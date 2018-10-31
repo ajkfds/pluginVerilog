@@ -1,0 +1,436 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace pluginVerilog.Verilog.Expressions
+{
+    public class Number : Primary
+    {
+        protected Number() { }
+
+        // A.8.7 Numbers
+        // number           ::= decimal_number
+        //                      | octal_number
+        //                      | binary_number
+        //                      | hex_number
+        //                      | real_number
+        // real_number      ::= unsigned_number.unsigned_number
+        //                      | unsigned_number[.unsigned_number] exp [sign] unsigned_number  
+        // exp ::= e|E
+        // sign ::= + | -
+        
+        // done!!   decimal_number  ::= unsigned_number 
+        //                          | [size] decimal_base unsigned_number
+        //                          | [size] decimal_base x_digit { _ }
+        //                          | [size] decimal_base z_digit { _ }
+        // done!!   binary_number    ::= [size] binary_base binary_value
+        // done!!   octal_number     ::= [size] octal_base octal_value
+        // done!!   hex_number       ::= [size] hex_base hex_value
+
+        // size ::= non_zero_unsigned_number  
+
+        // non_zero_unsigned_number ::= non_zero_decimal_digit { _ | decimal_digit} 
+
+        // unsigned_number ::= decimal_digit { _ | decimal_digit }  
+
+        // binary_value ::= binary_digit { _ | binary_digit }  
+        // octal_value ::= octal_digit { _ | octal_digit }  
+        // hex_value ::= hex_digit { _ | hex_digit }  
+
+
+        // decimal_base ::= ’[s|S]d | ’[s|S]D
+        // binary_base ::= ’[s|S]b |  ’[s|S]B  
+        // octal_base ::= ’[s|S]o | ’[s|S]O
+        // hex_base1 ::= ’[s|S]h | ’[s|S]H  
+        // non_zero_decimal_digit ::= 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 
+        // decimal_digit ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9  
+        // binary_digit ::= x_digit | z_digit | 0 | 1  
+        // octal_digit ::= x_digit | z_digit | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7  
+        // hex_digit ::=  x_digit | z_digit | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9          | a | b | c | d | e | f | A | B | C | D | E | F  
+        // x_digit ::= x | X 
+        // z_digit ::= z | Z | ?
+
+        public bool Signed = false;
+        public NumberTypeEnum NumberType = NumberTypeEnum.Decimal;
+        public double Value = 0;
+        public int BitWidth = 32;
+
+        public enum NumberTypeEnum
+        {
+            Decimal,
+            Binary,
+            Octal,
+            Hex
+        }
+
+        public static Number ParseCreate(WordScanner word)
+        {
+            word.Color((byte)Style.Color.Number);
+
+            Number number = new Number();
+            int index = 0;
+            int apostropheIndex = -1;
+            StringBuilder sb = new StringBuilder();
+
+            // get string before ' and ' index
+
+            while (index < word.Length)
+            {
+                if(word.GetCharAt(index) == '\'')
+                {
+                    apostropheIndex = index;
+                    break;
+                } 
+                if(isDecimalDigit(word.GetCharAt(index)))
+                {
+                    sb.Append(word.GetCharAt(index));
+                }
+                else if ( word.GetCharAt(index) == '_')
+                {
+                    if(index == 0) return null;
+                }
+                else if (word.GetCharAt(index) == '.' || word.GetCharAt(index) == 'e' || word.GetCharAt(index) == 'E')
+                { // real
+                    if (!parseRealValueAfterInteger(number, word, ref index, sb))
+                    {
+                        word.AddError("illegal real value");
+                        return null;
+                    }
+                    word.MoveNext();
+                    return number;
+                }
+                else
+                {
+                    word.AddError("illegal number value");
+                    return null;
+                }
+                index++;
+            }
+
+            if(apostropheIndex == -1)
+            { // decimal
+                number.NumberType = NumberTypeEnum.Decimal;
+                number.Value = int.Parse(sb.ToString());
+                word.MoveNext();
+                return number;
+            }
+            else
+            {
+                index = apostropheIndex + 1;
+                if (index >= word.Length) return null;
+                if( word.GetCharAt(index) == 's' || word.GetCharAt(index) == 'S')
+                {
+                    number.Signed = true;
+                    index++;
+                    if (index >= word.Length)
+                    {
+                        word.AddError("illegal number value");
+                        return null;
+                    }
+                }
+                if(sb.Length!=0) number.BitWidth = int.Parse(sb.ToString());
+
+                sb.Clear();
+                switch(word.GetCharAt(index))
+                {
+                    case 'd':
+                    case 'D':
+                        if (!parseDecimalValue(number, word, ref index, sb)) return null;
+                        break;
+                    case 'b':
+                    case 'B':
+                        if (!parseBinaryValue(number, word, ref index, sb)) return null;
+                        break;
+                    case 'o':
+                    case 'O':
+                        if (!parseOctalValue(number, word, ref index, sb)) return null;
+                        break;
+                    case 'h':
+                    case 'H':
+                        if (!parseHexValue(number, word, ref index, sb)) return null;
+                        break;
+                    default:
+                        return null;
+                }
+
+            }
+            word.MoveNext();
+            return number;
+        }
+
+        private static bool parseRealValueAfterInteger(Number number, WordScanner word, ref int index, StringBuilder sb)
+        {
+            if (word.GetCharAt(index) == '.')
+            { // real
+                sb.Append('.');
+                index++;
+                if (index >= word.Length) return false;
+
+                while (index < word.Length)
+                {
+                    if (word.GetCharAt(index) == 'e' || word.GetCharAt(index) == 'E') break;
+                    if (word.GetCharAt(index) == '_')
+                    {
+                        index++;
+                        break;
+                    }
+                    if (!isDecimalDigit(word.GetCharAt(index))) return false;
+                    sb.Append(word.GetCharAt(index));
+                    index++;
+                }
+            }
+            if (word.GetCharAt(index) == 'e' || word.GetCharAt(index) == 'E')
+            { // real
+                sb.Append('e');
+                index++;
+                if (index >= word.Length) return false;
+
+                if (word.GetCharAt(index) == '+' || word.GetCharAt(index) == '-')
+                {
+                    sb.Append(word.GetCharAt(index));
+                    index++;
+                    if (index >= word.Length) return false;
+                }
+
+                if (!isDecimalDigit(word.GetCharAt(index))) return false;
+                sb.Append(word.GetCharAt(index));
+                index++;
+                while (index < word.Length)
+                {
+                    if (word.GetCharAt(index) == '_')
+                    {
+                        index++;
+                        break;
+                    }
+                    if (!isDecimalDigit(word.GetCharAt(index))) return false;
+                    sb.Append(word.GetCharAt(index));
+                    index++;
+                }
+            }
+
+            number.Value = double.Parse(sb.ToString());
+            return true;
+        }
+
+        private static bool parseDecimalValue(Number number, WordScanner word, ref int index, StringBuilder sb)
+        {
+            sb.Clear();
+            number.NumberType = NumberTypeEnum.Decimal;
+            index++;
+            if (index >= word.Length)
+            {
+                word.MoveNext();
+                word.Color((byte)Style.Color.Number);
+                index = 0;
+            }
+            if (
+                word.GetCharAt(index) == 'x'
+                || word.GetCharAt(index) == 'X'
+                || word.GetCharAt(index) == 'z'
+                || word.GetCharAt(index) == 'Z'
+                )
+            {
+                index++;
+                while (index < word.Length)
+                {
+                    if (word.GetCharAt(index) != '_') return false;
+                    index++;
+                }
+                return true;
+            }
+
+            while (index < word.Length)
+            {
+                if (!isDecimalDigit(word.GetCharAt(index))) return false;
+                sb.Append(word.GetCharAt(index));
+                index++;
+            }
+            int value;
+            if(int.TryParse(sb.ToString(), out value))
+            {
+                number.Value = value;
+            }
+            return true;
+        }
+
+        private static bool parseBinaryValue(Number number, WordScanner word, ref int index, StringBuilder sb)
+        {
+            sb.Clear();
+            number.NumberType = NumberTypeEnum.Binary;
+            index++;
+            if (index >= word.Length)
+            {
+                word.AddError("illegal binary number");
+                return false;
+            }
+            if (!isBinaryDigit(word.GetCharAt(index)))
+            {
+                word.AddError("illegal binary digit");
+                return false;
+            }
+            sb.Append(word.GetCharAt(index));
+            index++;
+            while (index < word.Length)
+            {
+                if (word.GetCharAt(index) != '_')
+                {
+                    if (!isBinaryDigit(word.GetCharAt(index)))
+                    {
+                        word.AddError("illegal binary digit");
+                        return false;
+                    }
+                    sb.Append(word.GetCharAt(index));
+                }
+                index++;
+            }
+            try
+            {
+                number.Value = Convert.ToInt32(sb.ToString(), 2);
+            }
+            catch
+            {
+
+            }
+            return true;
+        }
+
+        private static bool parseOctalValue(Number number, WordScanner word, ref int index, StringBuilder sb)
+        {
+            sb.Clear();
+            number.NumberType = NumberTypeEnum.Octal;
+            index++;
+            if (index >= word.Length)
+            {
+                word.AddError("illegal octal number");
+                return false;
+            }
+            if (!isOctalDigit(word.GetCharAt(index)))
+            {
+                word.AddError("iilegal octal digit");
+                return false;
+            }
+            sb.Append(word.GetCharAt(index));
+            index++;
+            while (index < word.Length)
+            {
+                if (word.GetCharAt(index) != '_')
+                {
+                    if (!isOctalDigit(word.GetCharAt(index)))
+                    {
+                        word.AddError("iilegal octal digit");
+                        return false;
+                    }
+                    sb.Append(word.GetCharAt(index));
+                }
+                index++;
+            }
+            number.Value = Convert.ToInt32(sb.ToString(), 8);
+            return true;
+        }
+
+        private static bool parseHexValue(Number number, WordScanner word, ref int index, StringBuilder sb)
+        {
+            sb.Clear();
+            number.NumberType = NumberTypeEnum.Hex;
+            index++;
+            if (index >= word.Length)
+            {
+                word.AddError("illegal hex number");
+                return false;
+            }
+            if (!isHexDigit(word.GetCharAt(index)))
+            {
+                word.AddError("iilegal hex digit");
+                return false;
+            }
+            sb.Append(word.GetCharAt(index));
+            index++;
+            while (index < word.Length)
+            {
+                if (word.GetCharAt(index) != '_')
+                {
+                    if (!isHexDigit(word.GetCharAt(index)))
+                    {
+                        word.AddError("iilegal hex digit");
+                        return false;
+                    }
+                    sb.Append(word.GetCharAt(index));
+                }
+                index++;
+            }
+            if(sb.Length <= 10)
+            {
+                number.Value = int.Parse(sb.ToString(), System.Globalization.NumberStyles.HexNumber);
+            }
+            else
+            {
+                // overflow value
+            }
+            return true;
+        }
+
+
+        // decimal_digit ::= 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9  
+        // binary_digit ::= x_digit | z_digit | 0 | 1  
+        // octal_digit ::= x_digit | z_digit | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7  
+        // hex_digit ::=  x_digit | z_digit | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | a | b | c | d | e | f | A | B | C | D | E | F  
+        // x_digit ::= x | X 
+        // z_digit ::= z | Z | ?
+
+        private static bool isDecimalDigit(char value)
+        {
+            if (value >= '0' && value <= '9') return true;
+            return false;
+        }
+
+        private static bool isBinaryDigit(char value)
+        {
+            if (value >= '0' && value <= '1') return true;
+            if (value == 'x' || value == 'X') return true;                  // x_digit
+            if (value == 'z' || value == 'Z' || value == '?') return true;  // z_digit
+            return false;
+        }
+
+        private static bool isOctalDigit(char value)
+        {
+            if (value >= '0' && value <= '7') return true;
+            if (value == 'x' || value == 'X') return true;                  // x_digit
+            if (value == 'z' || value == 'Z' || value == '?') return true;  // z_digit
+            return false;
+        }
+
+        private static bool isHexDigit(char value)
+        {
+            if (value >= '0' && value <= '9') return true;
+            if (value >= 'a' && value <= 'f') return true;
+            if (value >= 'A' && value <= 'F') return true;
+            if (value == 'x' || value == 'X') return true;                  // x_digit
+            if (value == 'z' || value == 'Z' || value == '?') return true;  // z_digit
+            return false;
+        }
+
+        public byte[] identifierTable = new byte[128] {
+            //      0,1,2,3,4,5,6,7,8,9,a,b,c,e,d,f
+            // 0*
+                    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            // 1*
+                    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            // 2*     ! " # $ % & ' ( ) * + , - . /
+                    0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,
+            // 3*   0 1 2 3 4 5 6 7 8 9 : ; < = > ?
+                    2,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,
+            // 4*   @ A B C D E F G H I J K L M N O
+                    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            // 5*   P Q R S T U V W X Y Z [ \ ] ^ _
+                    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            // 6*   ` a b c d e f g h i j k l m n o
+                    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+            // 7*   p q r s t u v w x y z { | } ~ 
+                    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+        };
+
+    }
+
+}

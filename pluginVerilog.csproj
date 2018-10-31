@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F27C1188-D6D7-44C3-8188-8C79872EE9A7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>pluginVerilog</RootNamespace>
+    <AssemblyName>pluginVerilog</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Data\IVerilogRelatedFile.cs" />
+    <Compile Include="MessageView\MessageNode.cs" />
+    <Compile Include="NavigatePanel\VerilogHeaderInstanceNode.cs" />
+    <Compile Include="NavigatePanel\VerilogHeaderNode.cs" />
+    <Compile Include="ProjectProperty.cs" />
+    <Compile Include="Verilog\IWordPointer.cs" />
+    <Compile Include="Verilog\ModuleItems\ContinuousAssign.cs" />
+    <Compile Include="Data\VerilogFile.cs" />
+    <Compile Include="Data\VerilogHeaderFile.cs" />
+    <Compile Include="Verilog\Expressions\ConditionalExpression.cs" />
+    <Compile Include="Verilog\Expressions\FunctionCall.cs" />
+    <Compile Include="FileTypes\VerilogFile.cs" />
+    <Compile Include="FileTypes\VerilogHeaderFile.cs" />
+    <Compile Include="Verilog\Function.cs" />
+    <Compile Include="Verilog\ModuleItems\AlwaysConstruct.cs" />
+    <Compile Include="Verilog\ModuleItems\ModuleInstantiation.cs" />
+    <Compile Include="NavigatePanel\VerilogFileNode.cs" />
+    <Compile Include="Verilog\ParsedDocument.cs" />
+    <Compile Include="Parser\Parser.cs" />
+    <Compile Include="Plugin.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="SetupForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SetupForm.Designer.cs">
+      <DependentUpon>SetupForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Verilog\Statements\Assignment.cs" />
+    <Compile Include="Verilog\Attribute.cs" />
+    <Compile Include="Verilog\Statements\CaseStatement.cs" />
+    <Compile Include="Verilog\Statements\ConditionalStatement.cs" />
+    <Compile Include="Verilog\Expressions\Expression.cs" />
+    <Compile Include="Verilog\General.cs" />
+    <Compile Include="Verilog\Item.cs" />
+    <Compile Include="Verilog\Statements\LoopingStatememt.cs" />
+    <Compile Include="Verilog\Module.cs" />
+    <Compile Include="Verilog\NameSpace.cs" />
+    <Compile Include="Verilog\Expressions\Number.cs" />
+    <Compile Include="Verilog\Expressions\Operator.cs" />
+    <Compile Include="Style.cs" />
+    <Compile Include="Verilog\Task.cs" />
+    <Compile Include="Verilog\Variables\VariableAssignment.cs" />
+    <Compile Include="Verilog\Variables\Parameter.cs" />
+    <Compile Include="Verilog\Variables\Port.cs" />
+    <Compile Include="Verilog\Expressions\Primary.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Verilog\Variables\Range.cs" />
+    <Compile Include="Verilog\Statements\SequentialBlock.cs" />
+    <Compile Include="Verilog\Statements\Statement.cs" />
+    <Compile Include="Verilog\Statements\TimingControlStatements.cs" />
+    <Compile Include="Verilog\Variables\Variable.cs" />
+    <Compile Include="VerilogParser.cs" />
+    <Compile Include="Verilog\WordPointer.cs" />
+    <Compile Include="Verilog\WordScanner.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ajkControls\ajkControls.csproj">
+      <Project>{c43436fa-980d-4d3c-bcb5-9ee6b494496c}</Project>
+      <Name>ajkControls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\codeEditor\codeEditorPlugin\codeEditorPlugin.csproj">
+      <Project>{f03533b2-988a-4b18-b937-0123e7689e84}</Project>
+      <Name>codeEditorPlugin</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\codeEditor\codeEditor\codeEditor.csproj">
+      <Project>{ca5e5087-1436-4185-a775-9d38c5e8768e}</Project>
+      <Name>codeEditor</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SetupForm.resx">
+      <DependentUpon>SetupForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\verilog.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\verilogHeader.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\exclamation.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\exclamationBox.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /I /D /Y "$(ProjectDir)\bin\$(Configuration)\$(ProjectName).dll" "$(SolutionDir)codeEditor\bin\$(Configuration)\dlls" 
+</PostBuildEvent>
+  </PropertyGroup>
+</Project>
