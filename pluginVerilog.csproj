@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeEditor\CodeDocument.cs" />
     <Compile Include="Data\IVerilogRelatedFile.cs" />
     <Compile Include="MessageView\MessageNode.cs" />
     <Compile Include="NavigatePanel\VerilogHeaderInstanceNode.cs" />
