@@ -19,6 +19,8 @@ namespace pluginVerilog
                 FileTypes.VerilogHeaderFile fileType = new FileTypes.VerilogHeaderFile();
                 codeEditor.Global.FileTypes.Add(fileType.ID, fileType);
             }
+            string absolutePth = System.IO.Path.GetFullPath(@"..\\..\\..\\..\\pluginVerilog\\TestRTL");
+            codeEditor.Global.Controller.AddProject(absolutePth);
         }
         public string Id { get { return StaticID; } }
 
