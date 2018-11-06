@@ -53,7 +53,7 @@ namespace pluginVerilog.NavigatePanel
 
         public override void Selected()
         {
-            codeEditor.Global.ViewController.CodeEditor.SetTextFile(ITextFile);
+            codeEditor.Global.Controller.CodeEditor.SetTextFile(ITextFile);
         }
 
         public override void Update()

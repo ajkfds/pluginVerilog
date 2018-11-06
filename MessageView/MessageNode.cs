@@ -31,8 +31,8 @@ namespace pluginVerilog.MessageView
             textFile.CodeDocument.SelectionStart = index;
             textFile.CodeDocument.SelectionLast = index + length;
             textFile.CodeDocument.CaretIndex = index;
-            codeEditor.Global.ViewController.CodeEditor.ScrollToCaret();
-            codeEditor.Global.ViewController.CodeEditor.Refresh();
+            codeEditor.Global.Controller.CodeEditor.ScrollToCaret();
+            codeEditor.Global.Controller.CodeEditor.Refresh();
         }
 
         private static ajkControls.Icon icon = new ajkControls.Icon(Properties.Resources.exclamationBox);
