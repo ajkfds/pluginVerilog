@@ -96,7 +96,7 @@ namespace pluginVerilog.Data
         private Dictionary<string, codeEditor.Data.Item> items = new Dictionary<string, codeEditor.Data.Item>();
         public IReadOnlyDictionary<string, codeEditor.Data.Item> Items
         {
-            get => items;
+            get { return items; }
         }
 
         public override void Update()

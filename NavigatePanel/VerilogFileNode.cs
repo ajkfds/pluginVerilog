@@ -16,17 +16,17 @@ namespace pluginVerilog.NavigatePanel
 
         public codeEditor.Data.ITextFile ITextFile
         {
-            get => Project.GetRegisterdItem(ID) as codeEditor.Data.ITextFile;
+            get { return Project.GetRegisterdItem(ID) as codeEditor.Data.ITextFile; }
         }
 
         public virtual Data.VerilogFile VerilogFile
         {
-            get => Project.GetRegisterdItem(ID) as Data.VerilogFile;
+            get { return Project.GetRegisterdItem(ID) as Data.VerilogFile; }
         }
 
         public override string Text
         {
-            get => FileItem.Name;
+            get { return FileItem.Name; }
         }
 
         private static ajkControls.Icon icon = new ajkControls.Icon(Properties.Resources.verilog);

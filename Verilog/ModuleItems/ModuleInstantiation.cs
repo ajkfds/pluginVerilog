@@ -13,7 +13,7 @@ namespace pluginVerilog.Verilog.ModuleItems
         public string ModuleName{ get; protected set; }
 
         private List<Verilog.Variables.Port> ports = new List<Variables.Port>();
-        public IReadOnlyList<Verilog.Variables.Port> Ports { get => ports; }
+        public IReadOnlyList<Verilog.Variables.Port> Ports { get { return ports; } }
 
         public static void Parse(WordScanner word,Module module)
         {

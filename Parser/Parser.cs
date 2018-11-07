@@ -19,7 +19,7 @@ namespace pluginVerilog.Parser
         public Verilog.WordScanner word;
         private Verilog.ParsedDocument parsedDocument = null;
 
-        public override ParsedDocument ParsedDocument { get => parsedDocument as codeEditor.CodeEditor.ParsedDocument; }
+        public override ParsedDocument ParsedDocument { get { return parsedDocument as codeEditor.CodeEditor.ParsedDocument; } }
 
 
         /*
