@@ -43,6 +43,33 @@ namespace pluginVerilog.Verilog
             }
         }
 
+        public List<codeEditor.CodeEditor.PopupItem> GetPopupItems(int index,string text)
+        {
+            List<codeEditor.CodeEditor.PopupItem> ret = new List<codeEditor.CodeEditor.PopupItem>();
+            foreach (Message message in Messages)
+            {
+                if (index < message.Index) continue;
+                if (index > message.Index + message.Length) continue;
+                ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.Red, Style.ExclamationBoxIcon,ajkControls.Icon.ColorStyle.Red));
+            }
+
+            NameSpace space = null;
+            foreach(Module module in Modules.Values)
+            {
+                if (index < module.BeginIndex) continue;
+                if (index > module.LastIndex) continue;
+                space = module.GetHierNameSpace(index);
+                break;
+            }
+            if (space == null) return ret;
+            if (space.Variables.ContainsKey(text))
+            {
+                ret.Add(new Variables.VariablePopup(space.Variables[text]));
+            }
+
+            return ret;
+        }
+
         public new class Message : codeEditor.CodeEditor.ParsedDocument.Message
         {
             public Message(string text, MessageType type, int index, int length,string itemID,codeEditor.Data.Project project)

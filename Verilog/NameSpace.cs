@@ -15,11 +15,26 @@ namespace pluginVerilog.Verilog
             Parent = parent;
         }
 
+        public int BeginIndex = -1;
+        public int LastIndex = -1;
+
         public Dictionary<string, Variables.Variable> Variables = new Dictionary<string, Variables.Variable>();
         public NameSpace Parent { get; protected set; }
         public Dictionary<string, Variables.Parameter> Parameters = new Dictionary<string, Variables.Parameter>();
         public Dictionary<string, Variables.Parameter> LocalParameters = new Dictionary<string, Variables.Parameter>();
         public Module Module { get; protected set; }
+        public List<NameSpace> NameSpaces = new List<NameSpace>();
+
+        public NameSpace GetHierNameSpace(int index)
+        {
+            foreach(NameSpace subSpace in NameSpaces)
+            {
+                if (index < subSpace.BeginIndex) continue;
+                if (index > subSpace.LastIndex) continue;
+                return subSpace.GetHierNameSpace(index);
+            }
+            return this;
+        }
 
         public Variables.Variable GetVariable(string identifier)
         {

@@ -105,5 +105,18 @@ namespace pluginVerilog.Data
             return null;
         }
 
+        public virtual void AfterKeyPressed(System.Windows.Forms.KeyPressEventArgs e)
+        {
+
+        }
+        public virtual void AfterKeyDown(System.Windows.Forms.KeyEventArgs e)
+        {
+
+        }
+
+        public List<codeEditor.CodeEditor.PopupItem> GetPopupItems(int EditId, int index)
+        {
+            return null;
+        }
     }
 }

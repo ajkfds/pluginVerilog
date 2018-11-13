@@ -21,8 +21,8 @@ namespace pluginVerilog.Verilog
 
         public Verilog.ParsedDocument RootParsedDocument { get; protected set; }
 
-        protected IWordPointer wordPointer = null;
-        protected List<IWordPointer> stock = new List<IWordPointer>();
+        protected WordPointer wordPointer = null;
+        protected List<WordPointer> stock = new List<WordPointer>();
 
         public WordScanner Clone()
         {
@@ -48,6 +48,21 @@ namespace pluginVerilog.Verilog
         public void AddWarning(string message)
         {
             wordPointer.AddWarning(message);
+        }
+
+        public int RootIndex
+        {
+            get
+            {
+                if(stock.Count == 0)
+                {
+                    return wordPointer.Index;
+                }
+                else
+                {
+                    return stock[0].Index;
+                }
+            }
         }
 
         public void MoveNext()
@@ -115,7 +130,7 @@ namespace pluginVerilog.Verilog
         {
             get
             {
-                IWordPointer temp = wordPointer.Clone();
+                WordPointer temp = wordPointer.Clone();
                 wordPointer.MoveNext();
                 while (!wordPointer.Eof && wordPointer.WordType == WordPointer.WordTypeEnum.Comment)
                 {
@@ -356,7 +371,7 @@ namespace pluginVerilog.Verilog
             codeEditor.CodeEditor.CodeDocument codeDocument = new codeEditor.CodeEditor.CodeDocument();
             codeDocument.Replace(0, 0, 0, macroText);
 
-            IWordPointer newPointer = new WordPointer(codeDocument, wordPointer.ParsedDocument);
+            WordPointer newPointer = new WordPointer(codeDocument, wordPointer.ParsedDocument);
             stock.Add(wordPointer);
             wordPointer = newPointer;
             while (!wordPointer.Eof)
@@ -404,7 +419,7 @@ namespace pluginVerilog.Verilog
                 wordPointer.ParsedDocument.IncludeFiles.Add(vhFile.ID,vhFile);
             }
 
-            IWordPointer newPointer = new WordPointer(vhFile.CodeDocument, wordPointer.ParsedDocument);
+            WordPointer newPointer = new WordPointer(vhFile.CodeDocument, wordPointer.ParsedDocument);
             stock.Add(wordPointer);
             wordPointer = newPointer;
             while (!wordPointer.Eof)

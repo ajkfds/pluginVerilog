@@ -149,7 +149,25 @@ namespace pluginVerilog.Data
                 items.Add(item.ID, item);
             }
         }
-
+        public virtual void AfterKeyPressed(System.Windows.Forms.KeyPressEventArgs e)
+        {
 
         }
+        public virtual void AfterKeyDown(System.Windows.Forms.KeyEventArgs e)
+        {
+
+        }
+
+        public List<codeEditor.CodeEditor.PopupItem> GetPopupItems(int editId, int index)
+        {
+            if (VerilogParsedDocument == null) return null;
+            if (VerilogParsedDocument.EditID != editId) return null;
+
+            int headIndex, length;
+            CodeDocument.GetWord(index, out headIndex, out length);
+            string text = CodeDocument.CreateString(headIndex, length);
+            return VerilogParsedDocument.GetPopupItems(index,text);
+        }
+
+    }
 }

@@ -39,6 +39,7 @@ namespace pluginVerilog.Verilog
 
             if (word.Text != "module" && word.Text != "macromodule") System.Diagnostics.Debugger.Break();
             word.Color((byte)Style.Color.Keyword);
+            module.BeginIndex = word.RootIndex;
             word.MoveNext();
 
             module.Name = word.Text;
@@ -103,6 +104,7 @@ namespace pluginVerilog.Verilog
             if (word.Text == "endmodule")
             {
                 word.Color((byte)Style.Color.Keyword);
+                module.LastIndex = word.RootIndex;
                 word.MoveNext();
                 return module;
             }

@@ -13,7 +13,7 @@ namespace pluginVerilog.Verilog
         }
 
         public Dictionary<string, Variables.Port> Ports = new Dictionary<string, Variables.Port>();
-        public Statements.Statement Statement;
+        public Statements.IStatement Statement;
         public string Name;
 
         public new static void Parse(WordScanner word, Module module)
@@ -22,7 +22,9 @@ namespace pluginVerilog.Verilog
             {
                 System.Diagnostics.Debugger.Break();
             }
+            Function function = new Function(module, module);
             word.Color((byte)Style.Color.Keyword);
+            function.BeginIndex = word.RootIndex;
             word.MoveNext();
 
             // function_declaration::= function[automatic][signed][range_or_type] function_identifier;
@@ -38,7 +40,6 @@ namespace pluginVerilog.Verilog
             // function_item_declaration::= block_item_declaration | tf_input_declaration; function_port_list::= { attribute_instance }
             // tf_input_declaration { , { attribute_instance } tf_input_declaration }
             // range_or_type::= range | integer | real | realtime | time
-            Function function = new Function(module, module);
 
             if (word.Text == "automatic")
             {
@@ -143,7 +144,7 @@ namespace pluginVerilog.Verilog
 
             }
 
-            Statements.Statement statement = Statements.Statement.ParseCreateFunctionStatement(word, function);
+            Statements.IStatement statement = Statements.Statements.ParseCreateFunctionStatement(word, function);
 
             if(word.Text != "endfunction")
             {
@@ -151,11 +152,13 @@ namespace pluginVerilog.Verilog
                 return;
             }
             word.Color((byte)Style.Color.Keyword);
+            function.LastIndex = word.RootIndex;
             word.MoveNext();
 
             if (!module.Functions.ContainsKey(function.Name))
             {
                 module.Functions.Add(function.Name, function);
+                module.NameSpaces.Add(function);
             }
 
             return;

@@ -22,5 +22,6 @@ namespace pluginVerilog
         }
 
         public static ajkControls.Icon ExclamationIcon = new ajkControls.Icon(Properties.Resources.exclamation);
+        public static ajkControls.Icon ExclamationBoxIcon = new ajkControls.Icon(Properties.Resources.exclamationBox);
     }
 }
