@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Verilog.Statements
 {
-    public class SequentialBlock : Statement
+    public class SequentialBlock : IStatement
     {
         protected SequentialBlock() { }
-        public List<Statement> Statements = new List<Statement>();
+        public List<IStatement> Statements = new List<IStatement>();
 
         /*
         A.6.3 Parallel and sequential blocks
@@ -18,18 +18,21 @@ namespace pluginVerilog.Verilog.Statements
         par_block               ::= fork [ : block_identifier { block_item_declaration } ] { statement }
         join seq_block          ::= begin[ : block_identifier { block_item_declaration } ] { statement } end  
         */
-        public static SequentialBlock ParseCreate(WordScanner word,NameSpace nameSpace)
+        public static IStatement ParseCreate(WordScanner word,NameSpace nameSpace)
         {
-            SequentialBlock sequentialBlock = new SequentialBlock();
             if(word.Text != "begin")
             {
                 System.Diagnostics.Debugger.Break();
             }
             word.Color((byte)Style.Color.Keyword);
+            int beginIndex = word.RootIndex;
             word.MoveNext(); // begin
 
-            if(word.GetCharAt(0) == ':')
+            if (word.GetCharAt(0) == ':')
             {
+                NamedSequentialBlock namedBlock = new NamedSequentialBlock(nameSpace.Module, nameSpace);
+                namedBlock.BeginIndex = beginIndex;
+
                 word.MoveNext(); // :
                 if (!General.IsIdentifier(word.Text))
                 {
@@ -37,26 +40,58 @@ namespace pluginVerilog.Verilog.Statements
                 }
                 else
                 {
-//                    sequentialBlock.Name = word.Text;
+                    namedBlock.Name = word.Text;
                     word.MoveNext();
                 }
-            }
-            while (!word.Eof && word.Text != "end")
-            {
-                Statement statement = Statement.ParseCreateStatement(word, nameSpace);
-                if (statement == null) break;
-                sequentialBlock.Statements.Add(statement);
-            }
-            if(word.Text != "end")
-            {
-                word.AddError("illegal sequential block");
-                return null;
-            }
-            word.Color((byte)Style.Color.Keyword);
-            word.MoveNext(); // end
+                while (!word.Eof && word.Text != "end")
+                {
+                    IStatement statement = Verilog.Statements.Statements.ParseCreateStatement(word, namedBlock);
+                    if (statement == null) break;
+                    namedBlock.Statements.Add(statement);
+                }
+                if (word.Text != "end")
+                {
+                    word.AddError("illegal sequential block");
+                    return null;
+                }
+                word.Color((byte)Style.Color.Keyword);
+                namedBlock.LastIndex = word.RootIndex;
+                word.MoveNext(); // end
 
-            return sequentialBlock;
+                nameSpace.NameSpaces.Add(namedBlock);
+
+                return namedBlock;
+            }
+            else
+            {
+                SequentialBlock sequentialBlock = new SequentialBlock();
+                while (!word.Eof && word.Text != "end")
+                {
+                    IStatement statement = Verilog.Statements.Statements.ParseCreateStatement(word, nameSpace);
+                    if (statement == null) break;
+                    sequentialBlock.Statements.Add(statement);
+                }
+                if (word.Text != "end")
+                {
+                    word.AddError("illegal sequential block");
+                    return null;
+                }
+                word.Color((byte)Style.Color.Keyword);
+                word.MoveNext(); // end
+
+                return sequentialBlock;
+            }
         }
 
     }
+
+    public class NamedSequentialBlock : Verilog.NameSpace,IStatement
+    {
+        public NamedSequentialBlock(Module module, NameSpace parent) : base(module,parent)
+        {
+        }
+
+        public List<IStatement> Statements = new List<IStatement>();
+    }
+
 }

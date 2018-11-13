@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Verilog.Statements
 {
-    public class ForeverStatement : Statement
+    public class ForeverStatement : IStatement
     {
         protected ForeverStatement() { }
-        public Statement Statement;
+        public IStatement Statement;
         //A.6.8 Looping statements
         //function_loop_statement ::= forever function_statement          
         //                            | repeat(expression ) function_statement
@@ -25,17 +25,17 @@ namespace pluginVerilog.Verilog.Statements
             word.Color((byte)Style.Color.Keyword);
             word.MoveNext();
 
-            foreverStatement.Statement = Statement.ParseCreateStatement(word, nameSpace);
+            foreverStatement.Statement = Statements.ParseCreateStatement(word, nameSpace);
 
             return foreverStatement;
         }
     }
 
-    public class RepeatStatement : Statement
+    public class RepeatStatement : IStatement
     {
         protected RepeatStatement() { }
         public Expressions.Expression Expression;
-        public Statement Statement;
+        public IStatement Statement;
         //A.6.8 Looping statements
         //function_loop_statement ::= forever function_statement          
         //                            | repeat(expression ) function_statement
@@ -65,17 +65,17 @@ namespace pluginVerilog.Verilog.Statements
                 return null;
             }
 
-            repeatStatement.Statement = Statement.ParseCreateStatement(word, nameSpace);
+            repeatStatement.Statement = Statements.ParseCreateStatement(word, nameSpace);
 
             return repeatStatement;
         }
     }
 
-    public class WhileStatememt : Statement
+    public class WhileStatememt : IStatement
     {
         protected WhileStatememt() { }
         public Expressions.Expression Expression;
-        public Statement Statement;
+        public IStatement Statement;
         //A.6.8 Looping statements
         //function_loop_statement ::= forever function_statement          
         //                            | repeat(expression ) function_statement
@@ -105,16 +105,16 @@ namespace pluginVerilog.Verilog.Statements
                 return null;
             }
 
-            whileStatement.Statement = Statement.ParseCreateStatement(word, nameSpace);
+            whileStatement.Statement = Statements.ParseCreateStatement(word, nameSpace);
 
             return whileStatement;
         }
     }
 
-    public class ForStatememt : Statement
+    public class ForStatememt : IStatement
     {
         protected ForStatememt() { }
-        public Statement Statement;
+        public IStatement Statement;
 
         public Variables.VariableAssignment VariableAssignment;
         public Expressions.Expression Expression;
@@ -162,7 +162,7 @@ namespace pluginVerilog.Verilog.Statements
             }
 
 
-            forStatement.Statement = Statement.ParseCreateStatement(word, nameSpace);
+            forStatement.Statement = Statements.ParseCreateStatement(word, nameSpace);
             return forStatement;
         }
     }

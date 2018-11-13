@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Verilog.Statements
 {
-    public class Statement
+    public static class Statements
     {
-        protected Statement() { }
         /*
         A.6.4 Statements
         statement   ::= { attribute_instance } blocking_assignment ;
@@ -37,7 +36,7 @@ namespace pluginVerilog.Verilog.Statements
                                 | { attribute_instance } disable_statement
                                 | { attribute_instance } system_task_enable  
         */
-        public static Statement ParseCreateStatement(WordScanner word, NameSpace nameSpace)
+        public static IStatement ParseCreateStatement(WordScanner word, NameSpace nameSpace)
         {
             /*
             A.6.4 Statements
@@ -84,7 +83,7 @@ namespace pluginVerilog.Verilog.Statements
                     return CaseStatement.ParseCreate(word, nameSpace);
                 default:
                     Expressions.Expression expression = Expressions.Expression.ParseCreateVariableLValue(word, nameSpace);
-                    Statement statement;
+                    IStatement statement;
                     if (expression == null)
                     {
                         word.MoveNext();
@@ -115,7 +114,7 @@ namespace pluginVerilog.Verilog.Statements
             return null;
         }
 
-        public static Statement ParseCreateStatementOrNull(WordScanner word, NameSpace nameSpace)
+        public static IStatement ParseCreateStatementOrNull(WordScanner word, NameSpace nameSpace)
         {
             if(word.GetCharAt(0) == ';')
             {
@@ -124,46 +123,11 @@ namespace pluginVerilog.Verilog.Statements
             }
             return ParseCreateStatement(word, nameSpace);
         }
-        public static Statement ParseCreateFunctionStatement(WordScanner word, NameSpace nameSpace)
+        public static IStatement ParseCreateFunctionStatement(WordScanner word, NameSpace nameSpace)
         {
             return ParseCreateStatement(word,nameSpace);
         }
-
-        //private parseConditionalStatement(WordScanner word,NameSpace nameSpace)
-        //{
-
-        //}
     }
 
-    public class ProceduralTimingControlStatement : Statement
-    {
-        protected ProceduralTimingControlStatement() { }
-        public DelayControl DelayControl { get; protected set; }
-        public EventControl EventControl { get; protected set; }
-        public Statement Statement { get; protected set; }
-
-        public static ProceduralTimingControlStatement ParseCreate(WordScanner word,NameSpace nameSpace)
-        {
-            switch (word.Text)
-            {
-                case "#":
-                    {
-                        ProceduralTimingControlStatement statement = new ProceduralTimingControlStatement();
-                        statement.DelayControl = DelayControl.ParseCreate(word, nameSpace);
-                        statement.Statement = Statement.ParseCreateStatementOrNull(word, nameSpace);
-                        return statement;
-                    }
-                case "@":
-                    {
-                        ProceduralTimingControlStatement statement = new ProceduralTimingControlStatement();
-                        statement.EventControl = EventControl.ParseCreate(word, nameSpace);
-                        statement.Statement = Statement.ParseCreateStatementOrNull(word, nameSpace);
-                        return statement;
-                    }
-                default:
-                    return null;
-            }
-        }
-    }
 
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Verilog.Statements
 {
-    public class ConditionalStatement : Statement
+    public class ConditionalStatement : IStatement
     {
         protected ConditionalStatement() { }
 
@@ -14,13 +14,13 @@ namespace pluginVerilog.Verilog.Statements
 
         public struct ConditionStatementPair
         {
-            public ConditionStatementPair(Expressions.Expression conditionalExpression, Statement statement)
+            public ConditionStatementPair(Expressions.Expression conditionalExpression, IStatement statement)
             {
                 ConditionalExpression = conditionalExpression;
                 Statement = statement;
             }
             Expressions.Expression ConditionalExpression;
-            Statement Statement;
+            IStatement Statement;
         }
 
         /*
@@ -62,7 +62,7 @@ namespace pluginVerilog.Verilog.Statements
             }
             word.MoveNext(); // )
 
-            Statement statement = Statement.ParseCreateStatementOrNull(word, nameSpace);
+            IStatement statement = Statements.ParseCreateStatementOrNull(word, nameSpace);
             conditionalStatement.ConditionStatementPairs.Add(new ConditionStatementPair(conditionExpression, statement));
 
             while (word.Text == "else")
@@ -95,12 +95,12 @@ namespace pluginVerilog.Verilog.Statements
                     }
                     word.MoveNext(); // )
 
-                    statement = Statement.ParseCreateStatementOrNull(word, nameSpace);
+                    statement = Statements.ParseCreateStatementOrNull(word, nameSpace);
                     conditionalStatement.ConditionStatementPairs.Add(new ConditionStatementPair(conditionExpression, statement));
                 }
                 else
                 {
-                    statement = Statement.ParseCreateStatementOrNull(word, nameSpace);
+                    statement = Statements.ParseCreateStatementOrNull(word, nameSpace);
                     conditionalStatement.ConditionStatementPairs.Add(new ConditionStatementPair(null, statement));
                     break;
                 }

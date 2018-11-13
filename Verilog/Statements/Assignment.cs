@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace pluginVerilog.Verilog.Statements
 {
 
-    public class NonBlockingAssignment : Statement
+    public class NonBlockingAssignment : IStatement
     {
         protected NonBlockingAssignment() { }
 
@@ -58,7 +58,7 @@ namespace pluginVerilog.Verilog.Statements
             return assignment;
         }
     }
-    public class BlockingAssignment : Statement
+    public class BlockingAssignment : IStatement
     {
         protected BlockingAssignment() { }
 

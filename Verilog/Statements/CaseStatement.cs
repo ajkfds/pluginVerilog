@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Verilog.Statements
 {
-    public class CaseStatement : Statement
+    public class CaseStatement : IStatement
     {
         protected CaseStatement() { }
         public Expressions.Expression Expression;
@@ -86,7 +86,7 @@ namespace pluginVerilog.Verilog.Statements
         {
             protected CaseItem() { }
             public List<Expressions.Expression> Expressions = new List<Expressions.Expression>();
-            public Statement Statement;
+            public IStatement Statement;
 
             public static CaseItem ParseCreate(WordScanner word,NameSpace nameSpace)
             {
@@ -102,7 +102,7 @@ namespace pluginVerilog.Verilog.Statements
                     {
                         word.MoveNext();
                     }
-                    caseItem.Statement = Statements.Statement.ParseCreateStatementOrNull(word, nameSpace);
+                    caseItem.Statement = Statements.ParseCreateStatementOrNull(word, nameSpace);
                     return caseItem;
                 }
 
@@ -134,7 +134,7 @@ namespace pluginVerilog.Verilog.Statements
                     return null;
                 }
 
-                caseItem.Statement = Verilog.Statements.Statement.ParseCreateStatementOrNull(word, nameSpace);
+                caseItem.Statement = Statements.ParseCreateStatementOrNull(word, nameSpace);
                 return caseItem;
             }
         }
