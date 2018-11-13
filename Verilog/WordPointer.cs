@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Verilog
 {
-    public class WordPointer : IWordPointer
+    public class WordPointer
     {
         public WordPointer(codeEditor.CodeEditor.CodeDocument document, Verilog.ParsedDocument parsedDocument)
         {
@@ -40,7 +40,7 @@ namespace pluginVerilog.Verilog
             Eof
         }
 
-        public IWordPointer Clone()
+        public WordPointer Clone()
         {
             WordPointer ret = new WordPointer(Document, ParsedDocument);
             ret.index = index;
@@ -55,6 +55,14 @@ namespace pluginVerilog.Verilog
             for (int i = index; i < index + length; i++)
             {
                 Document.SetColorAt(i, colorIndex);
+            }
+        }
+
+        public int Index
+        {
+            get
+            {
+                return index;
             }
         }
 
