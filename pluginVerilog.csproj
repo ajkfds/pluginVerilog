@@ -140,6 +140,12 @@
   <ItemGroup>
     <None Include="Resources\exclamationBox.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\netBox.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\regBox.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /I /D /Y "$(ProjectDir)\bin\$(Configuration)\$(ProjectName).dll" "$(SolutionDir)codeEditor\bin\$(Configuration)\dlls" 
