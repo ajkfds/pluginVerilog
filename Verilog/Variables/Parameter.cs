@@ -41,31 +41,31 @@ namespace pluginVerilog.Verilog.Variables
             {
                 System.Diagnostics.Debugger.Break();
             }
-            word.Color((byte)Style.Color.Keyword);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
             switch(word.Text)
             {
                 case "integer":
-                    word.Color((byte)Style.Color.Keyword);
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext();
                     break;
                 case "real":
-                    word.Color((byte)Style.Color.Keyword);
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext();
                     break;
                 case "realtime":
-                    word.Color((byte)Style.Color.Keyword);
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext();
                     break;
                 case "time":
-                    word.Color((byte)Style.Color.Keyword);
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext();
                     break;
                 default:
                     if(word.Text == "signed")
                     {
-                        word.Color((byte)Style.Color.Keyword);
+                        word.Color(CodeDrawStyle.ColorType.Keyword);
                         word.MoveNext();
                     }
                     if(word.GetCharAt(0) == '[')
@@ -79,7 +79,7 @@ namespace pluginVerilog.Verilog.Variables
             {
                 if (!General.IsIdentifier(word.Text)) break;
                 string identifier = word.Text;
-                word.Color((byte)Style.Color.Paramater);
+                word.Color(CodeDrawStyle.ColorType.Paramater);
                 word.MoveNext();
 
                 if (word.Text != "=") break;
@@ -151,31 +151,31 @@ namespace pluginVerilog.Verilog.Variables
             {
                 System.Diagnostics.Debugger.Break();
             }
-            word.Color((byte)Style.Color.Keyword);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
             switch (word.Text)
             {
                 case "integer":
-                    word.Color((byte)Style.Color.Keyword);
+                    word.Color( CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext();
                     break;
                 case "real":
-                    word.Color((byte)Style.Color.Keyword);
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext();
                     break;
                 case "realtime":
-                    word.Color((byte)Style.Color.Keyword);
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext();
                     break;
                 case "time":
-                    word.Color((byte)Style.Color.Keyword);
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext();
                     break;
                 default:
                     if (word.Text == "signed")
                     {
-                        word.Color((byte)Style.Color.Keyword);
+                        word.Color(CodeDrawStyle.ColorType.Keyword);
                         word.MoveNext();
                     }
                     if (word.GetCharAt(0) == '[')
@@ -189,7 +189,7 @@ namespace pluginVerilog.Verilog.Variables
             {
                 if (!General.IsIdentifier(word.Text)) break;
                 string identifier = word.Text;
-                word.Color((byte)Style.Color.Paramater);
+                word.Color(CodeDrawStyle.ColorType.Paramater);
                 word.MoveNext();
 
                 if (word.Text != "=") break;

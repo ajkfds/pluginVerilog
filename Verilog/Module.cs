@@ -38,12 +38,12 @@ namespace pluginVerilog.Verilog
             module.Module = module;
 
             if (word.Text != "module" && word.Text != "macromodule") System.Diagnostics.Debugger.Break();
-            word.Color((byte)Style.Color.Keyword);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             module.BeginIndex = word.RootIndex;
             word.MoveNext();
 
             module.Name = word.Text;
-            word.Color((byte)Style.Color.Identifier);
+            word.Color(CodeDrawStyle.ColorType.Identifier);
             if (!General.IsIdentifier(word.Text)) word.AddError("illegal module name");
             word.MoveNext();
 
@@ -103,7 +103,7 @@ namespace pluginVerilog.Verilog
 
             if (word.Text == "endmodule")
             {
-                word.Color((byte)Style.Color.Keyword);
+                word.Color(CodeDrawStyle.ColorType.Keyword);
                 module.LastIndex = word.RootIndex;
                 word.MoveNext();
                 return module;

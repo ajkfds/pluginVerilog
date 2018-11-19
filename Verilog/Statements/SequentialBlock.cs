@@ -24,7 +24,7 @@ namespace pluginVerilog.Verilog.Statements
             {
                 System.Diagnostics.Debugger.Break();
             }
-            word.Color((byte)Style.Color.Keyword);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             int beginIndex = word.RootIndex;
             word.MoveNext(); // begin
 
@@ -54,7 +54,7 @@ namespace pluginVerilog.Verilog.Statements
                     word.AddError("illegal sequential block");
                     return null;
                 }
-                word.Color((byte)Style.Color.Keyword);
+                word.Color(CodeDrawStyle.ColorType.Keyword);
                 namedBlock.LastIndex = word.RootIndex;
                 word.MoveNext(); // end
 
@@ -76,7 +76,7 @@ namespace pluginVerilog.Verilog.Statements
                     word.AddError("illegal sequential block");
                     return null;
                 }
-                word.Color((byte)Style.Color.Keyword);
+                word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext(); // end
 
                 return sequentialBlock;

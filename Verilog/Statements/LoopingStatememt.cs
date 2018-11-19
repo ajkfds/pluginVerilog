@@ -22,7 +22,7 @@ namespace pluginVerilog.Verilog.Statements
         public static ForeverStatement ParseCreate(WordScanner word, NameSpace nameSpace)
         {
             ForeverStatement foreverStatement = new ForeverStatement();
-            word.Color((byte)Style.Color.Keyword);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
             foreverStatement.Statement = Statements.ParseCreateStatement(word, nameSpace);
@@ -48,7 +48,7 @@ namespace pluginVerilog.Verilog.Statements
         public static RepeatStatement ParseCreate(WordScanner word, NameSpace nameSpace)
         {
             RepeatStatement repeatStatement = new RepeatStatement();
-            word.Color((byte)Style.Color.Keyword);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
             if (word.GetCharAt(0) != '(')
@@ -88,7 +88,7 @@ namespace pluginVerilog.Verilog.Statements
         public static WhileStatememt ParseCreate(WordScanner word, NameSpace nameSpace)
         {
             WhileStatememt whileStatement = new WhileStatememt();
-            word.Color((byte)Style.Color.Keyword);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
             if (word.GetCharAt(0) != '(')
@@ -132,7 +132,7 @@ namespace pluginVerilog.Verilog.Statements
         public static ForStatememt ParseCreate(WordScanner word, NameSpace nameSpace)
         {
             ForStatememt forStatement = new ForStatememt();
-            word.Color((byte)Style.Color.Keyword);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
             if (word.GetCharAt(0) != '(')

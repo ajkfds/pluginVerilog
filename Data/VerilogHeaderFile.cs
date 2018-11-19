@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using codeEditor.CodeEditor;
 
 namespace pluginVerilog.Data
 {
@@ -95,6 +95,14 @@ namespace pluginVerilog.Data
             }
         }
 
+        public ajkControls.CodeDrawStyle DrawStyle
+        {
+            get
+            {
+                return Style.CodeDrawStyle;
+            }
+        }
+
         public override codeEditor.NavigatePanel.NavigatePanelNode CreateNode()
         {
             return new NavigatePanel.VerilogHeaderNode(ID, Project);
@@ -113,10 +121,27 @@ namespace pluginVerilog.Data
         {
 
         }
+        public virtual void BeforeKeyPressed(System.Windows.Forms.KeyPressEventArgs e)
+        {
+        }
+
+        public virtual void BeforeKeyDown(System.Windows.Forms.KeyEventArgs e)
+        {
+        }
 
         public List<codeEditor.CodeEditor.PopupItem> GetPopupItems(int EditId, int index)
         {
             return null;
         }
+
+        public List<AutocompleteItem> GetAutoCompleteItems(int index)
+        {
+            return null;
+        }
+        public List<codeEditor.CodeEditor.ToolItem> GetToolItems(int index)
+        {
+            return null;
+        }
+
     }
 }

@@ -31,11 +31,11 @@ namespace pluginVerilog.Verilog.ModuleItems
                 return;
             }
 
-            moduleIdentifier.Color((byte)Style.Color.Identifier);
+            moduleIdentifier.Color(CodeDrawStyle.ColorType.Identifier);
 
             if(word.Text == "#")
             {
-                word.Color((byte)Style.Color.Keyword);
+                word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext();
 
                 if (word.Text != "(")
@@ -50,7 +50,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                     while (!word.Eof && word.Text == ".")
                     {
                         word.MoveNext();
-                        word.Color((byte)Style.Color.Paramater);
+                        word.Color(CodeDrawStyle.ColorType.Paramater);
                         word.MoveNext();
                         if (word.Text != "(")
                         {
@@ -103,7 +103,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                 word.MoveNext();
             }
 
-            word.Color((byte)Style.Color.Identifier);
+            word.Color(CodeDrawStyle.ColorType.Identifier);
             if (!General.IsIdentifier(word.Text))
             {
                 word.AddError("illegal instance name");
@@ -132,7 +132,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                 while (!word.Eof && word.Text == ".")
                 {
                     word.MoveNext();
-                    word.Color((byte)Style.Color.Identifier);
+                    word.Color(CodeDrawStyle.ColorType.Identifier);
                     word.MoveNext();
                     if (word.Text != "(")
                     {

@@ -10,11 +10,9 @@ input	RST_X
 `define MAC wire aaa;
 `MAC
 
-//wire aaa;
-wire bbb;
-assign aaa = 8'h00;
-
 localparam P_DELAY = 1;
+
+
 
 wire [7:0] data_next;
 assign data_next = get_data_next(DATA_I);
@@ -27,6 +25,7 @@ begin
 		DATA_O <= #P_DELAY data_next;
 	end
 end
+
 
 function [7:0] get_data_next;
 input [7:0] data;

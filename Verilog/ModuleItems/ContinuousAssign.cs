@@ -21,7 +21,7 @@ namespace pluginVerilog.Verilog.ModuleItems
             {
                 System.Diagnostics.Debugger.Break();
             }
-            word.Color((byte)Style.Color.Keyword);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
             ContinuousAssign continuousAssign = new ContinuousAssign();

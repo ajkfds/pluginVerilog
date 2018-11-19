@@ -32,7 +32,7 @@ namespace pluginVerilog.CodeEditor
             Verilog.WordPointer.WordTypeEnum wordType;
             Verilog.WordPointer.FetchNext(this, ref headIndex, out length, out nextIndex, out wordType);
 
-            while(nextIndex < index && index < Length)
+            while(nextIndex <= index && index < Length)
             {
                 headIndex = nextIndex;
                 Verilog.WordPointer.FetchNext(this, ref headIndex, out length, out nextIndex, out wordType);

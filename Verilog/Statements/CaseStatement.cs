@@ -39,7 +39,7 @@ namespace pluginVerilog.Verilog.Statements
                     return null;
             }
             CaseStatement caseStatement = new CaseStatement();
-            word.Color((byte)Style.Color.Keyword);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
             if(word.GetCharAt(0) == '(')
@@ -76,7 +76,7 @@ namespace pluginVerilog.Verilog.Statements
                 word.AddError("illegal case statement");
                 return null;
             }
-            word.Color((byte)Style.Color.Keyword);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
             return caseStatement;
@@ -96,7 +96,7 @@ namespace pluginVerilog.Verilog.Statements
 
                 if (word.Text == "default")
                 {
-                    word.Color((byte)Style.Color.Keyword);
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext();
                     if (word.GetCharAt(0) == ':')
                     {

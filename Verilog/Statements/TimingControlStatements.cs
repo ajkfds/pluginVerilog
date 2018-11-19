@@ -27,7 +27,7 @@ namespace pluginVerilog.Verilog.Statements
                                 | mintypmax_expression 
             */
             System.Diagnostics.Debug.Assert(word.Text == "#");
-            word.Color((byte)Style.Color.Keyword);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
             Expressions.Expression expression = Expressions.Expression.ParseCreate(word, nameSpace);
@@ -63,7 +63,7 @@ namespace pluginVerilog.Verilog.Statements
                                     | event_expression , event_expression
             */
             System.Diagnostics.Debug.Assert(word.Text == "@");
-            word.Color((byte)Style.Color.Keyword);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
             List<EventExpression> eventExpressions = new List<EventExpression>();
 
@@ -72,7 +72,7 @@ namespace pluginVerilog.Verilog.Statements
                 word.MoveNext(); // (
                 if(word.GetCharAt(0) == '*')
                 {
-                    word.Color((byte)Style.Color.Keyword);
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext(); // *
                     if(word.GetCharAt(0) != ')')
                     {
@@ -96,7 +96,7 @@ namespace pluginVerilog.Verilog.Statements
             {
                 if (word.GetCharAt(0) == '*')
                 {
-                    word.Color((byte)Style.Color.Keyword);
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext(); // *
                 }
                 else
@@ -177,13 +177,13 @@ namespace pluginVerilog.Verilog.Statements
             switch (word.Text)
             {
                 case "posedge":
-                    word.Color((byte)Style.Color.Keyword);
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext();
                     eventExpression.EventType = EventTypeEnum.Posedge;
                     eventExpression.Expression = Expressions.Expression.ParseCreate(word, nameSpace);
                     break;
                 case "negedge":
-                    word.Color((byte)Style.Color.Keyword);
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext();
                     eventExpression.EventType = EventTypeEnum.Negedge;
                     eventExpression.Expression = Expressions.Expression.ParseCreate(word, nameSpace);

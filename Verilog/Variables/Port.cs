@@ -25,7 +25,7 @@ namespace pluginVerilog.Verilog.Variables
             if (!General.IsIdentifier(word.Text)) return null;
             Port port = new Port();
             port.Name = word.Text;
-            word.Color((byte)Style.Color.Net);
+            word.Color(CodeDrawStyle.ColorType.Net);
             word.MoveNext();
             return port;
         }
@@ -124,7 +124,7 @@ namespace pluginVerilog.Verilog.Variables
             // input_declaration ::= input[net_type][signed][range] list_of_port_identifiers
             variables = new List<Variable>();
             if (word.Text != "input") System.Diagnostics.Debugger.Break();
-            word.Color((byte)Style.Color.Keyword);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
             bool signed = false;
@@ -134,7 +134,7 @@ namespace pluginVerilog.Verilog.Variables
             if (word.Text == "signed")
             {
                 signed = true;
-                word.Color((byte)Style.Color.Keyword);
+                word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext();
             }
 
@@ -148,7 +148,7 @@ namespace pluginVerilog.Verilog.Variables
             Net net = new Net();
             net.Name = word.Text;
             net.Range = range;
-            word.Color((byte)Style.Color.Net);
+            word.Color(CodeDrawStyle.ColorType.Net);
             net.Signed = signed;
             if (netType != null) net.NetType = (Net.NetTypeEnum)netType;
             variables.Add(net);
@@ -176,7 +176,7 @@ namespace pluginVerilog.Verilog.Variables
             // inout_declaration::= inout[net_type][signed][range] list_of_port_identifiers
             variables = new List<Variable>();
             if (word.Text != "inout") System.Diagnostics.Debugger.Break();
-            word.Color((byte)Style.Color.Keyword);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
             bool signed = false;
@@ -186,7 +186,7 @@ namespace pluginVerilog.Verilog.Variables
             if (word.Text == "signed")
             {
                 signed = true;
-                word.Color((byte)Style.Color.Keyword);
+                word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext();
             }
 
@@ -200,7 +200,7 @@ namespace pluginVerilog.Verilog.Variables
             Net net = new Net();
             net.Name = word.Text;
             net.Range = range;
-            word.Color((byte)Style.Color.Net);
+            word.Color(CodeDrawStyle.ColorType.Net);
             net.Signed = signed;
             if (netType != null) net.NetType = (Net.NetTypeEnum)netType;
             variables.Add(net);
@@ -233,7 +233,7 @@ namespace pluginVerilog.Verilog.Variables
             // output_variable_type ::= integer | time  
             variables = new List<Variable>();
             if (word.Text != "output") System.Diagnostics.Debugger.Break();
-            word.Color((byte)Style.Color.Keyword);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
             bool signed = false;
@@ -248,15 +248,15 @@ namespace pluginVerilog.Verilog.Variables
                 {
                     case "reg":
                         reg = true;
-                        word.Color((byte)Style.Color.Keyword);
+                        word.Color(CodeDrawStyle.ColorType.Keyword);
                         word.MoveNext();
                         break;
                     case "integer":
-                        word.Color((byte)Style.Color.Keyword);
+                        word.Color(CodeDrawStyle.ColorType.Keyword);
                         word.MoveNext();
                         break;
                     case "time":
-                        word.Color((byte)Style.Color.Keyword);
+                        word.Color(CodeDrawStyle.ColorType.Keyword);
                         word.MoveNext();
                         break;
                 }
@@ -266,7 +266,7 @@ namespace pluginVerilog.Verilog.Variables
             if (word.Text == "signed")
             {
                 signed = true;
-                word.Color((byte)Style.Color.Keyword);
+                word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext();
             }
 
@@ -283,7 +283,7 @@ namespace pluginVerilog.Verilog.Variables
             net.Signed = signed;
             if (netType != null) net.NetType = (Net.NetTypeEnum)netType;
             variables.Add(net);
-            word.Color((byte)Style.Color.Net);
+            word.Color(CodeDrawStyle.ColorType.Net);
             word.MoveNext();
 
             if(word.Text == "=")
@@ -306,7 +306,7 @@ namespace pluginVerilog.Verilog.Variables
                 net.Signed = signed;
                 if (netType != null) net.NetType = (Net.NetTypeEnum)netType;
                 variables.Add(net);
-                word.Color((byte)Style.Color.Net);
+                word.Color(CodeDrawStyle.ColorType.Net);
                 word.MoveNext();
             }
         }

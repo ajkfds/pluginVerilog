@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeDrawStyle.cs" />
     <Compile Include="CodeEditor\CodeDocument.cs" />
     <Compile Include="Data\IVerilogRelatedFile.cs" />
     <Compile Include="MessageView\MessageNode.cs" />
@@ -75,6 +76,8 @@
     <Compile Include="SetupForm.Designer.cs">
       <DependentUpon>SetupForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Verilog\Snippets\AlwaysFFSnippet.cs" />
+    <Compile Include="Verilog\Snippets\BeginAutoCompleteItem.cs" />
     <Compile Include="Verilog\Statements\Assignment.cs" />
     <Compile Include="Verilog\Attribute.cs" />
     <Compile Include="Verilog\Statements\CaseStatement.cs" />

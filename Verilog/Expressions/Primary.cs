@@ -90,7 +90,7 @@ namespace pluginVerilog.Verilog.Expressions
             ParameterReference val = new ParameterReference();
             val.ParameterName = word.Text;
 
-            word.Color((byte)Style.Color.Paramater);
+            word.Color(CodeDrawStyle.ColorType.Paramater);
             word.MoveNext();
 
             return val;
@@ -113,15 +113,15 @@ namespace pluginVerilog.Verilog.Expressions
 
             if(variable is Variables.Reg)
             {
-                word.Color((byte)Style.Color.Register);
+                word.Color(CodeDrawStyle.ColorType.Register);
             }
             else if (variable is Variables.Net)
             {
-                word.Color((byte)Style.Color.Net);
+                word.Color(CodeDrawStyle.ColorType.Net);
             }
             else
             {
-                word.Color((byte)Style.Color.Net);
+                word.Color(CodeDrawStyle.ColorType.Net);
             }
             word.MoveNext();
 

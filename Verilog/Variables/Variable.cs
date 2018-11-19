@@ -23,11 +23,15 @@ namespace pluginVerilog.Verilog.Variables
         {
             if(variable is Net)
             {
-                color = ajkControls.Style.ColorPallet[(int)Style.Color.Net];
+                color =　CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net);
+                icon = new ajkControls.Icon(Properties.Resources.netBox);
+                iconColorStyle = ajkControls.Icon.ColorStyle.Red;
             }
             else if(variable is Reg)
             {
-                color = ajkControls.Style.ColorPallet[(int)Style.Color.Register];
+                color = CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net);
+                icon = new ajkControls.Icon(Properties.Resources.regBox);
+                iconColorStyle = ajkControls.Icon.ColorStyle.Red;
             }
             else
             {
@@ -41,7 +45,13 @@ namespace pluginVerilog.Verilog.Variables
         private ajkControls.Icon.ColorStyle iconColorStyle;
         private Color color;
 
-        public override void Draw(Graphics graphics, int x, int y, Font font, Color backgroundColor, out Size size)
+        public override Size GetSize(Graphics graphics, Font font)
+        {
+            Size tsize = System.Windows.Forms.TextRenderer.MeasureText(graphics, text, font);
+            return new Size(tsize.Width + tsize.Height + (tsize.Height >> 2), tsize.Height);
+        }
+
+        public override void Draw(Graphics graphics, int x, int y, Font font, Color backgroundColor)
         {
             Size tsize = System.Windows.Forms.TextRenderer.MeasureText(graphics, text, font);
             if (icon != null) graphics.DrawImage(icon.GetImage(tsize.Height, iconColorStyle), new Point(x, y));
@@ -55,7 +65,6 @@ namespace pluginVerilog.Verilog.Variables
                 bgColor,
                 System.Windows.Forms.TextFormatFlags.NoPadding
                 );
-            size = new Size(tsize.Width + tsize.Height + (tsize.Height >> 2), tsize.Height);
         }
 
     }
@@ -130,7 +139,7 @@ namespace pluginVerilog.Verilog.Variables
                     System.Diagnostics.Debugger.Break();
                     break;
             }
-            word.Color((byte)Style.Color.Keyword);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
             // [drive_strength]
@@ -151,7 +160,7 @@ namespace pluginVerilog.Verilog.Variables
             }
             if (word.Text == "signed")
             {
-                word.Color((byte)Style.Color.Keyword);
+                word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext();
                 signed = true;
             }
@@ -193,7 +202,7 @@ namespace pluginVerilog.Verilog.Variables
                 nameSpace.Variables.Add(net.Name, net);
             }
 
-            word.Color((byte)Style.Color.Net);
+            word.Color(CodeDrawStyle.ColorType.Net);
             word.MoveNext();
 
             while (word.GetCharAt(0) == ',')
@@ -215,7 +224,7 @@ namespace pluginVerilog.Verilog.Variables
                 else
                 {
                     nameSpace.Variables.Add(net.Name, net);
-                    word.Color((byte)Style.Color.Net);
+                    word.Color(CodeDrawStyle.ColorType.Net);
                     word.MoveNext();
                 }
             }
@@ -251,7 +260,7 @@ namespace pluginVerilog.Verilog.Variables
         {
             // reg_declaration::= reg [signed] [range] list_of_variable_identifiers;
 
-            word.Color((byte)Style.Color.Keyword);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext(); // reg
             bool signed = false;
 
@@ -262,7 +271,7 @@ namespace pluginVerilog.Verilog.Variables
             }
             if(word.Text == "signed")
             {
-                word.Color((byte)Style.Color.Keyword);
+                word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext();
                 signed = true;
             }
@@ -308,7 +317,7 @@ namespace pluginVerilog.Verilog.Variables
                 nameSpace.Variables.Add(reg.Name, reg);
             }
 
-            word.Color((byte)Style.Color.Register);
+            word.Color(CodeDrawStyle.ColorType.Register);
             word.MoveNext();
 
             while(word.GetCharAt(0) == ',')
@@ -338,7 +347,7 @@ namespace pluginVerilog.Verilog.Variables
                 else
                 {
                     nameSpace.Variables.Add(reg.Name, reg);
-                    word.Color((byte)Style.Color.Register);
+                    word.Color(CodeDrawStyle.ColorType.Register);
                     word.MoveNext();
                 }
             }

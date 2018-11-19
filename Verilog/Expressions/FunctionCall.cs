@@ -13,7 +13,7 @@ namespace pluginVerilog.Verilog.Expressions
 
         public new static FunctionCall ParseCreate(WordScanner word, NameSpace nameSpace)
         {
-            word.Color((byte)Style.Color.Identifier);
+            word.Color(CodeDrawStyle.ColorType.Identifier);
             word.MoveNext();
 
             if(word.GetCharAt(0) != '(')

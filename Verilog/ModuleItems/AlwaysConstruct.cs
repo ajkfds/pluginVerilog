@@ -14,7 +14,7 @@ namespace pluginVerilog.Verilog.ModuleItems
         public static AlwaysConstruct ParseCreate(WordScanner word,Module module)
         {
             System.Diagnostics.Debug.Assert(word.Text == "always");
-            word.Color((byte)Style.Color.Keyword);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
             AlwaysConstruct always = new AlwaysConstruct();

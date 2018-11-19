@@ -67,7 +67,7 @@ namespace pluginVerilog.Verilog.Expressions
 
         public static Number ParseCreate(WordScanner word)
         {
-            word.Color((byte)Style.Color.Number);
+            word.Color(CodeDrawStyle.ColorType.Number);
 
             Number number = new Number();
             int index = 0;
@@ -222,7 +222,7 @@ namespace pluginVerilog.Verilog.Expressions
             if (index >= word.Length)
             {
                 word.MoveNext();
-                word.Color((byte)Style.Color.Number);
+                word.Color(CodeDrawStyle.ColorType.Number);
                 index = 0;
             }
             if (

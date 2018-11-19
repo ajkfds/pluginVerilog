@@ -36,7 +36,7 @@ namespace pluginVerilog.Verilog.Statements
         public static ConditionalStatement ParseCreate(WordScanner word, NameSpace nameSpace)
         {
             System.Diagnostics.Debug.Assert(word.Text == "if");
-            word.Color((byte)Style.Color.Keyword);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext(); // if
 
             ConditionalStatement conditionalStatement = new ConditionalStatement();
@@ -67,12 +67,12 @@ namespace pluginVerilog.Verilog.Statements
 
             while (word.Text == "else")
             {
-                word.Color((byte)Style.Color.Keyword);
+                word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext(); // else
 
                 if (word.Text == "if")
                 {
-                    word.Color((byte)Style.Color.Keyword);
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext(); // else
 
                     if (word.GetCharAt(0) != '(')

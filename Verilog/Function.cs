@@ -23,7 +23,7 @@ namespace pluginVerilog.Verilog
                 System.Diagnostics.Debugger.Break();
             }
             Function function = new Function(module, module);
-            word.Color((byte)Style.Color.Keyword);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             function.BeginIndex = word.RootIndex;
             word.MoveNext();
 
@@ -43,14 +43,14 @@ namespace pluginVerilog.Verilog
 
             if (word.Text == "automatic")
             {
-                word.Color((byte)Style.Color.Keyword);
+                word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext();
             }
 
             bool signed = false;
             if (word.Text == "signed")
             {
-                word.Color((byte)Style.Color.Keyword);
+                word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext();
                 signed = true;
             }
@@ -63,19 +63,19 @@ namespace pluginVerilog.Verilog
                     range = Verilog.Variables.Range.ParseCreate(word, function);
                     break;
                 case "integer":
-                    word.Color((byte)Style.Color.Identifier);
+                    word.Color(CodeDrawStyle.ColorType.Identifier);
                     word.MoveNext();
                     break;
                 case "real":
-                    word.Color((byte)Style.Color.Identifier);
+                    word.Color(CodeDrawStyle.ColorType.Identifier);
                     word.MoveNext();
                     break;
                 case "realtime":
-                    word.Color((byte)Style.Color.Identifier);
+                    word.Color(CodeDrawStyle.ColorType.Identifier);
                     word.MoveNext();
                     break;
                 case "time":
-                    word.Color((byte)Style.Color.Identifier);
+                    word.Color(CodeDrawStyle.ColorType.Identifier);
                     word.MoveNext();
                     break;
                 default:
@@ -89,7 +89,7 @@ namespace pluginVerilog.Verilog
             }
 
             function.Name = word.Text;
-            word.Color((byte)Style.Color.Identifier);
+            word.Color(CodeDrawStyle.ColorType.Identifier);
             if (module.Functions.ContainsKey(function.Name))
             {
                 word.AddError("duplicated name");
@@ -151,7 +151,7 @@ namespace pluginVerilog.Verilog
                 word.AddError("endfunction expected");
                 return;
             }
-            word.Color((byte)Style.Color.Keyword);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             function.LastIndex = word.RootIndex;
             word.MoveNext();
 

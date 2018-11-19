@@ -50,11 +50,11 @@ namespace pluginVerilog.Verilog
             return ret;
         }
 
-        public void Color(byte colorIndex)
+        public void Color(CodeDrawStyle.ColorType colorType)
         {
             for (int i = index; i < index + length; i++)
             {
-                Document.SetColorAt(i, colorIndex);
+                Document.SetColorAt(i, CodeDrawStyle.ColorIndex(colorType));
             }
         }
 
@@ -377,13 +377,13 @@ namespace pluginVerilog.Verilog
         {
             if (document.Length > nextIndex + 1 && document.GetCharAt(nextIndex) == '/' && document.GetCharAt(nextIndex + 1) == '*') // "/*"
             { // comment block
-                document.SetColorAt(nextIndex, (byte)Style.Color.Comment);
+                document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Comment));
                 nextIndex++;
-                document.SetColorAt(nextIndex, (byte)Style.Color.Comment);
+                document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Comment));
                 nextIndex++;
                 while (document.Length > nextIndex)
                 {
-                    document.SetColorAt(nextIndex, (byte)Style.Color.Comment);
+                    document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Comment));
                     if (document.GetCharAt(nextIndex) == '/' && document.GetCharAt(nextIndex - 1) == '*') break;
                     nextIndex++;
                 }
@@ -391,18 +391,18 @@ namespace pluginVerilog.Verilog
             }
             else if (document.Length > nextIndex + 1 && document.GetCharAt(nextIndex) == '/' && document.GetCharAt(nextIndex + 1) == '/') // "//"
             { // line comment
-                document.SetColorAt(nextIndex, (byte)Style.Color.Comment);
+                document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Comment));
                 nextIndex++;
-                document.SetColorAt(nextIndex, (byte)Style.Color.Comment);
+                document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Comment));
                 nextIndex++;
                 while (document.Length > nextIndex && document.GetCharAt(nextIndex) != '\n')
                 {
-                    document.SetColorAt(nextIndex, (byte)Style.Color.Comment);
+                    document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Comment));
                     nextIndex++;
                 }
                 if (document.Length > nextIndex && document.GetCharAt(nextIndex) == '\n')
                 {
-                    document.SetColorAt(nextIndex, (byte)Style.Color.Comment);
+                    document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Comment));
                     nextIndex++;
                 }
                 wordType = WordTypeEnum.Comment;
