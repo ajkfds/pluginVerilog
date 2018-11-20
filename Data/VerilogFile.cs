@@ -189,9 +189,11 @@ namespace pluginVerilog.Data
             return VerilogParsedDocument.GetPopupItems(index,text);
         }
 
+
         public List<codeEditor.CodeEditor.ToolItem> GetToolItems(int index)
         {
             List<codeEditor.CodeEditor.ToolItem> toolItems = new List<codeEditor.CodeEditor.ToolItem>();
+            toolItems.Add(new Verilog.Snippets.AlwaysFFSnippet());
             return toolItems;
         }
 
