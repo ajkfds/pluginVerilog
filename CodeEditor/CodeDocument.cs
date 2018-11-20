@@ -17,7 +17,7 @@ namespace pluginVerilog.CodeEditor
             char ch = GetCharAt(index);
             if (ch == ' ' || ch == '\r' || ch == '\n' || ch == '\t') return;
 
-            while (index > 0)
+            while (headIndex > 0)
             {
                 ch = GetCharAt(headIndex);
                 if (ch == ' ' || ch == '\r' || ch == '\n' || ch == '\t')
