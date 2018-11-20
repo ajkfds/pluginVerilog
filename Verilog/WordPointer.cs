@@ -365,7 +365,15 @@ namespace pluginVerilog.Verilog
                 while (
                     document.Length > nextIndex &&
                     document.GetCharAt(nextIndex) < 128 &&
-                    (charClass[document.GetCharAt(nextIndex)] == 1 || charClass[document.GetCharAt(nextIndex)] == 2)
+                    (
+                        charClass[document.GetCharAt(nextIndex)] == 1 ||
+                        charClass[document.GetCharAt(nextIndex)] == 2 ||
+                        document.GetCharAt(nextIndex) == '?' ||
+                        document.GetCharAt(nextIndex) == 'x' ||
+                        document.GetCharAt(nextIndex) == 'X' ||
+                        document.GetCharAt(nextIndex) == 'z' ||
+                        document.GetCharAt(nextIndex) == 'Z'
+                        )
                     )
                 {
                     nextIndex++;
