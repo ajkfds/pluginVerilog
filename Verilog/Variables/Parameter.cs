@@ -39,6 +39,7 @@ namespace pluginVerilog.Verilog.Variables
             }
             else
             {
+
                 System.Diagnostics.Debugger.Break();
             }
             word.Color(CodeDrawStyle.ColorType.Keyword);

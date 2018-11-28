@@ -68,6 +68,7 @@ namespace pluginVerilog.Data
                             string text = sr.ReadToEnd();
                             document.Replace(0, 0, 0, text);
                             document.ParentID = ID;
+                            document.ClearHistory();
                         }
                     }
                     catch
@@ -153,11 +154,6 @@ namespace pluginVerilog.Data
             }
         }
 
-        public virtual void AfterKeyPressed(System.Windows.Forms.KeyPressEventArgs e)
-        {
-            if (VerilogParsedDocument == null) return;
-        }
-
         public virtual void AfterKeyDown(System.Windows.Forms.KeyEventArgs e)
         {
             if (VerilogParsedDocument == null) return;
@@ -166,10 +162,18 @@ namespace pluginVerilog.Data
                 case System.Windows.Forms.Keys.Return:
                     applyAutoInput();
                     break;
+                case System.Windows.Forms.Keys.Space:
+                    break;
                 default:
                     break;
             }
         }
+
+        public virtual void AfterKeyPressed(System.Windows.Forms.KeyPressEventArgs e)
+        {
+            if (VerilogParsedDocument == null) return;
+        }
+
         public virtual void BeforeKeyPressed(System.Windows.Forms.KeyPressEventArgs e)
         {
         }

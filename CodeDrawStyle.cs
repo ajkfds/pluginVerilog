@@ -30,7 +30,7 @@ namespace pluginVerilog
                 System.Drawing.Color.SandyBrown,                // number
                 System.Drawing.Color.Salmon,                    // variable-light
                 System.Drawing.Color.Green,                     // highlighted comment
-                System.Drawing.Color.Black,                     // 11
+                System.Drawing.Color.Pink,                     // 11
                 System.Drawing.Color.Black,                     // 12
                 System.Drawing.Color.Black,                     // 13
                 System.Drawing.Color.Black,                     // 14
@@ -53,6 +53,7 @@ namespace pluginVerilog
             Comment = 5,
             Register = 3,
             Net = 9,
+            Variable = 11,
             Paramater = 7,
             Keyword = 4,
             Identifier = 6,

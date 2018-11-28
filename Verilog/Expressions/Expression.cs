@@ -11,6 +11,7 @@ namespace pluginVerilog.Verilog.Expressions
         protected Expression() { }
 
         public List<ExpressionItem> RpnExpressionItems = new List<ExpressionItem>();
+        public bool Constant = false;
 
         /*
         A.8.3 Expressions
@@ -132,7 +133,6 @@ namespace pluginVerilog.Verilog.Expressions
                 } while (false);
             }
 
-
             BinaryOperator binaryOperator = BinaryOperator.ParseCreate(word);
             if (binaryOperator == null) return true;
 
@@ -142,14 +142,6 @@ namespace pluginVerilog.Verilog.Expressions
             {
                 word.AddError("illegal binary Operator");
             }
-
-            // conditional_expression::= expression1 ? { attribute_instance } expression2: expression3
-            //if(word.GetCharAt(0) == '?')
-            //{
-            //    ConditionalExpression 
-            //}
-
-
 
             return true;
         }

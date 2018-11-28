@@ -9,6 +9,8 @@ namespace pluginVerilog.Verilog.Expressions
     public class Primary : ExpressionItem
     {
         protected Primary() { }
+        public bool Constant = false;
+
         /*
          * 
          * 
@@ -68,7 +70,7 @@ namespace pluginVerilog.Verilog.Expressions
 
                         if(word.NextText == "(")
                         {
-                            var functionCall = FunctionCall.ParseCreate(word, nameSpace);
+                            return FunctionCall.ParseCreate(word, nameSpace);
                         }
                     }
                     break;

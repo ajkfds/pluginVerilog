@@ -66,7 +66,7 @@ namespace pluginVerilog.Verilog
                         word.MoveNext();
                         while(!word.Eof)
                         {
-                            Verilog.Variables.Parameter.ParseCreateDeclarationForPort(word, module, null);
+                            if(word.Text == "parameter") Verilog.Variables.Parameter.ParseCreateDeclarationForPort(word, module, null);
                             if (word.Text != ",") break;
                             word.MoveNext();
                         }
@@ -230,6 +230,20 @@ namespace pluginVerilog.Verilog
             }
         }
 
+        /*
+        module_item ::= (From Annex A - A.1.5)  module_or_generate_item
+            | port_declaration ; | { attribute_instance } generated_instantiation 
+            | { attribute_instance } local_parameter_declaration 
+            | { attribute_instance } parameter_declaration | { attribute_instance } specify_block 
+            | { attribute_instance } specparam_declaration  
+        module_or_generate_item ::=   { attribute_instance } module_or_generate_item_declaration 
+            | { attribute_instance } parameter_override | { attribute_instance } continuous_assign 
+            | { attribute_instance } gate_instantiation | { attribute_instance } udp_instantiation 
+            | { attribute_instance } module_instantiation | { attribute_instance } initial_construct 
+            | { attribute_instance } always_construct  
+        module_or_generate_item_declaration ::=   net_declaration 
+            | reg_declaration | integer_declaration | real_declaration | time_declaration | realtime_declaration | event_declaration | genvar_declaration | task_declaration | function_declaration          
+        */
         private static void parseModuleItems(WordScanner word, Module module)
         {
             while (!word.Eof)
@@ -252,7 +266,7 @@ namespace pluginVerilog.Verilog
                         }
                         break;
                     case "reg":
-                        Verilog.Variables.Reg.ParseCreateDeclaration(word, module);
+                        Verilog.Variables.Reg.ParseCreateFromDeclaration(word, module);
                         break;
                     case "supply0":
                     case "supply1":
@@ -264,7 +278,119 @@ namespace pluginVerilog.Verilog
                     case "wire":
                     case "wand":
                     case "wor":
-                        Verilog.Variables.Net net = Verilog.Variables.Net.ParseCreateDeclaration(word, module);
+                        Verilog.Variables.Net.ParseCreateFromDeclaration(word, module);
+                        break;
+                    case "integer":
+                        Verilog.Variables.Integer.ParseCreateFromDeclaration(word, module);
+                        break;
+                    case "real":
+                        Verilog.Variables.Real.ParseCreateFromDeclaration(word, module);
+                        break;
+                    case "realtime":
+                        Verilog.Variables.RealTime.ParseCreateFromDeclaration(word, module);
+                        break;
+                    case "time":
+                        Verilog.Variables.Time.ParseCreateFromDeclaration(word, module);
+                        break;
+                    case "event":
+                        Verilog.Variables.Event.ParseCreateFromDeclaration(word, module);
+                        break;
+                    case "genvar":
+                        Verilog.Variables.Genvar.ParseCreateFromDeclaration(word, module);
+                        break;
+                    case "always":
+                        ModuleItems.AlwaysConstruct always = ModuleItems.AlwaysConstruct.ParseCreate(word, module);
+                        break;
+                    case "parameter":
+                    case "localparam":
+                        Verilog.Variables.Parameter.ParseCreateDeclaration(word, module, null);
+                        break;
+                    case "assign":
+                        ModuleItems.ContinuousAssign continuousAssign = ModuleItems.ContinuousAssign.ParseCreate(word, module);
+                        break;
+                    case "function":
+                        Function.Parse(word, module);
+                        break;
+                    case "generate":
+                        parseGenerateItems(word, module);
+                        if(word.Text != "endgenerate")
+                        {
+                            word.AddError("endgenerate expected");
+                        }
+                        break;
+                    default:
+                        ModuleItems.ModuleInstantiation.Parse(word, module);
+                        break;
+                }
+            }
+        }
+
+        /*
+        generated_instantiation ::= (From Annex A -A.4.2) generate { generate_item } endgenerate
+        generate_item_or_null ::= generate_item | ;  
+        generate_item ::=   generate_conditional_statement | generate_case_statement | generate_loop_statement | generate_block | module_or_generate_item  
+        generate_conditional_statement ::= if ( constant_expression ) generate_item_or_null  [ else generate_item_or_null ]  generate_case_statement ::=  case ( constant_expression )      
+        genvar_case_item { genvar_case_item } endcase  genvar_case_item ::=  constant_expression  { , constant_expression } :      
+        generate_item_or_null  | default [ : ] generate_item_or_null  
+        generate_loop_statement ::=  for ( genvar_assignment ; constant_expression ; genvar_assignment )      
+        begin : generate_block_identifier { generate_item } end 
+        genvar_assignment ::= genvar_identifier = constant_expression  
+        generate_block ::= begin [ : generate_block_identifier ]  { generate_item } end 
+         */
+        private static void parseGenerateItems(WordScanner word, Module module)
+        {
+            while (!word.Eof)
+            {
+                switch (word.Text)
+                {
+                    case "endmodule":
+                    case "endgenerate":
+                        return;
+                    case "input":
+                    case "output":
+                    case "inout":
+                        Verilog.Variables.Port.ParsePortDeclaration(word, module, null);
+                        if (word.GetCharAt(0) != ';')
+                        {
+                            word.AddError("; expected");
+                        }
+                        else
+                        {
+                            word.MoveNext();
+                        }
+                        break;
+                    case "reg":
+                        Verilog.Variables.Reg.ParseCreateFromDeclaration(word, module);
+                        break;
+                    case "supply0":
+                    case "supply1":
+                    case "tri":
+                    case "triand":
+                    case "trior":
+                    case "tri0":
+                    case "tri1":
+                    case "wire":
+                    case "wand":
+                    case "wor":
+                        Verilog.Variables.Net.ParseCreateFromDeclaration(word, module);
+                        break;
+                    case "integer":
+                        Verilog.Variables.Integer.ParseCreateFromDeclaration(word, module);
+                        break;
+                    case "real":
+                        Verilog.Variables.Real.ParseCreateFromDeclaration(word, module);
+                        break;
+                    case "realtime":
+                        Verilog.Variables.RealTime.ParseCreateFromDeclaration(word, module);
+                        break;
+                    case "time":
+                        Verilog.Variables.Time.ParseCreateFromDeclaration(word, module);
+                        break;
+                    case "event":
+                        Verilog.Variables.Event.ParseCreateFromDeclaration(word, module);
+                        break;
+                    case "genvar":
+                        Verilog.Variables.Genvar.ParseCreateFromDeclaration(word, module);
                         break;
                     case "always":
                         ModuleItems.AlwaysConstruct always = ModuleItems.AlwaysConstruct.ParseCreate(word, module);
@@ -314,8 +440,8 @@ namespace pluginVerilog.Verilog
                                     | { attribute_instance } initial_construct
                                     | { attribute_instance } always_construct  
 
-        module_or_generate_item_declaration ::= net_declaration          
-                                                | reg_declaration          
+        module_or_generate_item_declaration ::= net_declaration          v
+                                                | reg_declaration         v 
                                                 | integer_declaration          
                                                 | real_declaration          
                                                 | time_declaration          

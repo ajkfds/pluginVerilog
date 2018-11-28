@@ -16,7 +16,7 @@ namespace pluginVerilog.Verilog
         public Statements.IStatement Statement;
         public string Name;
 
-        public new static void Parse(WordScanner word, Module module)
+        public static void Parse(WordScanner word, Module module)
         {
             if(word.Text != "function")
             {
@@ -119,7 +119,7 @@ namespace pluginVerilog.Verilog
                     switch (word.Text)
                     {
                         case "input":
-                            Verilog.Variables.Port.ParsePortDeclaration(word,module, null);
+                            Verilog.Variables.Port.ParseFunctionPortDeclaration(word,function, null);
                             if(word.Text != ";")
                             {
                                 word.AddError("; expected");
@@ -130,7 +130,7 @@ namespace pluginVerilog.Verilog
                             }
                             continue;
                         case "reg":
-                            Verilog.Variables.Reg.ParseCreateDeclaration(word, function);
+                            Verilog.Variables.Reg.ParseCreateFromDeclaration(word, function);
                             continue;
                         default:
                             break;

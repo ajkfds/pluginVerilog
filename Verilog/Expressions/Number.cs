@@ -210,7 +210,12 @@ namespace pluginVerilog.Verilog.Expressions
                 }
             }
 
-            number.Value = double.Parse(sb.ToString());
+            double value;
+            if(double.TryParse(sb.ToString(),out value))
+            {
+                number.Value = value;
+                number.Constant = true;
+            }
             return true;
         }
 
@@ -251,6 +256,7 @@ namespace pluginVerilog.Verilog.Expressions
             if(int.TryParse(sb.ToString(), out value))
             {
                 number.Value = value;
+                number.Constant = true;
             }
             return true;
         }
@@ -285,9 +291,11 @@ namespace pluginVerilog.Verilog.Expressions
                 }
                 index++;
             }
+
             try
             {
                 number.Value = Convert.ToInt32(sb.ToString(), 2);
+                number.Constant = true;
             }
             catch
             {
@@ -326,7 +334,15 @@ namespace pluginVerilog.Verilog.Expressions
                 }
                 index++;
             }
-            number.Value = Convert.ToInt32(sb.ToString(), 8);
+            try
+            {
+                number.Value = Convert.ToInt32(sb.ToString(), 8);
+                number.Constant = true;
+            }
+            catch
+            {
+
+            }
             return true;
         }
 
@@ -362,7 +378,12 @@ namespace pluginVerilog.Verilog.Expressions
             }
             if(sb.Length <= 10)
             {
-                number.Value = int.Parse(sb.ToString(), System.Globalization.NumberStyles.HexNumber);
+                int value;
+                if(int.TryParse(sb.ToString(),out value))
+                {
+                    number.Value = value;
+                    number.Constant = true;
+                }
             }
             else
             {

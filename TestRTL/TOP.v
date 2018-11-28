@@ -1,17 +1,17 @@
 module TOP(
-input [7:0]			DATA_I,
-output reg [7:0]	DATA_O,
-input	CLK_I,
-input	RST_X
+input [7:0]			DATA_I,		// @sync CLK_I
+output reg [7:0]	DATA_O,		// @sync CLK_I
+input	CLK_I,					// @clock
+input	RST_X					// @reset
 );
 
 `include "TEST.vh"
 
+
 `define MAC wire aaa;
 `MAC
 
-localparam P_DELAY = 1;
-
+localparam P_DELAY = 1; // @delay
 
 
 wire [7:0] data_next;
@@ -42,5 +42,6 @@ MOD MOD0(
 	.CLK_I(CLK_I),
 	.RST_X(RST_X)
 );
+
 
 endmodule

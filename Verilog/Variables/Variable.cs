@@ -88,10 +88,11 @@ namespace pluginVerilog.Verilog.Variables
             Tri0,
             Tri1,
             Wire,
-            WAnd,
+            Wand,
             Wor
         }
-        public static Net ParseCreateDeclaration(WordScanner word, NameSpace nameSpace)
+
+        public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
         {
             // net_declaration ::=    net_type                                          [signed]        [delay3] list_of_net_identifiers;
             //                      | net_type[drive_strength]                          [signed]        [delay3] list_of_net_decl_assignments;
@@ -130,7 +131,7 @@ namespace pluginVerilog.Verilog.Variables
                     netType = NetTypeEnum.Wire;
                     break;
                 case "wand":
-                    netType = NetTypeEnum.WAnd;
+                    netType = NetTypeEnum.Wand;
                     break;
                 case "wor":
                     netType = NetTypeEnum.Wor;
@@ -156,7 +157,7 @@ namespace pluginVerilog.Verilog.Variables
             if (word.Eof)
             {
                 word.AddError("illegal net declaration");
-                return null;
+                return;
             }
             if (word.Text == "signed")
             {
@@ -167,7 +168,7 @@ namespace pluginVerilog.Verilog.Variables
             if (word.Eof)
             {
                 word.AddError("illegal net declaration");
-                return null;
+                return;
             }
 
             // [range]
@@ -178,42 +179,20 @@ namespace pluginVerilog.Verilog.Variables
                 if (word.Eof || range == null)
                 {
                     word.AddError("illegal net declaration");
-                    return null;
+                    return;
                 }
             }
             if (!General.IsSimpleIdentifier(word.Text))
             {
                 word.AddError("illegal net identifier");
-                return null;
+                return;
             }
             //[delay3]
             // TODO
 
-            Net net = new Net();
-            net.Signed = signed;
-            net.Range = range;
-            net.Name = word.Text;
-            if (nameSpace.Variables.ContainsKey(net.Name))
+            while (!word.Eof)
             {
-                word.AddError("duplicated net name");
-            }
-            else
-            {
-                nameSpace.Variables.Add(net.Name, net);
-            }
-
-            word.Color(CodeDrawStyle.ColorType.Net);
-            word.MoveNext();
-
-            while (word.GetCharAt(0) == ',')
-            {
-                word.MoveNext(); // ,
-                if (!General.IsSimpleIdentifier(word.Text))
-                {
-                    word.AddError("illegal net identifier");
-                    break;
-                }
-                net = new Net();
+                Net net = new Net();
                 net.Signed = signed;
                 net.Range = range;
                 net.Name = word.Text;
@@ -224,9 +203,13 @@ namespace pluginVerilog.Verilog.Variables
                 else
                 {
                     nameSpace.Variables.Add(net.Name, net);
-                    word.Color(CodeDrawStyle.ColorType.Net);
-                    word.MoveNext();
                 }
+
+                word.Color(CodeDrawStyle.ColorType.Net);
+                word.MoveNext();
+
+                if (word.GetCharAt(0) != ',') break;
+                word.MoveNext(); // ,
             }
 
             if (word.Eof || word.GetCharAt(0) != ';')
@@ -238,7 +221,7 @@ namespace pluginVerilog.Verilog.Variables
                 word.MoveNext();
             }
 
-            return net;
+            return;
         }
     }
 
@@ -256,7 +239,7 @@ namespace pluginVerilog.Verilog.Variables
             this.Signed = signed;
         }
 
-        public static Reg ParseCreateDeclaration(WordScanner word,NameSpace nameSpace)
+        public static void ParseCreateFromDeclaration(WordScanner word,NameSpace nameSpace)
         {
             // reg_declaration::= reg [signed] [range] list_of_variable_identifiers;
 
@@ -267,7 +250,7 @@ namespace pluginVerilog.Verilog.Variables
             if(word.Eof)
             {
                 word.AddError("illegal reg declaration");
-                return null;
+                return;
             }
             if(word.Text == "signed")
             {
@@ -278,7 +261,7 @@ namespace pluginVerilog.Verilog.Variables
             if (word.Eof)
             {
                 word.AddError("illegal reg declaration");
-                return null;
+                return;
             }
 
             Range range = null;
@@ -288,47 +271,18 @@ namespace pluginVerilog.Verilog.Variables
                 if (word.Eof || range == null)
                 {
                     word.AddError("illegal reg declaration");
-                    return null;
+                    return;
                 }
-            }
-            if (!General.IsSimpleIdentifier(word.Text))
-            {
-                word.AddError("illegal reg identifier");
-                return null;
-            }
-            Reg reg = new Reg();
-            reg.Signed = signed;
-            reg.Range = range;
-            reg.Name = word.Text;
-            if (nameSpace.Variables.ContainsKey(reg.Name))
-            {
-                if(nameSpace.Variables[reg.Name] is Net)
-                {
-                    nameSpace.Variables.Remove(reg.Name);
-                    nameSpace.Variables.Add(reg.Name, reg);
-                }
-                else
-                {
-                    word.AddError("duplicated reg name");
-                }
-            }
-            else
-            {
-                nameSpace.Variables.Add(reg.Name, reg);
             }
 
-            word.Color(CodeDrawStyle.ColorType.Register);
-            word.MoveNext();
-
-            while(word.GetCharAt(0) == ',')
+            while (!word.Eof)
             {
-                word.MoveNext(); // ,
                 if (!General.IsSimpleIdentifier(word.Text))
                 {
                     word.AddError("illegal reg identifier");
-                    break;
+                    return;
                 }
-                reg = new Reg();
+                Reg reg = new Reg();
                 reg.Signed = signed;
                 reg.Range = range;
                 reg.Name = word.Text;
@@ -347,9 +301,13 @@ namespace pluginVerilog.Verilog.Variables
                 else
                 {
                     nameSpace.Variables.Add(reg.Name, reg);
-                    word.Color(CodeDrawStyle.ColorType.Register);
-                    word.MoveNext();
                 }
+
+                word.Color(CodeDrawStyle.ColorType.Register);
+                word.MoveNext();
+
+                if (word.GetCharAt(0) != ',') break;
+                word.MoveNext();
             }
 
             if (word.Eof || word.GetCharAt(0) != ';')
@@ -361,27 +319,389 @@ namespace pluginVerilog.Verilog.Variables
                 word.MoveNext();
             }
 
-            return reg;
+            return;
+        }
+    }
+
+    public class Integer : Variable
+    {
+        protected Integer() { }
+
+
+        public Integer(string Name)
+        {
+            this.Name = Name;
         }
 
+        public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
+        {
+//            integer_declaration::= integer list_of_variable_identifiers;
+
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext(); // reg
+
+            while (!word.Eof)
+            {
+                if (!General.IsSimpleIdentifier(word.Text))
+                {
+                    word.AddError("illegal integer identifier");
+                    return;
+                }
+                Integer reg = new Integer();
+                reg.Name = word.Text;
+                if (nameSpace.Variables.ContainsKey(reg.Name))
+                {
+                    if (nameSpace.Variables[reg.Name] is Net)
+                    {
+                        nameSpace.Variables.Remove(reg.Name);
+                        nameSpace.Variables.Add(reg.Name, reg);
+                    }
+                    else
+                    {
+                        word.AddError("duplicated integer name");
+                    }
+                }
+                else
+                {
+                    nameSpace.Variables.Add(reg.Name, reg);
+                }
+
+                word.Color(CodeDrawStyle.ColorType.Variable);
+                word.MoveNext();
+
+                if (word.GetCharAt(0) != ',') break;
+                word.MoveNext();
+            }
+
+            if (word.Eof || word.GetCharAt(0) != ';')
+            {
+                word.AddError("; expected");
+            }
+            else
+            {
+                word.MoveNext();
+            }
+
+            return;
+        }
+    }
+
+    public class Real : Variable
+    {
+        protected Real() { }
+
+
+        public Real(string Name)
+        {
+            this.Name = Name;
+        }
+
+        public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
+        {
+//            real_declaration::= real list_of_real_identifiers;
+
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext(); // reg
+
+            while (!word.Eof)
+            {
+                if (!General.IsSimpleIdentifier(word.Text))
+                {
+                    word.AddError("illegal real identifier");
+                    return;
+                }
+                Real val = new Real();
+                val.Name = word.Text;
+                if (nameSpace.Variables.ContainsKey(val.Name))
+                {
+                    if (nameSpace.Variables[val.Name] is Net)
+                    {
+                        nameSpace.Variables.Remove(val.Name);
+                        nameSpace.Variables.Add(val.Name, val);
+                    }
+                    else
+                    {
+                        word.AddError("duplicated real name");
+                    }
+                }
+                else
+                {
+                    nameSpace.Variables.Add(val.Name, val);
+                }
+
+                word.Color(CodeDrawStyle.ColorType.Variable);
+                word.MoveNext();
+
+                if (word.GetCharAt(0) != ',') break;
+                word.MoveNext();
+            }
+
+            if (word.Eof || word.GetCharAt(0) != ';')
+            {
+                word.AddError("; expected");
+            }
+            else
+            {
+                word.MoveNext();
+            }
+
+            return;
+        }
+    }
+
+    public class RealTime : Variable
+    {
+        protected RealTime() { }
+
+
+        public RealTime(string Name)
+        {
+            this.Name = Name;
+        }
+
+        public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
+        {
+//            realtime_declaration::= realtime list_of_real_identifiers;
+
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext(); // reg
+
+            while (!word.Eof)
+            {
+                if (!General.IsSimpleIdentifier(word.Text))
+                {
+                    word.AddError("illegal real identifier");
+                    return;
+                }
+                RealTime val = new RealTime();
+                val.Name = word.Text;
+                if (nameSpace.Variables.ContainsKey(val.Name))
+                {
+                    if (nameSpace.Variables[val.Name] is Net)
+                    {
+                        nameSpace.Variables.Remove(val.Name);
+                        nameSpace.Variables.Add(val.Name, val);
+                    }
+                    else
+                    {
+                        word.AddError("duplicated real name");
+                    }
+                }
+                else
+                {
+                    nameSpace.Variables.Add(val.Name, val);
+                }
+
+                word.Color(CodeDrawStyle.ColorType.Variable);
+                word.MoveNext();
+
+                if (word.GetCharAt(0) != ',') break;
+                word.MoveNext();
+            }
+
+            if (word.Eof || word.GetCharAt(0) != ';')
+            {
+                word.AddError("; expected");
+            }
+            else
+            {
+                word.MoveNext();
+            }
+
+            return;
+        }
+    }
+
+    public class Time : Variable
+    {
+        protected Time() { }
+
+
+        public Time(string Name)
+        {
+            this.Name = Name;
+        }
+
+        public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
+        {
+//            time_declaration::= time list_of_variable_identifiers;
+
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext(); // reg
+
+            while (!word.Eof)
+            {
+                if (!General.IsSimpleIdentifier(word.Text))
+                {
+                    word.AddError("illegal real identifier");
+                    return;
+                }
+                Time val = new Time();
+                val.Name = word.Text;
+                if (nameSpace.Variables.ContainsKey(val.Name))
+                {
+                    if (nameSpace.Variables[val.Name] is Net)
+                    {
+                        nameSpace.Variables.Remove(val.Name);
+                        nameSpace.Variables.Add(val.Name, val);
+                    }
+                    else
+                    {
+                        word.AddError("duplicated real name");
+                    }
+                }
+                else
+                {
+                    nameSpace.Variables.Add(val.Name, val);
+                }
+
+                word.Color(CodeDrawStyle.ColorType.Variable);
+                word.MoveNext();
+
+                if (word.GetCharAt(0) != ',') break;
+                word.MoveNext();
+            }
+
+            if (word.Eof || word.GetCharAt(0) != ';')
+            {
+                word.AddError("; expected");
+            }
+            else
+            {
+                word.MoveNext();
+            }
+
+            return;
+        }
+    }
+
+    public class Event : Variable
+    {
+        protected Event() { }
+
+
+        public Event(string Name)
+        {
+            this.Name = Name;
+        }
+
+        public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
+        {
+//            event_declaration::= event list_of_event_identifiers ;
+
+        word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext();
+
+            while (!word.Eof)
+            {
+                if (!General.IsSimpleIdentifier(word.Text))
+                {
+                    word.AddError("illegal real identifier");
+                    return;
+                }
+                Event val = new Event();
+                val.Name = word.Text;
+                if (nameSpace.Variables.ContainsKey(val.Name))
+                {
+                    if (nameSpace.Variables[val.Name] is Net)
+                    {
+                        nameSpace.Variables.Remove(val.Name);
+                        nameSpace.Variables.Add(val.Name, val);
+                    }
+                    else
+                    {
+                        word.AddError("duplicated real name");
+                    }
+                }
+                else
+                {
+                    nameSpace.Variables.Add(val.Name, val);
+                }
+
+                word.Color(CodeDrawStyle.ColorType.Variable);
+                word.MoveNext();
+
+                if (word.GetCharAt(0) != ',') break;
+                word.MoveNext();
+            }
+
+            if (word.Eof || word.GetCharAt(0) != ';')
+            {
+                word.AddError("; expected");
+            }
+            else
+            {
+                word.MoveNext();
+            }
+
+            return;
+        }
+    }
+
+    public class Genvar : Variable
+    {
+        protected Genvar() { }
+
+
+        public Genvar(string Name)
+        {
+            this.Name = Name;
+        }
+
+        public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
+        {
+//            genvar_declaration::= genvar list_of_genvar_identifiers;
+
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext();
+
+            while (!word.Eof)
+            {
+                if (!General.IsSimpleIdentifier(word.Text))
+                {
+                    word.AddError("illegal real identifier");
+                    return;
+                }
+                Genvar val = new Genvar();
+                val.Name = word.Text;
+                if (nameSpace.Variables.ContainsKey(val.Name))
+                {
+                    if (nameSpace.Variables[val.Name] is Net)
+                    {
+                        nameSpace.Variables.Remove(val.Name);
+                        nameSpace.Variables.Add(val.Name, val);
+                    }
+                    else
+                    {
+                        word.AddError("duplicated real name");
+                    }
+                }
+                else
+                {
+                    nameSpace.Variables.Add(val.Name, val);
+                }
+
+                word.Color(CodeDrawStyle.ColorType.Variable);
+                word.MoveNext();
+
+                if (word.GetCharAt(0) != ',') break;
+                word.MoveNext();
+            }
+
+            if (word.Eof || word.GetCharAt(0) != ';')
+            {
+                word.AddError("; expected");
+            }
+            else
+            {
+                word.MoveNext();
+            }
+
+            return;
+        }
     }
     /*
-    A.2.1.3 Type declarations
-    event_declaration   ::= event list_of_event_identifiers ;  
-    genvar_declaration  ::= genvar list_of_genvar_identifiers ;  
-    integer_declaration ::= integer list_of_variable_identifiers ;  
-    net_declaration     ::=   net_type                                              [ signed ]          [ delay3 ]  list_of_net_identifiers ;
-                            | net_type  [ drive_strength ]                          [ signed ]          [ delay3 ]  list_of_net_decl_assignments ;
-                            | net_type  [ vectored | scalared ]                     [ signed ]  range   [ delay3 ]  list_of_net_identifiers ;
-                            | net_type  [ drive_strength ] [ vectored | scalared ]  [ signed ]  range   [ delay3 ]  list_of_net_decl_assignments ;
-                            | trireg    [ charge_strength ]                         [ signed ]          [ delay3 ]  list_of_net_identifiers ;          
-                            | trireg    [ drive_strength ]                          [ signed ]          [ delay3 ]  list_of_net_decl_assignments ;          
-                            | trireg    [ charge_strength ] [ vectored | scalared ] [ signed ]  range   [ delay3 ]  list_of_net_identifiers ;
-                            | trireg    [ drive_strength ] [ vectored | scalared ]  [ signed ]  range   [ delay3 ]  list_of_net_decl_assignments ;
-    real_declaration    ::= real list_of_real_identifiers ;  
-    realtime_declaration    ::= realtime list_of_real_identifiers ;  
-    reg_declaration     ::= reg [ signed ] [ range ] list_of_variable_identifiers ;  
-    time_declaration    ::= time list_of_variable_identifiers ;
+
 
 
     variable_type ::=  variable_identifier [ = constant_expression ] | variable_identifier dimension { dimension } 
