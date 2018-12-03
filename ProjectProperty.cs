@@ -8,6 +8,17 @@ namespace pluginVerilog
 {
     public class ProjectProperty : codeEditor.Data.ProjectProperty
     {
+        public override void SaveSetup(ajkControls.JsonWriter writer)
+        {
+            using(var macroWriter = writer.GetObjectWriter("Macros"))
+            {
+                foreach(var kvp in Macros)
+                {
+                    macroWriter.writeKeyValue(kvp.Key, kvp.Value);
+                }
+            }
+        }
+
         // module reference table
         private Dictionary<string, string> relativeFilePathWithModuleName = new Dictionary<string, string>();
 
