@@ -21,6 +21,9 @@ namespace pluginVerilog
             }
             string absolutePth = System.IO.Path.GetFullPath(@"..\\..\\..\\..\\pluginVerilog\\TestRTL");
             codeEditor.Global.Controller.AddProject(absolutePth);
+
+            System.Windows.Forms.ContextMenuStrip menu = codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip();
+            menu.Items.Add(Global.SetupForm.icarusVerilogSimulationToolStripMenuItem);
         }
         public string Id { get { return StaticID; } }
 

@@ -16,5 +16,18 @@ namespace pluginVerilog
         {
             InitializeComponent();
         }
+
+        private void icarusVerilogSimulationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string projectName, id;
+            codeEditor.Global.Controller.NavigatePanel.GetSelectedNode(out projectName, out id);
+
+            codeEditor.Data.Project project = codeEditor.Global.Projects[projectName];
+            Data.VerilogFile topFile = project.GetRegisterdItem(id) as Data.VerilogFile;
+            if (topFile == null) return;
+
+            ajkControls.TabPage page = new IcarusVerilog.SimulationTab(topFile);
+            codeEditor.Global.Controller.Tabs.AddPage(page);
+        }
     }
 }

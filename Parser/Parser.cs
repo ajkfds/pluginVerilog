@@ -41,7 +41,7 @@ namespace pluginVerilog.Parser
             {
                 if (word.Text == "module")
                 {
-                    Verilog.Module module = Verilog.Module.Create(word, null);
+                    Verilog.Module module = Verilog.Module.Create(word, null,parsedDocument.ItemID);
                     parsedDocument.Modules.Add(module.Name, module);
                 }
                 else

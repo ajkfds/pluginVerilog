@@ -17,8 +17,9 @@ namespace pluginVerilog.Verilog
         public Dictionary<string, Function> Functions = new Dictionary<string, Function>();
         public Dictionary<string, Task> Tasks = new Dictionary<string, Task>();
         public Dictionary<string, ModuleItems.ModuleInstantiation> ModuleInstantiations = new Dictionary<string, ModuleItems.ModuleInstantiation>();
+        public string FileId { get; protected set; }
 
-        public static Module Create(WordScanner word,Attribute attribute)
+        public static Module Create(WordScanner word,Attribute attribute,string fileId)
         {
             /*
             module_declaration  ::= { attribute_instance } module_keyword module_identifier [ module_parameter_port_list ]
@@ -36,6 +37,7 @@ namespace pluginVerilog.Verilog
 
             Module module = new Module();
             module.Module = module;
+            module.FileId = fileId;
 
             if (word.Text != "module" && word.Text != "macromodule") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);

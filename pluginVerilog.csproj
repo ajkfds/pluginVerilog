@@ -47,6 +47,17 @@
     <Compile Include="CodeDrawStyle.cs" />
     <Compile Include="CodeEditor\CodeDocument.cs" />
     <Compile Include="Data\IVerilogRelatedFile.cs" />
+    <Compile Include="Global.cs" />
+    <Compile Include="IcarusVerilog\Setup.cs" />
+    <Compile Include="IcarusVerilog\SimulationPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="IcarusVerilog\SimulationPanel.Designer.cs">
+      <DependentUpon>SimulationPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IcarusVerilog\SimulationTab.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="MessageView\MessageNode.cs" />
     <Compile Include="NavigatePanel\VerilogHeaderInstanceNode.cs" />
     <Compile Include="NavigatePanel\VerilogHeaderNode.cs" />
@@ -104,7 +115,6 @@
     <Compile Include="Verilog\Statements\Statements.cs" />
     <Compile Include="Verilog\Statements\TimingControlStatements.cs" />
     <Compile Include="Verilog\Variables\Variable.cs" />
-    <Compile Include="VerilogParser.cs" />
     <Compile Include="Verilog\WordPointer.cs" />
     <Compile Include="Verilog\WordScanner.cs" />
   </ItemGroup>
@@ -123,6 +133,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="IcarusVerilog\SimulationPanel.resx">
+      <DependentUpon>SimulationPanel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -149,6 +162,7 @@
   <ItemGroup>
     <None Include="Resources\regBox.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /I /D /Y "$(ProjectDir)\bin\$(Configuration)\$(ProjectName).dll" "$(SolutionDir)codeEditor\bin\$(Configuration)\dlls" 
