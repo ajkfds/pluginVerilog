@@ -26,8 +26,14 @@ namespace pluginVerilog
             Data.VerilogFile topFile = project.GetRegisterdItem(id) as Data.VerilogFile;
             if (topFile == null) return;
 
-            ajkControls.TabPage page = new IcarusVerilog.SimulationTab(topFile);
-            codeEditor.Global.Controller.Tabs.AddPage(page);
+            //ajkControls.TabPage page = new IcarusVerilog.SimulationTab(topFile);
+            //codeEditor.Global.Controller.Tabs.AddPage(page);
+
+
+
+            IcarusVerilog.SimulationPanel panel = new IcarusVerilog.SimulationPanel(topFile);
+            codeEditor.Controller.MainTabPage mainTabPage = new codeEditor.Controller.MainTabPage(panel, topFile.Name);
+            codeEditor.Global.Controller.Tabs.AddPage(mainTabPage);
         }
     }
 }

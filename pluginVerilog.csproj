@@ -62,6 +62,7 @@
     <Compile Include="NavigatePanel\VerilogHeaderInstanceNode.cs" />
     <Compile Include="NavigatePanel\VerilogHeaderNode.cs" />
     <Compile Include="ProjectProperty.cs" />
+    <Compile Include="Verilog\Expressions\String.cs" />
     <Compile Include="Verilog\ModuleItems\ContinuousAssign.cs" />
     <Compile Include="Data\VerilogFile.cs" />
     <Compile Include="Data\VerilogHeaderFile.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="FileTypes\VerilogHeaderFile.cs" />
     <Compile Include="Verilog\Function.cs" />
     <Compile Include="Verilog\ModuleItems\AlwaysConstruct.cs" />
+    <Compile Include="Verilog\ModuleItems\InitialConstruct.cs" />
     <Compile Include="Verilog\ModuleItems\ModuleInstantiation.cs" />
     <Compile Include="NavigatePanel\VerilogFileNode.cs" />
     <Compile Include="Verilog\ParsedDocument.cs" />
@@ -96,6 +98,7 @@
     <Compile Include="Verilog\Expressions\Expression.cs" />
     <Compile Include="Verilog\General.cs" />
     <Compile Include="Verilog\Item.cs" />
+    <Compile Include="Verilog\Statements\DisableStatement.cs" />
     <Compile Include="Verilog\Statements\IStatement.cs" />
     <Compile Include="Verilog\Statements\LoopingStatememt.cs" />
     <Compile Include="Verilog\Module.cs" />
@@ -103,7 +106,9 @@
     <Compile Include="Verilog\Expressions\Number.cs" />
     <Compile Include="Verilog\Expressions\Operator.cs" />
     <Compile Include="Style.cs" />
+    <Compile Include="Verilog\Statements\ParallelBlock.cs" />
     <Compile Include="Verilog\Statements\ProceduralTimingControlStatement.cs" />
+    <Compile Include="Verilog\Statements\TaskEnable.cs" />
     <Compile Include="Verilog\Task.cs" />
     <Compile Include="Verilog\Variables\VariableAssignment.cs" />
     <Compile Include="Verilog\Variables\Parameter.cs" />

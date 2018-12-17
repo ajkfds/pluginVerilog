@@ -13,6 +13,7 @@ namespace pluginVerilog.Verilog.ModuleItems
 
         public static AlwaysConstruct ParseCreate(WordScanner word,Module module)
         {
+        //  always_construct::= always statement
             System.Diagnostics.Debug.Assert(word.Text == "always");
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
@@ -29,8 +30,6 @@ namespace pluginVerilog.Verilog.ModuleItems
     }
     /*
     A.6.2 Procedural blocks and assignments
-    initial_construct   ::= initial statement  
-    always_construct    ::= always statement  
     blocking_assignment ::= variable_lvalue = [ delay_or_event_control ] expression  
     nonblocking_assignment ::= variable_lvalue <= [ delay_or_event_control ] expression  
     procedural_continuous_assignments   ::= assign variable_assignment

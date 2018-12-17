@@ -59,6 +59,7 @@ namespace pluginVerilog.Verilog.Expressions
                     }
                     return null;
                 case WordPointer.WordTypeEnum.String:
+                    return ConstantString.ParseCreate(word);
                     break;
                 case WordPointer.WordTypeEnum.Text:
                     {

@@ -48,13 +48,13 @@ namespace pluginVerilog.Verilog.Statements
                             | { attribute_instance } nonblocking_assignment ;
                             | { attribute_instance } procedural_timing_control_statement
                             | { attribute_instance } loop_statement
-
                             | { attribute_instance } case_statement
                             | { attribute_instance } disable_statement
-                            | { attribute_instance } event_trigger
-                            | { attribute_instance } par_block
-                            | { attribute_instance } procedural_continuous_assignments ;
                             | { attribute_instance } seq_block
+                            | { attribute_instance } par_block
+
+                            | { attribute_instance } event_trigger
+                            | { attribute_instance } procedural_continuous_assignments ;
                             | { attribute_instance } system_task_enable
                             | { attribute_instance } task_enable
                             | { attribute_instance } wait_statement
@@ -69,6 +69,8 @@ namespace pluginVerilog.Verilog.Statements
                     return ProceduralTimingControlStatement.ParseCreate(word, nameSpace);
                 case "begin":
                     return SequentialBlock.ParseCreate(word, nameSpace);
+                case "fork":
+                    return ParallelBlock.ParseCreate(word, nameSpace);
                 case "forever":
                     return ForeverStatement.ParseCreate(word, nameSpace);
                 case "repeat":
@@ -81,7 +83,21 @@ namespace pluginVerilog.Verilog.Statements
                 case "casex":
                 case "casez":
                     return CaseStatement.ParseCreate(word, nameSpace);
+                case "disable":
+                    return DisableStatement.ParseCreate(word,nameSpace);
                 default:
+                    string nextText = word.NextText;
+                    if (nextText == "(")
+                    {
+                        if (word.Text.StartsWith("$"))
+                        {
+                            return TaskEnable.ParseCreate(word, nameSpace); // system task enable
+                        }
+                        else if (General.IsIdentifier(word.Text)){
+                            return TaskEnable.ParseCreate(word, nameSpace);
+                        }
+                    }
+
                     Expressions.Expression expression = Expressions.Expression.ParseCreateVariableLValue(word, nameSpace);
                     IStatement statement;
                     if (expression == null)

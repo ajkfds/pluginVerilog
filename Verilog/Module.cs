@@ -234,17 +234,31 @@ namespace pluginVerilog.Verilog
 
         /*
         module_item ::= (From Annex A - A.1.5)  module_or_generate_item
-            | port_declaration ; | { attribute_instance } generated_instantiation 
-            | { attribute_instance } local_parameter_declaration 
-            | { attribute_instance } parameter_declaration | { attribute_instance } specify_block 
+            | port_declaration ;
+            | { attribute_instance } generated_instantiation 
+            | { attribute_instance } local_parameter_declaration
+            | { attribute_instance } parameter_declaration
+            | { attribute_instance } specify_block 
             | { attribute_instance } specparam_declaration  
         module_or_generate_item ::=   { attribute_instance } module_or_generate_item_declaration 
-            | { attribute_instance } parameter_override | { attribute_instance } continuous_assign 
-            | { attribute_instance } gate_instantiation | { attribute_instance } udp_instantiation 
-            | { attribute_instance } module_instantiation | { attribute_instance } initial_construct 
+            | { attribute_instance } parameter_override 
+            | { attribute_instance } continuous_assign
+            | { attribute_instance } gate_instantiation
+            | { attribute_instance } udp_instantiation 
+            | { attribute_instance } module_instantiation 
+            | { attribute_instance } initial_construct 
             | { attribute_instance } always_construct  
         module_or_generate_item_declaration ::=   net_declaration 
-            | reg_declaration | integer_declaration | real_declaration | time_declaration | realtime_declaration | event_declaration | genvar_declaration | task_declaration | function_declaration          
+            | reg_declaration
+            | integer_declaration 
+            | real_declaration 
+            | time_declaration 
+            | realtime_declaration 
+            | event_declaration 
+            | genvar_declaration 
+            | task_declaration 
+            | function_declaration          
+        parameter_override ::= defparam list_of_param_assignments ;  
         */
         private static void parseModuleItems(WordScanner word, Module module)
         {
@@ -254,6 +268,7 @@ namespace pluginVerilog.Verilog
                 {
                     case "endmodule":
                         return;
+                    // port_declaration
                     case "input":
                     case "output":
                     case "inout":
@@ -267,6 +282,7 @@ namespace pluginVerilog.Verilog
                             word.MoveNext();
                         }
                         break;
+                    // module_or_generate_item_declaration
                     case "reg":
                         Verilog.Variables.Reg.ParseCreateFromDeclaration(word, module);
                         break;
@@ -300,13 +316,21 @@ namespace pluginVerilog.Verilog
                     case "genvar":
                         Verilog.Variables.Genvar.ParseCreateFromDeclaration(word, module);
                         break;
+                    // always_construct
                     case "always":
                         ModuleItems.AlwaysConstruct always = ModuleItems.AlwaysConstruct.ParseCreate(word, module);
                         break;
+                    // initial_construct
+                    case "initial":
+                        ModuleItems.InitialConstruct initial = ModuleItems.InitialConstruct.ParseCreate(word, module);
+                        break;
+                    // parameter_declaration
                     case "parameter":
+                    // local_parameter_declaration
                     case "localparam":
                         Verilog.Variables.Parameter.ParseCreateDeclaration(word, module, null);
                         break;
+                    // continuous_assign
                     case "assign":
                         ModuleItems.ContinuousAssign continuousAssign = ModuleItems.ContinuousAssign.ParseCreate(word, module);
                         break;
