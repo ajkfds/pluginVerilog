@@ -132,6 +132,12 @@ namespace pluginVerilog.Verilog
                         case "reg":
                             Verilog.Variables.Reg.ParseCreateFromDeclaration(word, function);
                             continue;
+                        case "integer":
+                            Verilog.Variables.Integer.ParseCreateFromDeclaration(word, function);
+                            continue;
+                        case "real":
+                            Verilog.Variables.Real.ParseCreateFromDeclaration(word, function);
+                            continue;
                         default:
                             break;
                     }

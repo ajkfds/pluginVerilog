@@ -5,11 +5,8 @@ input	CLK_I,					// @clock
 input	RST_X					// @reset
 );
 
-`include "TEST.vh"
+//`include "TEST.vh"
 
-
-`define MAC wire aaa;
-`MAC
 
 localparam P_DELAY = 1; // @delay
 
@@ -34,14 +31,6 @@ begin
 	{overflow,get_data_next} = data + 8'h01;
 end
 endfunction
-
-wire [7:0] dat;
-
-MOD MOD0(
-	.DATA_O(dat),
-	.CLK_I(CLK_I),
-	.RST_X(RST_X)
-);
 
 
 endmodule

@@ -19,8 +19,9 @@ namespace pluginVerilog
                 FileTypes.VerilogHeaderFile fileType = new FileTypes.VerilogHeaderFile();
                 codeEditor.Global.FileTypes.Add(fileType.ID, fileType);
             }
-            string absolutePth = System.IO.Path.GetFullPath(@"..\\..\\..\\..\\pluginVerilog\\TestRTL");
-            codeEditor.Global.Controller.AddProject(absolutePth);
+            string absolutePath = System.IO.Path.GetFullPath(@"..\\..\\..\\..\\pluginVerilog\\TestRTL");
+            codeEditor.Data.Project project = codeEditor.Data.Project.Create(absolutePath);
+            codeEditor.Global.Controller.AddProject(project);
 
             System.Windows.Forms.ContextMenuStrip menu = codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip();
             menu.Items.Add(Global.SetupForm.icarusVerilogSimulationToolStripMenuItem);

@@ -100,7 +100,7 @@ namespace pluginVerilog.Data
         {
             get
             {
-                return Style.CodeDrawStyle;
+                return Global.CodeDrawStyle;
             }
         }
 

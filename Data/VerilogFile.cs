@@ -48,7 +48,7 @@ namespace pluginVerilog.Data
         {
             get
             {
-                if (!Project.ProjectProperties.ContainsKey(Plugin.StaticID)) Project.ProjectProperties.Add(Plugin.StaticID, new ProjectProperty());
+                if (!Project.ProjectProperties.ContainsKey(Plugin.StaticID)) Project.ProjectProperties.Add(Plugin.StaticID, new ProjectProperty(Project));
                 return Project.ProjectProperties[Plugin.StaticID] as ProjectProperty;
             }
         }
@@ -88,7 +88,7 @@ namespace pluginVerilog.Data
         {
             get
             {
-                return Style.CodeDrawStyle;
+                return Global.CodeDrawStyle;
             }
         }
 
@@ -204,7 +204,10 @@ namespace pluginVerilog.Data
         public List<codeEditor.CodeEditor.AutocompleteItem> GetAutoCompleteItems(int index)
         {
             if (VerilogParsedDocument == null) return null;
-            return VerilogParsedDocument.GetAutoCompleteItems(index);
+            int line = CodeDocument.GetLineAt(index);
+            int lineStartIndex = CodeDocument.GetLineStartIndex(line);
+
+            return VerilogParsedDocument.GetAutoCompleteItems(index,lineStartIndex,line);
         }
 
 

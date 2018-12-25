@@ -17,6 +17,14 @@ namespace pluginVerilog.Verilog
         public Dictionary<string, Data.VerilogHeaderFile> IncludeFiles = new Dictionary<string, Data.VerilogHeaderFile>();
         public Dictionary<string, string> Macros = new Dictionary<string, string>();
 
+        private ProjectProperty projectProperty
+        {
+            get
+            {
+                return Project.ProjectProperties[Plugin.StaticID] as ProjectProperty; 
+            }
+        }
+
         public override void Accept()
         {
             base.Accept();
@@ -50,7 +58,7 @@ namespace pluginVerilog.Verilog
             {
                 if (index < message.Index) continue;
                 if (index > message.Index + message.Length) continue;
-                ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.Red, Style.ExclamationBoxIcon,ajkControls.Icon.ColorStyle.Red));
+                ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.Red, Global.Icons.ExclamationBox,ajkControls.Icon.ColorStyle.Red));
             }
 
             NameSpace space = null;
@@ -104,6 +112,8 @@ namespace pluginVerilog.Verilog
             new codeEditor.CodeEditor.AutocompleteItem("force",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("forever",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("fork",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
+
+            new Snippets.FunctionAutocompleteItem("function",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("function",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("generate",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("genvar",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
@@ -137,7 +147,8 @@ namespace pluginVerilog.Verilog
             new codeEditor.CodeEditor.AutocompleteItem("repeat",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("signed",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("time",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
-            new codeEditor.CodeEditor.AutocompleteItem("task",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
+//            new codeEditor.CodeEditor.AutocompleteItem("task",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
+            new Snippets.TaskAutocompleteItem("task",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
 
             new codeEditor.CodeEditor.AutocompleteItem("tri0",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("tri1",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
@@ -152,48 +163,21 @@ namespace pluginVerilog.Verilog
 
             new codeEditor.CodeEditor.AutocompleteItem("wand",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("wire",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
-            new codeEditor.CodeEditor.AutocompleteItem("wor",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword))
+            new codeEditor.CodeEditor.AutocompleteItem("wor",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
+
+            new Snippets.NonBlockingAssignmentAutoCompleteItem("<=",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Normal), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
         };
 
-        public List<codeEditor.CodeEditor.AutocompleteItem> GetAutoCompleteItems(int index)
+        public List<codeEditor.CodeEditor.AutocompleteItem> GetAutoCompleteItems(int index,int lineStartIndex,int line)
         {
-            List<codeEditor.CodeEditor.AutocompleteItem> items = new List<codeEditor.CodeEditor.AutocompleteItem>();
-            items = verilogKeywords.ToList();
+            List<codeEditor.CodeEditor.AutocompleteItem> items = verilogKeywords.ToList();
 
-            /*
-            buf
-            bufif0
-            bufif1
-
-            cell
-            cmos
-            config
-
-            
-              
-              endconfig 
-                endtable
-                
-                highz0 highz1
-             ifnone 
-              
-             instance   large liblist library  macromodule medium    
-             nmos  noshowcancelled  
-             notif0 notif1    pmos  primitive pull0 pull1   
-             pulsestyle_onevent pulsestyle_ondetect rcmos 
-              
-              rnmos rpmos rtran rtranif0 rtranif1 scalared showcancelled
-             small specify specparam strong0 strong1 supply0 supply1 table  
-             tran tranif0 tranif1 tri   triand trior 
-              use
-                    xnor xor
-            */
             NameSpace space = null;
             foreach (Module module in Modules.Values)
             {
-                if (index < module.BeginIndex) continue;
-                if (index > module.LastIndex) continue;
-                space = module.GetHierNameSpace(index);
+                if (lineStartIndex < module.BeginIndex) continue;
+                if (lineStartIndex > module.LastIndex) continue;
+                space = module.GetHierNameSpace(lineStartIndex);
                 break;
             }
             if (space == null) return items;
@@ -207,6 +191,18 @@ namespace pluginVerilog.Verilog
                 {
                     items.Add(newItem(variable.Name, CodeDrawStyle.ColorType.Register));
                 }
+            }
+
+            List<string> moduleNameList = projectProperty.GetModuleNameList();
+            foreach(string moduleName in moduleNameList)
+            {
+                items.Add(new Snippets.ModuleInstanceAutocompleteItem(
+                    moduleName, 
+                    CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Identifier), 
+                    CodeDrawStyle.Color(CodeDrawStyle.ColorType.Identifier),
+                    Project
+                    )
+                );
             }
 
             return items;

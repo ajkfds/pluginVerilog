@@ -140,12 +140,16 @@ namespace pluginVerilog.Verilog.Statements
                 word.AddError("( expected");
                 return null;
             }
+            word.MoveNext();
+
             forStatement.VariableAssignment = Variables.VariableAssignment.ParseCreate(word, nameSpace);
             if (word.GetCharAt(0) != ';')
             {
                 word.AddError("( expected");
                 return null;
             }
+            word.MoveNext();
+
             forStatement.Expression = Expressions.Expression.ParseCreate(word, nameSpace);
 
             if (word.GetCharAt(0) != ';')
@@ -153,6 +157,8 @@ namespace pluginVerilog.Verilog.Statements
                 word.AddError("( expected");
                 return null;
             }
+            word.MoveNext();
+
             forStatement.VariableUpdate = Variables.VariableAssignment.ParseCreate(word, nameSpace);
 
             if (word.GetCharAt(0) != ')')
@@ -160,6 +166,7 @@ namespace pluginVerilog.Verilog.Statements
                 word.AddError("( expected");
                 return null;
             }
+            word.MoveNext();
 
 
             forStatement.Statement = Statements.ParseCreateStatement(word, nameSpace);

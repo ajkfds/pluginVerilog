@@ -9,9 +9,9 @@ namespace pluginVerilog
 {
     public static class Style
     {
-        public static CodeDrawStyle CodeDrawStyle = new CodeDrawStyle();
+//        public static CodeDrawStyle CodeDrawStyle = new CodeDrawStyle();
 
-        public static ajkControls.Icon ExclamationIcon = new ajkControls.Icon(Properties.Resources.exclamation);
-        public static ajkControls.Icon ExclamationBoxIcon = new ajkControls.Icon(Properties.Resources.exclamationBox);
+//        public static ajkControls.Icon ExclamationIcon = new ajkControls.Icon(Properties.Resources.exclamation);
+//        public static ajkControls.Icon ExclamationBoxIcon = new ajkControls.Icon(Properties.Resources.exclamationBox);
     }
 }

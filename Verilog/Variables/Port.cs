@@ -164,6 +164,39 @@ namespace pluginVerilog.Verilog.Variables
             return;
         }
 
+        public static void ParseTaskPortDeclaration(WordScanner word, Task task, Attribute attribute)
+        {
+
+            List<Variable> variables;
+            switch (word.Text)
+            {
+                case "input":
+                    ParseTfInputDeclaration(word, task.Module, attribute, out variables);
+                    if (variables.Count == 0) return;
+                    foreach (Variable variable in variables)
+                    {
+                        Port port = new Port();
+                        port.Name = variable.Name;
+                        port.Direction = DirectionEnum.Input;
+                        if (!task.Ports.ContainsKey(variable.Name))
+                        {
+                            task.Ports.Add(port.Name, port);
+                        }
+                        if (task.Variables.ContainsKey(variable.Name))
+                        {
+                            word.AddError("illegal port name");
+                        }
+                        else
+                        {
+                            task.Variables.Add(variable.Name, variable);
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return;
+        }
 
         private static void parseInputDeclaration(WordScanner word, Module module, Attribute attribute, out List<Variable> variables)
         {

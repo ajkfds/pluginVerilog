@@ -45,6 +45,10 @@ namespace pluginVerilog.IcarusVerilog
 
             Data.VerilogFile topFile = project.GetRegisterdItem(topId) as Data.VerilogFile;
             if (topFile == null) return;
+            Verilog.ParsedDocument topParsedDocument = topFile.ParsedDocument as Verilog.ParsedDocument;
+            if (topParsedDocument == null) return;
+            if (topParsedDocument.Modules.Count == 0) return;
+
             string simName = topFile.Name.Substring(0, topFile.Name.LastIndexOf('.'));
 
 
@@ -60,6 +64,10 @@ namespace pluginVerilog.IcarusVerilog
                 filePathList.Add(absolutePath);
             }
 
+            foreach(Verilog.Module module in topParsedDocument.Modules.Values)
+            {
+                appendFiles(filePathList, module, project);
+            }
 
             using (System.IO.StreamWriter sw = new System.IO.StreamWriter(simulationPath + "\\command"))
             {
@@ -101,9 +109,18 @@ namespace pluginVerilog.IcarusVerilog
             if (!filePathList.Contains(absolutePath)) filePathList.Add(absolutePath);
 
             if (file.VerilogParsedDocument == null) return;
-            foreach (Verilog.Module subModule in file.VerilogParsedDocument.Modules.Values)
+
+            // includes
+            foreach(var include in file.VerilogParsedDocument.IncludeFiles.Values)
             {
-                appendFiles(filePathList, subModule, project);
+                string includePath = project.GetAbsolutePath(include.RelativePath);
+                if (!filePathList.Contains(includePath)) filePathList.Add(includePath);
+            }
+
+            foreach(Verilog.ModuleItems.ModuleInstantiation instance in module.ModuleInstantiations.Values)
+            {
+                Verilog.Module subModule = project.GetPluginProperty().GetModule(instance.ModuleName);
+                if (subModule != null) appendFiles(filePathList, subModule, project);
             }
 
         }

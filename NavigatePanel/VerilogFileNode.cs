@@ -47,7 +47,7 @@ namespace pluginVerilog.NavigatePanel
 
             if(VerilogFile != null && VerilogFile.ParsedDocument != null && VerilogFile.ParsedDocument.Messages.Count != 0)
             {
-                graphics.DrawImage(Style.ExclamationIcon.GetImage(lineHeight, ajkControls.Icon.ColorStyle.Red), new Point(x, y));
+                graphics.DrawImage(Global.Icons.Exclamation.GetImage(lineHeight, ajkControls.Icon.ColorStyle.Red), new Point(x, y));
             }
         }
 

@@ -8,6 +8,14 @@ namespace pluginVerilog
 {
     public class ProjectProperty : codeEditor.Data.ProjectProperty
     {
+        public ProjectProperty(codeEditor.Data.Project project)
+        {
+            this.project = project;
+        }
+        private codeEditor.Data.Project project;
+
+        public Verilog.Snippets.Setup SnippetSetup = new Verilog.Snippets.Setup();
+
         public override void SaveSetup(ajkControls.JsonWriter writer)
         {
             using(var macroWriter = writer.GetObjectWriter("Macros"))
@@ -92,6 +100,27 @@ namespace pluginVerilog
                 return relativeFilePathWithModuleName[moduleName];
             }
         }
+
+        public List<string> GetModuleNameList()
+        {
+            List<string> list = new List<string>();
+            foreach(string name in relativeFilePathWithModuleName.Keys)
+            {
+                list.Add(name);
+            }
+            return list;
+        }
+
+        public Verilog.Module GetModule(string moduleName)
+        {
+            string fileRelativePath = GetRelativeFilePathOfModule(moduleName);
+            if (fileRelativePath == null) return null;
+            Data.VerilogFile file = project.GetRegisterdItem(codeEditor.Data.File.GetID(fileRelativePath,project)) as Data.VerilogFile;
+            if (file == null || file.VerilogParsedDocument == null) return null;
+            if (!file.VerilogParsedDocument.Modules.ContainsKey(moduleName)) return null;
+            return file.VerilogParsedDocument.Modules[moduleName];
+        }
+
         // macros
         public Dictionary<string, string> Macros = new Dictionary<string, string>();
 

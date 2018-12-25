@@ -337,6 +337,9 @@ namespace pluginVerilog.Verilog
                     case "function":
                         Function.Parse(word, module);
                         break;
+                    case "task":
+                        Task.Parse(word, module);
+                        break;
                     case "generate":
                         parseGenerateItems(word, module);
                         if(word.Text != "endgenerate")

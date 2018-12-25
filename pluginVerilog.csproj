@@ -47,6 +47,7 @@
     <Compile Include="CodeDrawStyle.cs" />
     <Compile Include="CodeEditor\CodeDocument.cs" />
     <Compile Include="Data\IVerilogRelatedFile.cs" />
+    <Compile Include="PluginExtensions.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="IcarusVerilog\Setup.cs" />
     <Compile Include="IcarusVerilog\SimulationPanel.cs">
@@ -75,6 +76,7 @@
     <Compile Include="Verilog\ModuleItems\InitialConstruct.cs" />
     <Compile Include="Verilog\ModuleItems\ModuleInstantiation.cs" />
     <Compile Include="NavigatePanel\VerilogFileNode.cs" />
+    <Compile Include="Verilog\ModuleReference.cs" />
     <Compile Include="Verilog\ParsedDocument.cs" />
     <Compile Include="Parser\Parser.cs" />
     <Compile Include="Plugin.cs" />
@@ -91,6 +93,11 @@
     </Compile>
     <Compile Include="Verilog\Snippets\AlwaysFFSnippet.cs" />
     <Compile Include="Verilog\Snippets\BeginAutoCompleteItem.cs" />
+    <Compile Include="Verilog\Snippets\FunctionAutocompleteItem.cs" />
+    <Compile Include="Verilog\Snippets\ModuleInstanceAutocompleteItem.cs" />
+    <Compile Include="Verilog\Snippets\NonBlockingAssignmentAutocompleteItem.cs" />
+    <Compile Include="Verilog\Snippets\Setup.cs" />
+    <Compile Include="Verilog\Snippets\TaskAutocompleteItem.cs" />
     <Compile Include="Verilog\Statements\Assignment.cs" />
     <Compile Include="Verilog\Attribute.cs" />
     <Compile Include="Verilog\Statements\CaseStatement.cs" />
@@ -167,7 +174,12 @@
   <ItemGroup>
     <None Include="Resources\regBox.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\play.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pause.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /I /D /Y "$(ProjectDir)\bin\$(Configuration)\$(ProjectName).dll" "$(SolutionDir)codeEditor\bin\$(Configuration)\dlls" 

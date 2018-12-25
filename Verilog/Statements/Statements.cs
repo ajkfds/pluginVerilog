@@ -87,7 +87,7 @@ namespace pluginVerilog.Verilog.Statements
                     return DisableStatement.ParseCreate(word,nameSpace);
                 default:
                     string nextText = word.NextText;
-                    if (nextText == "(")
+                    if (nextText == "(" || nextText == ";")
                     {
                         if (word.Text.StartsWith("$"))
                         {

@@ -306,6 +306,12 @@ namespace pluginVerilog.Verilog.Variables
                 word.Color(CodeDrawStyle.ColorType.Register);
                 word.MoveNext();
 
+                if(word.Text == "=")
+                {
+                    word.MoveNext();
+                    Expressions.Expression initalValue = Expressions.Expression.ParseCreate(word, nameSpace);
+                }
+
                 if (word.GetCharAt(0) != ',') break;
                 word.MoveNext();
             }
@@ -347,23 +353,15 @@ namespace pluginVerilog.Verilog.Variables
                     word.AddError("illegal integer identifier");
                     return;
                 }
-                Integer reg = new Integer();
-                reg.Name = word.Text;
-                if (nameSpace.Variables.ContainsKey(reg.Name))
+                Integer val = new Integer();
+                val.Name = word.Text;
+                if (nameSpace.Variables.ContainsKey(val.Name))
                 {
-                    if (nameSpace.Variables[reg.Name] is Net)
-                    {
-                        nameSpace.Variables.Remove(reg.Name);
-                        nameSpace.Variables.Add(reg.Name, reg);
-                    }
-                    else
-                    {
-                        word.AddError("duplicated integer name");
-                    }
+                    word.AddError("duplicated integer name");
                 }
                 else
                 {
-                    nameSpace.Variables.Add(reg.Name, reg);
+                    nameSpace.Variables.Add(val.Name, val);
                 }
 
                 word.Color(CodeDrawStyle.ColorType.Variable);
