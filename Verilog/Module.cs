@@ -368,12 +368,20 @@ namespace pluginVerilog.Verilog
          */
         private static void parseGenerateItems(WordScanner word, Module module)
         {
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext();
+
             while (!word.Eof)
             {
                 switch (word.Text)
                 {
-                    case "endmodule":
                     case "endgenerate":
+                        word.Color(CodeDrawStyle.ColorType.Keyword);
+                        word.MoveNext();
+                        return;
+                    case "endmodule":
+                        word.AddError("endgenerate expected");
+                        word.MoveNext();
                         return;
                     case "input":
                     case "output":
@@ -433,6 +441,9 @@ namespace pluginVerilog.Verilog
                         break;
                     case "function":
                         Function.Parse(word, module);
+                        break;
+                    case "task":
+                        Task.Parse(word, module);
                         break;
                     default:
                         ModuleItems.ModuleInstantiation.Parse(word, module);
