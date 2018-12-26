@@ -15,6 +15,8 @@ namespace pluginVerilog.Verilog.Variables
     public class Variable
     {
         public string Name;
+        protected List<Dimension> dimensions = new List<Dimension>();
+        public IReadOnlyList<Dimension> Dimensions { get { return dimensions; } }
     }
 
     public class VariablePopup : codeEditor.CodeEditor.PopupItem
@@ -230,6 +232,7 @@ namespace pluginVerilog.Verilog.Variables
         protected Reg() { }
 
         public Range Range { get; protected set; }
+        
         public bool Signed { get; protected set; }
 
         public Reg(string Name,Range range,bool signed)
@@ -310,6 +313,13 @@ namespace pluginVerilog.Verilog.Variables
                 {
                     word.MoveNext();
                     Expressions.Expression initalValue = Expressions.Expression.ParseCreate(word, nameSpace);
+                }else if( word.Text == "[")
+                {
+                    while(word.Text == "[")
+                    {
+                        Dimension dimension = Dimension.ParseCreate(word, nameSpace);
+                        reg.dimensions.Add(dimension);
+                    }
                 }
 
                 if (word.GetCharAt(0) != ',') break;

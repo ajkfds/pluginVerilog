@@ -117,6 +117,7 @@
     <Compile Include="Verilog\Statements\ProceduralTimingControlStatement.cs" />
     <Compile Include="Verilog\Statements\TaskEnable.cs" />
     <Compile Include="Verilog\Task.cs" />
+    <Compile Include="Verilog\Variables\Dimension.cs" />
     <Compile Include="Verilog\Variables\VariableAssignment.cs" />
     <Compile Include="Verilog\Variables\Parameter.cs" />
     <Compile Include="Verilog\Variables\Port.cs" />

@@ -104,7 +104,8 @@ namespace pluginVerilog.Verilog.Expressions
     {
         protected VariableReference() { }
         public string VariableName { get; protected set; }
-        public Variables.Range Range { get; protected set; }
+        public RangeExpression RangeExpression { get; protected set; }
+        public List<Expression> Dimensions = new List<Expression>();
 
         public new static VariableReference ParseCreate(WordScanner word,NameSpace nameSpace)
         {
@@ -128,17 +129,122 @@ namespace pluginVerilog.Verilog.Expressions
             }
             word.MoveNext();
 
-            if(word.GetCharAt(0) == '[')
+            while(!word.Eof && val.Dimensions.Count < variable.Dimensions.Count)
             {
-                val.Range = Variables.Range.ParseCreate(word, nameSpace);
-                if (val.Range == null) return null;
+                if (word.GetCharAt(0) != '[')
+                {
+                    word.AddError("lacked dimension");
+                    break;
+                }
+                Expression exp = Expression.ParseCreate(word, nameSpace);
+                val.Dimensions.Add(exp);
+            }
+
+            if (word.GetCharAt(0) == '[')
+            {
+                Expression exp1 = Expression.ParseCreate(word, nameSpace);
+                Expression exp2;
+                switch (word.Text)
+                {
+                    case ":":
+                        word.MoveNext();
+                        exp2 = Expression.ParseCreate(word, nameSpace);
+                        if (word.Text != "]")
+                        {
+                            word.AddError("illegal range");
+                            return null;
+                        }
+                        word.MoveNext();
+                        val.RangeExpression = new AbsoluteRangeExpression(exp1, exp2);
+                        break;
+                    case "+:":
+                        word.MoveNext();
+                        exp2 = Expression.ParseCreate(word, nameSpace);
+                        if (word.Text != "]")
+                        {
+                            word.AddError("illegal range");
+                            return null;
+                        }
+                        word.MoveNext();
+                        val.RangeExpression = new RelativePlusRangeExpression(exp1, exp2);
+                        break;
+                    case "-:":
+                        word.MoveNext();
+                        exp2 = Expression.ParseCreate(word, nameSpace);
+                        if (word.Text != "]")
+                        {
+                            word.AddError("illegal range");
+                            return null;
+                        }
+                        word.MoveNext();
+                        val.RangeExpression = new RelativeMinusRangeExpression(exp1, exp2);
+                        break;
+                    case "]":
+                        word.MoveNext();
+                        val.RangeExpression = new SingleBitRangeExpression(exp1);
+                        break;
+                    default:
+                        word.AddError("illegal range/dimension");
+                        return null;
+                }
             }
 
             return val;
         }
 
     }
-
+    //  range_expression ::=    expression        
+    //                          | msb_constant_expression : lsb_constant_expression
+    //                          | base_expression +: width_constant_expression
+    //                          | base_expression -: width_constant_expression 
+    //         | hierarchical_identifier          | hierarchical_identifier [ expression ] { [ expression ] }          | hierarchical_identifier [ expression ] { [ expression ] }  [ range_expression ]          | hierarchical_identifier [ range_expression ]  
+    public class RangeExpression
+    {
+        public int BitWidth;
+    }
+    public class SingleBitRangeExpression : RangeExpression
+    {
+        protected SingleBitRangeExpression() { }
+        public SingleBitRangeExpression(Expression expression)
+        {
+            Expression = expression;
+            BitWidth = 1;
+        }
+        public Expression Expression;
+    }
+    public class AbsoluteRangeExpression : RangeExpression
+    {
+        protected AbsoluteRangeExpression() { }
+        public AbsoluteRangeExpression(Expression expression1,Expression expression2)
+        {
+            MsbExpression = expression1;
+            LsbExpression = expression2;
+        }
+        public Expression MsbExpression;
+        public Expression LsbExpression;
+    }
+    public class RelativePlusRangeExpression : RangeExpression
+    {
+        protected RelativePlusRangeExpression() { }
+        public RelativePlusRangeExpression(Expression expression1, Expression expression2)
+        {
+            BaseExpression = expression1;
+            WidthExpression = expression2;
+        }
+        public Expression BaseExpression;
+        public Expression WidthExpression;
+    }
+    public class RelativeMinusRangeExpression : RangeExpression
+    {
+        protected RelativeMinusRangeExpression() { }
+        public RelativeMinusRangeExpression(Expression expression1, Expression expression2)
+        {
+            BaseExpression = expression1;
+            WidthExpression = expression2;
+        }
+        public Expression BaseExpression;
+        public Expression WidthExpression;
+    }
 
 
     public class Bracket : Primary
