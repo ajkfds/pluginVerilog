@@ -8,7 +8,7 @@ namespace pluginVerilog.Verilog
 {
     public class WordPointer
     {
-        public WordPointer(codeEditor.CodeEditor.CodeDocument document, Verilog.ParsedDocument parsedDocument)
+        public WordPointer(codeEditor.CodeEditor.CodeDocument document, codeEditor.CodeEditor.ParsedDocument parsedDocument)
         {
             this.Document = document;
             this.ParsedDocument = parsedDocument;
@@ -22,7 +22,7 @@ namespace pluginVerilog.Verilog
         }
 
         public codeEditor.CodeEditor.CodeDocument Document { get; protected set; }
-        public Verilog.ParsedDocument ParsedDocument { get; protected set; }
+        public codeEditor.CodeEditor.ParsedDocument ParsedDocument { get; protected set; }
 
         protected int index = 0;
         protected int length = 0;
@@ -69,7 +69,9 @@ namespace pluginVerilog.Verilog
         public void AddError(string message)
         {
             if (ParsedDocument == null) return;
-            ParsedDocument.Messages.Add(new Verilog.ParsedDocument.Message(message, Verilog.ParsedDocument.Message.MessageType.Error, index, length, ParsedDocument.ItemID,ParsedDocument.Project));
+            int lineNo = Document.GetLineAt(index);
+
+            ParsedDocument.Messages.Add(new Verilog.ParsedDocument.Message(lineNo.ToString()+" "+ message, Verilog.ParsedDocument.Message.MessageType.Error, index, length, ParsedDocument.ItemID,ParsedDocument.Project));
             for (int i = index; i < index + length; i++)
             {
                 Document.SetMarkAt(i, 0);

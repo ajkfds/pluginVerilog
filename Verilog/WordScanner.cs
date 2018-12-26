@@ -26,7 +26,7 @@ namespace pluginVerilog.Verilog
 
         public WordScanner Clone()
         {
-            WordScanner ret = new WordScanner(wordPointer.Document, wordPointer.ParsedDocument);
+            WordScanner ret = new WordScanner(wordPointer.Document, RootParsedDocument);
             ret.wordPointer = wordPointer.Clone();
             foreach (var wp in stock)
             {
@@ -69,9 +69,14 @@ namespace pluginVerilog.Verilog
         {
             while(wordPointer.Eof && stock.Count != 0)
             {
+                bool error = false;
+                if (wordPointer.ParsedDocument.Messages.Count != 0) error = true;
+
                 wordPointer.Dispose();
                 wordPointer = stock.Last();
                 stock.Remove(stock.Last());
+
+                if(error) wordPointer.AddError("include errors");
             }
 
             wordPointer.MoveNext();
@@ -411,15 +416,15 @@ namespace pluginVerilog.Verilog
                 wordPointer.AddError("illegal filetype");
                 return;
             }
+
             Data.VerilogHeaderFile vhFile = textFile as Data.VerilogHeaderFile;
-
-
-            if(!wordPointer.ParsedDocument.IncludeFiles.ContainsKey(vhFile.ID))
+            if(!RootParsedDocument.IncludeFiles.ContainsKey(vhFile.ID))
             {
-                wordPointer.ParsedDocument.IncludeFiles.Add(vhFile.ID,vhFile);
+                RootParsedDocument.IncludeFiles.Add(vhFile.ID,vhFile);
             }
+            vhFile.ParsedDocument = new codeEditor.CodeEditor.ParsedDocument(RootParsedDocument.Project, id, -1);
 
-            WordPointer newPointer = new WordPointer(vhFile.CodeDocument, wordPointer.ParsedDocument);
+            WordPointer newPointer = new WordPointer(vhFile.CodeDocument, vhFile.ParsedDocument);
             stock.Add(wordPointer);
             wordPointer = newPointer;
             while (!wordPointer.Eof)
