@@ -63,6 +63,7 @@
     <Compile Include="NavigatePanel\VerilogHeaderInstanceNode.cs" />
     <Compile Include="NavigatePanel\VerilogHeaderNode.cs" />
     <Compile Include="ProjectProperty.cs" />
+    <Compile Include="Verilog\Expressions\ExpressionItem.cs" />
     <Compile Include="Verilog\Expressions\String.cs" />
     <Compile Include="Verilog\ModuleItems\ContinuousAssign.cs" />
     <Compile Include="Data\VerilogFile.cs" />
@@ -118,6 +119,14 @@
     <Compile Include="Verilog\Statements\TaskEnable.cs" />
     <Compile Include="Verilog\Task.cs" />
     <Compile Include="Verilog\Variables\Dimension.cs" />
+    <Compile Include="Verilog\Variables\Event.cs" />
+    <Compile Include="Verilog\Variables\Genvar.cs" />
+    <Compile Include="Verilog\Variables\Integer.cs" />
+    <Compile Include="Verilog\Variables\Net.cs" />
+    <Compile Include="Verilog\Variables\Real.cs" />
+    <Compile Include="Verilog\Variables\RealTime.cs" />
+    <Compile Include="Verilog\Variables\Reg.cs" />
+    <Compile Include="Verilog\Variables\Time.cs" />
     <Compile Include="Verilog\Variables\VariableAssignment.cs" />
     <Compile Include="Verilog\Variables\Parameter.cs" />
     <Compile Include="Verilog\Variables\Port.cs" />
