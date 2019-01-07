@@ -24,6 +24,7 @@ namespace pluginVerilog.Verilog.Snippets
             codeDocument.GetWord(prevIndex, out headIndex, out length);
 
             char currentChar = codeDocument.GetCharAt(codeDocument.CaretIndex);
+//            string appendText = ";\r\nbegin\r\nend\r\nendtask";
             string appendText = "\r\nendtask";
             if (currentChar != '\r' && currentChar != '\n')
             {
