@@ -71,7 +71,7 @@ namespace pluginVerilog.Verilog
             if (ParsedDocument == null) return;
             int lineNo = Document.GetLineAt(index);
 
-            ParsedDocument.Messages.Add(new Verilog.ParsedDocument.Message(lineNo.ToString()+" "+ message, Verilog.ParsedDocument.Message.MessageType.Error, index, length, ParsedDocument.ItemID,ParsedDocument.Project));
+            ParsedDocument.Messages.Add(new Verilog.ParsedDocument.Message(message, Verilog.ParsedDocument.Message.MessageType.Error, index,lineNo, length, ParsedDocument.ItemID,ParsedDocument.Project));
             for (int i = index; i < index + length; i++)
             {
                 Document.SetMarkAt(i, 0);
@@ -81,8 +81,9 @@ namespace pluginVerilog.Verilog
         public void AddWarning(string message)
         {
             if (ParsedDocument == null) return;
-            if (ParsedDocument == null) return;
-            ParsedDocument.Messages.Add(new Verilog.ParsedDocument.Message(message, Verilog.ParsedDocument.Message.MessageType.Warning, index, length, ParsedDocument.ItemID, ParsedDocument.Project));
+            int lineNo = Document.GetLineAt(index);
+
+            ParsedDocument.Messages.Add(new Verilog.ParsedDocument.Message(message, Verilog.ParsedDocument.Message.MessageType.Warning, index,lineNo, length, ParsedDocument.ItemID, ParsedDocument.Project));
             for (int i = index; i < index + length; i++)
             {
                 Document.SetMarkAt(i, 1);
@@ -394,7 +395,11 @@ namespace pluginVerilog.Verilog
                 while (document.Length > nextIndex)
                 {
                     document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Comment));
-                    if (document.GetCharAt(nextIndex) == '/' && document.GetCharAt(nextIndex - 1) == '*') break;
+                    if (document.GetCharAt(nextIndex) == '/' && document.GetCharAt(nextIndex - 1) == '*')
+                    {
+                        nextIndex++;
+                        break;
+                    }
                     nextIndex++;
                 }
                 wordType = WordTypeEnum.Comment;
