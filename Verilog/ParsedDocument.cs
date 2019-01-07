@@ -182,16 +182,7 @@ namespace pluginVerilog.Verilog
             }
             if (space == null) return items;
 
-            foreach(Variables.Variable variable in space.Variables.Values)
-            {
-                if(variable is Variables.Net)
-                {
-                    items.Add(newItem(variable.Name, CodeDrawStyle.ColorType.Net));
-                }else if(variable is Variables.Reg)
-                {
-                    items.Add(newItem(variable.Name, CodeDrawStyle.ColorType.Register));
-                }
-            }
+            appendAutoCompleteItems(items, space);
 
             List<string> moduleNameList = projectProperty.GetModuleNameList();
             foreach(string moduleName in moduleNameList)
@@ -207,6 +198,37 @@ namespace pluginVerilog.Verilog
 
             return items;
         }
+        private void appendAutoCompleteItems(List<codeEditor.CodeEditor.AutocompleteItem> items, NameSpace nameSpace)
+        {
+            foreach (Variables.Variable variable in nameSpace.Variables.Values)
+            {
+                if (variable is Variables.Net)
+                {
+                    items.Add(newItem(variable.Name, CodeDrawStyle.ColorType.Net));
+                }
+                else if (variable is Variables.Reg)
+                {
+                    items.Add(newItem(variable.Name, CodeDrawStyle.ColorType.Register));
+                }
+                else if (variable is Variables.Integer)
+                {
+                    items.Add(newItem(variable.Name, CodeDrawStyle.ColorType.Variable));
+                }
+                else if (variable is Variables.Time || variable is Variables.Real || variable is Variables.RealTime || variable is Variables.Integer || variable is Variables.Genvar)
+                {
+                    items.Add(newItem(variable.Name, CodeDrawStyle.ColorType.Variable));
+                }
+            }
+            foreach (Variables.Parameter parameter in nameSpace.Parameters.Values)
+            {
+                items.Add(newItem(parameter.Name, CodeDrawStyle.ColorType.Paramater));
+            }
+            foreach (Variables.Parameter parameter in nameSpace.LocalParameters.Values)
+            {
+                items.Add(newItem(parameter.Name, CodeDrawStyle.ColorType.Paramater));
+            }
+        }
+
         private codeEditor.CodeEditor.AutocompleteItem newItem(string text, CodeDrawStyle.ColorType colorType)
         {
             return new codeEditor.CodeEditor.AutocompleteItem(text, CodeDrawStyle.ColorIndex(colorType), CodeDrawStyle.Color(colorType));
@@ -215,15 +237,17 @@ namespace pluginVerilog.Verilog
 
         public new class Message : codeEditor.CodeEditor.ParsedDocument.Message
         {
-            public Message(string text, MessageType type, int index, int length,string itemID,codeEditor.Data.Project project)
+            public Message(string text, MessageType type, int index, int line,int length,string itemID,codeEditor.Data.Project project)
             {
                 this.Text = text;
                 this.Length = length;
                 this.Index = index;
+                this.Line = line;
                 this.Type = type;
                 this.ItemID = itemID;
                 this.Project = project;
             }
+            public int Line { get; protected set; }
 
             public enum MessageType
             {
@@ -237,6 +261,20 @@ namespace pluginVerilog.Verilog
             public override codeEditor.MessageView.MessageNode CreateMessageNode()
             {
                 MessageView.MessageNode node = new MessageView.MessageNode(this);
+                node.Text = Line.ToString() + " " + node.Text;
+                switch (Type)
+                {
+                    case MessageType.Error:
+                        break;
+                    case MessageType.Warning:
+                        break;
+                    case MessageType.Notice:
+                        break;
+                    case MessageType.Hint:
+                        break;
+                }
+
+
                 return node;
             }
 
