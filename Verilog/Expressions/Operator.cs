@@ -13,6 +13,7 @@ namespace pluginVerilog.Verilog.Expressions
             this.Text = text;
             this.Precedence = precedence;
         }
+
         public readonly string Text = "";
         public readonly byte Precedence;
     }
@@ -79,6 +80,76 @@ namespace pluginVerilog.Verilog.Expressions
                     {
                         return null;
                     }
+                default:
+                    return null;
+            }
+        }
+
+        public Primary Operate(Primary primary)
+        {
+            bool constant = false;
+            double? value = null;
+            int? bitWidth = null;
+
+            if (primary.Constant) constant = true;
+            if (primary.Value != null) value = getValue(Text, (double)primary.Value);
+            if (primary.BitWidth != null) bitWidth = getBitWidth(Text, (int)primary.BitWidth);
+
+            return Primary.Create(constant, value, bitWidth);
+
+        }
+
+        private double? getValue(string text,double value)
+        {
+            switch (text)
+            {
+                // alithmetic operators
+                case "+":
+                    return value;
+                case "-":
+                    return -value;
+
+                // logical negation
+                case "!":
+                    return null;
+
+                // reduction operators
+                case "&":
+                case "|":
+                case "^":
+                case "~^":
+                case "~&":
+                case "~|":
+                case "^~":
+                    return null;
+
+                default:
+                    return null;
+            }
+        }
+
+        private int? getBitWidth(string text,int bitWidth)
+        {
+            switch (text)
+            {
+                // alithmetic operators
+                case "+":
+                case "-":
+                    return bitWidth+1;
+
+                // logical negation
+                case "!":
+                    return bitWidth;
+
+                // reduction operators
+                case "&":
+                case "|":
+                case "^":
+                case "~^":
+                case "~&":
+                case "~|":
+                case "^~":
+                    return 1;
                 default:
                     return null;
             }
@@ -179,6 +250,148 @@ namespace pluginVerilog.Verilog.Expressions
                     return null;
             }
         }
+
+        public Primary Operate(Primary primary1, Primary primary2)
+        {
+            bool constant = false;
+            double? value = null;
+            int? bitWidth = null;
+
+            if (primary1.Constant && primary2.Constant) constant = true;
+            if (primary1.Value != null && primary2.Value != null) value = getValue(Text, (double)primary1.Value, (double)primary2.Value);
+            if (primary1.BitWidth != null && primary2.BitWidth != null) bitWidth = getBitWidth(Text, (int)primary1.BitWidth, (int)primary2.BitWidth);
+
+            return Primary.Create(constant, value, bitWidth);
+        }
+
+        private int? getBitWidth(string operatorText,int bitWidth1,int bitWidth2)
+        {
+            int maxWidth = bitWidth1;
+            if (bitWidth2 > bitWidth1) maxWidth = bitWidth2;
+
+            switch (operatorText)
+            {
+                // alithmetic operator
+                case "+":
+                    return maxWidth + 1;
+                case "-":
+                    return maxWidth;
+                case "*":
+                    return bitWidth1 + bitWidth2;
+                case "/":
+                    return maxWidth;
+                case "**":
+                    return bitWidth1 * bitWidth2;
+
+                // modulus operator
+                case "%":
+                    return maxWidth;
+
+                // relational operators
+                case "<":
+                case ">":
+                case "<=":
+                case ">=":
+                    return 1;
+                // equality operators
+                case "==":
+                case "!=":
+                case "===":
+                case "!==":
+                    return 1;
+                // logical operators
+                case "&&":
+                case "||":
+                    return 1;
+
+                // bit-wise binary operators
+                case "&":
+                case "|":
+                case "^":
+                case "^~":
+                case "~^":
+                    return maxWidth;
+
+                // logical shoft
+                case ">>":
+                case "<<":
+                    return bitWidth1;
+                // alithmetic shift
+                case ">>>":
+                case "<<<":
+                    return bitWidth1;
+
+                default:
+                    return null;
+            }
+
+        }
+
+        private double? getValue(string operatorText, double value1, double value2)
+        {
+            switch (Text)
+            {
+                // alithmetic operator
+                case "+":
+                    return value1 + value2;
+                case "-":
+                    return value1 - value2;
+                case "*":
+                    return value1 * value2;
+                case "/":
+                    return value1 / value2;
+                case "**":
+                    return Math.Pow(value1, value2);
+
+                // modulus operator
+                case "%":
+                    return value1 % value2;
+
+                // relational operators
+                case "<":
+                    return (value1 < value2) ? 1:0;
+                case ">":
+                    return (value1 > value2) ? 1 : 0;
+                case "<=":
+                    return (value1 <= value2) ? 1 : 0;
+                case ">=":
+                    return (value1 >= value2) ? 1 : 0;
+
+                // equality operators
+                case "==":
+                    return (value1 == value2) ? 1 : 0;
+                case "!=":
+                    return (value1 != value2) ? 1 : 0;
+                case "===":
+                    return (value1 == value2) ? 1 : 0;
+                case "!==":
+                    return (value1 != value2) ? 1 : 0;
+
+                // logical operators
+                case "&&":
+                    return (value1 != 0) & (value2 != 0) ? 1 : 0;
+                case "||":
+                    return (value1 != 0) | (value2 != 0) ? 1 : 0;
+
+                // bit-wise binary operators
+                case "&":
+                case "|":
+                case "^":
+                case "^~":
+                case "~^":
+                
+                // logical shoft
+                case ">>":
+                case "<<":
+                // alithmetic shift
+                case ">>>":
+                case "<<<":
+                default:
+                    return null;
+            }
+        }
+
+
     }
 
-}
+    }

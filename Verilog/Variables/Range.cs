@@ -12,6 +12,9 @@ namespace pluginVerilog.Verilog.Variables
 
         public Expressions.Expression MsbBitExpression { get; protected set; }
         public Expressions.Expression LsbBitExpression { get; protected set; }
+        public int? BitWidth { get; protected set; }
+        public bool Constant { get; protected set; }
+
         /*
         A.2.5 Declaration ranges
         dimension ::= [ dimension_constant_expression : dimension_constant_expression ]
@@ -36,7 +39,8 @@ namespace pluginVerilog.Verilog.Variables
                 Range range = new Range();
                 range.MsbBitExpression = msbExpression;
                 range.LsbBitExpression = msbExpression;
-
+                range.BitWidth = 1;
+                range.Constant = msbExpression.Constant;
                 return range;
             }
 
@@ -67,6 +71,22 @@ namespace pluginVerilog.Verilog.Variables
                 Range range = new Range();
                 range.MsbBitExpression = msbExpression;
                 range.LsbBitExpression = lsbExpression;
+
+                if(msbExpression.Value != null && lsbExpression.Value != null)
+                {
+                    range.BitWidth = (int)msbExpression.Value - (int)lsbExpression.Value;
+                }
+
+
+                if (msbExpression.Constant && lsbExpression.Constant)
+                {
+                    range.Constant = true;
+                }
+                else
+                {
+                    range.Constant = false;
+                }
+
 
                 return range;
             }

@@ -8,9 +8,22 @@ namespace pluginVerilog.Verilog.Expressions
 {
     public class Primary : ExpressionItem
     {
-        protected Primary() { }
-        public bool Constant = false;
+        protected Primary() {
+            Constant = false;
+        }
+        public virtual bool Constant { get; protected set; }
+        public virtual double? Value { get; protected set; }
+        public virtual int? BitWidth { get; protected set; }
+//        public bool Signed { get; protected set; }
 
+        public static Primary Create(bool constant, double? value, int? bitWidth)
+        {
+            Primary primary = new Primary();
+            primary.Constant = constant;
+            primary.Value = value;
+            primary.BitWidth = bitWidth;
+            return primary;
+        }
         /*
          * 
          * 
@@ -60,7 +73,6 @@ namespace pluginVerilog.Verilog.Expressions
                     return null;
                 case WordPointer.WordTypeEnum.String:
                     return ConstantString.ParseCreate(word);
-                    break;
                 case WordPointer.WordTypeEnum.Text:
                     {
                         var variable = VariableReference.ParseCreate(word, nameSpace);
@@ -142,6 +154,8 @@ namespace pluginVerilog.Verilog.Expressions
 
             if (word.GetCharAt(0) == '[')
             {
+                word.MoveNext();
+
                 Expression exp1 = Expression.ParseCreate(word, nameSpace);
                 Expression exp2;
                 switch (word.Text)
@@ -186,6 +200,19 @@ namespace pluginVerilog.Verilog.Expressions
                     default:
                         word.AddError("illegal range/dimension");
                         return null;
+                }
+            }
+            else
+            {   // w/o range
+                if (variable is Variables.Reg)
+                {
+                    if(((Variables.Reg)variable).Range != null) val.BitWidth = ((Variables.Reg)variable).Range.BitWidth;
+                    else val.BitWidth = 1;
+                }
+                else if (variable is Variables.Net)
+                {
+                    if (((Variables.Net)variable).Range != null) val.BitWidth = ((Variables.Net)variable).Range.BitWidth;
+                    else val.BitWidth = 1;
                 }
             }
 

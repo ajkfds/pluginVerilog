@@ -10,6 +10,14 @@ namespace pluginVerilog.Verilog.Expressions
     {
         protected Number() { }
 
+        public override bool Constant
+        {
+            get
+            {
+                return true;
+            }
+        }
+
         // A.8.7 Numbers
         // number           ::= decimal_number
         //                      | octal_number
@@ -20,7 +28,7 @@ namespace pluginVerilog.Verilog.Expressions
         //                      | unsigned_number[.unsigned_number] exp [sign] unsigned_number  
         // exp ::= e|E
         // sign ::= + | -
-        
+
         // done!!   decimal_number  ::= unsigned_number 
         //                          | [size] decimal_base unsigned_number
         //                          | [size] decimal_base x_digit { _ }
@@ -54,8 +62,6 @@ namespace pluginVerilog.Verilog.Expressions
 
         public bool Signed = false;
         public NumberTypeEnum NumberType = NumberTypeEnum.Decimal;
-        public double Value = 0;
-        public int BitWidth = 32;
 
         public enum NumberTypeEnum
         {
@@ -130,8 +136,14 @@ namespace pluginVerilog.Verilog.Expressions
                         return null;
                     }
                 }
-                if(sb.Length!=0) number.BitWidth = int.Parse(sb.ToString());
-
+                if (sb.Length != 0)
+                {
+                    int bitWidth;
+                    if (int.TryParse(sb.ToString(), out bitWidth))
+                    {
+                        number.BitWidth = bitWidth;
+                    }
+                }
                 sb.Clear();
                 switch(word.GetCharAt(index))
                 {

@@ -8,10 +8,15 @@ namespace pluginVerilog.Verilog.Expressions
 {
     public class Expression
     {
-        protected Expression() { }
+        protected Expression()
+        {
+            Constant = false;
+        }
 
         public List<ExpressionItem> RpnExpressionItems = new List<ExpressionItem>();
-        public bool Constant = false;
+        public bool Constant { get; protected set; }
+        public double? Value { get; protected set; }
+        public int? BitWidth { get; protected set; }
 
         /*
         A.8.3 Expressions
@@ -56,8 +61,65 @@ namespace pluginVerilog.Verilog.Expressions
             {
                 return null;
             }
+
+            if (expression.RpnExpressionItems.Count == 1 && expression.RpnExpressionItems[0] is Primary)
+            {
+                Primary primary = expression.RpnExpressionItems[0] as Primary;
+                expression.Constant = primary.Constant;
+                expression.Value = primary.Value;
+                expression.BitWidth = primary.BitWidth;
+                return expression;
+            }
+            // parse rpn
+            List<Primary> primaryStock = new List<Primary>();
+            while(expression.RpnExpressionItems.Count > 0)
+            {
+                ExpressionItem item = expression.RpnExpressionItems[0];
+                if (item is Primary)
+                {
+                    primaryStock.Add(item as Primary);
+                }
+                else if (item is BinaryOperator)
+                {
+                    if (primaryStock.Count < 2) return null;
+                    BinaryOperator op = item as BinaryOperator;
+                    Primary primary = op.Operate(primaryStock[0], primaryStock[1]);
+                    primaryStock.RemoveAt(0);
+                    primaryStock.RemoveAt(0);
+                    primaryStock.Add(primary);
+                }
+                else if (item is UnaryOperator)
+                {
+                    if (primaryStock.Count < 1) return null;
+                    UnaryOperator op = item as UnaryOperator;
+                    Primary primary = op.Operate(primaryStock[0]);
+                    primaryStock.RemoveAt(0);
+                    primaryStock.Add(primary);
+                }
+                else
+                {
+                    return null;
+                }
+                expression.RpnExpressionItems.RemoveAt(0);
+            }
+            if(primaryStock.Count == 1)
+            {
+                expression.Constant = primaryStock[0].Constant;
+                expression.BitWidth = primaryStock[0].BitWidth;
+                expression.Value = primaryStock[0].Value;
+            }
+            else
+            {
+                return null;
+            }
+
+
             return expression;
         }
+
+
+
+
 
         public static Expression ParseCreateVariableLValue(WordScanner word, NameSpace nameSpace)
         {
@@ -65,26 +127,82 @@ namespace pluginVerilog.Verilog.Expressions
             List<Operator> operatorsStock = new List<Operator>();
 
             parseVariableLValue(word, nameSpace, expression.RpnExpressionItems, operatorsStock);
+            while (operatorsStock.Count != 0)
+            {
+                expression.RpnExpressionItems.Add(operatorsStock.Last());
+                operatorsStock.RemoveAt(operatorsStock.Count - 1);
+            }
             if (expression.RpnExpressionItems.Count == 0)
             {
                 return null;
             }
+
+            if (expression.RpnExpressionItems.Count == 1 && expression.RpnExpressionItems[0] is Primary)
+            {
+                Primary primary = expression.RpnExpressionItems[0] as Primary;
+                expression.Constant = primary.Constant;
+                expression.Value = primary.Value;
+                expression.BitWidth = primary.BitWidth;
+                return expression;
+            }
+            // parse rpn
+            List<Primary> primaryStock = new List<Primary>();
+            while (expression.RpnExpressionItems.Count > 0)
+            {
+                ExpressionItem item = expression.RpnExpressionItems[0];
+                if (item is Primary)
+                {
+                    primaryStock.Add(item as Primary);
+                }
+                else if (item is BinaryOperator)
+                {
+                    if (primaryStock.Count < 2) return null;
+                    BinaryOperator op = item as BinaryOperator;
+                    Primary primary = op.Operate(primaryStock[0], primaryStock[1]);
+                    primaryStock.RemoveAt(0);
+                    primaryStock.RemoveAt(0);
+                    primaryStock.Add(primary);
+                }
+                else if (item is UnaryOperator)
+                {
+                    if (primaryStock.Count < 1) return null;
+                    UnaryOperator op = item as UnaryOperator;
+                    Primary primary = op.Operate(primaryStock[0]);
+                    primaryStock.RemoveAt(0);
+                    primaryStock.Add(primary);
+                }
+                else
+                {
+                    return null;
+                }
+                expression.RpnExpressionItems.RemoveAt(0);
+            }
+            if (primaryStock.Count == 1)
+            {
+                expression.Constant = primaryStock[0].Constant;
+                expression.BitWidth = primaryStock[0].BitWidth;
+                expression.Value = primaryStock[0].Value;
+            }
+            else
+            {
+                return null;
+            }
+
             return expression;
         }
 
-        private static bool parseExpression(WordScanner word,NameSpace nameSpace,List<ExpressionItem> expressioItems,List<Operator> operatorStock)
+        private static bool parseExpression(WordScanner word,NameSpace nameSpace,List<ExpressionItem> expressionItems,List<Operator> operatorStock)
         {
             Primary primary = Primary.ParseCreate(word, nameSpace);
             if (primary != null)
             {
-                expressioItems.Add(primary);
+                expressionItems.Add(primary);
             }
             else
             {
                 UnaryOperator unaryOperator = UnaryOperator.ParseCreate(word);
                 if (unaryOperator != null)
                 {
-                    AddOperator(unaryOperator, expressioItems, operatorStock);
                     if (word.Eof)
                     {
                         word.AddError("illegal unary Operator");
@@ -96,7 +214,8 @@ namespace pluginVerilog.Verilog.Expressions
                         word.AddError("illegal unary Operator");
                         return false;
                     }
-                    expressioItems.Add(primary);
+                    expressionItems.Add(primary);
+                    AddOperator(unaryOperator, expressionItems, operatorStock);
                 }
                 else
                 {
@@ -111,7 +230,7 @@ namespace pluginVerilog.Verilog.Expressions
                 word.MoveNext();
                 do
                 {
-                    if (!parseExpression(word, nameSpace, expressioItems, operatorStock))
+                    if (!parseExpression(word, nameSpace, expressionItems, operatorStock))
                     {
                         word.AddError("illegal binary Operator");
                         break;
@@ -125,7 +244,7 @@ namespace pluginVerilog.Verilog.Expressions
                         word.AddError(": expected");
                         break;
                     }
-                    if (!parseExpression(word, nameSpace, expressioItems, operatorStock))
+                    if (!parseExpression(word, nameSpace, expressionItems, operatorStock))
                     {
                         word.AddError("illegal binary Operator");
                         break;
@@ -136,9 +255,9 @@ namespace pluginVerilog.Verilog.Expressions
             BinaryOperator binaryOperator = BinaryOperator.ParseCreate(word);
             if (binaryOperator == null) return true;
 
-            AddOperator(binaryOperator, expressioItems, operatorStock);
+            AddOperator(binaryOperator, expressionItems, operatorStock);
 
-            if (!parseExpression(word, nameSpace, expressioItems, operatorStock))
+            if (!parseExpression(word, nameSpace, expressionItems, operatorStock))
             {
                 word.AddError("illegal binary Operator");
             }
@@ -146,12 +265,12 @@ namespace pluginVerilog.Verilog.Expressions
             return true;
         }
 
-        private static bool parseVariableLValue(WordScanner word, NameSpace nameSpace, List<ExpressionItem> expressioItems, List<Operator> operatorStock)
+        private static bool parseVariableLValue(WordScanner word, NameSpace nameSpace, List<ExpressionItem> expressionItems, List<Operator> operatorStock)
         {
             Primary primary = Primary.ParseCreate(word, nameSpace);
             if (primary != null)
             {
-                expressioItems.Add(primary);
+                expressionItems.Add(primary);
             }
             return true;
         }
@@ -172,11 +291,5 @@ namespace pluginVerilog.Verilog.Expressions
         }
 
     }
-
-    public interface ExpressionItem
-    {
-
-    }
-
 
 }
