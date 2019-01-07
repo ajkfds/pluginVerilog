@@ -62,59 +62,10 @@ namespace pluginVerilog.Verilog
             task.BeginIndex = word.RootIndex;
             word.MoveNext();
 
-            // function_declaration::= function[automatic][signed][range_or_type] function_identifier;
-            // function_item_declaration { function_item_declaration }
-            // function_statement
-            // endfunction
-
-            // | function[automatic][signed][range_or_type] function_identifier(function_port_list);
-            // block_item_declaration { block_item_declaration }
-            // function_statement 
-            // endfunction 
-
-            // function_item_declaration::= block_item_declaration | tf_input_declaration; function_port_list::= { attribute_instance }
-            // tf_input_declaration { , { attribute_instance } tf_input_declaration }
-            // range_or_type::= range | integer | real | realtime | time
-
             if (word.Text == "automatic")
             {
                 word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext();
-            }
-
-            bool signed = false;
-            if (word.Text == "signed")
-            {
-                word.Color(CodeDrawStyle.ColorType.Keyword);
-                word.MoveNext();
-                signed = true;
-            }
-
-            Verilog.Variables.Range range = null;
-
-            switch (word.Text)
-            {
-                case "[":
-                    range = Verilog.Variables.Range.ParseCreate(word, task);
-                    break;
-                case "integer":
-                    word.Color(CodeDrawStyle.ColorType.Identifier);
-                    word.MoveNext();
-                    break;
-                case "real":
-                    word.Color(CodeDrawStyle.ColorType.Identifier);
-                    word.MoveNext();
-                    break;
-                case "realtime":
-                    word.Color(CodeDrawStyle.ColorType.Identifier);
-                    word.MoveNext();
-                    break;
-                case "time":
-                    word.Color(CodeDrawStyle.ColorType.Identifier);
-                    word.MoveNext();
-                    break;
-                default:
-                    break;
             }
 
             if (!General.IsIdentifier(word.Text))
@@ -130,9 +81,6 @@ namespace pluginVerilog.Verilog
                 word.AddError("duplicated name");
             }
             word.MoveNext();
-
-            Variables.Reg reg = new Variables.Reg(task.Name, range, signed);
-            task.Variables.Add(reg.Name, reg);
 
 
             /*            A.2.8 Block item declarations
@@ -166,6 +114,12 @@ namespace pluginVerilog.Verilog
                             continue;
                         case "reg":
                             Verilog.Variables.Reg.ParseCreateFromDeclaration(word, task);
+                            continue;
+                        case "integer":
+                            Verilog.Variables.Integer.ParseCreateFromDeclaration(word, task);
+                            continue;
+                        case "real":
+                            Verilog.Variables.Real.ParseCreateFromDeclaration(word, task);
                             continue;
                         default:
                             break;
