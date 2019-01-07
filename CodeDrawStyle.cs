@@ -59,5 +59,42 @@ namespace pluginVerilog
             Identifier = 6,
             Number = 8
         }
+
+        public override Color[] MarkColor
+        {
+            get
+            {
+                return new System.Drawing.Color[8]
+                    {
+                        System.Drawing.Color.FromArgb(128,System.Drawing.Color.Red),    // 0
+                        System.Drawing.Color.FromArgb(128,System.Drawing.Color.Orange), // 1
+                        System.Drawing.Color.Red, // 2
+                        System.Drawing.Color.Red, // 3
+                        System.Drawing.Color.Red, // 4
+                        System.Drawing.Color.Red, // 5
+                        System.Drawing.Color.Red, // 6
+                        System.Drawing.Color.Red  // 7
+                    };
+            }
+        }
+
+        public override ajkControls.CodeTextbox.MarkStyleEnum[] MarkStyle
+        {
+            get
+            {
+                return new ajkControls.CodeTextbox.MarkStyleEnum[8]
+                    {
+                        ajkControls.CodeTextbox.MarkStyleEnum.wave,    // 0
+                        ajkControls.CodeTextbox.MarkStyleEnum.wave,    // 1
+                        ajkControls.CodeTextbox.MarkStyleEnum.underLine,
+                        ajkControls.CodeTextbox.MarkStyleEnum.underLine,
+                        ajkControls.CodeTextbox.MarkStyleEnum.underLine,
+                        ajkControls.CodeTextbox.MarkStyleEnum.underLine,
+                        ajkControls.CodeTextbox.MarkStyleEnum.underLine,
+                        ajkControls.CodeTextbox.MarkStyleEnum.underLine
+                    };
+            }
+        }
+
     }
 }
