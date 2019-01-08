@@ -237,17 +237,17 @@ namespace pluginVerilog.Verilog
 
         public new class Message : codeEditor.CodeEditor.ParsedDocument.Message
         {
-            public Message(string text, MessageType type, int index, int line,int length,string itemID,codeEditor.Data.Project project)
+            public Message(string text, MessageType type, int index, int lineNo,int length,string itemID,codeEditor.Data.Project project)
             {
                 this.Text = text;
                 this.Length = length;
                 this.Index = index;
-                this.Line = line;
+                this.LineNo = lineNo;
                 this.Type = type;
                 this.ItemID = itemID;
                 this.Project = project;
             }
-            public int Line { get; protected set; }
+            public int LineNo { get; protected set; }
 
             public enum MessageType
             {
@@ -261,19 +261,6 @@ namespace pluginVerilog.Verilog
             public override codeEditor.MessageView.MessageNode CreateMessageNode()
             {
                 MessageView.MessageNode node = new MessageView.MessageNode(this);
-                node.Text = Line.ToString() + " " + node.Text;
-                switch (Type)
-                {
-                    case MessageType.Error:
-                        break;
-                    case MessageType.Warning:
-                        break;
-                    case MessageType.Notice:
-                        break;
-                    case MessageType.Hint:
-                        break;
-                }
-
 
                 return node;
             }

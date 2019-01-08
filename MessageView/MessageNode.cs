@@ -11,17 +11,19 @@ namespace pluginVerilog.MessageView
     {
         public MessageNode(Verilog.ParsedDocument.Message message)
         {
-            Text = message.Text;
+            Text = message.LineNo.ToString()+":"+ message.Text;
             this.messageType = message.Type;
             this.index = message.Index;
             this.length = message.Length;
             this.itemID = message.ItemID;
             this.project = message.Project;
+            this.lineNo = message.LineNo;
         }
         Verilog.ParsedDocument.Message.MessageType messageType;
         int index;
         int length;
         string itemID;
+        int lineNo;
         codeEditor.Data.Project project;
 
         public override void Selected()
