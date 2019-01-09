@@ -39,7 +39,15 @@ namespace pluginVerilog.Verilog.Variables
             //                      | trireg[charge_strength][signed][delay3] list_of_net_identifiers;
             //                      | trireg[drive_strength][signed][delay3] list_of_net_decl_assignments;
             //                      | trireg[charge_strength][vectored | scalared][signed] range[delay3] list_of_net_identifiers;          
-            //                      | trireg[drive_strength][vectored | scalared][signed] range[delay3] list_of_net_decl_assignments;              /*
+            //                      | trireg[drive_strength][vectored | scalared][signed] range[delay3] list_of_net_decl_assignments; 
+            //
+            //
+            // list_of_net_decl_assignments ::= net_decl_assignment { , net_decl_assignment }
+            // list_of_net_identifiers      ::= net_identifier [ dimension { dimension }]    { , net_identifier [ dimension { dimension }] }
+            // net_decl_assignment          ::= net_identifier = expression
+            // dimension                    ::= [ dimension_constant_expression : dimension_constant_expression ]
+            // range                        ::= [ msb_constant_expression : lsb_constant_expression ] 
+
             NetTypeEnum netType = NetTypeEnum.Wire;
             switch (word.Text)
             {
@@ -144,6 +152,20 @@ namespace pluginVerilog.Verilog.Variables
 
                 word.Color(CodeDrawStyle.ColorType.Net);
                 word.MoveNext();
+
+                if (word.Text == "=")
+                {
+                    word.MoveNext();
+                    Expressions.Expression initalValue = Expressions.Expression.ParseCreate(word, nameSpace);
+                }
+                else if (word.Text == "[")
+                {
+                    while (word.Text == "[")
+                    {
+                        Dimension dimension = Dimension.ParseCreate(word, nameSpace);
+                        net.dimensions.Add(dimension);
+                    }
+                }
 
                 if (word.GetCharAt(0) != ',') break;
                 word.MoveNext(); // ,

@@ -280,8 +280,9 @@ namespace pluginVerilog.Verilog.Expressions
             index++;
             if (index >= word.Length)
             {
-                word.AddError("illegal binary number");
-                return false;
+                word.MoveNext();
+                index = 0;
+                word.Color(CodeDrawStyle.ColorType.Number);
             }
             if (!isBinaryDigit(word.GetCharAt(index)))
             {
@@ -323,8 +324,9 @@ namespace pluginVerilog.Verilog.Expressions
             index++;
             if (index >= word.Length)
             {
-                word.AddError("illegal octal number");
-                return false;
+                word.MoveNext();
+                index = 0;
+                word.Color(CodeDrawStyle.ColorType.Number);
             }
             if (!isOctalDigit(word.GetCharAt(index)))
             {
@@ -365,8 +367,9 @@ namespace pluginVerilog.Verilog.Expressions
             index++;
             if (index >= word.Length)
             {
-                word.AddError("illegal hex number");
-                return false;
+                word.MoveNext();
+                index = 0;
+                word.Color(CodeDrawStyle.ColorType.Number);
             }
             if (!isHexDigit(word.GetCharAt(index)))
             {

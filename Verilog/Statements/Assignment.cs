@@ -34,6 +34,7 @@ namespace pluginVerilog.Verilog.Statements
                 System.Diagnostics.Debugger.Break();
                 return null;
             }
+            WordScanner equalPointer = word.Clone();
             word.MoveNext();    // <=
 
             if (word.GetCharAt(0) == '#')
@@ -50,6 +51,13 @@ namespace pluginVerilog.Verilog.Statements
             {
                 word.AddError("illegal non blocking assignment");
                 return null;
+            }
+            if (lExpression.BitWidth != null && expression.BitWidth != null)
+            {
+                if (lExpression.BitWidth != expression.BitWidth)
+                {
+                    equalPointer.AddWarning("bitwidth mismatch " + lExpression.BitWidth + " vs " + expression.BitWidth);
+                }
             }
 
             NonBlockingAssignment assignment = new NonBlockingAssignment();
@@ -107,7 +115,7 @@ namespace pluginVerilog.Verilog.Statements
             {
                 if(lExpression.BitWidth != expression.BitWidth)
                 {
-                    equalPointer.AddWarning("bitwidth mismatch");
+                    equalPointer.AddWarning("bitwidth mismatch "+lExpression.BitWidth+" vs "+expression.BitWidth);
                 }
             }
 

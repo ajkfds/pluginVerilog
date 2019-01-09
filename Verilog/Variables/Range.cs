@@ -74,7 +74,7 @@ namespace pluginVerilog.Verilog.Variables
 
                 if(msbExpression.Value != null && lsbExpression.Value != null)
                 {
-                    range.BitWidth = (int)msbExpression.Value - (int)lsbExpression.Value;
+                    range.BitWidth = (int)msbExpression.Value - (int)lsbExpression.Value + 1;
                 }
 
 
