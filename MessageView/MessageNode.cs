@@ -11,7 +11,7 @@ namespace pluginVerilog.MessageView
     {
         public MessageNode(Verilog.ParsedDocument.Message message)
         {
-            Text = message.LineNo.ToString()+":"+ message.Text;
+            Text = "["+message.LineNo.ToString()+"]"+ message.Text;
             this.messageType = message.Type;
             this.index = message.Index;
             this.length = message.Length;
@@ -46,7 +46,7 @@ namespace pluginVerilog.MessageView
                     graphics.DrawImage(icon.GetImage(lineHeight, ajkControls.Icon.ColorStyle.Red), new Point(x, y));
                     break;
                 case Verilog.ParsedDocument.Message.MessageType.Warning:
-                    graphics.DrawImage(icon.GetImage(lineHeight, ajkControls.Icon.ColorStyle.Green), new Point(x, y));
+                    graphics.DrawImage(icon.GetImage(lineHeight, ajkControls.Icon.ColorStyle.Orange), new Point(x, y));
                     break;
                 case Verilog.ParsedDocument.Message.MessageType.Notice:
                     graphics.DrawImage(icon.GetImage(lineHeight, ajkControls.Icon.ColorStyle.Blue), new Point(x, y));
