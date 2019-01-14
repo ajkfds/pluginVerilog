@@ -12,7 +12,7 @@ namespace pluginVerilog.Verilog.Snippets
         public BeginAutoCompleteItem(string text, byte colorIndex, Color color) : base(text,colorIndex,color)
         {
         }
-        public BeginAutoCompleteItem(string text, byte colorIndex, Color color, ajkControls.Icon icon, ajkControls.Icon.ColorStyle iconColorStyle) : base(text,colorIndex,color,icon,iconColorStyle)
+        public BeginAutoCompleteItem(string text, byte colorIndex, Color color, ajkControls.IconImage icon, ajkControls.IconImage.ColorStyle iconColorStyle) : base(text,colorIndex,color,icon,iconColorStyle)
         {
         }
 

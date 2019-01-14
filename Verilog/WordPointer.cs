@@ -269,16 +269,16 @@ namespace pluginVerilog.Verilog
             }
             length = nextIndex - index;
 
-            while (document.Length > nextIndex && document.GetCharAt(nextIndex) < 128 && charClass[document.GetCharAt(nextIndex)] == 0)
-            {
-                nextIndex++;
-            }
+            //while (document.Length > nextIndex && document.GetCharAt(nextIndex) < 128 && charClass[document.GetCharAt(nextIndex)] == 0)
+            //{
+            //    nextIndex++;
+            //}
         }
 
         public static void FetchNextUntilEol(ajkControls.Document document, ref int index, out int length, out int nextIndex, out WordTypeEnum wordType)
         {
             // skip blanks before word
-            while (document.Length > index && document.GetCharAt(index) < 128 && charClass[document.GetCharAt(index)] == 0)
+            while (document.Length > index && ( document.GetCharAt(index)=='\t' || document.GetCharAt(index) == ' '))
             {
                 index++;
             }
@@ -308,10 +308,10 @@ namespace pluginVerilog.Verilog
 
             length = nextIndex - index;
 
-            while (document.Length > nextIndex && document.GetCharAt(nextIndex) < 128 && charClass[document.GetCharAt(index)] == 0)
-            {
-                nextIndex++;
-            }
+            //while (document.Length > nextIndex && document.GetCharAt(nextIndex) < 128 && charClass[document.GetCharAt(index)] == 0)
+            //{
+            //    nextIndex++;
+            //}
         }
 
         private static void fetchNextAtNumber(ajkControls.Document document, ref int nextIndex, ref WordTypeEnum wordType)
@@ -320,7 +320,7 @@ namespace pluginVerilog.Verilog
             while (
                 document.Length > nextIndex &&
                 document.GetCharAt(nextIndex) < 128 &&
-                (charClass[document.GetCharAt(nextIndex)] == 1)
+                (charClass[document.GetCharAt(nextIndex)] == 1) // 0-9
                 )
             {
                 nextIndex++;
@@ -335,7 +335,7 @@ namespace pluginVerilog.Verilog
                     while (
                         document.Length > nextIndex &&
                         document.GetCharAt(nextIndex) < 128 &&
-                        (charClass[document.GetCharAt(nextIndex)] == 1)
+                        (charClass[document.GetCharAt(nextIndex)] == 1) // 0-9
                         )
                     {
                         nextIndex++;
@@ -354,7 +354,7 @@ namespace pluginVerilog.Verilog
                     while (
                         document.Length > nextIndex &&
                         document.GetCharAt(nextIndex) < 128 &&
-                        (charClass[document.GetCharAt(nextIndex)] == 1)
+                        (charClass[document.GetCharAt(nextIndex)] == 1) // 0-9
                         )
                     {
                         nextIndex++;
@@ -365,12 +365,32 @@ namespace pluginVerilog.Verilog
             {
                 nextIndex++;
                 if (document.Length <= nextIndex) return;
+
                 while (
                     document.Length > nextIndex &&
                     document.GetCharAt(nextIndex) < 128 &&
                     (
-                        charClass[document.GetCharAt(nextIndex)] == 1 ||
-                        charClass[document.GetCharAt(nextIndex)] == 2 ||
+                        charClass[document.GetCharAt(nextIndex)] == 1 || // 0-9
+                        charClass[document.GetCharAt(nextIndex)] == 2 || // alphabet
+                        document.GetCharAt(nextIndex) == '?' ||
+                        document.GetCharAt(nextIndex) == 'x' ||
+                        document.GetCharAt(nextIndex) == 'X' ||
+                        document.GetCharAt(nextIndex) == 'z' ||
+                        document.GetCharAt(nextIndex) == 'Z'
+                        )
+                    )
+                {
+                    nextIndex++;
+                }
+            }
+            else
+            {
+                while (
+                    document.Length > nextIndex &&
+                    document.GetCharAt(nextIndex) < 128 &&
+                    (
+                        charClass[document.GetCharAt(nextIndex)] == 1 || // 0-9
+                        charClass[document.GetCharAt(nextIndex)] == 2 || // alphabet
                         document.GetCharAt(nextIndex) == '?' ||
                         document.GetCharAt(nextIndex) == 'x' ||
                         document.GetCharAt(nextIndex) == 'X' ||

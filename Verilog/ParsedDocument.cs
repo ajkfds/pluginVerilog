@@ -58,7 +58,21 @@ namespace pluginVerilog.Verilog
             {
                 if (index < message.Index) continue;
                 if (index > message.Index + message.Length) continue;
-                ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.Red, Global.Icons.ExclamationBox,ajkControls.Icon.ColorStyle.Red));
+                switch (message.Type)
+                {
+                    case Message.MessageType.Error:
+                        ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.Red, Global.Icons.ExclamationBox, ajkControls.IconImage.ColorStyle.Red));
+                        break;
+                    case Message.MessageType.Warning:
+                        ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.Orange, Global.Icons.ExclamationBox, ajkControls.IconImage.ColorStyle.Orange));
+                        break;
+                    case Message.MessageType.Hint:
+                        ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.Blue, Global.Icons.ExclamationBox, ajkControls.IconImage.ColorStyle.Blue));
+                        break;
+                    case Message.MessageType.Notice:
+                        ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.Green, Global.Icons.ExclamationBox, ajkControls.IconImage.ColorStyle.Green));
+                        break;
+                }
             }
 
             NameSpace space = null;

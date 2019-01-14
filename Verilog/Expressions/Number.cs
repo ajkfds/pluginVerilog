@@ -284,6 +284,18 @@ namespace pluginVerilog.Verilog.Expressions
                 index = 0;
                 word.Color(CodeDrawStyle.ColorType.Number);
             }
+
+            bool valueHeadError = false;
+            while(index<word.Length && word.GetCharAt(index) == '_')
+            {
+                valueHeadError = true;
+                index++;
+            }
+            if (valueHeadError)
+            {
+                word.AddWarning("hex_value can't start with _");
+            }
+
             if (!isBinaryDigit(word.GetCharAt(index)))
             {
                 word.AddError("illegal binary digit");
@@ -371,6 +383,15 @@ namespace pluginVerilog.Verilog.Expressions
                 index = 0;
                 word.Color(CodeDrawStyle.ColorType.Number);
             }
+
+            bool hexHeadError = false;
+            while (index < word.Length && word.GetCharAt(index) == '_')
+            {
+                hexHeadError = true;
+                index++;
+            }
+            if(hexHeadError) word.AddError("_ not allowed at head of hex value");
+
             if (!isHexDigit(word.GetCharAt(index)))
             {
                 word.AddError("iilegal hex digit");

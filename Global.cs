@@ -13,10 +13,10 @@ namespace pluginVerilog
 
         public static class Icons
         {
-            public static ajkControls.Icon Exclamation = new ajkControls.Icon(Properties.Resources.exclamation);
-            public static ajkControls.Icon ExclamationBox = new ajkControls.Icon(Properties.Resources.exclamationBox);
-            public static ajkControls.Icon Play = new ajkControls.Icon(Properties.Resources.play);
-            public static ajkControls.Icon Pause = new ajkControls.Icon(Properties.Resources.pause);
+            public static ajkControls.IconImage Exclamation = new ajkControls.IconImage(Properties.Resources.exclamation);
+            public static ajkControls.IconImage ExclamationBox = new ajkControls.IconImage(Properties.Resources.exclamationBox);
+            public static ajkControls.IconImage Play = new ajkControls.IconImage(Properties.Resources.play);
+            public static ajkControls.IconImage Pause = new ajkControls.IconImage(Properties.Resources.pause);
         }
     }
 }

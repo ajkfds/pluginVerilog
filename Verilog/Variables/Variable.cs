@@ -26,14 +26,14 @@ namespace pluginVerilog.Verilog.Variables
             if(variable is Net)
             {
                 color =　CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net);
-                icon = new ajkControls.Icon(Properties.Resources.netBox);
-                iconColorStyle = ajkControls.Icon.ColorStyle.Red;
+                icon = new ajkControls.IconImage(Properties.Resources.netBox);
+                iconColorStyle = ajkControls.IconImage.ColorStyle.Red;
             }
             else if(variable is Reg)
             {
                 color = CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net);
-                icon = new ajkControls.Icon(Properties.Resources.regBox);
-                iconColorStyle = ajkControls.Icon.ColorStyle.Red;
+                icon = new ajkControls.IconImage(Properties.Resources.regBox);
+                iconColorStyle = ajkControls.IconImage.ColorStyle.Red;
             }
             else
             {
@@ -43,8 +43,8 @@ namespace pluginVerilog.Verilog.Variables
         }
 
         private string text;
-        private ajkControls.Icon icon = null;
-        private ajkControls.Icon.ColorStyle iconColorStyle;
+        private ajkControls.IconImage icon = null;
+        private ajkControls.IconImage.ColorStyle iconColorStyle;
         private Color color;
 
         public override Size GetSize(Graphics graphics, Font font)

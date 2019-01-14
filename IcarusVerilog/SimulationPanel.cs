@@ -64,13 +64,21 @@ namespace pluginVerilog.IcarusVerilog
                 filePathList.Add(absolutePath);
             }
 
-            foreach(Verilog.Module module in topParsedDocument.Modules.Values)
+            List<string> includeFileList = new List<string>();
+
+            foreach (Verilog.Module module in topParsedDocument.Modules.Values)
             {
-                appendFiles(filePathList, module, project);
+                appendFiles(filePathList,includeFileList, module, project);
             }
+
+
 
             using (System.IO.StreamWriter sw = new System.IO.StreamWriter(simulationPath + "\\command"))
             {
+                //foreach (string includePath in includeFileList)
+                //{
+                //    sw.WriteLine("+libdir+" + includePath);
+                //}
                 foreach (string absolutePath in filePathList)
                 {
                     sw.WriteLine(absolutePath);
@@ -100,7 +108,7 @@ namespace pluginVerilog.IcarusVerilog
 
         }
 
-        private void appendFiles(List<string> filePathList, Verilog.Module module, codeEditor.Data.Project project)
+        private void appendFiles(List<string> filePathList, List<string> includePathList, Verilog.Module module, codeEditor.Data.Project project)
         {
             string fileId = module.FileId;
             Data.VerilogFile file = project.GetRegisterdItem(fileId) as Data.VerilogFile;
@@ -114,13 +122,14 @@ namespace pluginVerilog.IcarusVerilog
             foreach(var include in file.VerilogParsedDocument.IncludeFiles.Values)
             {
                 string includePath = project.GetAbsolutePath(include.RelativePath);
-                if (!filePathList.Contains(includePath)) filePathList.Add(includePath);
+                includePath = includePath.Substring(0, includePath.LastIndexOf('\\'));
+                if (!includePathList.Contains(includePath)) includePathList.Add(includePath);
             }
 
             foreach(Verilog.ModuleItems.ModuleInstantiation instance in module.ModuleInstantiations.Values)
             {
                 Verilog.Module subModule = project.GetPluginProperty().GetModule(instance.ModuleName);
-                if (subModule != null) appendFiles(filePathList, subModule, project);
+                if (subModule != null) appendFiles(filePathList, includePathList, subModule, project);
             }
 
         }
