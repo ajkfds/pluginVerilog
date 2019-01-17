@@ -358,13 +358,7 @@ namespace pluginVerilog.Verilog
         generated_instantiation ::= (From Annex A -A.4.2) generate { generate_item } endgenerate
         generate_item_or_null ::= generate_item | ;  
         generate_item ::=   generate_conditional_statement | generate_case_statement | generate_loop_statement | generate_block | module_or_generate_item  
-        generate_conditional_statement ::= if ( constant_expression ) generate_item_or_null  [ else generate_item_or_null ]  generate_case_statement ::=  case ( constant_expression )      
-        genvar_case_item { genvar_case_item } endcase  genvar_case_item ::=  constant_expression  { , constant_expression } :      
-        generate_item_or_null  | default [ : ] generate_item_or_null  
-        generate_loop_statement ::=  for ( genvar_assignment ; constant_expression ; genvar_assignment )      
-        begin : generate_block_identifier { generate_item } end 
-        genvar_assignment ::= genvar_identifier = constant_expression  
-        generate_block ::= begin [ : generate_block_identifier ]  { generate_item } end 
+
          */
         private static void parseGenerateItems(WordScanner word, Module module)
         {
@@ -379,6 +373,16 @@ namespace pluginVerilog.Verilog
                         word.Color(CodeDrawStyle.ColorType.Keyword);
                         word.MoveNext();
                         return;
+                    //case "if":
+                    //    break;
+                    //case "case":
+                    //    break;
+                    //case "for":
+                    //    break;
+                    //case "begin":
+                    //    break;
+
+
                     case "endmodule":
                         word.AddError("endgenerate expected");
                         word.MoveNext();
@@ -451,6 +455,7 @@ namespace pluginVerilog.Verilog
                 }
             }
         }
+
 
         /*
         module_item ::= 

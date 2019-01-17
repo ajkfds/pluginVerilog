@@ -15,6 +15,17 @@ namespace pluginVerilog.Verilog.Variables
         public int? BitWidth { get; protected set; }
         public bool Constant { get; protected set; }
 
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("[");
+            sb.Append(MsbBitExpression.ToString());
+            sb.Append(":");
+            sb.Append(LsbBitExpression.ToString());
+            sb.Append("]");
+            return sb.ToString();
+        }
+
         /*
         A.2.5 Declaration ranges
         dimension ::= [ dimension_constant_expression : dimension_constant_expression ]

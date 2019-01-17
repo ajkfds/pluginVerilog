@@ -193,75 +193,139 @@ namespace pluginVerilog.Verilog
                     wordPointer.MoveNext();
                     wordPointer.Color(CodeDrawStyle.ColorType.Identifier);
                     if (RootParsedDocument.Macros.ContainsKey(wordPointer.Text))
-                    {
+                    {   // true
                         wordPointer.MoveNext();
-                        ifDefs.Add(ifdefEnum.ifdefActive);
-                    }
-                    else
-                    {
-                        wordPointer.MoveNext();
-                        while (!wordPointer.Eof)
+                        if (wordPointer.Text == "`else")
                         {
-                            if(wordPointer.WordType == WordPointer.WordTypeEnum.CompilerDirective)
-                            {
-                                if(wordPointer.Text == "`else")
-                                {
-                                    wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
-                                    wordPointer.MoveNext();
-                                    ifDefs.Add(ifdefEnum.ElseActive);
-                                    break;
-                                }else if(wordPointer.Text == "`endif"){
-                                    wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
-                                    wordPointer.MoveNext();
-                                    break;
-                                }else if(wordPointer.Text == "`ifdef")
-                                {
-                                    break;
-                                }
-                            }
+                            wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
                             wordPointer.MoveNext();
                         }
+                    }
+                    else
+                    {   // false
+                        wordPointer.MoveNext();
+                        skip();
+                    }
+                    break;
+                case "`ifndef":
+                    wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
+                    wordPointer.MoveNext();
+                    wordPointer.Color(CodeDrawStyle.ColorType.Identifier);
+                    if (!RootParsedDocument.Macros.ContainsKey(wordPointer.Text))
+                    {   // true
+                        wordPointer.MoveNext();
+                        if (wordPointer.Text == "`else")
+                        {
+                            wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
+                            wordPointer.MoveNext();
+                        }
+                    }
+                    else
+                    {   // false
+                        wordPointer.MoveNext();
+                        skip();
                     }
                     break;
                 case "`else":
                     wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
                     wordPointer.MoveNext();
-                    while (!wordPointer.Eof)
-                    {
-                        if (wordPointer.WordType == WordPointer.WordTypeEnum.CompilerDirective)
-                        {
-                            if (wordPointer.Text == "`else")
-                            {
-                                wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
-                                wordPointer.MoveNext();
-                                ifDefs.Add(ifdefEnum.ElseActive);
-                                break;
-                            }
-                            else if (wordPointer.Text == "`endif")
-                            {
-                                wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
-                                wordPointer.MoveNext();
-                                break;
-                            }
-                        }
-                        wordPointer.MoveNext();
-                    }
+                    skip();
                     break;
                 case "`elsif":
-                case "`ifndef":
+                    wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
+                    wordPointer.MoveNext();
+                    wordPointer.Color(CodeDrawStyle.ColorType.Identifier);
+                    if (RootParsedDocument.Macros.ContainsKey(wordPointer.Text))
+                    {   // true
+                        wordPointer.MoveNext();
+                        if (wordPointer.Text == "`else")
+                        {
+                            wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
+                            wordPointer.MoveNext();
+                        }
+                    }
+                    else
+                    {   // false
+                        wordPointer.MoveNext();
+                        skip();
+                    }
+                    break;
                 case "`line":
                 case "`nounconnected_drive":
                 case "`resetall":
-                case "`timescale":
                 case "`unconnected_drive":
                 case "`undef":
                     wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
                     wordPointer.AddError("unsupported compiler directive");
                     wordPointer.MoveNext();
                     break;
+                case "`timescale":
+                    wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
+                    wordPointer.MoveNextUntilEol();
+                    break;
                 default: // macro call
                     parseMacro();
                     break;
+            }
+        }
+
+        private void skip()
+        {
+            int depth = 0;
+            while (!wordPointer.Eof)
+            {
+                if (wordPointer.WordType == WordPointer.WordTypeEnum.CompilerDirective)
+                {
+                    switch (wordPointer.Text)
+                    {
+                        case "`ifdef":
+                            depth++;
+                            wordPointer.Color(CodeDrawStyle.ColorType.Inactivated);
+                            wordPointer.MoveNext();
+                            break;
+                        case "`ifndef":
+                            depth++;
+                            wordPointer.Color(CodeDrawStyle.ColorType.Inactivated);
+                            wordPointer.MoveNext();
+                            break;
+                        case "`else":
+                            if (depth == 0)
+                            {
+                                wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
+                                wordPointer.MoveNext();
+                                return;
+                            }
+                            else
+                            {
+                                wordPointer.Color(CodeDrawStyle.ColorType.Inactivated);
+                                wordPointer.MoveNext();
+                            }
+                            break;
+                        case "`endif":
+                            if (depth == 0)
+                            {
+                                wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
+                                wordPointer.MoveNext();
+                                return;
+                            }
+                            else
+                            {
+                                depth--;
+                                wordPointer.Color(CodeDrawStyle.ColorType.Inactivated);
+                                wordPointer.MoveNext();
+                            }
+                            break;
+                        default:
+                            wordPointer.Color(CodeDrawStyle.ColorType.Inactivated);
+                            wordPointer.MoveNext();
+                            break;
+                    }
+                }
+                else
+                {
+                    wordPointer.Color(CodeDrawStyle.ColorType.Inactivated);
+                    wordPointer.MoveNext();
+                }
             }
         }
 

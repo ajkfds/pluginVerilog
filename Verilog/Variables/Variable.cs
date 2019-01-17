@@ -25,21 +25,29 @@ namespace pluginVerilog.Verilog.Variables
         {
             if(variable is Net)
             {
+                Net val = variable as Net;
                 color =　CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net);
                 icon = new ajkControls.IconImage(Properties.Resources.netBox);
                 iconColorStyle = ajkControls.IconImage.ColorStyle.Red;
+                text = variable.Name;
             }
             else if(variable is Reg)
             {
+                Reg val = variable as Reg;
                 color = CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net);
                 icon = new ajkControls.IconImage(Properties.Resources.regBox);
                 iconColorStyle = ajkControls.IconImage.ColorStyle.Red;
+                text = variable.Name;
+                if(val.Range != null)
+                {
+                    text = text +" "+ val.Range.ToString();
+                }
             }
             else
             {
                 color = Color.Black;
+                text = variable.Name;
             }
-            text = variable.Name;
         }
 
         private string text;

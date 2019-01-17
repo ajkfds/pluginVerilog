@@ -20,7 +20,7 @@ namespace pluginVerilog.Verilog.Statements
         */
         public static IStatement ParseCreate(WordScanner word, NameSpace nameSpace)
         {
-            if (word.Text != "begin")
+            if (word.Text != "fork")
             {
                 System.Diagnostics.Debugger.Break();
             }

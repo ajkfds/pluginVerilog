@@ -42,7 +42,14 @@ namespace pluginVerilog.Parser
                 if (word.Text == "module")
                 {
                     Verilog.Module module = Verilog.Module.Create(word, null,parsedDocument.ItemID);
-                    parsedDocument.Modules.Add(module.Name, module);
+                    if (!parsedDocument.Modules.ContainsKey(module.Name))
+                    {
+                        parsedDocument.Modules.Add(module.Name, module);
+                    }
+                    else
+                    {
+                        word.AddError("duplicated module name");
+                    }
                 }
                 else
                 {

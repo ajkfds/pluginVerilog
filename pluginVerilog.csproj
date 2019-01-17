@@ -65,6 +65,7 @@
     <Compile Include="ProjectProperty.cs" />
     <Compile Include="Verilog\Expressions\ExpressionItem.cs" />
     <Compile Include="Verilog\Expressions\String.cs" />
+    <Compile Include="Verilog\Generate.cs" />
     <Compile Include="Verilog\ModuleItems\ContinuousAssign.cs" />
     <Compile Include="Data\VerilogFile.cs" />
     <Compile Include="Data\VerilogHeaderFile.cs" />

@@ -75,10 +75,10 @@ namespace pluginVerilog.IcarusVerilog
 
             using (System.IO.StreamWriter sw = new System.IO.StreamWriter(simulationPath + "\\command"))
             {
-                //foreach (string includePath in includeFileList)
-                //{
-                //    sw.WriteLine("+libdir+" + includePath);
-                //}
+                foreach (string includePath in includeFileList)
+                { 
+                    sw.WriteLine("+libdir+\"" + includePath + "\"");
+                }
                 foreach (string absolutePath in filePathList)
                 {
                     sw.WriteLine(absolutePath);

@@ -44,7 +44,7 @@ namespace pluginVerilog
         public static bool IsIdentifier(string value)
         {
             // identifier::= simple_identifier | escaped_identifier
-            if (value.Length <= 1) return false;
+            if (value.Length < 1) return false;
             if (value[0] == '\\') return true;  // escaped identifier
 
             // simple identifier

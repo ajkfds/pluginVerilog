@@ -18,6 +18,25 @@ namespace pluginVerilog.Verilog.Expressions
         public double? Value { get; protected set; }
         public int? BitWidth { get; protected set; }
 
+        public override string ToString()
+        {
+            if (Constant)
+            {
+                if (Value == null)
+                {
+                    return "?";
+                }
+                else
+                {
+                    return ((double)Value).ToString();
+                }
+            }
+            else
+            {
+                return "x";
+            }
+        }
+
         /*
         A.8.3 Expressions
         base_expression                 ::= expression

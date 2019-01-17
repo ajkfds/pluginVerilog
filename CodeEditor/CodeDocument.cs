@@ -27,6 +27,7 @@ namespace pluginVerilog.CodeEditor
                 headIndex--;
             }
             headIndex++;
+            if (index < headIndex) headIndex = index;
 
             int nextIndex;
             Verilog.WordPointer.WordTypeEnum wordType;

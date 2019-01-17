@@ -118,6 +118,7 @@ namespace pluginVerilog.Verilog.Expressions
         public string VariableName { get; protected set; }
         public RangeExpression RangeExpression { get; protected set; }
         public List<Expression> Dimensions = new List<Expression>();
+        public Variables.Variable Variable = null;
 
         public new static VariableReference ParseCreate(WordScanner word,NameSpace nameSpace)
         {
@@ -126,6 +127,7 @@ namespace pluginVerilog.Verilog.Expressions
 
             VariableReference val = new VariableReference();
             val.VariableName = variable.Name;
+            val.Variable = variable;
 
             if(variable is Variables.Reg)
             {
