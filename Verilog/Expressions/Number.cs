@@ -119,6 +119,7 @@ namespace pluginVerilog.Verilog.Expressions
             { // decimal
                 number.NumberType = NumberTypeEnum.Decimal;
                 number.Value = int.Parse(sb.ToString());
+                number.Constant = true;
                 word.MoveNext();
                 return number;
             }

@@ -27,6 +27,7 @@ namespace pluginVerilog.Verilog
         protected int index = 0;
         protected int length = 0;
         protected int nextIndex;
+
         protected WordTypeEnum wordType = WordTypeEnum.Eof;
 
         public enum WordTypeEnum
@@ -78,6 +79,28 @@ namespace pluginVerilog.Verilog
             }
         }
 
+        public void AddError(WordReference fromReference, string message)
+        {
+            if (ParsedDocument == null) return;
+            int lineNo = Document.GetLineAt(index);
+
+            ParsedDocument.Messages.Add(new Verilog.ParsedDocument.Message(message, Verilog.ParsedDocument.Message.MessageType.Error, index, lineNo, length, ParsedDocument.ItemID, ParsedDocument.Project));
+            if (fromReference.Document == Document)
+            {
+                for (int i = fromReference.Index; i < index + length; i++)
+                {
+                    Document.SetMarkAt(i, 0);
+                }
+            }
+            else
+            {
+                for (int i = index; i < index + length; i++)
+                {
+                    Document.SetMarkAt(i, 0);
+                }
+            }
+        }
+
         public void AddWarning(string message)
         {
             if (ParsedDocument == null) return;
@@ -87,6 +110,28 @@ namespace pluginVerilog.Verilog
             for (int i = index; i < index + length; i++)
             {
                 Document.SetMarkAt(i, 1);
+            }
+        }
+
+        public void AddWarning(WordReference fromReference, string message)
+        {
+            if (ParsedDocument == null) return;
+            int lineNo = Document.GetLineAt(index);
+
+            ParsedDocument.Messages.Add(new Verilog.ParsedDocument.Message(message, Verilog.ParsedDocument.Message.MessageType.Warning, index, lineNo, length, ParsedDocument.ItemID, ParsedDocument.Project));
+            if (fromReference.Document == Document)
+            {
+                for (int i = fromReference.Index; i < index + length; i++)
+                {
+                    Document.SetMarkAt(i, 1);
+                }
+            }
+            else
+            {
+                for (int i = index; i < index + length; i++)
+                {
+                    Document.SetMarkAt(i, 1);
+                }
             }
         }
 

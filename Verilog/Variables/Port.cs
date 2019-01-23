@@ -223,31 +223,37 @@ namespace pluginVerilog.Verilog.Variables
                 range = Range.ParseCreate(word, module);
             }
 
-            if (!General.IsIdentifier(word.Text)) return;
-            Net net = new Net();
-            net.Name = word.Text;
-            net.Range = range;
-            word.Color(CodeDrawStyle.ColorType.Net);
-            net.Signed = signed;
-            if (netType != null) net.NetType = (Net.NetTypeEnum)netType;
-            variables.Add(net);
-            word.MoveNext();
-
-            while (!word.Eof & word.GetCharAt(0) == ',')
+            while (!word.Eof)
             {
-                string next = word.NextText;
-                if (next == "input" || next == "output" || next == "inout")
-                {
-                    break;
-                }
-                word.MoveNext(); // ,
-                if (!General.IsIdentifier(word.Text)) break;
-                net = new Net();
+                if (!General.IsIdentifier(word.Text)) return;
+
+                Net net = new Net();
                 net.Name = word.Text;
+                net.Range = range;
                 net.Signed = signed;
                 if (netType != null) net.NetType = (Net.NetTypeEnum)netType;
                 variables.Add(net);
+                word.Color(CodeDrawStyle.ColorType.Net);
+                word.MoveNext();
+
+                if (word.GetCharAt(0) == ',')
+                {
+                    string next = word.NextText;
+                    if (next == "input" || next == "output" || next == "inout")
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        word.MoveNext(); // ,
+                    }
+                }
+                else
+                {
+                    break;
+                }
             }
+
         }
 
         private static void parseInoutDeclaration(WordScanner word, Module module, Attribute attribute, out List<Variable> variables)
@@ -275,31 +281,36 @@ namespace pluginVerilog.Verilog.Variables
                 range = Range.ParseCreate(word, module);
             }
 
-            if (!General.IsIdentifier(word.Text)) return;
-            Net net = new Net();
-            net.Name = word.Text;
-            net.Range = range;
-            word.Color(CodeDrawStyle.ColorType.Net);
-            net.Signed = signed;
-            if (netType != null) net.NetType = (Net.NetTypeEnum)netType;
-            variables.Add(net);
-            word.MoveNext();
 
-            while (!word.Eof & word.GetCharAt(0) == ',')
+            while (!word.Eof)
             {
-                string next = word.NextText;
-                if(next == "input" || next == "output" || next == "inout")
-                {
-                    break;
-                }
+                if (!General.IsIdentifier(word.Text)) return;
 
-                word.MoveNext(); // ,
-                if (!General.IsIdentifier(word.Text)) break;
-                net = new Net();
+                Net net = new Net();
                 net.Name = word.Text;
+                net.Range = range;
                 net.Signed = signed;
                 if (netType != null) net.NetType = (Net.NetTypeEnum)netType;
                 variables.Add(net);
+                word.Color(CodeDrawStyle.ColorType.Net);
+                word.MoveNext();
+
+                if (word.GetCharAt(0) == ',')
+                {
+                    string next = word.NextText;
+                    if (next == "input" || next == "output" || next == "inout")
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        word.MoveNext(); // ,
+                    }
+                }
+                else
+                {
+                    break;
+                }
             }
         }
 

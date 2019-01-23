@@ -104,6 +104,7 @@ namespace pluginVerilog.Verilog.Expressions
 
             ParameterReference val = new ParameterReference();
             val.ParameterName = word.Text;
+            val.Constant = true;
 
             word.Color(CodeDrawStyle.ColorType.Paramater);
             word.MoveNext();
@@ -215,6 +216,9 @@ namespace pluginVerilog.Verilog.Expressions
                 {
                     if (((Variables.Net)variable).Range != null) val.BitWidth = ((Variables.Net)variable).Range.BitWidth;
                     else val.BitWidth = 1;
+                }else if(variable is Variables.Genvar)
+                {
+                    val.Constant = true;
                 }
             }
 

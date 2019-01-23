@@ -35,6 +35,23 @@ namespace pluginVerilog.Verilog
             return ret;
         }
 
+        public WordReference GetReference()
+        {
+            return new WordReference(wordPointer.Document, wordPointer.ParsedDocument, wordPointer.Index, wordPointer.Length);
+        }
+
+        public WordReference GetReference(WordReference fromReference)
+        { 
+            if(fromReference.Document == wordPointer.Document)
+            {
+                return new WordReference(wordPointer.Document, wordPointer.ParsedDocument, fromReference.Index, wordPointer.Index + wordPointer.Length - fromReference.Index);
+            }
+            else
+            {
+                return new WordReference(wordPointer.Document, wordPointer.ParsedDocument, fromReference.Index, fromReference.Document.Length - fromReference.Index);
+            }
+        }
+
         public void Color(CodeDrawStyle.ColorType colorType)
         {
             wordPointer.Color(colorType);

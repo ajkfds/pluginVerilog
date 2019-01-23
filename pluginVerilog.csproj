@@ -63,6 +63,7 @@
     <Compile Include="NavigatePanel\VerilogHeaderInstanceNode.cs" />
     <Compile Include="NavigatePanel\VerilogHeaderNode.cs" />
     <Compile Include="ProjectProperty.cs" />
+    <Compile Include="Verilog\Delay.cs" />
     <Compile Include="Verilog\Expressions\ExpressionItem.cs" />
     <Compile Include="Verilog\Expressions\String.cs" />
     <Compile Include="Verilog\Generate.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="FileTypes\VerilogHeaderFile.cs" />
     <Compile Include="Verilog\Function.cs" />
     <Compile Include="Verilog\ModuleItems\AlwaysConstruct.cs" />
+    <Compile Include="Verilog\ModuleItems\GateInstantialtion.cs" />
     <Compile Include="Verilog\ModuleItems\InitialConstruct.cs" />
     <Compile Include="Verilog\ModuleItems\ModuleInstantiation.cs" />
     <Compile Include="NavigatePanel\VerilogFileNode.cs" />
@@ -118,6 +120,7 @@
     <Compile Include="Verilog\Statements\ParallelBlock.cs" />
     <Compile Include="Verilog\Statements\ProceduralTimingControlStatement.cs" />
     <Compile Include="Verilog\Statements\TaskEnable.cs" />
+    <Compile Include="Verilog\Strength.cs" />
     <Compile Include="Verilog\Task.cs" />
     <Compile Include="Verilog\Variables\Dimension.cs" />
     <Compile Include="Verilog\Variables\Event.cs" />
@@ -139,6 +142,7 @@
     <Compile Include="Verilog\Statements\TimingControlStatements.cs" />
     <Compile Include="Verilog\Variables\Variable.cs" />
     <Compile Include="Verilog\WordPointer.cs" />
+    <Compile Include="Verilog\WordReference.cs" />
     <Compile Include="Verilog\WordScanner.cs" />
   </ItemGroup>
   <ItemGroup>

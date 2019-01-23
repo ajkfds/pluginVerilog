@@ -341,10 +341,17 @@ namespace pluginVerilog.Verilog
                         Task.Parse(word, module);
                         break;
                     case "generate":
-                        parseGenerateItems(word, module);
+                        word.Color(CodeDrawStyle.ColorType.Keyword);
+                        word.MoveNext();
+                        ParseGenerateItems(word, module);
                         if(word.Text != "endgenerate")
                         {
                             word.AddError("endgenerate expected");
+                        }
+                        else
+                        {
+                            word.Color(CodeDrawStyle.ColorType.Keyword);
+                            word.MoveNext();
                         }
                         break;
                     default:
@@ -360,33 +367,29 @@ namespace pluginVerilog.Verilog
         generate_item ::=   generate_conditional_statement | generate_case_statement | generate_loop_statement | generate_block | module_or_generate_item  
 
          */
-        private static void parseGenerateItems(WordScanner word, Module module)
+        public static void ParseGenerateItems(WordScanner word, Module module)
         {
-            word.Color(CodeDrawStyle.ColorType.Keyword);
-            word.MoveNext();
-
             while (!word.Eof)
             {
                 switch (word.Text)
                 {
                     case "endgenerate":
-                        word.Color(CodeDrawStyle.ColorType.Keyword);
-                        word.MoveNext();
+                        return;
+                    case "end":
                         return;
                     //case "if":
                     //    break;
                     //case "case":
                     //    break;
-                    //case "for":
-                    //    break;
-                    //case "begin":
-                    //    break;
-
+                    case "for":
+                        Generate.ParseGenerateLoopStatement(word, module);
+                        break;
+                        //case "begin":
+                        //    break;
 
                     case "endmodule":
                         word.AddError("endgenerate expected");
-                        word.MoveNext();
-                        return;
+                        break;
                     case "input":
                     case "output":
                     case "inout":
@@ -449,10 +452,37 @@ namespace pluginVerilog.Verilog
                     case "task":
                         Task.Parse(word, module);
                         break;
+                    case "cmos":
+                    case "rcmos":
+                    case "bufif0":
+                    case "bufif1":
+                    case "notif0":
+                    case "notif1":
+                    case "nmos":
+                    case "pmos":
+                    case "rnmos":
+                    case "rpmos":
+                    case "and":
+                    case "nand":
+                    case "or":
+                    case "nor":
+                    case "xor":
+                    case "xnor":
+                    case "buf":
+                    case "not":
+                    case "tranif0":
+                    case "tranif1":
+                    case "rtranif0":
+                    case "rtranif1":
+                    case "tran":
+                    case "rtran":
+                        ModuleItems.GateInstantialtion.ParseCreate(word, module);
+                        break;
                     default:
                         ModuleItems.ModuleInstantiation.Parse(word, module);
                         break;
                 }
+
             }
         }
 

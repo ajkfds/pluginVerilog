@@ -8,7 +8,7 @@ namespace pluginVerilog.Verilog
 {
     public class Generate
     {
-        private static void parseGenerateLoopStatement(WordScanner word, NameSpace nameSpace)
+        public static void ParseGenerateLoopStatement(WordScanner word, Module module)
         {
             // generate_loop_statement::=  for (genvar_assignment; constant_expression; genvar_assignment) begin : generate_block_identifier { generate_item } end
             word.Color(CodeDrawStyle.ColorType.Keyword);
@@ -21,7 +21,7 @@ namespace pluginVerilog.Verilog
             }
             word.MoveNext();
 
-            if(!parseGenvarAssignment(word, nameSpace))
+            if(!parseGenvarAssignment(word, module))
             {
                 return;
             }
@@ -33,11 +33,11 @@ namespace pluginVerilog.Verilog
             }
             word.MoveNext();
 
-            Expressions.Expression constant = Expressions.Expression.ParseCreate(word, nameSpace);
+            Expressions.Expression constant = Expressions.Expression.ParseCreate(word, module);
             if (constant == null) return;
             if (!constant.Constant)
             {
-                word.AddError("should be constant");
+                constant.Reference.AddError("should be constant");
             }
 
             if (word.Text != ";")
@@ -47,7 +47,53 @@ namespace pluginVerilog.Verilog
             }
             word.MoveNext();
 
+            if (!parseGenvarAssignment(word, module))
+            {
+                return;
+            }
 
+            if (word.Text != ")")
+            {
+                word.AddError(") expected");
+                return;
+            }
+            word.MoveNext();
+
+            if (word.Text != "begin")
+            {
+                word.AddError("begin expected");
+                return;
+            }
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext();
+
+            if (word.Text != ":")
+            {
+                word.AddError(": required");
+                return;
+            }
+            word.MoveNext();
+
+            if (!General.IsIdentifier(word.Text))
+            {
+                word.AddError("identifier required");
+                return;
+            }
+            word.Color(CodeDrawStyle.ColorType.Identifier);
+            word.MoveNext();
+
+            Module.ParseGenerateItems(word, module);
+
+            if(word.Text == "end")
+            {
+                word.Color(CodeDrawStyle.ColorType.Keyword);
+                word.MoveNext();
+                return;
+            }
+            else
+            {
+                word.AddError("end required");
+            }
         }
 
         private static bool parseGenvarAssignment(WordScanner word, NameSpace nameSpace)

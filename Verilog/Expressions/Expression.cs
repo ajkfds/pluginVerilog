@@ -17,6 +17,7 @@ namespace pluginVerilog.Verilog.Expressions
         public bool Constant { get; protected set; }
         public double? Value { get; protected set; }
         public int? BitWidth { get; protected set; }
+        public WordReference Reference { get; protected set; }
 
         public override string ToString()
         {
@@ -69,8 +70,10 @@ namespace pluginVerilog.Verilog.Expressions
         {
             Expression expression = new Expression();
             List<Operator> operatorsStock = new List<Operator>();
+            WordReference reference = word.GetReference();
 
-            parseExpression(word, nameSpace, expression.RpnExpressionItems, operatorsStock);
+            parseExpression(word, nameSpace, expression.RpnExpressionItems, operatorsStock,ref reference);
+            expression.Reference = reference;
             while(operatorsStock.Count != 0)
             {
                 expression.RpnExpressionItems.Add(operatorsStock.Last());
@@ -210,8 +213,9 @@ namespace pluginVerilog.Verilog.Expressions
             return expression;
         }
 
-        private static bool parseExpression(WordScanner word,NameSpace nameSpace,List<ExpressionItem> expressionItems,List<Operator> operatorStock)
+        private static bool parseExpression(WordScanner word,NameSpace nameSpace,List<ExpressionItem> expressionItems,List<Operator> operatorStock,ref WordReference reference)
         {
+            reference = word.GetReference(reference);
             Primary primary = Primary.ParseCreate(word, nameSpace);
             if (primary != null)
             {
@@ -249,7 +253,7 @@ namespace pluginVerilog.Verilog.Expressions
                 word.MoveNext();
                 do
                 {
-                    if (!parseExpression(word, nameSpace, expressionItems, operatorStock))
+                    if (!parseExpression(word, nameSpace, expressionItems, operatorStock,ref reference))
                     {
                         word.AddError("illegal binary Operator");
                         break;
@@ -263,7 +267,7 @@ namespace pluginVerilog.Verilog.Expressions
                         word.AddError(": expected");
                         break;
                     }
-                    if (!parseExpression(word, nameSpace, expressionItems, operatorStock))
+                    if (!parseExpression(word, nameSpace, expressionItems, operatorStock, ref reference))
                     {
                         word.AddError("illegal binary Operator");
                         break;
@@ -276,7 +280,7 @@ namespace pluginVerilog.Verilog.Expressions
 
             AddOperator(binaryOperator, expressionItems, operatorStock);
 
-            if (!parseExpression(word, nameSpace, expressionItems, operatorStock))
+            if (!parseExpression(word, nameSpace, expressionItems, operatorStock, ref reference))
             {
                 word.AddError("illegal binary Operator");
             }
