@@ -120,6 +120,44 @@ namespace pluginVerilog.Verilog
             return true;
         }
 
+        public static void ParseGenerateConditionalStatement(WordScanner word, Module module)
+        {
+            // generate_conditional_statement::= if (constant_expression ) generate_item_or_null[ else generate_item_or_null]
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext();
+
+            if(word.Text != "(")
+            {
+                word.AddError("( required");
+                return;
+            }
+            word.MoveNext();
+
+            Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
+            if (!expression.Constant)
+            {
+                word.AddError("should be constant");
+            }
+
+            if (word.Text != ")")
+            {
+                word.AddError(") required");
+                return;
+            }
+            word.MoveNext();
+
+            Module.ParseGenerateItem(word, module);
+
+            if(word.Text == "else")
+            {
+                word.Color(CodeDrawStyle.ColorType.Keyword);
+                word.MoveNext();
+
+                Module.ParseGenerateItem(word, module);
+            }
+
+        }
+
 
         // generate_loop_statement ::=  for ( genvar_assignment ; constant_expression ; genvar_assignment ) begin : generate_block_identifier { generate_item } end 
         //        generate_conditional_statement::= if (constant_expression ) generate_item_or_null[ else generate_item_or_null]

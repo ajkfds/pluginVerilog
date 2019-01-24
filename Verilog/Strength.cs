@@ -36,6 +36,26 @@ namespace pluginVerilog.Verilog
 
         public static DriveStrength ParseCreate(WordScanner word, NameSpace nameSpace)
         {
+            string nextText = word.NextText;
+
+            if (word.Text != "(") return null;
+            switch (nextText)
+            {
+                case "supply0":
+                case "strong0":
+                case "pull0":
+                case "weak0":
+                case "supply1":
+                case "strong1":
+                case "pull1":
+                case "weak1":
+                case "highz0":
+                case "highz1":
+                    break;
+                default:
+                    return null;
+            }
+
             word.MoveNext(); // (
             DriveStrength ret = new DriveStrength();
             Strengths? strength;

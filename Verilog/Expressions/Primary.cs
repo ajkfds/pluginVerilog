@@ -151,8 +151,15 @@ namespace pluginVerilog.Verilog.Expressions
                     word.AddError("lacked dimension");
                     break;
                 }
+                word.MoveNext();
                 Expression exp = Expression.ParseCreate(word, nameSpace);
                 val.Dimensions.Add(exp);
+                if (word.GetCharAt(0) != ']')
+                {
+                    word.AddError("illegal dimension");
+                    break;
+                }
+                word.MoveNext();
             }
 
             if (word.GetCharAt(0) == '[')
@@ -317,6 +324,9 @@ namespace pluginVerilog.Verilog.Expressions
             word.MoveNext();
             Bracket bracket = new Bracket();
             bracket.Expression = exp1;
+            bracket.Constant = exp1.Constant;
+            bracket.BitWidth = exp1.BitWidth;
+            bracket.Value = exp1.Value;
             return bracket;
         }
     }

@@ -18,7 +18,7 @@ namespace pluginVerilog.Verilog
 
         public static Delay2 ParseCreate(WordScanner word, NameSpace nameSpace)
         {
-            System.Diagnostics.Debug.Assert(word.Text == "#");
+            if (word.Text != "#") return null;
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
@@ -63,7 +63,7 @@ namespace pluginVerilog.Verilog
 
         public static Delay3 ParseCreate(WordScanner word, NameSpace nameSpace)
         {
-            System.Diagnostics.Debug.Assert(word.Text == "#");
+            if (word.Text != "#") return null;
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 

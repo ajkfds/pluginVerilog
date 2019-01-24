@@ -76,7 +76,16 @@ namespace pluginVerilog.Verilog.ModuleItems
                 case "xor":
                 case "xnor":
                     // n_input_gatetype     ::= and | nand | or | nor | xor | xnor 
-                    break;
+                    NInputGate ngate = NInputGate.ParseCreate(word, module);
+                    if(word.Text != ";")
+                    {
+                        word.AddError("; required");
+                    }
+                    else
+                    {
+                        word.MoveNext();
+                    }
+                    return ngate;
                 case "buf":
                 case "not":
                     // n_output_gatetype    ::= buf | not 
@@ -126,4 +135,52 @@ namespace pluginVerilog.Verilog.ModuleItems
             return null;
         }
     }
+
+    public class NInputGate : GateInstantialtion
+    {
+        protected NInputGate() { }
+
+        Delay2 Delay2;
+        DriveStrength DriveStrength;
+
+        //  n_input_gatetype  [drive_strength]        [delay2]    n_input_gate_instance       {, n_input_gate_instance }; 
+        public static new NInputGate ParseCreate(WordScanner word, Module module)
+        {
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext();
+
+            NInputGate ret = new NInputGate();
+
+            ret.DriveStrength = DriveStrength.ParseCreate(word, module);
+            ret.Delay2 = Delay2.ParseCreate(word, module);
+
+            while (!word.Eof)
+            {
+                if (General.IsIdentifier(word.Text))
+                {
+                    word.Color(CodeDrawStyle.ColorType.Identifier);
+                    word.MoveNext();
+                }
+                if (word.Text != "(") return null;
+                word.MoveNext();
+
+                while (!word.Eof)
+                {
+                    Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
+                    if(word.Text != ",")
+                    {
+                        break;
+                    }
+                    word.MoveNext();
+                }
+                if (word.Text != ")") return null;
+                word.MoveNext();
+            }
+
+            // n_input_gate_instance            ::= [name_of_gate_instance] (output_terminal, input_terminal { , input_terminal } ) 
+
+            return ret;
+        }
+    }
+
 }

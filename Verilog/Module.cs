@@ -371,122 +371,128 @@ namespace pluginVerilog.Verilog
         {
             while (!word.Eof)
             {
-                switch (word.Text)
-                {
-                    case "endgenerate":
-                        return;
-                    case "end":
-                        return;
-                    //case "if":
-                    //    break;
-                    //case "case":
-                    //    break;
-                    case "for":
-                        Generate.ParseGenerateLoopStatement(word, module);
-                        break;
-                        //case "begin":
-                        //    break;
-
-                    case "endmodule":
-                        word.AddError("endgenerate expected");
-                        break;
-                    case "input":
-                    case "output":
-                    case "inout":
-                        Verilog.Variables.Port.ParsePortDeclaration(word, module, null);
-                        if (word.GetCharAt(0) != ';')
-                        {
-                            word.AddError("; expected");
-                        }
-                        else
-                        {
-                            word.MoveNext();
-                        }
-                        break;
-                    case "reg":
-                        Verilog.Variables.Reg.ParseCreateFromDeclaration(word, module);
-                        break;
-                    case "supply0":
-                    case "supply1":
-                    case "tri":
-                    case "triand":
-                    case "trior":
-                    case "tri0":
-                    case "tri1":
-                    case "wire":
-                    case "wand":
-                    case "wor":
-                        Verilog.Variables.Net.ParseCreateFromDeclaration(word, module);
-                        break;
-                    case "integer":
-                        Verilog.Variables.Integer.ParseCreateFromDeclaration(word, module);
-                        break;
-                    case "real":
-                        Verilog.Variables.Real.ParseCreateFromDeclaration(word, module);
-                        break;
-                    case "realtime":
-                        Verilog.Variables.RealTime.ParseCreateFromDeclaration(word, module);
-                        break;
-                    case "time":
-                        Verilog.Variables.Time.ParseCreateFromDeclaration(word, module);
-                        break;
-                    case "event":
-                        Verilog.Variables.Event.ParseCreateFromDeclaration(word, module);
-                        break;
-                    case "genvar":
-                        Verilog.Variables.Genvar.ParseCreateFromDeclaration(word, module);
-                        break;
-                    case "always":
-                        ModuleItems.AlwaysConstruct always = ModuleItems.AlwaysConstruct.ParseCreate(word, module);
-                        break;
-                    case "parameter":
-                    case "localparam":
-                        Verilog.Variables.Parameter.ParseCreateDeclaration(word, module, null);
-                        break;
-                    case "assign":
-                        ModuleItems.ContinuousAssign continuousAssign = ModuleItems.ContinuousAssign.ParseCreate(word, module);
-                        break;
-                    case "function":
-                        Function.Parse(word, module);
-                        break;
-                    case "task":
-                        Task.Parse(word, module);
-                        break;
-                    case "cmos":
-                    case "rcmos":
-                    case "bufif0":
-                    case "bufif1":
-                    case "notif0":
-                    case "notif1":
-                    case "nmos":
-                    case "pmos":
-                    case "rnmos":
-                    case "rpmos":
-                    case "and":
-                    case "nand":
-                    case "or":
-                    case "nor":
-                    case "xor":
-                    case "xnor":
-                    case "buf":
-                    case "not":
-                    case "tranif0":
-                    case "tranif1":
-                    case "rtranif0":
-                    case "rtranif1":
-                    case "tran":
-                    case "rtran":
-                        ModuleItems.GateInstantialtion.ParseCreate(word, module);
-                        break;
-                    default:
-                        ModuleItems.ModuleInstantiation.Parse(word, module);
-                        break;
-                }
-
+                if (!ParseGenerateItem(word, module)) break;
             }
         }
 
+        public static bool ParseGenerateItem(WordScanner word, Module module)
+        {
+            switch (word.Text)
+            {
+                case "endgenerate":
+                    return false;
+                case "end":
+                    return false;
+                case "endmodule":
+                    word.AddError("endgenerate expected");
+                    return false;
 
+                case "if":
+                    Generate.ParseGenerateConditionalStatement(word, module);
+                    break;
+                //case "case":
+                //    break;
+                case "for":
+                    Generate.ParseGenerateLoopStatement(word, module);
+                    break;
+                //case "begin":
+                //    break;
+
+                case "input":
+                case "output":
+                case "inout":
+                    Verilog.Variables.Port.ParsePortDeclaration(word, module, null);
+                    if (word.GetCharAt(0) != ';')
+                    {
+                        word.AddError("; expected");
+                    }
+                    else
+                    {
+                        word.MoveNext();
+                    }
+                    break;
+                case "reg":
+                    Verilog.Variables.Reg.ParseCreateFromDeclaration(word, module);
+                    break;
+                case "supply0":
+                case "supply1":
+                case "tri":
+                case "triand":
+                case "trior":
+                case "tri0":
+                case "tri1":
+                case "wire":
+                case "wand":
+                case "wor":
+                    Verilog.Variables.Net.ParseCreateFromDeclaration(word, module);
+                    break;
+                case "integer":
+                    Verilog.Variables.Integer.ParseCreateFromDeclaration(word, module);
+                    break;
+                case "real":
+                    Verilog.Variables.Real.ParseCreateFromDeclaration(word, module);
+                    break;
+                case "realtime":
+                    Verilog.Variables.RealTime.ParseCreateFromDeclaration(word, module);
+                    break;
+                case "time":
+                    Verilog.Variables.Time.ParseCreateFromDeclaration(word, module);
+                    break;
+                case "event":
+                    Verilog.Variables.Event.ParseCreateFromDeclaration(word, module);
+                    break;
+                case "genvar":
+                    Verilog.Variables.Genvar.ParseCreateFromDeclaration(word, module);
+                    break;
+                case "always":
+                    ModuleItems.AlwaysConstruct always = ModuleItems.AlwaysConstruct.ParseCreate(word, module);
+                    break;
+                case "parameter":
+                case "localparam":
+                    Verilog.Variables.Parameter.ParseCreateDeclaration(word, module, null);
+                    break;
+                case "assign":
+                    ModuleItems.ContinuousAssign continuousAssign = ModuleItems.ContinuousAssign.ParseCreate(word, module);
+                    break;
+                case "function":
+                    Function.Parse(word, module);
+                    break;
+                case "task":
+                    Task.Parse(word, module);
+                    break;
+                case "cmos":
+                case "rcmos":
+                case "bufif0":
+                case "bufif1":
+                case "notif0":
+                case "notif1":
+                case "nmos":
+                case "pmos":
+                case "rnmos":
+                case "rpmos":
+                case "and":
+                case "nand":
+                case "or":
+                case "nor":
+                case "xor":
+                case "xnor":
+                case "buf":
+                case "not":
+                case "tranif0":
+                case "tranif1":
+                case "rtranif0":
+                case "rtranif1":
+                case "tran":
+                case "rtran":
+                    ModuleItems.GateInstantialtion.ParseCreate(word, module);
+                    break;
+                default:
+                    ModuleItems.ModuleInstantiation.Parse(word, module);
+                    break;
+            }
+
+            return true;
+        }
         /*
         module_item ::= 
                         port_declaration ;
