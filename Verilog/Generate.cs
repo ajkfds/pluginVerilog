@@ -21,7 +21,7 @@ namespace pluginVerilog.Verilog
             }
             word.MoveNext();
 
-            if(!parseGenvarAssignment(word, module))
+            if (!parseGenvarAssignment(word, module))
             {
                 return;
             }
@@ -59,41 +59,7 @@ namespace pluginVerilog.Verilog
             }
             word.MoveNext();
 
-            if (word.Text != "begin")
-            {
-                word.AddError("begin expected");
-                return;
-            }
-            word.Color(CodeDrawStyle.ColorType.Keyword);
-            word.MoveNext();
-
-            if (word.Text != ":")
-            {
-                word.AddError(": required");
-                return;
-            }
-            word.MoveNext();
-
-            if (!General.IsIdentifier(word.Text))
-            {
-                word.AddError("identifier required");
-                return;
-            }
-            word.Color(CodeDrawStyle.ColorType.Identifier);
-            word.MoveNext();
-
-            Module.ParseGenerateItems(word, module);
-
-            if(word.Text == "end")
-            {
-                word.Color(CodeDrawStyle.ColorType.Keyword);
-                word.MoveNext();
-                return;
-            }
-            else
-            {
-                word.AddError("end required");
-            }
+            ParseGenerateBlockStatement(word, module);
         }
 
         private static bool parseGenvarAssignment(WordScanner word, NameSpace nameSpace)
@@ -101,7 +67,7 @@ namespace pluginVerilog.Verilog
             //    genvar_assignment::= genvar_identifier = constant_expression
             Expressions.VariableReference genvar = Expressions.VariableReference.ParseCreate(word, nameSpace);
             if (genvar == null) return false;
-            if(!(genvar.Variable is Variables.Genvar))
+            if (!(genvar.Variable is Variables.Genvar))
             {
                 word.AddError("should be genvar");
             }
@@ -123,10 +89,11 @@ namespace pluginVerilog.Verilog
         public static void ParseGenerateConditionalStatement(WordScanner word, Module module)
         {
             // generate_conditional_statement::= if (constant_expression ) generate_item_or_null[ else generate_item_or_null]
+            // true (that is, has a nonzero known value)
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
-            if(word.Text != "(")
+            if (word.Text != "(")
             {
                 word.AddError("( required");
                 return;
@@ -148,7 +115,7 @@ namespace pluginVerilog.Verilog
 
             Module.ParseGenerateItem(word, module);
 
-            if(word.Text == "else")
+            if (word.Text == "else")
             {
                 word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext();
@@ -158,17 +125,120 @@ namespace pluginVerilog.Verilog
 
         }
 
+        public static void ParseGenerateCaseStatement(WordScanner word, Module module)
+        {
+            // generate_case_statement::=  case (constant_expression ) genvar_case_item { genvar_case_item } endcase
+            // genvar_case_item ::=  constant_expression  { , constant_expression } : generate_item_or_null
+            //                      | default [ : ] generate_item_or_null
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext();
 
-        // generate_loop_statement ::=  for ( genvar_assignment ; constant_expression ; genvar_assignment ) begin : generate_block_identifier { generate_item } end 
-        //        generate_conditional_statement::= if (constant_expression ) generate_item_or_null[ else generate_item_or_null]
-        //        generate_case_statement::=  case (constant_expression )
-        //       genvar_case_item
-        //        { genvar_case_item }
-        //        endcase
-        //genvar_case_item ::=  constant_expression  { , constant_expression } :      
-        //        generate_item_or_null  | default [ : ]
-        //        generate_item_or_null
-        //        generate_block ::= begin[ : generate_block_identifier]  { generate_item }
-        //        end
+            if (word.Text != "(")
+            {
+                word.AddError("( required");
+                return;
+            }
+            word.MoveNext();
+
+            Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
+            if(expression == null)
+            {
+                word.AddError("illegal constant_expression");
+                return;
+            }
+            if (!expression.Constant)
+            {
+                word.AddError("should be constant");
+            }
+
+            if (word.Text != ")")
+            {
+                word.AddError(") required");
+                return;
+            }
+            word.MoveNext();
+
+            while (!word.Eof)
+            {
+                if (word.Text == "endcase")
+                {
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
+                    word.MoveNext();
+                    break;
+                }
+                else if (word.Text == "default")
+                {
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
+                    word.MoveNext();
+
+                    if (word.Text == ":") word.MoveNext();
+                    Module.ParseGenerateItem(word, module);
+                }
+                else
+                {
+                    while (!word.Eof)
+                    {
+                        expression = Expressions.Expression.ParseCreate(word, module);
+                        if(expression == null)
+                        {
+                            word.AddError("illegal constant expression");
+                            return;
+                        }
+                        if (!expression.Constant)
+                        {
+                            word.AddError("should be constant");
+                        }
+                        if (word.Text != ",") break;
+                        word.MoveNext();
+                    }
+                    if (word.Text != ":")
+                    {
+                        word.AddError(": required");
+                        return;
+                    }
+                    word.MoveNext();
+                    Module.ParseGenerateItem(word, module);
+                }
+            }
+
+        }
+
+        public static void ParseGenerateBlockStatement(WordScanner word, Module module)
+        {
+            // generate_block ::= begin[ : generate_block_identifier]  { generate_item } end
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext();
+
+            if (word.Text != ":")
+            {
+                word.AddError(": required");
+            }
+            else
+            {
+                word.MoveNext();
+
+                if (!General.IsIdentifier(word.Text))
+                {
+                    word.AddError("identifier required");
+                    return;
+                }
+                word.Color(CodeDrawStyle.ColorType.Identifier);
+                word.MoveNext();
+            }
+
+            Module.ParseGenerateItems(word, module);
+
+            if (word.Text == "end")
+            {
+                word.Color(CodeDrawStyle.ColorType.Keyword);
+                word.MoveNext();
+                return;
+            }
+            else
+            {
+                word.AddError("end required");
+            }
+        }
+
     }
 }
