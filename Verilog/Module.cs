@@ -390,13 +390,15 @@ namespace pluginVerilog.Verilog
                 case "if":
                     Generate.ParseGenerateConditionalStatement(word, module);
                     break;
-                //case "case":
-                //    break;
+                case "case":
+                    Generate.ParseGenerateCaseStatement(word, module);
+                    break;
                 case "for":
                     Generate.ParseGenerateLoopStatement(word, module);
                     break;
-                //case "begin":
-                //    break;
+                case "begin":
+                    Generate.ParseGenerateBlockStatement(word, module);
+                    break;
 
                 case "input":
                 case "output":
@@ -443,6 +445,9 @@ namespace pluginVerilog.Verilog
                     break;
                 case "genvar":
                     Verilog.Variables.Genvar.ParseCreateFromDeclaration(word, module);
+                    break;
+                case "initial":
+                    ModuleItems.InitialConstruct initial = ModuleItems.InitialConstruct.ParseCreate(word, module);
                     break;
                 case "always":
                     ModuleItems.AlwaysConstruct always = ModuleItems.AlwaysConstruct.ParseCreate(word, module);
