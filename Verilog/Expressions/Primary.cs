@@ -85,6 +85,19 @@ namespace pluginVerilog.Verilog.Expressions
                         {
                             return FunctionCall.ParseCreate(word, nameSpace);
                         }
+
+                        if(word.Eof) return null;
+                        if (General.ListOfKeywords.Contains(word.Text)) return null;
+                        if(General.IsIdentifier(word.Text) & !nameSpace.Variables.ContainsKey(word.Text))
+                        {
+                            word.AddWarning("undefined");
+                            Variables.Net net = new Variables.Net();
+                            net.Name = word.Text;
+                            net.Signed = false;
+                            nameSpace.Variables.Add(net.Name, net);
+                            variable = VariableReference.ParseCreate(word, nameSpace);
+                            if (variable != null) return variable;
+                        }
                     }
                     break;
             }
@@ -411,6 +424,8 @@ namespace pluginVerilog.Verilog.Expressions
             }
             Concatenation concatenation = new Concatenation();
             concatenation.Expressions.Add(exp1);
+            concatenation.Constant = exp1.Constant;
+            concatenation.BitWidth = exp1.BitWidth;
 
             while(word.GetCharAt(0) != '}')
             {
@@ -426,6 +441,11 @@ namespace pluginVerilog.Verilog.Expressions
                     return null;
                 }
                 exp1 = Expression.ParseCreate(word, nameSpace);
+                if (exp1 != null)
+                {
+                    concatenation.Constant = concatenation.Constant & exp1.Constant;
+                    concatenation.BitWidth = concatenation.BitWidth + exp1.BitWidth;
+                }
                 if (exp1 == null)
                 {
                     word.AddError("illegal concatenation");

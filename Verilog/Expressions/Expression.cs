@@ -192,6 +192,15 @@ namespace pluginVerilog.Verilog.Expressions
                     Primary primary = op.Operate(primaryStock[0]);
                     primaryStock.RemoveAt(0);
                     primaryStock.Add(primary);
+                }else if(item is TenaryOperator)
+                {
+                    if (primaryStock.Count < 3) return null;
+                    TenaryOperator op = item as TenaryOperator;
+                    Primary primary = op.Operate(primaryStock[0], primaryStock[1], primaryStock[2]);
+                    primaryStock.RemoveAt(0);
+                    primaryStock.RemoveAt(0);
+                    primaryStock.RemoveAt(0);
+                    primaryStock.Add(primary);
                 }
                 else
                 {
@@ -272,6 +281,7 @@ namespace pluginVerilog.Verilog.Expressions
                         word.AddError("illegal binary Operator");
                         break;
                     }
+                    expressionItems.Add(TenaryOperator.Create());
                 } while (false);
             }
 
