@@ -122,6 +122,61 @@ namespace pluginVerilog.Verilog.Expressions
             word.Color(CodeDrawStyle.ColorType.Paramater);
             word.MoveNext();
 
+            if(parameter.Expression != null) val.Value = parameter.Expression.Value;
+
+            if (word.GetCharAt(0) == '[')
+            {
+                word.AddError("bit select can't used for parameters");
+                word.MoveNext();
+
+                Expression exp1 = Expression.ParseCreate(word, nameSpace);
+                Expression exp2;
+                RangeExpression range;
+                switch (word.Text)
+                {
+                    case ":":
+                        word.MoveNext();
+                        exp2 = Expression.ParseCreate(word, nameSpace);
+                        if (word.Text != "]")
+                        {
+                            word.AddError("illegal range");
+                            return null;
+                        }
+                        word.MoveNext();
+                        range = new AbsoluteRangeExpression(exp1, exp2);
+                        break;
+                    case "+:":
+                        word.MoveNext();
+                        exp2 = Expression.ParseCreate(word, nameSpace);
+                        if (word.Text != "]")
+                        {
+                            word.AddError("illegal range");
+                            return null;
+                        }
+                        word.MoveNext();
+                        range = new RelativePlusRangeExpression(exp1, exp2);
+                        break;
+                    case "-:":
+                        word.MoveNext();
+                        exp2 = Expression.ParseCreate(word, nameSpace);
+                        if (word.Text != "]")
+                        {
+                            word.AddError("illegal range");
+                            return null;
+                        }
+                        word.MoveNext();
+                        range = new RelativeMinusRangeExpression(exp1, exp2);
+                        break;
+                    case "]":
+                        word.MoveNext();
+                        range = new SingleBitRangeExpression(exp1);
+                        break;
+                    default:
+                        word.AddError("illegal range/dimension");
+                        return null;
+                }
+            }
+
             return val;
         }
     }

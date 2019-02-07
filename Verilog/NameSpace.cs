@@ -77,6 +77,10 @@ namespace pluginVerilog.Verilog
             {
                 return Parameters[identifier];
             }
+            if (LocalParameters.ContainsKey(identifier))
+            {
+                return LocalParameters[identifier];
+            }
 
             if (Parent != null)
             {

@@ -96,6 +96,7 @@ namespace pluginVerilog.Verilog.Statements
                 word.AddError("( expected");
                 return null;
             }
+            word.MoveNext();
 
             whileStatement.Expression = Expressions.Expression.ParseCreate(word, nameSpace);
 
@@ -104,6 +105,7 @@ namespace pluginVerilog.Verilog.Statements
                 word.AddError("( expected");
                 return null;
             }
+            word.MoveNext();
 
             whileStatement.Statement = Statements.ParseCreateStatement(word, nameSpace);
 

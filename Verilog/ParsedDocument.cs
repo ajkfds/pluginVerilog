@@ -61,16 +61,16 @@ namespace pluginVerilog.Verilog
                 switch (message.Type)
                 {
                     case Message.MessageType.Error:
-                        ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.Red, Global.Icons.ExclamationBox, ajkControls.IconImage.ColorStyle.Red));
+                        ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.Red, Global.IconImages.ExclamationBox, ajkControls.IconImage.ColorStyle.Red));
                         break;
                     case Message.MessageType.Warning:
-                        ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.Orange, Global.Icons.ExclamationBox, ajkControls.IconImage.ColorStyle.Orange));
+                        ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.Orange, Global.IconImages.ExclamationBox, ajkControls.IconImage.ColorStyle.Orange));
                         break;
                     case Message.MessageType.Hint:
-                        ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.Blue, Global.Icons.ExclamationBox, ajkControls.IconImage.ColorStyle.Blue));
+                        ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.Blue, Global.IconImages.ExclamationBox, ajkControls.IconImage.ColorStyle.Blue));
                         break;
                     case Message.MessageType.Notice:
-                        ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.Green, Global.Icons.ExclamationBox, ajkControls.IconImage.ColorStyle.Green));
+                        ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.Green, Global.IconImages.ExclamationBox, ajkControls.IconImage.ColorStyle.Green));
                         break;
                 }
             }
@@ -233,11 +233,13 @@ namespace pluginVerilog.Verilog
                     items.Add(newItem(variable.Name, CodeDrawStyle.ColorType.Variable));
                 }
             }
-            foreach (Variables.Parameter parameter in nameSpace.Parameters.Values)
+
+            foreach (Variables.Parameter parameter in nameSpace.Module.Parameters.Values)
             {
                 items.Add(newItem(parameter.Name, CodeDrawStyle.ColorType.Paramater));
             }
-            foreach (Variables.Parameter parameter in nameSpace.LocalParameters.Values)
+
+            foreach (Variables.Parameter parameter in nameSpace.Module.LocalParameters.Values)
             {
                 items.Add(newItem(parameter.Name, CodeDrawStyle.ColorType.Paramater));
             }

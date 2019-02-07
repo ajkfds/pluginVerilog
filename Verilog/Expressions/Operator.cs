@@ -49,7 +49,7 @@ namespace pluginVerilog.Verilog.Expressions
             int? bitWidth = null;
 
             if (primary1.Constant && primary2.Constant & condition.Constant ) constant = true;
-            if (primary1.Value != null && primary2.Value != null) value = getValue((double)condition.Value, (double)primary1.Value, (double)primary2.Value);
+            if (condition.Value != null && primary1.Value != null && primary2.Value != null) value = getValue((double)condition.Value, (double)primary1.Value, (double)primary2.Value);
             if (primary1.BitWidth != null && primary2.BitWidth != null) bitWidth = getBitWidth(Text, (int)primary1.BitWidth, (int)primary2.BitWidth);
 
             return Primary.Create(constant, value, bitWidth);

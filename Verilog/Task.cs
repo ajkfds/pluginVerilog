@@ -146,7 +146,7 @@ namespace pluginVerilog.Verilog
             task.LastIndex = word.RootIndex;
             word.MoveNext();
 
-            if (!module.Functions.ContainsKey(task.Name))
+            if (!module.Tasks.ContainsKey(task.Name))
             {
                 module.Tasks.Add(task.Name, task);
                 module.NameSpaces.Add(task);

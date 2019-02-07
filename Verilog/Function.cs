@@ -63,19 +63,19 @@ namespace pluginVerilog.Verilog
                     range = Verilog.Variables.Range.ParseCreate(word, function);
                     break;
                 case "integer":
-                    word.Color(CodeDrawStyle.ColorType.Identifier);
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext();
                     break;
                 case "real":
-                    word.Color(CodeDrawStyle.ColorType.Identifier);
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext();
                     break;
                 case "realtime":
-                    word.Color(CodeDrawStyle.ColorType.Identifier);
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext();
                     break;
                 case "time":
-                    word.Color(CodeDrawStyle.ColorType.Identifier);
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext();
                     break;
                 default:
