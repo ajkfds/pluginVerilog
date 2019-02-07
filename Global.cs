@@ -11,7 +11,7 @@ namespace pluginVerilog
         public static SetupForm SetupForm = new SetupForm();
         public static CodeDrawStyle CodeDrawStyle = new CodeDrawStyle();
 
-        public static class Icons
+        public static class IconImages
         {
             public static ajkControls.IconImage Exclamation = new ajkControls.IconImage(Properties.Resources.exclamation);
             public static ajkControls.IconImage ExclamationBox = new ajkControls.IconImage(Properties.Resources.exclamationBox);
