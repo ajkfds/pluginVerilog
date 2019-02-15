@@ -30,6 +30,10 @@ namespace pluginVerilog.Verilog.Variables
                 icon = new ajkControls.IconImage(Properties.Resources.netBox);
                 iconColorStyle = ajkControls.IconImage.ColorStyle.Red;
                 text = variable.Name;
+                if (val.Range != null)
+                {
+                    text = text + " " + val.Range.ToString();
+                }
             }
             else if(variable is Reg)
             {

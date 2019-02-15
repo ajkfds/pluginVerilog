@@ -563,16 +563,6 @@ namespace pluginVerilog.Verilog.Variables
                 range = Range.ParseCreate(word, module);
             }
 
-            if (!General.IsIdentifier(word.Text)) return;
-            Net net = new Net();
-            net.Name = word.Text;
-            net.Range = range;
-            word.Color(CodeDrawStyle.ColorType.Net);
-            net.Signed = signed;
-
-            variables.Add(net);
-            word.MoveNext();
-
             while (!word.Eof)
             {
                 if (!General.IsIdentifier(word.Text)) return;
