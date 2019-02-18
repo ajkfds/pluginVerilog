@@ -14,7 +14,15 @@ namespace pluginVerilog.Verilog
 
         public Dictionary<string, Variables.Port> Ports = new Dictionary<string, Variables.Port>();
         public Statements.IStatement Statement;
-        public string Name;
+
+        private enum valType
+        {
+            reg,
+            integer,
+            real,
+            realtime,
+            time
+        }
 
         public static void Parse(WordScanner word, Module module)
         {
@@ -56,6 +64,7 @@ namespace pluginVerilog.Verilog
             }
 
             Verilog.Variables.Range range = null;
+            valType valType = valType.reg;
 
             switch (word.Text)
             {
@@ -63,18 +72,22 @@ namespace pluginVerilog.Verilog
                     range = Verilog.Variables.Range.ParseCreate(word, function);
                     break;
                 case "integer":
+                    valType = valType.integer;
                     word.Color(CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext();
                     break;
                 case "real":
+                    valType = valType.real;
                     word.Color(CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext();
                     break;
                 case "realtime":
+                    valType = valType.realtime;
                     word.Color(CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext();
                     break;
                 case "time":
+                    valType = valType.time;
                     word.Color(CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext();
                     break;
@@ -96,8 +109,28 @@ namespace pluginVerilog.Verilog
             }
             word.MoveNext();
 
-            Variables.Reg reg = new Variables.Reg(function.Name, range, signed);
-            function.Variables.Add(reg.Name, reg);
+            Variables.Variable retVal;
+            switch (valType)
+            {
+                case valType.reg:
+                    retVal = new Variables.Reg(function.Name, range, signed);
+                    break;
+                case valType.integer:
+                    retVal = new Variables.Integer(function.Name);
+                    break;
+                case valType.real:
+                    retVal = new Variables.Real(function.Name);
+                    break;
+                case valType.realtime:
+                    retVal = new Variables.RealTime(function.Name);
+                    break;
+                case valType.time:
+                    retVal = new Variables.Time(function.Name);
+                    break;
+                default:
+                    throw new Exception();
+            }
+            function.Variables.Add(retVal.Name, retVal);
 
 
             /*            A.2.8 Block item declarations
