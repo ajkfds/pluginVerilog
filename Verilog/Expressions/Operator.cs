@@ -326,7 +326,7 @@ namespace pluginVerilog.Verilog.Expressions
 
                 // modulus operator
                 case "%":
-                    return maxWidth;
+                    return bitWidth2;
 
                 // relational operators
                 case "<":
