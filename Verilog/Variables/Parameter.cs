@@ -87,33 +87,35 @@ namespace pluginVerilog.Verilog.Variables
                 word.MoveNext();
                 Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
                 if (expression == null) break;
-
-                if (local)
+                if (word.Active)
                 {
-                    if (module.LocalParameters.ContainsKey(identifier))
+                    if (local)
                     {
-                        word.AddError("local parameter name duplicated");
+                        if (module.LocalParameters.ContainsKey(identifier))
+                        {
+                            word.AddError("local parameter name duplicated");
+                        }
+                        else
+                        {
+                            Parameter param = new Parameter();
+                            param.Name = identifier;
+                            param.Expression = expression;
+                            module.LocalParameters.Add(param.Name, param);
+                        }
                     }
                     else
                     {
-                        Parameter param = new Parameter();
-                        param.Name = identifier;
-                        param.Expression = expression;
-                        module.LocalParameters.Add(param.Name, param);
-                    }
-                }
-                else
-                {
-                    if (module.Parameters.ContainsKey(identifier))
-                    {
-                        word.AddError("parameter name duplicated");
-                    }
-                    else
-                    {
-                        Parameter param = new Parameter();
-                        param.Name = identifier;
-                        param.Expression = expression;
-                        module.Parameters.Add(param.Name, param);
+                        if (module.Parameters.ContainsKey(identifier))
+                        {
+                            word.AddError("parameter name duplicated");
+                        }
+                        else
+                        {
+                            Parameter param = new Parameter();
+                            param.Name = identifier;
+                            param.Expression = expression;
+                            module.Parameters.Add(param.Name, param);
+                        }
                     }
                 }
                 if (word.Text != ",") break;

@@ -21,6 +21,14 @@ namespace pluginVerilog.Verilog
 
         public Verilog.ParsedDocument RootParsedDocument { get; protected set; }
 
+        private bool active = true;
+        public bool Active {
+            get {
+                return active;
+            }
+            set { active = value; }
+        }
+
         protected WordPointer wordPointer = null;
         protected List<WordPointer> stock = new List<WordPointer>();
 
@@ -28,6 +36,7 @@ namespace pluginVerilog.Verilog
         {
             WordScanner ret = new WordScanner(wordPointer.Document, RootParsedDocument);
             ret.wordPointer = wordPointer.Clone();
+            ret.Active = Active;
             foreach (var wp in stock)
             {
                 ret.stock.Add(wp.Clone());
@@ -54,16 +63,19 @@ namespace pluginVerilog.Verilog
 
         public void Color(CodeDrawStyle.ColorType colorType)
         {
+            if (!active) return;
             wordPointer.Color(colorType);
         }
 
         public void AddError(string message)
         {
+            if (!active) return;
             wordPointer.AddError(message);
         }
 
         public void AddWarning(string message)
         {
+            if (!active) return;
             wordPointer.AddWarning(message);
         }
 
@@ -84,6 +96,8 @@ namespace pluginVerilog.Verilog
 
         public void MoveNext()
         {
+            if (!active) wordPointer.Color(CodeDrawStyle.ColorType.Inactivated);
+
             while(wordPointer.Eof && stock.Count != 0)
             {
                 bool error = false;

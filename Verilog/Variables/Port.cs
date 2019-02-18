@@ -55,17 +55,20 @@ namespace pluginVerilog.Verilog.Variables
                         Port port = new Port();
                         port.Name = variable.Name;
                         port.Direction = DirectionEnum.Input;
-                        if (!module.Ports.ContainsKey(variable.Name))
+                        if (word.Active)
                         {
-                            module.Ports.Add(port.Name, port);
-                        }
-                        if (module.Variables.ContainsKey(variable.Name))
-                        {
-                            word.AddError("illegal port name");
-                        }
-                        else
-                        {
-                            module.Variables.Add(variable.Name, variable);
+                            if (!module.Ports.ContainsKey(variable.Name))
+                            {
+                                module.Ports.Add(port.Name, port);
+                            }
+                            if (module.Variables.ContainsKey(variable.Name))
+                            {
+                                word.AddError("illegal port name");
+                            }
+                            else
+                            {
+                                module.Variables.Add(variable.Name, variable);
+                            }
                         }
                     }
                     break;
@@ -77,17 +80,20 @@ namespace pluginVerilog.Verilog.Variables
                         Port port = new Port();
                         port.Name = variable.Name;
                         port.Direction = DirectionEnum.Output;
-                        if (!module.Ports.ContainsKey(variable.Name))
+                        if (word.Active)
                         {
-                            module.Ports.Add(port.Name, port);
-                        }
-                        if (module.Variables.ContainsKey(variable.Name))
-                        {
-                            word.AddError("illegal port name");
-                        }
-                        else
-                        {
-                            module.Variables.Add(variable.Name, variable);
+                            if (!module.Ports.ContainsKey(variable.Name))
+                            {
+                                module.Ports.Add(port.Name, port);
+                            }
+                            if (module.Variables.ContainsKey(variable.Name))
+                            {
+                                word.AddError("illegal port name");
+                            }
+                            else
+                            {
+                                module.Variables.Add(variable.Name, variable);
+                            }
                         }
                     }
                     break;
@@ -99,17 +105,20 @@ namespace pluginVerilog.Verilog.Variables
                         Port port = new Port();
                         port.Name = variable.Name;
                         port.Direction = DirectionEnum.Inout;
-                        if (!module.Ports.ContainsKey(variable.Name))
+                        if (word.Active)
                         {
-                            module.Ports.Add(port.Name, port);
-                        }
-                        if (module.Variables.ContainsKey(variable.Name))
-                        {
-                            word.AddError("illegal port name");
-                        }
-                        else
-                        {
-                            module.Variables.Add(variable.Name, variable);
+                            if (!module.Ports.ContainsKey(variable.Name))
+                            {
+                                module.Ports.Add(port.Name, port);
+                            }
+                            if (module.Variables.ContainsKey(variable.Name))
+                            {
+                                word.AddError("illegal port name");
+                            }
+                            else
+                            {
+                                module.Variables.Add(variable.Name, variable);
+                            }
                         }
                     }
                     break;

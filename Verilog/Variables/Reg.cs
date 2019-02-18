@@ -64,25 +64,31 @@ namespace pluginVerilog.Verilog.Variables
                     word.AddError("illegal reg identifier");
                     return;
                 }
+
                 Reg reg = new Reg();
                 reg.Signed = signed;
                 reg.Range = range;
                 reg.Name = word.Text;
-                if (nameSpace.Variables.ContainsKey(reg.Name))
+
+                // register valiable
+                if (word.Active)
                 {
-                    if (nameSpace.Variables[reg.Name] is Net)
+                    if (nameSpace.Variables.ContainsKey(reg.Name))
                     {
-                        nameSpace.Variables.Remove(reg.Name);
-                        nameSpace.Variables.Add(reg.Name, reg);
+                        if (nameSpace.Variables[reg.Name] is Net)
+                        {
+                            nameSpace.Variables.Remove(reg.Name);
+                            nameSpace.Variables.Add(reg.Name, reg);
+                        }
+                        else
+                        {
+                            word.AddError("duplicated reg name");
+                        }
                     }
                     else
                     {
-                        word.AddError("duplicated reg name");
+                        nameSpace.Variables.Add(reg.Name, reg);
                     }
-                }
-                else
-                {
-                    nameSpace.Variables.Add(reg.Name, reg);
                 }
 
                 word.Color(CodeDrawStyle.ColorType.Register);

@@ -50,13 +50,16 @@ namespace pluginVerilog.Verilog.Variables
                     }
                 }
 
-                if (nameSpace.Variables.ContainsKey(val.Name))
+                if (word.Active)
                 {
-                    word.AddError("duplicated name");
-                }
-                else
-                {
-                    nameSpace.Variables.Add(val.Name, val);
+                    if (nameSpace.Variables.ContainsKey(val.Name))
+                    {
+                        word.AddError("duplicated name");
+                    }
+                    else
+                    {
+                        nameSpace.Variables.Add(val.Name, val);
+                    }
                 }
 
                 if (word.GetCharAt(0) != ',') break;

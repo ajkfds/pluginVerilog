@@ -139,6 +139,8 @@ namespace pluginVerilog.Verilog.Statements
             }
             return ParseCreateStatement(word, nameSpace);
         }
+
+
         public static IStatement ParseCreateFunctionStatement(WordScanner word, NameSpace nameSpace)
         {
             return ParseCreateStatement(word,nameSpace);

@@ -141,13 +141,16 @@ namespace pluginVerilog.Verilog.Variables
                 net.Signed = signed;
                 net.Range = range;
                 net.Name = word.Text;
-                if (nameSpace.Variables.ContainsKey(net.Name))
+                if (word.Active)
                 {
-                    word.AddError("duplicated net name");
-                }
-                else
-                {
-                    nameSpace.Variables.Add(net.Name, net);
+                    if (nameSpace.Variables.ContainsKey(net.Name))
+                    {
+                        word.AddError("duplicated net name");
+                    }
+                    else
+                    {
+                        nameSpace.Variables.Add(net.Name, net);
+                    }
                 }
 
                 word.Color(CodeDrawStyle.ColorType.Net);

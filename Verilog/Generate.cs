@@ -59,7 +59,7 @@ namespace pluginVerilog.Verilog
             }
             word.MoveNext();
 
-            ParseGenerateBlockStatement(word, module);
+            ParseGenerateBlockStatementWithName(word, module);
         }
 
         private static bool parseGenvarAssignment(WordScanner word, NameSpace nameSpace)
@@ -113,14 +113,34 @@ namespace pluginVerilog.Verilog
             }
             word.MoveNext();
 
-            Module.ParseGenerateItem(word, module);
+            if(word.Active && expression.Constant && expression.Value == 0)
+            {
+                // false
+                word.Active = false;
+                Module.ParseGenerateItem(word, module);
+                word.Active = true;
+            }
+            else
+            {
+                Module.ParseGenerateItem(word, module);
+            }
 
             if (word.Text == "else")
             {
                 word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext();
 
-                Module.ParseGenerateItem(word, module);
+                if (word.Active && expression.Constant && expression.Value != 0)
+                {
+                    // false
+                    word.Active = false;
+                    Module.ParseGenerateItem(word, module);
+                    word.Active = true;
+                }
+                else
+                {
+                    Module.ParseGenerateItem(word, module);
+                }
             }
 
         }
@@ -140,13 +160,13 @@ namespace pluginVerilog.Verilog
             }
             word.MoveNext();
 
-            Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
-            if(expression == null)
+            Expressions.Expression conditionExpression = Expressions.Expression.ParseCreate(word, module);
+            if(conditionExpression == null)
             {
                 word.AddError("illegal constant_expression");
                 return;
             }
-            if (!expression.Constant)
+            if (!conditionExpression.Constant)
             {
                 word.AddError("should be constant");
             }
@@ -158,8 +178,10 @@ namespace pluginVerilog.Verilog
             }
             word.MoveNext();
 
+            bool caseSelected = false;
             while (!word.Eof)
             {
+                Expressions.Expression expression = null;
                 if (word.Text == "endcase")
                 {
                     word.Color(CodeDrawStyle.ColorType.Keyword);
@@ -172,7 +194,17 @@ namespace pluginVerilog.Verilog
                     word.MoveNext();
 
                     if (word.Text == ":") word.MoveNext();
-                    Module.ParseGenerateItem(word, module);
+
+                    if(caseSelected && word.Active)
+                    {
+                        word.Active = false;
+                        Module.ParseGenerateItem(word, module);
+                        word.Active = true;
+                    }
+                    else
+                    {
+                        Module.ParseGenerateItem(word, module);
+                    }
                 }
                 else
                 {
@@ -197,13 +229,58 @@ namespace pluginVerilog.Verilog
                         return;
                     }
                     word.MoveNext();
-                    Module.ParseGenerateItem(word, module);
+
+                    if (word.Active && expression != null && conditionExpression != null && expression.Constant && conditionExpression.Constant && expression.Value != conditionExpression.Value)
+                    {
+                        // false
+                        word.Active = false;
+                        Module.ParseGenerateItem(word, module);
+                        word.Active = true;
+                    }
+                    else
+                    {
+                        Module.ParseGenerateItem(word, module);
+                        caseSelected = true;
+                    }
                 }
             }
 
         }
 
         public static void ParseGenerateBlockStatement(WordScanner word, Module module)
+        {
+            // generate_block ::= begin[ : generate_block_identifier]  { generate_item } end
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext();
+
+            if (word.Text == ":")
+            {
+                word.MoveNext();
+
+                if (!General.IsIdentifier(word.Text))
+                {
+                    word.AddError("identifier required");
+                    return;
+                }
+                word.Color(CodeDrawStyle.ColorType.Identifier);
+                word.MoveNext();
+            }
+
+            Module.ParseGenerateItems(word, module);
+
+            if (word.Text == "end")
+            {
+                word.Color(CodeDrawStyle.ColorType.Keyword);
+                word.MoveNext();
+                return;
+            }
+            else
+            {
+                word.AddError("end required");
+            }
+        }
+
+        public static void ParseGenerateBlockStatementWithName(WordScanner word, Module module)
         {
             // generate_block ::= begin[ : generate_block_identifier]  { generate_item } end
             word.Color(CodeDrawStyle.ColorType.Keyword);
@@ -239,6 +316,5 @@ namespace pluginVerilog.Verilog
                 word.AddError("end required");
             }
         }
-
     }
 }

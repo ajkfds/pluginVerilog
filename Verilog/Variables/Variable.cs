@@ -54,6 +54,7 @@ namespace pluginVerilog.Verilog.Variables
             }
         }
 
+
         private string text;
         private ajkControls.IconImage icon = null;
         private ajkControls.IconImage.ColorStyle iconColorStyle;
