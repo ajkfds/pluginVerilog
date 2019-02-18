@@ -18,6 +18,7 @@ namespace pluginVerilog.Verilog
         public Dictionary<string, Task> Tasks = new Dictionary<string, Task>();
         public Dictionary<string, ModuleItems.ModuleInstantiation> ModuleInstantiations = new Dictionary<string, ModuleItems.ModuleInstantiation>();
         public string FileId { get; protected set; }
+        internal List<Expressions.FunctionCall> functionCalls = new List<Expressions.FunctionCall>();
 
         public static Module Create(WordScanner word,Attribute attribute,string fileId)
         {
@@ -103,6 +104,15 @@ namespace pluginVerilog.Verilog
                 break;
             }
 
+            // post function check
+            foreach (Expressions.FunctionCall funcationCall in module.functionCalls)
+            {
+                if (!module.Functions.ContainsKey(funcationCall.FunctionName))
+                {
+                    funcationCall.Reference.AddError("undefined");
+                }
+            }
+
             if (word.Text == "endmodule")
             {
                 word.Color(CodeDrawStyle.ColorType.Keyword);
@@ -114,6 +124,7 @@ namespace pluginVerilog.Verilog
             {
                 word.AddError("endmodule expected");
             }
+
             return module;
         }
 
@@ -498,46 +509,158 @@ namespace pluginVerilog.Verilog
 
             return true;
         }
+
         /*
-        module_item ::= 
-                        port_declaration ;
-                        | module_or_generate_item
-                        | { attribute_instance } generated_instantiation
-                        | { attribute_instance } local_parameter_declaration
-                        | { attribute_instance } parameter_declaration
-                        | { attribute_instance } specify_block
-                        | { attribute_instance } specparam_declaration
+         module_item ::= 
+                         port_declaration ;
+                         | module_or_generate_item
+                         | { attribute_instance } generated_instantiation
+                         | { attribute_instance } local_parameter_declaration
+                         | { attribute_instance } parameter_declaration
+                         | { attribute_instance } specify_block
+                         | { attribute_instance } specparam_declaration
 
-        non_port_module_item ::=
-                                    { attribute_instance } module_or_generate_item
-                                    | { attribute_instance } generated_instantiation
-                                    | { attribute_instance } local_parameter_declaration
-                                    | { attribute_instance } parameter_declaration
-                                    | { attribute_instance } specify_block
-                                    | { attribute_instance } specparam_declaration
+         non_port_module_item ::=
+                                     { attribute_instance } module_or_generate_item
+                                     | { attribute_instance } generated_instantiation
+                                     | { attribute_instance } local_parameter_declaration
+                                     | { attribute_instance } parameter_declaration
+                                     | { attribute_instance } specify_block
+                                     | { attribute_instance } specparam_declaration
 
-        module_or_generate_item ::= 
-                                    { attribute_instance } module_or_generate_item_declaration
-                                    | { attribute_instance } parameter_override
-                                    | { attribute_instance } continuous_assign
-                                    | { attribute_instance } gate_instantiation
-                                    | { attribute_instance } udp_instantiation
-                                    | { attribute_instance } module_instantiation
-                                    | { attribute_instance } initial_construct
-                                    | { attribute_instance } always_construct  
+         module_or_generate_item ::= 
+                                     { attribute_instance } module_or_generate_item_declaration
+                                     | { attribute_instance } parameter_override
+                                     | { attribute_instance } continuous_assign
+                                     | { attribute_instance } gate_instantiation
+                                     | { attribute_instance } udp_instantiation
+                                     | { attribute_instance } module_instantiation
+                                     | { attribute_instance } initial_construct
+                                     | { attribute_instance } always_construct  
 
-        module_or_generate_item_declaration ::= net_declaration          v
-                                                | reg_declaration         v 
-                                                | integer_declaration          
-                                                | real_declaration          
-                                                | time_declaration          
-                                                | realtime_declaration          
-                                                | event_declaration         
-                                                | genvar_declaration          
-                                                | task_declaration          
-                                                | function_declaration  
+         module_or_generate_item_declaration ::= net_declaration          v
+                                                 | reg_declaration         v 
+                                                 | integer_declaration          
+                                                 | real_declaration          
+                                                 | time_declaration          
+                                                 | realtime_declaration          
+                                                 | event_declaration         
+                                                 | genvar_declaration          
+                                                 | task_declaration          
+                                                 | function_declaration  
 
-        parameter_override ::= defparam list_of_param_assignments ;  
-        */
+         parameter_override ::= defparam list_of_param_assignments ;  
+         */
+
+        // parse prototype
+        public static Module CreatePrototype(WordScanner word, Attribute attribute, string fileId)
+        {
+            /*
+            module_declaration  ::= { attribute_instance } module_keyword module_identifier [ module_parameter_port_list ]
+                                        [ list_of_ports ] ; { module_item }
+                                        endmodule
+                                    | { attribute_instance } module_keyword module_identifier [ module_parameter_port_list ]
+                                        [ list_of_port_declarations ] ; { non_port_module_item }
+                                        endmodule
+            module_keyword      ::= module | macromodule  
+            module_identifier   ::= identifier
+
+            module_parameter_port_list  ::= # ( parameter_declaration { , parameter_declaration } ) 
+            list_of_ports ::= ( port { , port } )
+            */
+
+            Module module = new Module();
+            module.Module = module;
+            module.FileId = fileId;
+
+            if (word.Text != "module" && word.Text != "macromodule") System.Diagnostics.Debugger.Break();
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            module.BeginIndex = word.RootIndex;
+            word.MoveNext();
+
+            module.Name = word.Text;
+            word.Color(CodeDrawStyle.ColorType.Identifier);
+            if (!General.IsIdentifier(word.Text)) word.AddError("illegal module name");
+            word.MoveNext();
+
+            while (true)
+            {
+                if (word.Eof || word.Text == "endmodule")
+                {
+                    break;
+                }
+                if (word.Text == "#")
+                { // module_parameter_port_list
+                    word.MoveNext();
+                    do
+                    {
+                        if (word.GetCharAt(0) != '(')
+                        {
+                            word.AddError("( expected");
+                            break;
+                        }
+                        word.MoveNext();
+                        while (!word.Eof)
+                        {
+                            if (word.Text == "parameter") Verilog.Variables.Parameter.ParseCreateDeclarationForPort(word, module, null);
+                            if (word.Text != ",") break;
+                            word.MoveNext();
+                        }
+
+                        if (word.GetCharAt(0) != ')')
+                        {
+                            word.AddError(") expected");
+                            break;
+                        }
+                        word.MoveNext();
+                    } while (false);
+                }
+
+                if (word.Eof || word.Text == "endmodule") break;
+                if (word.Text == "(")
+                {
+                    parseListOfPorts_ListOfPortsDeclarations(word, module);
+                } // list_of_ports or list_of_posrt_declarations
+
+                if (word.Eof || word.Text == "endmodule") break;
+
+                if (word.GetCharAt(0) == ';')
+                {
+                    word.MoveNext();
+                }
+                else
+                {
+                    word.AddError("; expected");
+                }
+
+                parseModuleItems(word, module);
+                break;
+            }
+
+            // post function check
+            foreach (Expressions.FunctionCall funcationCall in module.functionCalls)
+            {
+                if (!module.Functions.ContainsKey(funcationCall.FunctionName))
+                {
+                    funcationCall.Reference.AddError("undefined");
+                }
+            }
+
+            if (word.Text == "endmodule")
+            {
+                word.Color(CodeDrawStyle.ColorType.Keyword);
+                module.LastIndex = word.RootIndex;
+                word.MoveNext();
+                return module;
+            }
+            else
+            {
+                word.AddError("endmodule expected");
+            }
+
+            return module;
+        }
+
+
     }
 }

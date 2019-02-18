@@ -10,9 +10,15 @@ namespace pluginVerilog.Verilog.Expressions
     {
         protected FunctionCall() { }
         public List<Expression> Expressions = new List<Expression>();
+        public WordReference Reference { get; protected set; }
+        public string FunctionName { get; protected set; }
 
         public new static FunctionCall ParseCreate(WordScanner word, NameSpace nameSpace)
         {
+            FunctionCall functionCall = new FunctionCall();
+            functionCall.Reference = word.GetReference();
+            functionCall.FunctionName = word.Text;
+
             word.Color(CodeDrawStyle.ColorType.Identifier);
             word.MoveNext();
 
@@ -23,7 +29,6 @@ namespace pluginVerilog.Verilog.Expressions
             }
             word.MoveNext();
 
-            FunctionCall functionCall = new FunctionCall();
             while (!word.Eof)
             {
                 Expression expression = Expression.ParseCreate(word, nameSpace);
@@ -48,6 +53,7 @@ namespace pluginVerilog.Verilog.Expressions
                     return null;
                 }
             }
+            nameSpace.Module.functionCalls.Add(functionCall);
             return functionCall;
         }
     }
