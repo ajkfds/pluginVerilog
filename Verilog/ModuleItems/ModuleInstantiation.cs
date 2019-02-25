@@ -108,6 +108,9 @@ namespace pluginVerilog.Verilog.ModuleItems
             {
                 word.AddError("illegal instance name");
                 error = true;
+            }else if(!word.Active)
+            {
+                error = true;
             } else if (module.ModuleInstantiations.ContainsKey(word.Text))
             {
                 word.AddError("instance name duplicated");

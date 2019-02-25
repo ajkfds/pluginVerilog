@@ -92,6 +92,8 @@ namespace pluginVerilog.Verilog.Expressions
                 expression.BitWidth = primary.BitWidth;
                 return expression;
             }
+
+            if (!word.Active) return expression;
             // parse rpn
             List<Primary> primaryStock = new List<Primary>();
             while(expression.RpnExpressionItems.Count > 0)

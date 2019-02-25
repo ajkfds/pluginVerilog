@@ -53,7 +53,6 @@ namespace pluginVerilog.Verilog.Expressions
                     return null;
                 }
             }
-            nameSpace.Module.functionCalls.Add(functionCall);
             return functionCall;
         }
     }

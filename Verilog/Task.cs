@@ -102,6 +102,8 @@ namespace pluginVerilog.Verilog
                     switch (word.Text)
                     {
                         case "input":
+                        case "output":
+                        case "inout":
                             Verilog.Variables.Port.ParseTaskPortDeclaration(word, task, null);
                             if (word.Text != ";")
                             {

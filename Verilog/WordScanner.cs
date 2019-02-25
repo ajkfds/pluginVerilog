@@ -21,12 +21,29 @@ namespace pluginVerilog.Verilog
 
         public Verilog.ParsedDocument RootParsedDocument { get; protected set; }
 
-        private bool active = true;
-        public bool Active {
-            get {
-                return active;
-            }
-            set { active = value; }
+
+        private int nonGeneratedCount = 0;
+        private bool skipWords = false;
+
+        public void StartSkip()
+        {
+            skipWords = true;
+        }
+
+        public void EndSkip()
+        {
+            skipWords = false;
+        }
+
+        public void StartNonGenenerated()
+        {
+            nonGeneratedCount++;
+        }
+
+        public void EndNonGeneratred()
+        {
+            if (nonGeneratedCount == 0) return;
+            nonGeneratedCount--;
         }
 
         protected WordPointer wordPointer = null;
@@ -36,7 +53,8 @@ namespace pluginVerilog.Verilog
         {
             WordScanner ret = new WordScanner(wordPointer.Document, RootParsedDocument);
             ret.wordPointer = wordPointer.Clone();
-            ret.Active = Active;
+            ret.nonGeneratedCount = nonGeneratedCount;
+            ret.skipWords = skipWords;
             foreach (var wp in stock)
             {
                 ret.stock.Add(wp.Clone());
@@ -63,19 +81,19 @@ namespace pluginVerilog.Verilog
 
         public void Color(CodeDrawStyle.ColorType colorType)
         {
-            if (!active) return;
+            if (nonGeneratedCount != 0 || skipWords) return;
             wordPointer.Color(colorType);
         }
 
         public void AddError(string message)
         {
-            if (!active) return;
+            if (nonGeneratedCount != 0 || skipWords) return;
             wordPointer.AddError(message);
         }
 
         public void AddWarning(string message)
         {
-            if (!active) return;
+            if (nonGeneratedCount != 0 || skipWords) return;
             wordPointer.AddWarning(message);
         }
 
@@ -94,9 +112,22 @@ namespace pluginVerilog.Verilog
             }
         }
 
+        public bool Active
+        {
+            get
+            {
+                if (nonGeneratedCount != 0) return false;
+                if (skipWords) return false;
+                return true;
+            }
+        }
+
         public void MoveNext()
         {
-            if (!active) wordPointer.Color(CodeDrawStyle.ColorType.Inactivated);
+            if (nonGeneratedCount != 0)
+            {
+                wordPointer.Color(CodeDrawStyle.ColorType.Inactivated);
+            }
 
             while(wordPointer.Eof && stock.Count != 0)
             {
@@ -375,7 +406,7 @@ namespace pluginVerilog.Verilog
             string identifier = wordPointer.Text;
             if (RootParsedDocument.Macros.ContainsKey(identifier))
             {
-                wordPointer.AddError("dulplicated identifier");
+                if(Active) wordPointer.AddError("dulplicated identifier");
                 error = true;
             }
 

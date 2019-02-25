@@ -41,7 +41,7 @@ namespace pluginVerilog.Verilog.Variables
             //                          | output reg[signed][range] list_of_variable_port_identifiers
             //                          | output[output_variable_type] list_of_port_identifiers
             //                          | output output_variable_type list_of_variable_port_identifiers 
-            // list_of_port_identifiers::= (From Annex A -A.2.3) port_identifier { , port_identifier }
+            // list_of_port_identifiers::= port_identifier { , port_identifier }
             // range ::= [ msb_constant_expression : lsb_constant_expression ]  
 
             List<Variable> variables;
@@ -173,9 +173,19 @@ namespace pluginVerilog.Verilog.Variables
             return;
         }
 
+/*        tf_input_declaration::= input[reg][signed][range] list_of_port_identifiers 
+                                    | input[task_port_type] list_of_port_identifiers
+        tf_output_declaration::= output[reg][signed][range] list_of_port_identifiers 
+                                    | output[task_port_type] list_of_port_identifiers
+        tf_inout_declaration::= inout[reg][signed][range] list_of_port_identifiers 
+                                    | inout[task_port_type] list_of_port_identifiers
+        task_port_type::= time 
+                                    | real 
+                                    | realtime 
+                                    | integer
+*/
         public static void ParseTaskPortDeclaration(WordScanner word, Task task, Attribute attribute)
         {
-
             List<Variable> variables;
             switch (word.Text)
             {
@@ -187,6 +197,50 @@ namespace pluginVerilog.Verilog.Variables
                         Port port = new Port();
                         port.Name = variable.Name;
                         port.Direction = DirectionEnum.Input;
+                        if (!task.Ports.ContainsKey(variable.Name))
+                        {
+                            task.Ports.Add(port.Name, port);
+                        }
+                        if (task.Variables.ContainsKey(variable.Name))
+                        {
+                            word.AddError("illegal port name");
+                        }
+                        else
+                        {
+                            task.Variables.Add(variable.Name, variable);
+                        }
+                    }
+                    break;
+                case "inout":
+                    ParseTfInoutDeclaration(word, task.Module, attribute, out variables);
+                    if (variables.Count == 0) return;
+                    foreach (Variable variable in variables)
+                    {
+                        Port port = new Port();
+                        port.Name = variable.Name;
+                        port.Direction = DirectionEnum.Inout;
+                        if (!task.Ports.ContainsKey(variable.Name))
+                        {
+                            task.Ports.Add(port.Name, port);
+                        }
+                        if (task.Variables.ContainsKey(variable.Name))
+                        {
+                            word.AddError("illegal port name");
+                        }
+                        else
+                        {
+                            task.Variables.Add(variable.Name, variable);
+                        }
+                    }
+                    break;
+                case "output":
+                    ParseTfOutputDeclaration(word, task.Module, attribute, out variables);
+                    if (variables.Count == 0) return;
+                    foreach (Variable variable in variables)
+                    {
+                        Port port = new Port();
+                        port.Name = variable.Name;
+                        port.Direction = DirectionEnum.Output;
                         if (!task.Ports.ContainsKey(variable.Name))
                         {
                             task.Ports.Add(port.Name, port);
@@ -506,28 +560,23 @@ namespace pluginVerilog.Verilog.Variables
             }
         }
 
-        /*
-        tf_output_declaration ::=   output [ reg ] [ signed ] [ range ] list_of_port_identifiers
-                                    |  output [ task_port_type ] list_of_port_identifiers
-        tf_inout_declaration  ::=   inout [ reg ] [ signed ] [ range ] list_of_port_identifiers
-                                    |  inout [ task_port_type ] list_of_port_identifiers
-        task_port_type ::=           time | real | realtime | integer
-         */
-
-        public static void ParseTfInputDeclaration(WordScanner word, Module module, Attribute attribute, out List<Variable> variables)
+        public static void ParseTfOutputDeclaration(WordScanner word, Module module, Attribute attribute, out List<Variable> variables)
         {
-            //            tf_input_declaration::= input[reg][signed][range] list_of_port_identifiers
-            //                          | input[task_port_type] list_of_port_identifiers
-            //            task_port_type::= time | real | realtime | integer
+            // tf_output_declaration::= output[reg][signed][range] list_of_port_identifiers
+            //                        | output[task_port_type] list_of_port_identifiers
+            // task_port_type::= time | real | realtime | integer
 
             portVariableType varType = portVariableType.wire;
 
             variables = new List<Variable>();
-            if (word.Text != "input") System.Diagnostics.Debugger.Break();
+            if (word.Text != "output") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
-            if(word.Text == "time")
+            bool signed = false;
+            Range range = null;
+
+            if (word.Text == "time")
             {
                 varType = portVariableType.time;
                 word.Color(CodeDrawStyle.ColorType.Keyword);
@@ -556,20 +605,312 @@ namespace pluginVerilog.Verilog.Variables
                 varType = portVariableType.reg;
                 word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext();
+
+                if (word.Text == "signed")
+                {
+                    signed = true;
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
+                    word.MoveNext();
+                }
+
+                if (word.GetCharAt(0) == '[')
+                {
+                    range = Range.ParseCreate(word, module);
+                }
+            }
+            else
+            {
+                if (word.Text == "signed")
+                {
+                    signed = true;
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
+                    word.MoveNext();
+                }
+
+                if (word.GetCharAt(0) == '[')
+                {
+                    range = Range.ParseCreate(word, module);
+                }
             }
 
-            bool signed = false;
-            if (word.Text == "signed")
+            while (!word.Eof)
             {
-                signed = true;
+                if (!General.IsIdentifier(word.Text)) return;
+
+                switch (varType)
+                {
+                    case portVariableType.wire:
+                        Net val = new Net();
+                        val.Name = word.Text;
+                        val.Range = range;
+                        val.Signed = signed;
+                        variables.Add(val);
+                        word.Color(CodeDrawStyle.ColorType.Net);
+                        word.MoveNext();
+                        break;
+                    case portVariableType.reg:
+                        Reg reg = new Reg(word.Text, range, signed);
+                        variables.Add(reg);
+                        word.Color(CodeDrawStyle.ColorType.Register);
+                        word.MoveNext();
+                        break;
+                    case portVariableType.integer:
+                        Integer integer = new Integer(word.Text);
+                        variables.Add(integer);
+                        word.Color(CodeDrawStyle.ColorType.Variable);
+                        word.MoveNext();
+                        break;
+                    case portVariableType.real:
+                        Real real = new Real(word.Text);
+                        variables.Add(real);
+                        word.Color(CodeDrawStyle.ColorType.Variable);
+                        word.MoveNext();
+                        break;
+                    case portVariableType.realtime:
+                        RealTime realtime = new RealTime(word.Text);
+                        variables.Add(realtime);
+                        word.Color(CodeDrawStyle.ColorType.Variable);
+                        word.MoveNext();
+                        break;
+                    case portVariableType.time:
+                        Time time = new Time(word.Text);
+                        variables.Add(time);
+                        word.Color(CodeDrawStyle.ColorType.Variable);
+                        word.MoveNext();
+                        break;
+
+                }
+
+                if (word.GetCharAt(0) == ',')
+                {
+                    string next = word.NextText;
+                    if (next == "input" || next == "output" || next == "inout")
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        word.MoveNext(); // ,
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+
+        public static void ParseTfInoutDeclaration(WordScanner word, Module module, Attribute attribute, out List<Variable> variables)
+        {
+            // tf_inout_declaration::= inout[reg][signed][range] list_of_port_identifiers
+            //                       | inout[task_port_type] list_of_port_identifiers
+            // task_port_type::= time | real | realtime | integer
+
+            portVariableType varType = portVariableType.wire;
+
+            variables = new List<Variable>();
+            if (word.Text != "inout") System.Diagnostics.Debugger.Break();
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext();
+
+            bool signed = false;
+            Range range = null;
+
+            if (word.Text == "time")
+            {
+                varType = portVariableType.time;
                 word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext();
             }
-
-            Range range = null;
-            if (word.GetCharAt(0) == '[')
+            else if (word.Text == "real")
             {
-                range = Range.ParseCreate(word, module);
+                varType = portVariableType.real;
+                word.Color(CodeDrawStyle.ColorType.Keyword);
+                word.MoveNext();
+            }
+            else if (word.Text == "realtime")
+            {
+                varType = portVariableType.realtime;
+                word.Color(CodeDrawStyle.ColorType.Keyword);
+                word.MoveNext();
+            }
+            else if (word.Text == "integer")
+            {
+                varType = portVariableType.integer;
+                word.Color(CodeDrawStyle.ColorType.Keyword);
+                word.MoveNext();
+            }
+            else if (word.Text == "reg")
+            {
+                varType = portVariableType.reg;
+                word.Color(CodeDrawStyle.ColorType.Keyword);
+                word.MoveNext();
+
+                if (word.Text == "signed")
+                {
+                    signed = true;
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
+                    word.MoveNext();
+                }
+
+                if (word.GetCharAt(0) == '[')
+                {
+                    range = Range.ParseCreate(word, module);
+                }
+            }
+            else
+            {
+                if (word.Text == "signed")
+                {
+                    signed = true;
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
+                    word.MoveNext();
+                }
+
+                if (word.GetCharAt(0) == '[')
+                {
+                    range = Range.ParseCreate(word, module);
+                }
+            }
+
+            while (!word.Eof)
+            {
+                if (!General.IsIdentifier(word.Text)) return;
+
+                switch (varType)
+                {
+                    case portVariableType.wire:
+                        Net val = new Net();
+                        val.Name = word.Text;
+                        val.Range = range;
+                        val.Signed = signed;
+                        variables.Add(val);
+                        word.Color(CodeDrawStyle.ColorType.Net);
+                        word.MoveNext();
+                        break;
+                    case portVariableType.reg:
+                        Reg reg = new Reg(word.Text, range, signed);
+                        variables.Add(reg);
+                        word.Color(CodeDrawStyle.ColorType.Register);
+                        word.MoveNext();
+                        break;
+                    case portVariableType.integer:
+                        Integer integer = new Integer(word.Text);
+                        variables.Add(integer);
+                        word.Color(CodeDrawStyle.ColorType.Variable);
+                        word.MoveNext();
+                        break;
+                    case portVariableType.real:
+                        Real real = new Real(word.Text);
+                        variables.Add(real);
+                        word.Color(CodeDrawStyle.ColorType.Variable);
+                        word.MoveNext();
+                        break;
+                    case portVariableType.realtime:
+                        RealTime realtime = new RealTime(word.Text);
+                        variables.Add(realtime);
+                        word.Color(CodeDrawStyle.ColorType.Variable);
+                        word.MoveNext();
+                        break;
+                    case portVariableType.time:
+                        Time time = new Time(word.Text);
+                        variables.Add(time);
+                        word.Color(CodeDrawStyle.ColorType.Variable);
+                        word.MoveNext();
+                        break;
+
+                }
+
+                if (word.GetCharAt(0) == ',')
+                {
+                    string next = word.NextText;
+                    if (next == "input" || next == "output" || next == "inout")
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        word.MoveNext(); // ,
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }
+
+        public static void ParseTfInputDeclaration(WordScanner word, Module module, Attribute attribute, out List<Variable> variables)
+        {
+            //            tf_input_declaration::= input[reg][signed][range] list_of_port_identifiers
+            //                          | input[task_port_type] list_of_port_identifiers
+            //            task_port_type::= time | real | realtime | integer
+
+            portVariableType varType = portVariableType.wire;
+
+            variables = new List<Variable>();
+            if (word.Text != "input") System.Diagnostics.Debugger.Break();
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext();
+
+            bool signed = false;
+            Range range = null;
+
+            if (word.Text == "time")
+            {
+                varType = portVariableType.time;
+                word.Color(CodeDrawStyle.ColorType.Keyword);
+                word.MoveNext();
+            }
+            else if (word.Text == "real")
+            {
+                varType = portVariableType.real;
+                word.Color(CodeDrawStyle.ColorType.Keyword);
+                word.MoveNext();
+            }
+            else if (word.Text == "realtime")
+            {
+                varType = portVariableType.realtime;
+                word.Color(CodeDrawStyle.ColorType.Keyword);
+                word.MoveNext();
+            }
+            else if (word.Text == "integer")
+            {
+                varType = portVariableType.integer;
+                word.Color(CodeDrawStyle.ColorType.Keyword);
+                word.MoveNext();
+            }
+            else if (word.Text == "reg")
+            {
+                varType = portVariableType.reg;
+                word.Color(CodeDrawStyle.ColorType.Keyword);
+                word.MoveNext();
+
+                if (word.Text == "signed")
+                {
+                    signed = true;
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
+                    word.MoveNext();
+                }
+
+                if (word.GetCharAt(0) == '[')
+                {
+                    range = Range.ParseCreate(word, module);
+                }
+            }
+            else
+            {
+                if (word.Text == "signed")
+                {
+                    signed = true;
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
+                    word.MoveNext();
+                }
+
+                if (word.GetCharAt(0) == '[')
+                {
+                    range = Range.ParseCreate(word, module);
+                }
             }
 
             while (!word.Eof)

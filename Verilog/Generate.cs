@@ -8,7 +8,7 @@ namespace pluginVerilog.Verilog
 {
     public class Generate
     {
-        public static void ParseGenerateLoopStatement(WordScanner word, Module module)
+        public static void ParseGenerateLoopStatement(WordScanner word, Module module, bool protoType)
         {
             // generate_loop_statement::=  for (genvar_assignment; constant_expression; genvar_assignment) begin : generate_block_identifier { generate_item } end
             word.Color(CodeDrawStyle.ColorType.Keyword);
@@ -21,7 +21,7 @@ namespace pluginVerilog.Verilog
             }
             word.MoveNext();
 
-            if (!parseGenvarAssignment(word, module))
+            if (!parseGenvarAssignment(word, module, protoType))
             {
                 return;
             }
@@ -47,7 +47,7 @@ namespace pluginVerilog.Verilog
             }
             word.MoveNext();
 
-            if (!parseGenvarAssignment(word, module))
+            if (!parseGenvarAssignment(word, module, protoType))
             {
                 return;
             }
@@ -59,10 +59,10 @@ namespace pluginVerilog.Verilog
             }
             word.MoveNext();
 
-            ParseGenerateBlockStatementWithName(word, module);
+            ParseGenerateBlockStatementWithName(word, module, protoType);
         }
 
-        private static bool parseGenvarAssignment(WordScanner word, NameSpace nameSpace)
+        private static bool parseGenvarAssignment(WordScanner word, NameSpace nameSpace, bool protoType)
         {
             //    genvar_assignment::= genvar_identifier = constant_expression
             Expressions.VariableReference genvar = Expressions.VariableReference.ParseCreate(word, nameSpace);
@@ -86,7 +86,7 @@ namespace pluginVerilog.Verilog
             return true;
         }
 
-        public static void ParseGenerateConditionalStatement(WordScanner word, Module module)
+        public static void ParseGenerateConditionalStatement(WordScanner word, Module module, bool protoType)
         {
             // generate_conditional_statement::= if (constant_expression ) generate_item_or_null[ else generate_item_or_null]
             // true (that is, has a nonzero known value)
@@ -101,7 +101,7 @@ namespace pluginVerilog.Verilog
             word.MoveNext();
 
             Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
-            if (!expression.Constant)
+            if (expression != null && !expression.Constant)
             {
                 word.AddError("should be constant");
             }
@@ -116,13 +116,13 @@ namespace pluginVerilog.Verilog
             if(word.Active && expression.Constant && expression.Value == 0)
             {
                 // false
-                word.Active = false;
-                Module.ParseGenerateItem(word, module);
-                word.Active = true;
+                word.StartNonGenenerated();
+                Module.ParseGenerateItem(word, module, protoType);
+                word.EndNonGeneratred();
             }
             else
             {
-                Module.ParseGenerateItem(word, module);
+                Module.ParseGenerateItem(word, module, protoType);
             }
 
             if (word.Text == "else")
@@ -133,19 +133,19 @@ namespace pluginVerilog.Verilog
                 if (word.Active && expression.Constant && expression.Value != 0)
                 {
                     // false
-                    word.Active = false;
-                    Module.ParseGenerateItem(word, module);
-                    word.Active = true;
+                    word.StartNonGenenerated();
+                    Module.ParseGenerateItem(word, module, protoType);
+                    word.EndNonGeneratred();
                 }
                 else
                 {
-                    Module.ParseGenerateItem(word, module);
+                    Module.ParseGenerateItem(word, module, protoType);
                 }
             }
 
         }
 
-        public static void ParseGenerateCaseStatement(WordScanner word, Module module)
+        public static void ParseGenerateCaseStatement(WordScanner word, Module module, bool protoType)
         {
             // generate_case_statement::=  case (constant_expression ) genvar_case_item { genvar_case_item } endcase
             // genvar_case_item ::=  constant_expression  { , constant_expression } : generate_item_or_null
@@ -197,13 +197,13 @@ namespace pluginVerilog.Verilog
 
                     if(caseSelected && word.Active)
                     {
-                        word.Active = false;
-                        Module.ParseGenerateItem(word, module);
-                        word.Active = true;
+                        word.StartNonGenenerated();
+                        Module.ParseGenerateItem(word, module, protoType);
+                        word.EndNonGeneratred();
                     }
                     else
                     {
-                        Module.ParseGenerateItem(word, module);
+                        Module.ParseGenerateItem(word, module, protoType);
                     }
                 }
                 else
@@ -233,13 +233,13 @@ namespace pluginVerilog.Verilog
                     if (word.Active && expression != null && conditionExpression != null && expression.Constant && conditionExpression.Constant && expression.Value != conditionExpression.Value)
                     {
                         // false
-                        word.Active = false;
-                        Module.ParseGenerateItem(word, module);
-                        word.Active = true;
+                        word.StartNonGenenerated();
+                        Module.ParseGenerateItem(word, module, protoType);
+                        word.EndNonGeneratred();
                     }
                     else
                     {
-                        Module.ParseGenerateItem(word, module);
+                        Module.ParseGenerateItem(word, module, protoType);
                         caseSelected = true;
                     }
                 }
@@ -247,7 +247,7 @@ namespace pluginVerilog.Verilog
 
         }
 
-        public static void ParseGenerateBlockStatement(WordScanner word, Module module)
+        public static void ParseGenerateBlockStatement(WordScanner word, Module module, bool protoType)
         {
             // generate_block ::= begin[ : generate_block_identifier]  { generate_item } end
             word.Color(CodeDrawStyle.ColorType.Keyword);
@@ -266,7 +266,7 @@ namespace pluginVerilog.Verilog
                 word.MoveNext();
             }
 
-            Module.ParseGenerateItems(word, module);
+            Module.ParseGenerateItems(word, module, protoType);
 
             if (word.Text == "end")
             {
@@ -280,7 +280,7 @@ namespace pluginVerilog.Verilog
             }
         }
 
-        public static void ParseGenerateBlockStatementWithName(WordScanner word, Module module)
+        public static void ParseGenerateBlockStatementWithName(WordScanner word, Module module, bool protoType)
         {
             // generate_block ::= begin[ : generate_block_identifier]  { generate_item } end
             word.Color(CodeDrawStyle.ColorType.Keyword);
@@ -303,7 +303,7 @@ namespace pluginVerilog.Verilog
                 word.MoveNext();
             }
 
-            Module.ParseGenerateItems(word, module);
+            Module.ParseGenerateItems(word, module, protoType);
 
             if (word.Text == "end")
             {
