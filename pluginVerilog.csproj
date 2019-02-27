@@ -98,6 +98,7 @@
     <Compile Include="Verilog\Snippets\AlwaysFFSnippet.cs" />
     <Compile Include="Verilog\Snippets\BeginAutoCompleteItem.cs" />
     <Compile Include="Verilog\Snippets\FunctionAutocompleteItem.cs" />
+    <Compile Include="Verilog\Snippets\ModuleAutocompleteItem.cs" />
     <Compile Include="Verilog\Snippets\ModuleInstanceAutocompleteItem.cs" />
     <Compile Include="Verilog\Snippets\NonBlockingAssignmentAutocompleteItem.cs" />
     <Compile Include="Verilog\Snippets\Setup.cs" />
