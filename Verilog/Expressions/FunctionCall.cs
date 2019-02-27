@@ -19,6 +19,16 @@ namespace pluginVerilog.Verilog.Expressions
             functionCall.Reference = word.GetReference();
             functionCall.FunctionName = word.Text;
 
+            Function function = null;
+            if (nameSpace.Module.Functions.ContainsKey(functionCall.FunctionName))
+            {
+                function = nameSpace.Module.Functions[functionCall.FunctionName];
+            }
+            else
+            {
+                word.AddError("undedefined");
+            }
+
             word.Color(CodeDrawStyle.ColorType.Identifier);
             word.MoveNext();
 
@@ -29,6 +39,7 @@ namespace pluginVerilog.Verilog.Expressions
             }
             word.MoveNext();
 
+            int i = 0;
             while (!word.Eof)
             {
                 Expression expression = Expression.ParseCreate(word, nameSpace);
@@ -37,6 +48,21 @@ namespace pluginVerilog.Verilog.Expressions
                     return null;
                 }
                 functionCall.Expressions.Add(expression);
+                if(function != null)
+                {
+                    if (i > function.Ports.Count)
+                    {
+                        word.AddError("illegal argument");
+                    }
+                    else
+                    {
+                        if(function.PortsList[i] != null && expression != null & function.PortsList[i].Range != null && function.PortsList[i].Range.BitWidth != expression.BitWidth)
+                        {
+                            word.AddWarning("bitwidth mismatch");
+                        }
+                    }
+                }
+
 
                 if(word.Text == ")")
                 {
@@ -52,6 +78,7 @@ namespace pluginVerilog.Verilog.Expressions
                     word.AddError("illegal function call");
                     return null;
                 }
+                i++;
             }
             return functionCall;
         }

@@ -13,6 +13,7 @@ namespace pluginVerilog.Verilog
         }
 
         public Dictionary<string, Variables.Port> Ports = new Dictionary<string, Variables.Port>();
+        public List<Variables.Port> PortsList = new List<Variables.Port>();
         public Statements.IStatement Statement;
 
         private enum valType
@@ -103,7 +104,7 @@ namespace pluginVerilog.Verilog
 
             function.Name = word.Text;
             word.Color(CodeDrawStyle.ColorType.Identifier);
-            if (module.Functions.ContainsKey(function.Name))
+            if (word.Active && module.Functions.ContainsKey(function.Name) || module.NameSpaces.ContainsKey(function.Name))
             {
                 word.AddError("duplicated name");
             }
@@ -194,11 +195,12 @@ namespace pluginVerilog.Verilog
             function.LastIndex = word.RootIndex;
             word.MoveNext();
 
-            if (!module.Functions.ContainsKey(function.Name))
-            {
-                module.Functions.Add(function.Name, function);
-                module.NameSpaces.Add(function);
-            }
+            if (!word.Active) return;
+            if (module.Functions.ContainsKey(function.Name)) return;
+            if (module.NameSpaces.ContainsKey(function.Name)) return;
+
+            module.Functions.Add(function.Name, function);
+            module.NameSpaces.Add(function.Name,function);
 
             return;
         }

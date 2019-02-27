@@ -23,11 +23,11 @@ namespace pluginVerilog.Verilog
         public Dictionary<string, Variables.Parameter> Parameters = new Dictionary<string, Variables.Parameter>();
         public Dictionary<string, Variables.Parameter> LocalParameters = new Dictionary<string, Variables.Parameter>();
         public Module Module { get; protected set; }
-        public List<NameSpace> NameSpaces = new List<NameSpace>();
+        public Dictionary<string, NameSpace> NameSpaces = new Dictionary<string, NameSpace>();
 
         public NameSpace GetHierNameSpace(int index)
         {
-            foreach(NameSpace subSpace in NameSpaces)
+            foreach(NameSpace subSpace in NameSpaces.Values)
             {
                 if (index < subSpace.BeginIndex) continue;
                 if (index > subSpace.LastIndex) continue;

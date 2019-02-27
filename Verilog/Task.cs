@@ -76,7 +76,7 @@ namespace pluginVerilog.Verilog
 
             task.Name = word.Text;
             word.Color(CodeDrawStyle.ColorType.Identifier);
-            if (module.Functions.ContainsKey(task.Name))
+            if (word.Active && module.Tasks.ContainsKey(task.Name) || module.NameSpaces.ContainsKey(task.Name))
             {
                 word.AddError("duplicated name");
             }
@@ -148,13 +148,15 @@ namespace pluginVerilog.Verilog
             task.LastIndex = word.RootIndex;
             word.MoveNext();
 
-            if (!module.Tasks.ContainsKey(task.Name))
-            {
-                module.Tasks.Add(task.Name, task);
-                module.NameSpaces.Add(task);
-            }
+            if (!word.Active) return;
+            if (module.Tasks.ContainsKey(task.Name)) return;
+            if (module.NameSpaces.ContainsKey(task.Name)) return;
+
+            module.Tasks.Add(task.Name, task);
+            module.NameSpaces.Add(task.Name, task);
 
             return;
+
         }
 
     }

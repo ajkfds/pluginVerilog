@@ -58,6 +58,7 @@ namespace pluginVerilog.Verilog.Expressions
         */
         public static Primary ParseCreate(WordScanner word, NameSpace nameSpace)
         {
+            if (nameSpace == null) System.Diagnostics.Debugger.Break();
             switch (word.WordType)
             {
                 case WordPointer.WordTypeEnum.Number:
@@ -86,6 +87,35 @@ namespace pluginVerilog.Verilog.Expressions
                             return FunctionCall.ParseCreate(word, nameSpace);
                         }
 
+                        if(word.NextText == ".")
+                        {
+                            if (nameSpace.Module.ModuleInstantiations.ContainsKey(word.Text))
+                            {
+                                word.Color(CodeDrawStyle.ColorType.Identifier);
+                                string moduleName = nameSpace.Module.ModuleInstantiations[word.Text].ModuleName;
+                                Module module = word.RootParsedDocument.ProjectProperty.GetModule(moduleName);
+                                if (module == null) return null;
+                                word.MoveNext();
+                                word.MoveNext(); // .
+
+                                Primary primary = subParseCreate(word, module);
+                                if (primary == null) word.AddError("illegal variable");
+                                return primary;
+                            }
+                            if (nameSpace.NameSpaces.ContainsKey(word.Text))
+                            {
+                                word.Color(CodeDrawStyle.ColorType.Identifier);
+                                NameSpace space = nameSpace.NameSpaces[word.Text];
+                                if (space == null) return null;
+                                word.MoveNext();
+                                word.MoveNext(); // .
+
+                                Primary primary = subParseCreate(word, space);
+                                if (primary == null) word.AddError("illegal variable");
+                                return primary;
+                            }
+                        }
+
                         if(word.Eof) return null;
                         if (General.ListOfKeywords.Contains(word.Text)) return null;
                         if(General.IsIdentifier(word.Text) & !nameSpace.Variables.ContainsKey(word.Text))
@@ -98,6 +128,67 @@ namespace pluginVerilog.Verilog.Expressions
                             variable = VariableReference.ParseCreate(word, nameSpace);
                             if (variable != null) return variable;
                         }
+                    }
+                    break;
+            }
+            return null;
+        }
+
+        private static Primary subParseCreate(WordScanner word, NameSpace nameSpace)
+        {
+            if (nameSpace == null) System.Diagnostics.Debugger.Break();
+            switch (word.WordType)
+            {
+                case WordPointer.WordTypeEnum.Number:
+                    return null;
+                case WordPointer.WordTypeEnum.Symbol:
+                    return null;
+                case WordPointer.WordTypeEnum.String:
+                    return null;
+                case WordPointer.WordTypeEnum.Text:
+                    {
+                        var variable = VariableReference.ParseCreate(word, nameSpace);
+                        if (variable != null) return variable;
+
+                        var parameter = ParameterReference.ParseCreate(word, nameSpace);
+                        if (parameter != null) return parameter;
+
+                        if (word.NextText == "(")
+                        {
+                            return FunctionCall.ParseCreate(word, nameSpace);
+                        }
+
+                        if (word.NextText == ".")
+                        {
+                            if (nameSpace.Module.ModuleInstantiations.ContainsKey(word.Text))
+                            {
+                                word.Color(CodeDrawStyle.ColorType.Identifier);
+                                string moduleName = nameSpace.Module.ModuleInstantiations[word.Text].ModuleName;
+                                Module module = word.RootParsedDocument.ProjectProperty.GetModule(moduleName);
+                                if (module == null) return null;
+                                word.MoveNext();
+                                word.MoveNext(); // .
+
+                                Primary primary = subParseCreate(word, module);
+                                if (primary == null) word.AddError("illegal variable");
+                                return primary;
+                            }
+                            if (nameSpace.NameSpaces.ContainsKey(word.Text))
+                            {
+                                word.Color(CodeDrawStyle.ColorType.Identifier);
+                                NameSpace space = nameSpace.NameSpaces[word.Text];
+                                if (space == null) return null;
+                                word.MoveNext();
+                                word.MoveNext(); // .
+
+                                Primary primary = subParseCreate(word, space);
+                                if (primary == null) word.AddError("illegal variable");
+                                return primary;
+                            }
+                        }
+
+                        if (word.Eof) return null;
+                        if (General.ListOfKeywords.Contains(word.Text)) return null;
                     }
                     break;
             }
@@ -191,6 +282,7 @@ namespace pluginVerilog.Verilog.Expressions
 
         public new static VariableReference ParseCreate(WordScanner word,NameSpace nameSpace)
         {
+            if (nameSpace == null) System.Diagnostics.Debugger.Break();
             Variables.Variable variable = nameSpace.GetVariable(word.Text);
             if (variable == null) return null;
 

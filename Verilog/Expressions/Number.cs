@@ -318,15 +318,24 @@ namespace pluginVerilog.Verilog.Expressions
                 index++;
             }
 
-            try
-            {
-                number.Value = Convert.ToInt32(sb.ToString(), 2);
-                number.Constant = true;
-            }
-            catch
+            string valueString = sb.ToString();
+            if (valueString.Contains('x') || valueString.Contains('?') || valueString.Contains('z'))
             {
 
             }
+            else
+            {
+                try
+                {
+                    number.Value = Convert.ToInt32(sb.ToString(), 2);
+                    number.Constant = true;
+                }
+                catch
+                {
+
+                }
+            }
+
             return true;
         }
 

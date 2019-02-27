@@ -40,6 +40,10 @@ namespace pluginVerilog.Verilog.Statements
                 }
                 else
                 {
+                    if (nameSpace.NameSpaces.ContainsKey(word.Text))
+                    {
+                        word.AddError("duplicated name");
+                    }
                     namedBlock.Name = word.Text;
                     word.MoveNext();
                 }
@@ -58,7 +62,10 @@ namespace pluginVerilog.Verilog.Statements
                 namedBlock.LastIndex = word.RootIndex;
                 word.MoveNext(); // end
 
-                nameSpace.NameSpaces.Add(namedBlock);
+                if (!nameSpace.NameSpaces.ContainsKey(namedBlock.Name))
+                {
+                    nameSpace.NameSpaces.Add(namedBlock.Name,namedBlock);
+                }
 
                 return namedBlock;
             }

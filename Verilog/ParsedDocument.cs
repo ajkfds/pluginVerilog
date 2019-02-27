@@ -17,7 +17,7 @@ namespace pluginVerilog.Verilog
         public Dictionary<string, Data.VerilogHeaderFile> IncludeFiles = new Dictionary<string, Data.VerilogHeaderFile>();
         public Dictionary<string, string> Macros = new Dictionary<string, string>();
 
-        private ProjectProperty projectProperty
+        public ProjectProperty ProjectProperty
         {
             get
             {
@@ -180,6 +180,9 @@ namespace pluginVerilog.Verilog
 
         public List<codeEditor.CodeEditor.AutocompleteItem> GetAutoCompleteItems(int index,int lineStartIndex,int line)
         {
+            
+
+
             List<codeEditor.CodeEditor.AutocompleteItem> items = verilogKeywords.ToList();
 
             NameSpace space = null;
@@ -194,7 +197,7 @@ namespace pluginVerilog.Verilog
 
             appendAutoCompleteItems(items, space);
 
-            List<string> moduleNameList = projectProperty.GetModuleNameList();
+            List<string> moduleNameList = ProjectProperty.GetModuleNameList();
             foreach(string moduleName in moduleNameList)
             {
                 items.Add(new Snippets.ModuleInstanceAutocompleteItem(
@@ -208,6 +211,7 @@ namespace pluginVerilog.Verilog
 
             return items;
         }
+
         private void appendAutoCompleteItems(List<codeEditor.CodeEditor.AutocompleteItem> items, NameSpace nameSpace)
         {
             foreach (Variables.Variable variable in nameSpace.Variables.Values)

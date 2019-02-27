@@ -152,10 +152,16 @@ namespace pluginVerilog.Verilog.Variables
                     {
                         Port port = new Port();
                         port.Name = variable.Name;
+                        if(variable is Net)
+                        {
+                            port.Range = ((Net)variable).Range;
+                        }
+
                         port.Direction = DirectionEnum.Input;
                         if (!function.Ports.ContainsKey(variable.Name))
                         {
                             function.Ports.Add(port.Name, port);
+                            function.PortsList.Add(port);
                         }
                         if (function.Variables.ContainsKey(variable.Name))
                         {
