@@ -178,12 +178,30 @@ namespace pluginVerilog.Verilog
             new Snippets.NonBlockingAssignmentAutoCompleteItem("<=",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Normal), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
         };
 
-        public List<codeEditor.CodeEditor.AutocompleteItem> GetAutoCompleteItems(int index,int lineStartIndex,int line)
+        private NameSpace getSearchNameSpace(NameSpace nameSpace,List<string> hier)
         {
-            
+            if (hier.Count == 0) return nameSpace;
 
+            if (nameSpace.Module.ModuleInstantiations.ContainsKey(hier[0]))
+            {
+                Module module = ProjectProperty.GetModule(nameSpace.Module.ModuleInstantiations[hier[0]].ModuleName);
+                hier.RemoveAt(0);
+                return getSearchNameSpace(module,hier);
+            }
+            else if(nameSpace.NameSpaces.ContainsKey(hier[0]))
+            {
+                NameSpace space = nameSpace.NameSpaces[hier[0]];
+                hier.RemoveAt(0);
+                return getSearchNameSpace(space, hier);
+            }
+            return nameSpace;
+        }
 
-            List<codeEditor.CodeEditor.AutocompleteItem> items = verilogKeywords.ToList();
+        public List<codeEditor.CodeEditor.AutocompleteItem> GetAutoCompleteItems(int index,int lineStartIndex,int line,CodeEditor.CodeDocument document,out string cantidateWord)
+        {
+            cantidateWord = null;
+
+            List<codeEditor.CodeEditor.AutocompleteItem> items = null;
 
             NameSpace space = null;
             foreach (Module module in Modules.Values)
@@ -193,21 +211,34 @@ namespace pluginVerilog.Verilog
                 space = module.GetHierNameSpace(lineStartIndex);
                 break;
             }
-            if (space == null) return items;
-
-            appendAutoCompleteItems(items, space);
-
-            List<string> moduleNameList = ProjectProperty.GetModuleNameList();
-            foreach(string moduleName in moduleNameList)
+            if (space == null)
             {
-                items.Add(new Snippets.ModuleInstanceAutocompleteItem(
-                    moduleName, 
-                    CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Identifier), 
-                    CodeDrawStyle.Color(CodeDrawStyle.ColorType.Identifier),
-                    Project
-                    )
-                );
+                items = verilogKeywords.ToList();
+                return items;
             }
+
+            List<string> words = document.GetHierWords(index);
+            if (document.GetCharAt(index - 1) == '.')
+            {
+                cantidateWord = "";
+                items = new List<codeEditor.CodeEditor.AutocompleteItem>();
+            }
+            else
+            {
+                cantidateWord = words.LastOrDefault();
+                if(words.Count <= 1)
+                {
+                    items = verilogKeywords.ToList();
+                }
+                else
+                {
+                    items = new List<codeEditor.CodeEditor.AutocompleteItem>();
+                }
+                words.RemoveAt(words.Count - 1);
+            }
+
+            NameSpace target = getSearchNameSpace(space, words);
+            if(target != null) appendAutoCompleteItems(items, target);
 
             return items;
         }
@@ -252,6 +283,18 @@ namespace pluginVerilog.Verilog
             foreach (Task task in nameSpace.Module.Tasks.Values)
             {
                 items.Add(newItem(task.Name, CodeDrawStyle.ColorType.Identifier));
+            }
+
+            foreach (NameSpace space in nameSpace.NameSpaces.Values)
+            {
+                if (space.Name == null) System.Diagnostics.Debugger.Break();
+                items.Add(newItem(space.Name, CodeDrawStyle.ColorType.Identifier));
+            }
+
+            foreach (ModuleItems.ModuleInstantiation mi in nameSpace.Module.ModuleInstantiations.Values)
+            {
+                if (mi.Name == null) System.Diagnostics.Debugger.Break();
+                items.Add(newItem(mi.Name, CodeDrawStyle.ColorType.Identifier));
             }
         }
 

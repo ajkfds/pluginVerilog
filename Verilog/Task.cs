@@ -49,7 +49,6 @@ namespace pluginVerilog.Verilog
 
         public Dictionary<string, Variables.Port> Ports = new Dictionary<string, Variables.Port>();
         public Statements.IStatement Statement;
-        public string Name;
 
         public static void Parse(WordScanner word, Module module)
         {

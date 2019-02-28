@@ -8,7 +8,7 @@ namespace pluginVerilog.Verilog
 {
     public class Item
     {
-        public string Name;
-        public Attribute Attribute = null;
+        public string Name { get; set; }
+        public Attribute Attribute { get; set; }
     }
 }
