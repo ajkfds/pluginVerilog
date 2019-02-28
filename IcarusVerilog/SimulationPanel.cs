@@ -10,8 +10,30 @@ using System.Windows.Forms;
 
 namespace pluginVerilog.IcarusVerilog
 {
+
+
     public partial class SimulationPanel : UserControl
     {
+
+        [System.Runtime.InteropServices.DllImport("kernel32.dll",
+        CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+        private static extern uint GetShortPathName(
+        [System.Runtime.InteropServices.MarshalAs(
+        System.Runtime.InteropServices.UnmanagedType.LPTStr)]
+    string lpszLongPath,
+        [System.Runtime.InteropServices.MarshalAs(
+        System.Runtime.InteropServices.UnmanagedType.LPTStr)]
+    System.Text.StringBuilder lpszShortPath,
+        uint cchBuffer);
+
+        public string getShortPath(string path)
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder(1024);
+            uint ret = GetShortPathName(path, sb, (uint)sb.Capacity);
+            if (ret == 0) return path;
+            return sb.ToString();
+        }
+
         public SimulationPanel(Data.VerilogFile topFile)
         {
             InitializeComponent();
@@ -77,7 +99,7 @@ namespace pluginVerilog.IcarusVerilog
             {
                 foreach (string includePath in includeFileList)
                 { 
-                    sw.WriteLine("+libdir+\"" + includePath + "\"");
+                    sw.WriteLine("+incdir+" + getShortPath(includePath)); // path with space is not accepted
                 }
                 foreach (string absolutePath in filePathList)
                 {
