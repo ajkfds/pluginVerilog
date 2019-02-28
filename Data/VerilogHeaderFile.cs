@@ -135,8 +135,9 @@ namespace pluginVerilog.Data
             return null;
         }
 
-        public List<AutocompleteItem> GetAutoCompleteItems(int index)
+        public List<AutocompleteItem> GetAutoCompleteItems(int index,out string cantidateWord)
         {
+            cantidateWord = null;
             return null;
         }
         public List<codeEditor.CodeEditor.ToolItem> GetToolItems(int index)

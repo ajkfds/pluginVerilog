@@ -201,13 +201,16 @@ namespace pluginVerilog.Data
             return toolItems;
         }
 
-        public List<codeEditor.CodeEditor.AutocompleteItem> GetAutoCompleteItems(int index)
+        public List<codeEditor.CodeEditor.AutocompleteItem> GetAutoCompleteItems(int index,out string cantidateWord)
         {
+            cantidateWord = null;
+
             if (VerilogParsedDocument == null) return null;
             int line = CodeDocument.GetLineAt(index);
             int lineStartIndex = CodeDocument.GetLineStartIndex(line);
 
-            return VerilogParsedDocument.GetAutoCompleteItems(index,lineStartIndex,line);
+            List<codeEditor.CodeEditor.AutocompleteItem> items = VerilogParsedDocument.GetAutoCompleteItems(index,lineStartIndex,line,(CodeEditor.CodeDocument)CodeDocument,out cantidateWord);
+            return items;
         }
 
 

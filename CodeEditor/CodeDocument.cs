@@ -17,7 +17,7 @@ namespace pluginVerilog.CodeEditor
             char ch = GetCharAt(index);
             if (ch == ' ' || ch == '\r' || ch == '\n' || ch == '\t') return;
 
-            while (headIndex > 0)
+            while (headIndex >= 0)
             {
                 ch = GetCharAt(headIndex);
                 if (ch == ' ' || ch == '\r' || ch == '\n' || ch == '\t')
@@ -38,6 +38,47 @@ namespace pluginVerilog.CodeEditor
                 headIndex = nextIndex;
                 Verilog.WordPointer.FetchNext(this, ref headIndex, out length, out nextIndex, out wordType);
             }
+        }
+
+        public List<string> GetHierWords(int index)
+        {
+            List<string> ret = new List<string>();
+            int headIndex = GetLineStartIndex(GetLineAt(index));
+            int length;
+            int nextIndex = headIndex;
+            Verilog.WordPointer.WordTypeEnum wordType;
+
+            while (headIndex < Length)
+            {
+                Verilog.WordPointer.FetchNext(this, ref headIndex, out length, out nextIndex, out wordType);
+                if (length == 0) break;
+                if (headIndex > index) break;
+                ret.Add(CreateString(headIndex, length));
+                headIndex = nextIndex;
+            }
+
+            int i= ret.Count - 1;
+            if (i >= 0 && ret[i] != ".")
+            {
+//                ret.RemoveAt(i);
+                i--;
+            }
+            while (i>=0)
+            {
+                if (ret[i] != ".") break;
+                ret.RemoveAt(i);
+                i--;
+
+                if (i == 0) break;
+                i--;
+            }
+
+            for(int j = 0; j < i; j++)
+            {
+                ret.RemoveAt(0);
+            }
+
+            return ret;
         }
 
     }
