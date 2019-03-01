@@ -12,6 +12,10 @@ namespace pluginVerilog.Verilog
         {
             RootParsedDocument = parsedDocument;
             wordPointer = new WordPointer(document, parsedDocument);
+        }
+
+        public void GetFirst()
+        {
             recheckWord();
         }
 

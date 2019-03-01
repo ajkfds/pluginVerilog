@@ -36,6 +36,7 @@ namespace pluginVerilog.Parser
 
         public override void Parse()
         {
+            word.GetFirst();
             while (!word.Eof)
             {
                 if (word.Text == "module")
