@@ -430,16 +430,13 @@ namespace pluginVerilog.Verilog
                         if (protoType) word.EndSkip();
                         break;
                     case "function":
-                        if (!protoType) word.StartSkip();
-                        { // for prototype only
-                            Function.Parse(word, module);
-                        }
+                        Function.Parse(word, module,protoType);
                         if (!protoType) word.EndSkip();
                         break;
                     case "task":
                         if (!protoType) word.StartSkip();
                         { // for prototype only
-                            Task.Parse(word, module);
+                            Task.Parse(word, module, protoType);
                         }
                         if (!protoType) word.EndSkip();
                         break;
@@ -619,16 +616,12 @@ namespace pluginVerilog.Verilog
                     if (protoType) word.EndSkip();
                     break;
                 case "function":
-                    if (!protoType) word.StartSkip();
-                    { // for prototype only
-                        Function.Parse(word, module);
-                    }
-                    if (!protoType) word.EndSkip();
+                    Function.Parse(word, module,protoType);
                     break;
                 case "task":
                     if (!protoType) word.StartSkip();
                     { // for prototype only
-                        Task.Parse(word, module);
+                        Task.Parse(word, module,protoType);
                     }
                     if (!protoType) word.EndSkip();
                     break;

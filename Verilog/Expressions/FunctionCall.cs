@@ -26,7 +26,7 @@ namespace pluginVerilog.Verilog.Expressions
             }
             else
             {
-                word.AddError("undedefined");
+                word.AddError("undefined");
             }
 
             word.Color(CodeDrawStyle.ColorType.Identifier);

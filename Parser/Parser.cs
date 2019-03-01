@@ -13,7 +13,6 @@ namespace pluginVerilog.Parser
         {
             parsedDocument = new Verilog.ParsedDocument(project, id, document.EditID);
             word = new Verilog.WordScanner(this.document, parsedDocument);
-
         }
 
         public Verilog.WordScanner word;

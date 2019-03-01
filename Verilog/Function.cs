@@ -25,7 +25,7 @@ namespace pluginVerilog.Verilog
             time
         }
 
-        public static void Parse(WordScanner word, Module module)
+        public static void Parse(WordScanner word, Module module, bool protoType)
         {
             if(word.Text != "function")
             {
@@ -50,6 +50,7 @@ namespace pluginVerilog.Verilog
             // tf_input_declaration { , { attribute_instance } tf_input_declaration }
             // range_or_type::= range | integer | real | realtime | time
 
+            if (!protoType) word.StartSkip();
             if (word.Text == "automatic")
             {
                 word.Color(CodeDrawStyle.ColorType.Keyword);
@@ -131,6 +132,7 @@ namespace pluginVerilog.Verilog
                 default:
                     throw new Exception();
             }
+
             function.Variables.Add(retVal.Name, retVal);
 
 
@@ -184,7 +186,23 @@ namespace pluginVerilog.Verilog
 
             }
 
+            if (protoType)
+            {
+                word.StartSkip();
+            }
+            else
+            {
+                word.EndSkip();
+                if(module.Functions.ContainsKey(function.Name) && module.Functions[function.Name].BeginIndex == function.BeginIndex)
+                {
+                    function = module.Functions[function.Name];
+                }
+            }
+
+
             Statements.IStatement statement = Statements.Statements.ParseCreateFunctionStatement(word, function);
+
+            if (protoType) word.EndSkip();
 
             if(word.Text != "endfunction")
             {
@@ -195,12 +213,14 @@ namespace pluginVerilog.Verilog
             function.LastIndex = word.RootIndex;
             word.MoveNext();
 
-            if (!word.Active) return;
-            if (module.Functions.ContainsKey(function.Name)) return;
-            if (module.NameSpaces.ContainsKey(function.Name)) return;
+            if (protoType)
+            {
+                if (module.Functions.ContainsKey(function.Name)) return;
+                if (module.NameSpaces.ContainsKey(function.Name)) return;
 
-            module.Functions.Add(function.Name, function);
-            module.NameSpaces.Add(function.Name,function);
+                module.Functions.Add(function.Name, function);
+                module.NameSpaces.Add(function.Name, function);
+            }
 
             return;
         }

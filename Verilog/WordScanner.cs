@@ -12,6 +12,7 @@ namespace pluginVerilog.Verilog
         {
             RootParsedDocument = parsedDocument;
             wordPointer = new WordPointer(document, parsedDocument);
+            recheckWord();
         }
 
         public void Dispose()

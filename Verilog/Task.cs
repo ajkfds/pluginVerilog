@@ -50,7 +50,7 @@ namespace pluginVerilog.Verilog
         public Dictionary<string, Variables.Port> Ports = new Dictionary<string, Variables.Port>();
         public Statements.IStatement Statement;
 
-        public static void Parse(WordScanner word, Module module)
+        public static void Parse(WordScanner word, Module module, bool protoType)
         {
             if (word.Text != "task")
             {
@@ -60,6 +60,8 @@ namespace pluginVerilog.Verilog
             word.Color(CodeDrawStyle.ColorType.Keyword);
             task.BeginIndex = word.RootIndex;
             word.MoveNext();
+
+            if (!protoType) word.StartSkip();
 
             if (word.Text == "automatic")
             {
@@ -134,9 +136,22 @@ namespace pluginVerilog.Verilog
 
             }
 
-
+            if (protoType)
+            {
+                word.StartSkip();
+            }
+            else
+            {
+                word.EndSkip();
+                if (module.Tasks.ContainsKey(task.Name) && module.Tasks[task.Name].BeginIndex == task.BeginIndex)
+                {
+                    task = module.Tasks[task.Name];
+                }
+            }
 
             Statements.IStatement statement = Statements.Statements.ParseCreateFunctionStatement(word, task);
+
+            if (protoType) word.EndSkip();
 
             if (word.Text != "endtask")
             {
@@ -147,12 +162,13 @@ namespace pluginVerilog.Verilog
             task.LastIndex = word.RootIndex;
             word.MoveNext();
 
-            if (!word.Active) return;
-            if (module.Tasks.ContainsKey(task.Name)) return;
-            if (module.NameSpaces.ContainsKey(task.Name)) return;
-
-            module.Tasks.Add(task.Name, task);
-            module.NameSpaces.Add(task.Name, task);
+            if (protoType)
+            {
+                if (module.Tasks.ContainsKey(task.Name)) return;
+                if (module.NameSpaces.ContainsKey(task.Name)) return;
+                module.Tasks.Add(task.Name, task);
+                module.NameSpaces.Add(task.Name, task);
+            }
 
             return;
 
