@@ -84,9 +84,17 @@ namespace pluginVerilog.Verilog
                 break;
             }
             if (space == null) return ret;
-            if (space.Variables.ContainsKey(text))
+            if (space.Variables.ContainsKey(text))          ret.Add(new Popup.VariablePopup(space.Variables[text]));
+            if (space.LocalParameters.ContainsKey(text))    ret.Add(new Popup.ParameterPopup(space.LocalParameters[text]));
+            if (space.Parameters.ContainsKey(text))         ret.Add(new Popup.ParameterPopup(space.Parameters[text]));
+
+            if (text.StartsWith("`") && Macros.ContainsKey(text.Substring(1)))
             {
-                ret.Add(new Variables.VariablePopup(space.Variables[text]));
+                ret.Add(new Popup.MacroPopup(Macros[text.Substring(1)]));
+            }
+            if (space.Module.Functions.ContainsKey(text))
+            {
+
             }
 
             return ret;

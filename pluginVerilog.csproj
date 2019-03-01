@@ -95,6 +95,11 @@
     <Compile Include="SetupForm.Designer.cs">
       <DependentUpon>SetupForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Verilog\Popup\FunctionPopup.cs" />
+    <Compile Include="Verilog\Popup\MacroPopup.cs" />
+    <Compile Include="Verilog\Popup\ParameterPopup.cs" />
+    <Compile Include="Verilog\Popup\TaskPopup.cs" />
+    <Compile Include="Verilog\Popup\VariablePopup.cs" />
     <Compile Include="Verilog\Snippets\AlwaysFFSnippet.cs" />
     <Compile Include="Verilog\Snippets\BeginAutoCompleteItem.cs" />
     <Compile Include="Verilog\Snippets\FunctionAutocompleteItem.cs" />
@@ -196,6 +201,7 @@
   <ItemGroup>
     <None Include="Resources\pause.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /I /D /Y "$(ProjectDir)\bin\$(Configuration)\$(ProjectName).dll" "$(SolutionDir)codeEditor\bin\$(Configuration)\dlls" 
