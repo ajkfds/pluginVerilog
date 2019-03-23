@@ -123,7 +123,7 @@ namespace pluginVerilog.Verilog.Variables
                 word.MoveNext();
             }
         }
-        public static void ParseCreateDeclaration(WordScanner word, Module module, Attribute attribute)
+        public static void ParseCreateDeclaration(WordScanner word, NameSpace nameSpace, Attribute attribute)
         {
             /*
             local_parameter_declaration ::=  (From Annex A - A.2.1.1)  
@@ -183,7 +183,7 @@ namespace pluginVerilog.Verilog.Variables
                     }
                     if (word.GetCharAt(0) == '[')
                     {
-                        Range range = Range.ParseCreate(word, module);
+                        Range range = Range.ParseCreate(word, nameSpace);
                     }
                     break;
             }
@@ -197,12 +197,12 @@ namespace pluginVerilog.Verilog.Variables
 
                 if (word.Text != "=") break;
                 word.MoveNext();
-                Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
+                Expressions.Expression expression = Expressions.Expression.ParseCreate(word, nameSpace);
                 if (expression == null) break;
 
                 if (local)
                 {
-                    if (module.LocalParameters.ContainsKey(identifier))
+                    if (nameSpace.LocalParameters.ContainsKey(identifier))
                     {
                         word.AddError("local parameter name duplicated");
                     }
@@ -211,12 +211,12 @@ namespace pluginVerilog.Verilog.Variables
                         Parameter param = new Parameter();
                         param.Name = identifier;
                         param.Expression = expression;
-                        module.LocalParameters.Add(param.Name, param);
+                        nameSpace.LocalParameters.Add(param.Name, param);
                     }
                 }
                 else
                 {
-                    if (module.Parameters.ContainsKey(identifier))
+                    if (nameSpace.Parameters.ContainsKey(identifier))
                     {
                         word.AddError("parameter name duplicated");
                     }
@@ -225,7 +225,7 @@ namespace pluginVerilog.Verilog.Variables
                         Parameter param = new Parameter();
                         param.Name = identifier;
                         param.Expression = expression;
-                        module.Parameters.Add(param.Name, param);
+                        nameSpace.Parameters.Add(param.Name, param);
                     }
                 }
                 if (word.Text != ",") break;

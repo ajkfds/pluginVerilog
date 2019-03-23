@@ -7,17 +7,11 @@ using System.Drawing;
 
 namespace pluginVerilog.Verilog.Popup
 {
-    public class ParameterPopup : codeEditor.CodeEditor.PopupItem
+    public class PortPopup : codeEditor.CodeEditor.PopupItem
     {
-        public ParameterPopup(Variables.Parameter parameter)
+        public PortPopup(Variables.Port port)
         {
-            label.AppendText("parameter ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
-            label.AppendText(parameter.Name, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Paramater));
-            if(parameter.Expression != null)
-            {
-                label.AppendText(" = ");
-                label.AppendLabel(parameter.Expression.GetLabel());
-            }
+            label.AppendLabel(port.GetLabel());
         }
 
         ajkControls.ColorLabel label = new ajkControls.ColorLabel();
@@ -31,5 +25,6 @@ namespace pluginVerilog.Verilog.Popup
         {
             label.Draw(graphics, x, y, font, Color.FromArgb(20, 20, 20), backgroundColor);
         }
+
     }
 }

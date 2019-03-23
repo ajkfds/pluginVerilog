@@ -47,6 +47,7 @@
     <Compile Include="CodeDrawStyle.cs" />
     <Compile Include="CodeEditor\CodeDocument.cs" />
     <Compile Include="Data\IVerilogRelatedFile.cs" />
+    <Compile Include="Data\SystemVerilogFile.cs" />
     <Compile Include="PluginExtensions.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="IcarusVerilog\Setup.cs" />
@@ -98,11 +99,13 @@
     <Compile Include="Verilog\Popup\FunctionPopup.cs" />
     <Compile Include="Verilog\Popup\MacroPopup.cs" />
     <Compile Include="Verilog\Popup\ParameterPopup.cs" />
+    <Compile Include="Verilog\Popup\PortPopup.cs" />
     <Compile Include="Verilog\Popup\TaskPopup.cs" />
     <Compile Include="Verilog\Popup\VariablePopup.cs" />
     <Compile Include="Verilog\Snippets\AlwaysFFSnippet.cs" />
     <Compile Include="Verilog\Snippets\BeginAutoCompleteItem.cs" />
     <Compile Include="Verilog\Snippets\FunctionAutocompleteItem.cs" />
+    <Compile Include="Verilog\Snippets\GenerateAutoCompleteItem.cs" />
     <Compile Include="Verilog\Snippets\ModuleAutocompleteItem.cs" />
     <Compile Include="Verilog\Snippets\ModuleInstanceAutocompleteItem.cs" />
     <Compile Include="Verilog\Snippets\NonBlockingAssignmentAutocompleteItem.cs" />

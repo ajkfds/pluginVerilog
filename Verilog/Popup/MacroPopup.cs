@@ -9,39 +9,23 @@ namespace pluginVerilog.Verilog.Popup
 {
     public class MacroPopup : codeEditor.CodeEditor.PopupItem
     {
-        public MacroPopup(string text)
+        public MacroPopup(string macroName,string text)
         {
-            color = CodeDrawStyle.Color(CodeDrawStyle.ColorType.Paramater);
-            icon = new ajkControls.IconImage(Properties.Resources.netBox);
-            iconColorStyle = ajkControls.IconImage.ColorStyle.Red;
-            this.text = text;
+            label.AppendText("define ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+            label.AppendText(macroName, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Identifier));
+            label.AppendText(" " + text);
         }
 
-        private string text;
-        private ajkControls.IconImage icon = null;
-        private ajkControls.IconImage.ColorStyle iconColorStyle;
-        private System.Drawing.Color color;
+        ajkControls.ColorLabel label = new ajkControls.ColorLabel();
 
         public override Size GetSize(Graphics graphics, Font font)
         {
-            Size tsize = System.Windows.Forms.TextRenderer.MeasureText(graphics, text, font);
-            return new Size(tsize.Width + tsize.Height + (tsize.Height >> 2), tsize.Height);
+            return label.GetSize(graphics, font);
         }
 
         public override void Draw(Graphics graphics, int x, int y, Font font, Color backgroundColor)
         {
-            Size tsize = System.Windows.Forms.TextRenderer.MeasureText(graphics, text, font);
-            if (icon != null) graphics.DrawImage(icon.GetImage(tsize.Height, iconColorStyle), new Point(x, y));
-            Color bgColor = backgroundColor;
-            System.Windows.Forms.TextRenderer.DrawText(
-                graphics,
-                text,
-                font,
-                new Point(x + tsize.Height + (tsize.Height >> 2), y),
-                color,
-                bgColor,
-                System.Windows.Forms.TextFormatFlags.NoPadding
-                );
+            label.Draw(graphics, x, y, font, Color.FromArgb(20, 20, 20), backgroundColor);
         }
     }
 }

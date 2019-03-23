@@ -21,6 +21,27 @@ namespace pluginVerilog.Verilog.Variables
             this.Signed = signed;
         }
 
+        public override ajkControls.ColorLabel GetLabel()
+        {
+            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            label.AppendText("reg ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+            label.AppendText(" ");
+            if (Signed)
+            {
+                label.AppendText("signed ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+            }
+
+            if (Range != null)
+            {
+                label.AppendLabel(Range.GetLabel());
+                label.AppendText(" ");
+            }
+
+            label.AppendText(Name, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Register));
+            label.AppendText("\r\n");
+            return label;
+        }
+
         public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
         {
             // reg_declaration::= reg [signed] [range] list_of_variable_identifiers;

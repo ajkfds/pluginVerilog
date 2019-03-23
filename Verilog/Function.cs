@@ -105,7 +105,7 @@ namespace pluginVerilog.Verilog
 
             function.Name = word.Text;
             word.Color(CodeDrawStyle.ColorType.Identifier);
-            if (word.Active && module.Functions.ContainsKey(function.Name) || module.NameSpaces.ContainsKey(function.Name))
+            if (word.Active && (module.Functions.ContainsKey(function.Name) || module.NameSpaces.ContainsKey(function.Name)))
             {
                 word.AddError("duplicated name");
             }
@@ -193,14 +193,42 @@ namespace pluginVerilog.Verilog
             else
             {
                 word.EndSkip();
-                if(module.Functions.ContainsKey(function.Name) && module.Functions[function.Name].BeginIndex == function.BeginIndex)
+                if (module.Functions.ContainsKey(function.Name) && module.Functions[function.Name].BeginIndex == function.BeginIndex)
                 {
                     function = module.Functions[function.Name];
                 }
             }
 
-
-            Statements.IStatement statement = Statements.Statements.ParseCreateFunctionStatement(word, function);
+            if(word.Text == "endfunction")
+            {
+                word.AddError("statement required");
+            }
+            else
+            {
+                if(protoType)
+                {
+                    while (!word.Eof)
+                    {
+                        if (word.Text == "endfunction") break;
+                        switch (word.Text)
+                        {
+                            case "endmodule":
+                            case "endtask":
+                            case "always":
+                            case "initial":
+                                word.AddError("missed endfunction");
+                                return;
+                            default:
+                                break;
+                        }
+                        word.MoveNext();
+                    }
+                }
+                else
+                {
+                    Statements.IStatement statement = Statements.Statements.ParseCreateFunctionStatement(word, function);
+                }
+            }
 
             if (protoType) word.EndSkip();
 
@@ -209,11 +237,14 @@ namespace pluginVerilog.Verilog
                 word.AddError("endfunction expected");
                 return;
             }
-            word.Color(CodeDrawStyle.ColorType.Keyword);
-            function.LastIndex = word.RootIndex;
-            word.MoveNext();
+            else
+            {
+                word.Color(CodeDrawStyle.ColorType.Keyword);
+                function.LastIndex = word.RootIndex;
+                word.MoveNext();
+            }
 
-            if (protoType)
+            if (protoType && word.Active)
             {
                 if (module.Functions.ContainsKey(function.Name)) return;
                 if (module.NameSpaces.ContainsKey(function.Name)) return;

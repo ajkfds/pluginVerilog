@@ -96,9 +96,10 @@ namespace pluginVerilog.Verilog.Expressions
             if (!word.Active) return expression;
             // parse rpn
             List<Primary> primaryStock = new List<Primary>();
-            while(expression.RpnExpressionItems.Count > 0)
+            for(int i=0;i<expression.RpnExpressionItems.Count;i++)
+//            while(expression.RpnExpressionItems.Count > 0)
             {
-                ExpressionItem item = expression.RpnExpressionItems[0];
+                ExpressionItem item = expression.RpnExpressionItems[i];
                 if (item is Primary)
                 {
                     primaryStock.Add(item as Primary);
@@ -134,7 +135,7 @@ namespace pluginVerilog.Verilog.Expressions
                 {
                     return null;
                 }
-                expression.RpnExpressionItems.RemoveAt(0);
+//                expression.RpnExpressionItems.RemoveAt(0);
             }
             if(primaryStock.Count == 1)
             {
@@ -152,7 +153,75 @@ namespace pluginVerilog.Verilog.Expressions
         }
 
 
+        public ajkControls.ColorLabel GetLabel()
+        {
+            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            List<Primary> primaryStock = new List<Primary>();
 
+            for (int i = 0; i < RpnExpressionItems.Count; i++)
+            {
+                ExpressionItem item = RpnExpressionItems[i];
+                if (item is Primary)
+                {
+                    primaryStock.Add(item as Primary);
+                }
+                else if (item is BinaryOperator)
+                {
+                    if (primaryStock.Count < 2) return null;
+                    BinaryOperator op = item as BinaryOperator;
+                    label.AppendLabel(primaryStock[0].GetLabel());
+                    label.AppendLabel(op.GetLabel());
+                    label.AppendLabel(primaryStock[1].GetLabel());
+
+                    Primary primary = op.Operate(primaryStock[0], primaryStock[1]);
+                    primaryStock.RemoveAt(0);
+                    primaryStock.RemoveAt(0);
+                    primaryStock.Add(primary);
+                }
+                else if (item is UnaryOperator)
+                {
+                    if (primaryStock.Count < 1) return null;
+                    UnaryOperator op = item as UnaryOperator;
+                    label.AppendLabel(op.GetLabel());
+                    label.AppendLabel(primaryStock[0].GetLabel());
+
+                    Primary primary = op.Operate(primaryStock[0]);
+                    primaryStock.RemoveAt(0);
+                    primaryStock.Add(primary);
+                }
+                else if (item is TenaryOperator)
+                {
+                    if (primaryStock.Count < 3) return null;
+                    TenaryOperator op = item as TenaryOperator;
+
+                    label.AppendLabel(primaryStock[0].GetLabel());
+
+                    Primary primary = op.Operate(primaryStock[0], primaryStock[1], primaryStock[2]);
+                    primaryStock.RemoveAt(0);
+                    primaryStock.RemoveAt(0);
+                    primaryStock.RemoveAt(0);
+                    primaryStock.Add(primary);
+                }
+                else
+                {
+                    return null;
+                }
+                //                expression.RpnExpressionItems.RemoveAt(0);
+            }
+            if (primaryStock.Count == 1)
+            {
+                label.AppendLabel(primaryStock[0].GetLabel());
+
+                Constant = primaryStock[0].Constant;
+                BitWidth = primaryStock[0].BitWidth;
+                Value = primaryStock[0].Value;
+            }
+            else
+            {
+                return null;
+            }
+            return label;
+        }
 
 
         public static Expression ParseCreateVariableLValue(WordScanner word, NameSpace nameSpace)

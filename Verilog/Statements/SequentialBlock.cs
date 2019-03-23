@@ -17,6 +17,19 @@ namespace pluginVerilog.Verilog.Statements
         end variable_assignment ::= variable_lvalue = expression
         par_block               ::= fork [ : block_identifier { block_item_declaration } ] { statement }
         join seq_block          ::= begin[ : block_identifier { block_item_declaration } ] { statement } end  
+
+
+        block_item_declaration ::=  { attribute_instance } block_reg_declaration          
+                                    | { attribute_instance } event_declaration          
+                                    | { attribute_instance } integer_declaration          
+                                    | { attribute_instance } local_parameter_declaration          
+                                    | { attribute_instance } parameter_declaration          
+                                    | { attribute_instance } real_declaration          
+                                    | { attribute_instance } realtime_declaration          
+                                    | { attribute_instance } time_declaration 
+        block_reg_declaration ::= reg [ signed ] [ range ] list_of_block_variable_identifiers ;
+        list_of_block_variable_identifiers ::=  block_variable_type { , block_variable_type } 
+        block_variable_type ::=  variable_identifier        | variable_identifier dimension { dimension }  
         */
         public static IStatement ParseCreate(WordScanner word,NameSpace nameSpace)
         {
@@ -43,10 +56,51 @@ namespace pluginVerilog.Verilog.Statements
                     if (nameSpace.NameSpaces.ContainsKey(word.Text))
                     {
                         word.AddError("duplicated name");
+                        namedBlock.Name = word.Text;
                     }
-                    namedBlock.Name = word.Text;
+                    else
+                    {
+                        namedBlock.Name = word.Text;
+                        nameSpace.NameSpaces.Add(namedBlock.Name, namedBlock);
+                    }
                     word.MoveNext();
                 }
+
+                while (!word.Eof && word.Text != "end")
+                {
+                    bool endFlag = false;
+                    switch (word.Text)
+                    {
+                        case "reg":
+                            Variables.Reg.ParseCreateFromDeclaration(word, namedBlock);
+                            break;
+                        case "integer":
+                            Variables.Integer.ParseCreateFromDeclaration(word, namedBlock);
+                            break;
+                        case "real":
+                            Verilog.Variables.Real.ParseCreateFromDeclaration(word, namedBlock);
+                            break;
+                        case "realtime":
+                            Verilog.Variables.RealTime.ParseCreateFromDeclaration(word, namedBlock);
+                            break;
+                        case "time":
+                            Verilog.Variables.Time.ParseCreateFromDeclaration(word, namedBlock);
+                            break;
+                        case "event":
+                            Verilog.Variables.Event.ParseCreateFromDeclaration(word, namedBlock);
+                            break;
+                        case "parameter":
+                        case "localparam":
+                            Verilog.Variables.Parameter.ParseCreateDeclaration(word, namedBlock, null);
+                            break;
+                        default:
+                            endFlag = true;
+                            break;
+                    }
+                    if (endFlag) break;
+                }
+
+
                 while (!word.Eof && word.Text != "end")
                 {
                     IStatement statement = Verilog.Statements.Statements.ParseCreateStatement(word, namedBlock);

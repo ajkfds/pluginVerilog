@@ -51,6 +51,16 @@ namespace pluginVerilog.Verilog
             }
         }
 
+        public enum FileStatus
+        {
+            Normal,
+            Error,
+            Warning
+        }
+
+        public FileStatus Status = FileStatus.Normal;
+
+
         public List<codeEditor.CodeEditor.PopupItem> GetPopupItems(int index,string text)
         {
             List<codeEditor.CodeEditor.PopupItem> ret = new List<codeEditor.CodeEditor.PopupItem>();
@@ -90,11 +100,15 @@ namespace pluginVerilog.Verilog
 
             if (text.StartsWith("`") && Macros.ContainsKey(text.Substring(1)))
             {
-                ret.Add(new Popup.MacroPopup(Macros[text.Substring(1)]));
+                ret.Add(new Popup.MacroPopup(text.Substring(1), Macros[text.Substring(1)]));
             }
             if (space.Module.Functions.ContainsKey(text))
             {
-
+                ret.Add(new Popup.FunctionPopup(space.Module.Functions[text]));
+            }
+            if (space.Module.Tasks.ContainsKey(text))
+            {
+                ret.Add(new Popup.TaskPopup(space.Module.Tasks[text]));
             }
 
             return ret;
@@ -107,8 +121,10 @@ namespace pluginVerilog.Verilog
             new codeEditor.CodeEditor.AutocompleteItem("and",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("assign",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("automatic",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
-            new Snippets.BeginAutoCompleteItem("begin",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
 
+
+
+            new Snippets.BeginAutoCompleteItem("begin",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("case",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("casex",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("casez",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
@@ -134,7 +150,7 @@ namespace pluginVerilog.Verilog
             new codeEditor.CodeEditor.AutocompleteItem("fork",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
 
             new Snippets.FunctionAutocompleteItem("function",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
-            new codeEditor.CodeEditor.AutocompleteItem("generate",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
+            new Snippets.GenerateAutoCompleteItem("generate",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("genvar",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("if",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("incdir",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
@@ -242,7 +258,7 @@ namespace pluginVerilog.Verilog
                 {
                     items = new List<codeEditor.CodeEditor.AutocompleteItem>();
                 }
-                words.RemoveAt(words.Count - 1);
+                if(words.Count>2) words.RemoveAt(words.Count - 1);
             }
 
             NameSpace target = getSearchNameSpace(space, words);

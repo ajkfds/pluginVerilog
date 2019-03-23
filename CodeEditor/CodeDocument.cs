@@ -73,12 +73,29 @@ namespace pluginVerilog.CodeEditor
                 i--;
             }
 
-            for(int j = 0; j < i; j++)
+            for(int j = 0; j <= i; j++)
             {
                 ret.RemoveAt(0);
             }
 
             return ret;
+        }
+
+        public string GetIndentString(int index)
+        {
+            StringBuilder sb = new StringBuilder();
+            int line = GetLineAt(index);
+            int headIndex = GetLineStartIndex(GetLineAt(index));
+            int lineLength = GetLineLength(line);
+
+            int i = headIndex;
+            while( i < headIndex + lineLength)
+            {
+                if (GetCharAt(i) != '\t' && GetCharAt(i) != ' ') break;
+                sb.Append(GetCharAt(i));
+                i++;
+            }
+            return sb.ToString();
         }
 
     }

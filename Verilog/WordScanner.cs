@@ -139,11 +139,15 @@ namespace pluginVerilog.Verilog
                 bool error = false;
                 if (wordPointer.ParsedDocument.Messages.Count != 0) error = true;
 
+                if(wordPointer.ParsedDocument == stock.Last().ParsedDocument)
+                {
+                    error = false;
+                }
+
                 wordPointer.Dispose();
                 wordPointer = stock.Last();
                 stock.Remove(stock.Last());
-
-                if(error) wordPointer.AddError("include errors");
+                if (error) wordPointer.AddError("include errors");
             }
 
             wordPointer.MoveNext();

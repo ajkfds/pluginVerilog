@@ -26,6 +26,23 @@ namespace pluginVerilog.Verilog.Variables
             return sb.ToString();
         }
 
+        public void AppendLabel(ajkControls.ColorLabel label)
+        {
+            label.AppendText("[");
+            label.AppendText("]");
+        }
+
+        public ajkControls.ColorLabel GetLabel()
+        {
+            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            label.AppendText("[");
+            label.AppendLabel(MsbBitExpression.GetLabel());
+            label.AppendText(":");
+            label.AppendLabel(LsbBitExpression.GetLabel());
+            label.AppendText("]");
+            return label;
+       }
+
         /*
         A.2.5 Declaration ranges
         dimension ::= [ dimension_constant_expression : dimension_constant_expression ]

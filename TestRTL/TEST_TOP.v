@@ -1,3 +1,6 @@
+`timescale 1ns/1ps
+`define VAL 8'h01
+
 module TEST_TOP;
 
 localparam P_DELAY = 1; // @delay
@@ -14,7 +17,6 @@ TOP TOP_0 (
 	.RST_X	( rst_x )
 );
 
-
 always begin
 	clk_i	<= #P_DELAY 1'b1;
 	#100;
@@ -28,7 +30,7 @@ initial begin
 	data_i = 0;
 	rst_x = 0;
 	@(posedge clk_i);
-	data_i	<= #P_DELAY 8'h55;
+	data_i	<= #P_DELAY `VAL;
 	rst_x	<= #P_DELAY 1'b1;
 	@(posedge clk_i);
 	@(posedge clk_i);
@@ -39,3 +41,6 @@ end
 
 
 endmodule
+
+
+

@@ -8,5 +8,6 @@ namespace pluginVerilog.Verilog.Expressions
 {
     public interface ExpressionItem
     {
+        ajkControls.ColorLabel GetLabel();
     }
 }

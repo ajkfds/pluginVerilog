@@ -149,7 +149,36 @@ namespace pluginVerilog.Verilog
                 }
             }
 
-            Statements.IStatement statement = Statements.Statements.ParseCreateFunctionStatement(word, task);
+            if (word.Text == "endtask")
+            {
+                word.AddError("statement required");
+            }
+            else
+            {
+                if (protoType)
+                {
+                    while (!word.Eof)
+                    {
+                        if (word.Text == "endtask") break;
+                        switch (word.Text)
+                        {
+                            case "endmodule":
+                            case "endfunction":
+                            case "always":
+                            case "initial":
+                                word.AddError("missed endfunction");
+                                return;
+                            default:
+                                break;
+                        }
+                        word.MoveNext();
+                    }
+                }
+                else
+                {
+                    Statements.IStatement statement = Statements.Statements.ParseCreateFunctionStatement(word, task);
+                }
+            }
 
             if (protoType) word.EndSkip();
 

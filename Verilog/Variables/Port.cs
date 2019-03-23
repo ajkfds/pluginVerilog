@@ -9,8 +9,9 @@ namespace pluginVerilog.Verilog.Variables
     public class Port : Item
     {
         public DirectionEnum Direction = DirectionEnum.Undefined;
-        public bool Signed = false;
+//        public bool Signed = false;
         public Range Range = null;
+        public Variable Variable = null;
 
         public enum DirectionEnum
         {
@@ -29,6 +30,49 @@ namespace pluginVerilog.Verilog.Variables
             word.MoveNext();
             return port;
         }
+
+        public ajkControls.ColorLabel GetLabel()
+        {
+            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            switch (Direction)
+            {
+                case DirectionEnum.Input:
+                    label.AppendText("input ",CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    break;
+                case DirectionEnum.Output:
+                    label.AppendText("output ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    break;
+                case DirectionEnum.Inout:
+                    label.AppendText("inout ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    break;
+                default:
+                    break;
+            }
+
+            if (Range != null)
+            {
+                label.AppendLabel(Range.GetLabel());
+            }
+
+            if (Variable != null)
+            {
+                if(Variable is Net)
+                {
+                    label.AppendText(Name, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net));
+                }
+                else if(Variable is Reg)
+                {
+                    label.AppendText(Name, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Register));
+                }
+                else
+                {
+                    label.AppendText(Name);
+                }
+            }
+
+            return label;
+        }
+
 
         public static void ParsePortDeclaration(WordScanner word, Module module, Attribute attribute)
         {
@@ -55,6 +99,7 @@ namespace pluginVerilog.Verilog.Variables
                         Port port = new Port();
                         port.Name = variable.Name;
                         port.Direction = DirectionEnum.Input;
+                        port.Variable = variable;
                         if (word.Active)
                         {
                             if (!module.Ports.ContainsKey(variable.Name))
@@ -80,6 +125,7 @@ namespace pluginVerilog.Verilog.Variables
                         Port port = new Port();
                         port.Name = variable.Name;
                         port.Direction = DirectionEnum.Output;
+                        port.Variable = variable;
                         if (word.Active)
                         {
                             if (!module.Ports.ContainsKey(variable.Name))
@@ -105,6 +151,7 @@ namespace pluginVerilog.Verilog.Variables
                         Port port = new Port();
                         port.Name = variable.Name;
                         port.Direction = DirectionEnum.Inout;
+                        port.Variable = variable;
                         if (word.Active)
                         {
                             if (!module.Ports.ContainsKey(variable.Name))
@@ -152,10 +199,10 @@ namespace pluginVerilog.Verilog.Variables
                     {
                         Port port = new Port();
                         port.Name = variable.Name;
-                        if(variable is Net)
-                        {
-                            port.Range = ((Net)variable).Range;
-                        }
+//                        if(variable is Net)
+//                        {
+//                            port.Range = ((Net)variable).Range;
+//                        }
 
                         port.Direction = DirectionEnum.Input;
                         if (!function.Ports.ContainsKey(variable.Name))

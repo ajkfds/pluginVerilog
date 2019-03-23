@@ -9,12 +9,25 @@ namespace pluginVerilog.Verilog.Expressions
     public class ConditionalExpression : Expression
     {
         public Expression ConditionExpression;
-        public Expression TrueExpreddion;
-        public Expression FalseExpreddion;
+        public Expression TrueExpression;
+        public Expression FalseExpression;
 
 
         protected ConditionalExpression() { }
         // conditional_expression::= expression1 ? { attribute_instance } expression2: expression3
+
+        public new ajkControls.ColorLabel GetLabel()
+        {
+            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+
+            label.AppendLabel(this.ConditionExpression.GetLabel());
+            label.AppendText(" ? ");
+            label.AppendLabel(TrueExpression.GetLabel());
+            label.AppendText(" : ");
+            label.AppendLabel(FalseExpression.GetLabel());
+
+            return label;
+        }
 
         public static ConditionalExpression ParseCreate(WordScanner word,NameSpace nameSpace,Expression conditionExpresstion)
         {
@@ -22,8 +35,8 @@ namespace pluginVerilog.Verilog.Expressions
             word.MoveNext();
 
             ConditionalExpression conditionalExpression = new ConditionalExpression();
-            conditionalExpression.TrueExpreddion = Expression.ParseCreate(word, nameSpace);
-            if(conditionalExpression.TrueExpreddion == null)
+            conditionalExpression.TrueExpression = Expression.ParseCreate(word, nameSpace);
+            if(conditionalExpression.TrueExpression == null)
             {
                 word.AddError("illegal conditional expression");
                 return null;
@@ -38,8 +51,8 @@ namespace pluginVerilog.Verilog.Expressions
                 word.MoveNext();
             }
 
-            conditionalExpression.FalseExpreddion = Expression.ParseCreate(word, nameSpace);
-            if (conditionalExpression.FalseExpreddion == null)
+            conditionalExpression.FalseExpression = Expression.ParseCreate(word, nameSpace);
+            if (conditionalExpression.FalseExpression == null)
             {
                 word.AddError("illegal conditional expression");
                 return null;

@@ -23,13 +23,14 @@ namespace pluginVerilog.Verilog.Snippets
             }
             int headIndex, length;
             codeDocument.GetWord(prevIndex, out headIndex, out length);
+            string indent = (codeDocument as CodeEditor.CodeDocument).GetIndentString(prevIndex);
 
             char currentChar = codeDocument.GetCharAt(codeDocument.CaretIndex);
-            string appendText = "\r\n";
-            appendText += "begin\r\n";
-            appendText += "\t\r\n";
-            appendText += "end\r\n";
-            appendText += "endfunction";
+            string appendText = ";\r\n";
+            appendText += indent + "begin\r\n";
+            appendText += indent + "\t\r\n";
+            appendText += indent + "end\r\n";
+            appendText += indent + "endfunction";
             if (currentChar != '\r' && currentChar != '\n')
             {
                 appendText = "";

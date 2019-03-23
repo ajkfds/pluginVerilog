@@ -14,7 +14,7 @@ namespace pluginVerilog.Verilog.Expressions
         public virtual bool Constant { get; protected set; }
         public virtual double? Value { get; protected set; }
         public virtual int? BitWidth { get; protected set; }
-//        public bool Signed { get; protected set; }
+        //        public bool Signed { get; protected set; }
 
         public static Primary Create(bool constant, double? value, int? bitWidth)
         {
@@ -24,6 +24,12 @@ namespace pluginVerilog.Verilog.Expressions
             primary.BitWidth = bitWidth;
             return primary;
         }
+
+        public virtual ajkControls.ColorLabel GetLabel()
+        {
+            return null;
+        }
+
         /*
          * 
          * 
@@ -119,12 +125,15 @@ namespace pluginVerilog.Verilog.Expressions
                         if(word.Eof) return null;
                         if (General.ListOfKeywords.Contains(word.Text)) return null;
                         if(General.IsIdentifier(word.Text) & !nameSpace.Variables.ContainsKey(word.Text))
-                        {
+                        {   // undefined net
                             word.AddWarning("undefined");
                             Variables.Net net = new Variables.Net();
                             net.Name = word.Text;
                             net.Signed = false;
-                            nameSpace.Variables.Add(net.Name, net);
+                            if (word.Active)
+                            {
+                                nameSpace.Variables.Add(net.Name, net);
+                            }
                             variable = VariableReference.ParseCreate(word, nameSpace);
                             if (variable != null) return variable;
                         }
@@ -200,6 +209,13 @@ namespace pluginVerilog.Verilog.Expressions
     {
         protected ParameterReference() { }
         public string ParameterName { get; protected set; }
+
+        public override ajkControls.ColorLabel GetLabel()
+        {
+            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            label.AppendText(ParameterName, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Paramater));
+            return label;
+        }
 
         public new static ParameterReference ParseCreate(WordScanner word, NameSpace nameSpace)
         {
@@ -280,10 +296,67 @@ namespace pluginVerilog.Verilog.Expressions
         public List<Expression> Dimensions = new List<Expression>();
         public Variables.Variable Variable = null;
 
+        public override ajkControls.ColorLabel GetLabel()
+        {
+            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+
+            if(Variable is Variables.Reg)
+            {
+                label.AppendText(VariableName,CodeDrawStyle.Color(CodeDrawStyle.ColorType.Register));
+            }
+            else if(Variable is Variables.Net)
+            {
+                label.AppendText(VariableName, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net));
+            }
+            else
+            {
+                label.AppendText(VariableName);
+            }
+            if(RangeExpression != null)
+            {
+                label.AppendText(" ");
+                label.AppendLabel(RangeExpression.GetLabel());
+            }
+            foreach(Expression expression in Dimensions)
+            {
+                label.AppendText(" [");
+                label.AppendLabel(expression.GetLabel());
+                label.AppendText("]");
+            }
+            return label;
+        }
+
+
+        private static Variables.Variable getVariable(WordScanner word, string identifier, NameSpace nameSpace)
+        {
+            if (nameSpace.Variables.ContainsKey(identifier))
+            {
+                return nameSpace.Variables[identifier];
+            }
+
+            if(nameSpace is Function)
+            {
+                if (nameSpace.Parent != null)
+                {
+                    Variables.Variable val =  nameSpace.Parent.GetVariable(identifier);
+                    if (val != null) word.AddWarning("external function reference");
+                    return val;
+                }
+            }
+            else
+            {
+                if (nameSpace.Parent != null)
+                {
+                    return nameSpace.Parent.GetVariable(identifier);
+                }
+            }
+            return null;
+        }
+
         public new static VariableReference ParseCreate(WordScanner word,NameSpace nameSpace)
         {
             if (nameSpace == null) System.Diagnostics.Debugger.Break();
-            Variables.Variable variable = nameSpace.GetVariable(word.Text);
+            Variables.Variable variable = getVariable(word,word.Text, nameSpace);
             if (variable == null) return null;
 
             VariableReference val = new VariableReference();
@@ -401,6 +474,10 @@ namespace pluginVerilog.Verilog.Expressions
     public class RangeExpression
     {
         public int BitWidth;
+        public virtual ajkControls.ColorLabel GetLabel()
+        {
+            return null;
+        }
     }
     public class SingleBitRangeExpression : RangeExpression
     {
@@ -411,6 +488,14 @@ namespace pluginVerilog.Verilog.Expressions
             BitWidth = 1;
         }
         public Expression Expression;
+        public override ajkControls.ColorLabel GetLabel()
+        {
+            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            label.AppendText("[");
+            label.AppendLabel(Expression.GetLabel());
+            label.AppendText("]");
+            return label;
+        }
     }
     public class AbsoluteRangeExpression : RangeExpression
     {
@@ -422,6 +507,16 @@ namespace pluginVerilog.Verilog.Expressions
         }
         public Expression MsbExpression;
         public Expression LsbExpression;
+        public override ajkControls.ColorLabel GetLabel()
+        {
+            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            label.AppendText("[");
+            label.AppendLabel(MsbExpression.GetLabel());
+            label.AppendText(":");
+            label.AppendLabel(LsbExpression.GetLabel());
+            label.AppendText("]");
+            return label;
+        }
     }
     public class RelativePlusRangeExpression : RangeExpression
     {
@@ -433,6 +528,17 @@ namespace pluginVerilog.Verilog.Expressions
         }
         public Expression BaseExpression;
         public Expression WidthExpression;
+
+        public override ajkControls.ColorLabel GetLabel()
+        {
+            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            label.AppendText("[");
+            label.AppendLabel(BaseExpression.GetLabel());
+            label.AppendText("+:");
+            label.AppendLabel(WidthExpression.GetLabel());
+            label.AppendText("]");
+            return label;
+        }
     }
     public class RelativeMinusRangeExpression : RangeExpression
     {
@@ -444,6 +550,17 @@ namespace pluginVerilog.Verilog.Expressions
         }
         public Expression BaseExpression;
         public Expression WidthExpression;
+
+        public override ajkControls.ColorLabel GetLabel()
+        {
+            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            label.AppendText("[");
+            label.AppendLabel(BaseExpression.GetLabel());
+            label.AppendText("-:");
+            label.AppendLabel(WidthExpression.GetLabel());
+            label.AppendText("]");
+            return label;
+        }
     }
 
 
@@ -452,6 +569,15 @@ namespace pluginVerilog.Verilog.Expressions
         protected Bracket() { }
 
         public Expression Expression { get; protected set; }
+
+        public override ajkControls.ColorLabel GetLabel()
+        {
+            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            label.AppendText("(");
+            if(Expression != null) label.AppendLabel(Expression.GetLabel());
+            label.AppendText(")");
+            return label;
+        }
 
         public static Primary ParseCreateBracketOrMinTypMax(WordScanner word,NameSpace nameSpace)
         {

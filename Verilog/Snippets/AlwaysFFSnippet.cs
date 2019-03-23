@@ -15,20 +15,22 @@ namespace pluginVerilog.Verilog.Snippets
 
         public override void Apply(CodeDocument codeDocument)
         {
+            string indent = (codeDocument as CodeEditor.CodeDocument).GetIndentString(codeDocument.CaretIndex);
+
             string replaceText =
                 "always @(posedge CLK_I or negedge RST_X)\r\n" +
-                "begin\r\n" +
-                "\tif(~RST_X) begin\r\n" +
-                "\t\t\r\n" +
-                "\tend else begin\r\n" +
-                "\t\t\r\n" +
-                "\tend\r\n" +
-                "end";
+                indent+"begin\r\n" +
+                indent + "\tif(~RST_X) begin\r\n" +
+                indent + "\t\t\r\n" +
+                indent + "\tend else begin\r\n" +
+                indent + "\t\t\r\n" +
+                indent + "\tend\r\n" +
+                indent + "end";
             string carletProceed =
                 "always @(posedge CLK_I or negedge RST_X)\r\n" +
-                "begin\r\n" +
-                "\tif(~RST_X) begin\r\n" +
-                "\t\t";
+                indent + "begin\r\n" +
+                indent + "\tif(~RST_X) begin\r\n" +
+                indent + "\t\t";
 
             codeDocument.Replace(codeDocument.CaretIndex, 0, 0, replaceText);
             codeDocument.CaretIndex = codeDocument.CaretIndex + carletProceed.Length;

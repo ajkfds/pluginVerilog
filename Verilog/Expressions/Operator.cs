@@ -16,6 +16,13 @@ namespace pluginVerilog.Verilog.Expressions
 
         public readonly string Text = "";
         public readonly byte Precedence;
+
+        public ajkControls.ColorLabel GetLabel()
+        {
+            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            label.AppendText(Text);
+            return label;
+        }
     }
     /*
     Table 12—Precedence rules for operators

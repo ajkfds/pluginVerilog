@@ -77,6 +77,7 @@ namespace pluginVerilog.Verilog
             {
                 Document.SetMarkAt(i, 0);
             }
+            if( ParsedDocument is Verilog.ParsedDocument) (ParsedDocument as Verilog.ParsedDocument).Status = Verilog.ParsedDocument.FileStatus.Error;
         }
 
         public void AddError(WordReference fromReference, string message)
@@ -99,6 +100,7 @@ namespace pluginVerilog.Verilog
                     Document.SetMarkAt(i, 0);
                 }
             }
+            if (ParsedDocument is Verilog.ParsedDocument) (ParsedDocument as Verilog.ParsedDocument).Status = Verilog.ParsedDocument.FileStatus.Error;
         }
 
         public void AddWarning(string message)
@@ -110,6 +112,10 @@ namespace pluginVerilog.Verilog
             for (int i = index; i < index + length; i++)
             {
                 Document.SetMarkAt(i, 1);
+            }
+            if (ParsedDocument is Verilog.ParsedDocument)
+            {
+                if ((ParsedDocument as Verilog.ParsedDocument).Status != Verilog.ParsedDocument.FileStatus.Error) (ParsedDocument as Verilog.ParsedDocument).Status = Verilog.ParsedDocument.FileStatus.Warning;
             }
         }
 
@@ -132,6 +138,10 @@ namespace pluginVerilog.Verilog
                 {
                     Document.SetMarkAt(i, 1);
                 }
+            }
+            if (ParsedDocument is Verilog.ParsedDocument)
+            {
+                if ((ParsedDocument as Verilog.ParsedDocument).Status != Verilog.ParsedDocument.FileStatus.Error) (ParsedDocument as Verilog.ParsedDocument).Status = Verilog.ParsedDocument.FileStatus.Warning;
             }
         }
 

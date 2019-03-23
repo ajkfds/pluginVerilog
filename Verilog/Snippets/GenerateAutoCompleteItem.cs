@@ -5,14 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 
+
 namespace pluginVerilog.Verilog.Snippets
 {
-    public class ModuleAutocompleteItem : codeEditor.CodeEditor.AutocompleteItem
+    public class GenerateAutoCompleteItem : codeEditor.CodeEditor.AutocompleteItem
     {
-        public ModuleAutocompleteItem(string text, byte colorIndex, Color color) : base(text, colorIndex, color)
+        public GenerateAutoCompleteItem(string text, byte colorIndex, Color color) : base(text, colorIndex, color)
         {
         }
-        public ModuleAutocompleteItem(string text, byte colorIndex, Color color, ajkControls.IconImage icon, ajkControls.IconImage.ColorStyle iconColorStyle) : base(text, colorIndex, color, icon, iconColorStyle)
+        public GenerateAutoCompleteItem(string text, byte colorIndex, Color color, ajkControls.IconImage icon, ajkControls.IconImage.ColorStyle iconColorStyle) : base(text, colorIndex, color, icon, iconColorStyle)
         {
         }
 
@@ -29,7 +30,7 @@ namespace pluginVerilog.Verilog.Snippets
 
             int headIndex, length;
             codeDocument.GetWord(prevIndex, out headIndex, out length);
-            codeDocument.Replace(headIndex, length, ColorIndex, Text + ";\r\n"+indent+"endmodule");
+            codeDocument.Replace(headIndex, length, ColorIndex, Text + "\r\n"+indent+"endgenerate");
             codeDocument.CaretIndex = headIndex + Text.Length;
             codeDocument.SelectionStart = headIndex + Text.Length;
             codeDocument.SelectionLast = headIndex + Text.Length;

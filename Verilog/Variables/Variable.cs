@@ -17,6 +17,13 @@ namespace pluginVerilog.Verilog.Variables
         public string Name;
         protected List<Dimension> dimensions = new List<Dimension>();
         public IReadOnlyList<Dimension> Dimensions { get { return dimensions; } }
+
+        public virtual ajkControls.ColorLabel GetLabel()
+        {
+            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            label.AppendText(Name);
+            return label;
+        }
     }
 
     /*

@@ -29,6 +29,60 @@ namespace pluginVerilog.Verilog.Variables
             Wor
         }
 
+        public override ajkControls.ColorLabel GetLabel()
+        {
+            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            switch (NetType)
+            {
+                case NetTypeEnum.Supply0:
+                    label.AppendText("Supply0", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    break;
+                case NetTypeEnum.Supply1:
+                    label.AppendText("Supply1", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    break;
+                case NetTypeEnum.Tri:
+                    label.AppendText("Tri", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    break;
+                case NetTypeEnum.Triand:
+                    label.AppendText("Triand", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    break;
+                case NetTypeEnum.Trior:
+                    label.AppendText("Trior", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    break;
+                case NetTypeEnum.Tri0:
+                    label.AppendText("Tri0", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    break;
+                case NetTypeEnum.Tri1:
+                    label.AppendText("Tri1", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    break;
+                case NetTypeEnum.Wire:
+                    label.AppendText("Wire", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    break;
+                case NetTypeEnum.Wand:
+                    label.AppendText("Wand", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    break;
+                case NetTypeEnum.Wor:
+                    label.AppendText("Wor", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    break;
+            }
+
+            label.AppendText(" ");
+            if (Signed)
+            {
+                label.AppendText("signed ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+            }
+
+            if (Range != null)
+            {
+                label.AppendLabel(Range.GetLabel());
+                label.AppendText(" ");
+            }
+
+            label.AppendText(Name, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net));
+            label.AppendText("\r\n");
+            return label;
+        }
+
         public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
         {
             // net_declaration ::=    net_type                                          [signed]        [delay3] list_of_net_identifiers;

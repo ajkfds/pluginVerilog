@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 module TOP(
 input [7:0]			DATA_I,		// @sync CLK_I
 output reg [7:0]	DATA_O,		// @sync CLK_I
@@ -5,14 +7,16 @@ input	CLK_I,					// @clock
 input	RST_X					// @reset
 );
 
-//`include "TEST.vh"
+`include "TEST.vh"
 
 
 localparam P_DELAY = 1; // @delay
 
+reg testReg = 1;
 
 wire [7:0] data_next;
 assign data_next = get_data_next(DATA_I);
+
 
 always @(posedge CLK_I or negedge RST_X)
 begin
@@ -23,7 +27,6 @@ begin
 	end
 end
 
-
 function [7:0] get_data_next;
 input [7:0] data;
 reg			overflow;
@@ -33,4 +36,20 @@ end
 endfunction
 
 
+function testes;
+input aaa;
+begin
+	testes = 1'b1;
+end
+endfunction
+
+task tastas;
+begin
+	
+end
+endtask
+
+
+
 endmodule
+

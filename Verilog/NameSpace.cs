@@ -47,10 +47,8 @@ namespace pluginVerilog.Verilog
             {
                 return Parent.GetVariable(identifier);
             }
-
             return null;
         }
-
 
         public Variables.Parameter GetParameter(string identifier)
         {

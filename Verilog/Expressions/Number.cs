@@ -62,6 +62,7 @@ namespace pluginVerilog.Verilog.Expressions
 
         public bool Signed = false;
         public NumberTypeEnum NumberType = NumberTypeEnum.Decimal;
+        public string Text = "";
 
         public enum NumberTypeEnum
         {
@@ -70,14 +71,22 @@ namespace pluginVerilog.Verilog.Expressions
             Octal,
             Hex
         }
+        public override ajkControls.ColorLabel GetLabel()
+        {
+            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            label.AppendText(Text, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Number));
+            return label;
+        }
 
         public static Number ParseCreate(WordScanner word)
         {
             word.Color(CodeDrawStyle.ColorType.Number);
+            
 
             Number number = new Number();
             int index = 0;
             int apostropheIndex = -1;
+            number.Text = word.Text;
             StringBuilder sb = new StringBuilder();
 
             // get string before ' and ' index
@@ -242,6 +251,7 @@ namespace pluginVerilog.Verilog.Expressions
                 word.MoveNext();
                 word.Color(CodeDrawStyle.ColorType.Number);
                 index = 0;
+                number.Text = number.Text + word.Text;
             }
             if (
                 word.GetCharAt(index) == 'x'
@@ -284,6 +294,7 @@ namespace pluginVerilog.Verilog.Expressions
                 word.MoveNext();
                 index = 0;
                 word.Color(CodeDrawStyle.ColorType.Number);
+                number.Text = number.Text + word.Text;
             }
 
             bool valueHeadError = false;
@@ -349,6 +360,7 @@ namespace pluginVerilog.Verilog.Expressions
                 word.MoveNext();
                 index = 0;
                 word.Color(CodeDrawStyle.ColorType.Number);
+                number.Text = number.Text + word.Text;
             }
             if (!isOctalDigit(word.GetCharAt(index)))
             {
@@ -392,6 +404,7 @@ namespace pluginVerilog.Verilog.Expressions
                 word.MoveNext();
                 index = 0;
                 word.Color(CodeDrawStyle.ColorType.Number);
+                number.Text = number.Text + word.Text;
             }
 
             bool hexHeadError = false;
