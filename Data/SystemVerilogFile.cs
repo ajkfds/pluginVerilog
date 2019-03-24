@@ -99,7 +99,7 @@ namespace pluginVerilog.Data
 
         public virtual codeEditor.CodeEditor.DocumentParser CreateDocumentParser(codeEditor.CodeEditor.CodeDocument document, string id, codeEditor.Data.Project project)
         {
-            return new Parser.Parser(document, id, project);
+            return new Parser.VerilogParser(document, id, project);
         }
 
 

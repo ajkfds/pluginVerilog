@@ -48,6 +48,7 @@
     <Compile Include="CodeEditor\CodeDocument.cs" />
     <Compile Include="Data\IVerilogRelatedFile.cs" />
     <Compile Include="Data\SystemVerilogFile.cs" />
+    <Compile Include="FileTypes\SystemVerilogFile.cs" />
     <Compile Include="PluginExtensions.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="IcarusVerilog\Setup.cs" />
@@ -64,6 +65,7 @@
     <Compile Include="NavigatePanel\VerilogHeaderInstanceNode.cs" />
     <Compile Include="NavigatePanel\VerilogHeaderNode.cs" />
     <Compile Include="ProjectProperty.cs" />
+    <Compile Include="SystemVerilog\ParsedDocument.cs" />
     <Compile Include="Verilog\Delay.cs" />
     <Compile Include="Verilog\Expressions\ExpressionItem.cs" />
     <Compile Include="Verilog\Expressions\String.cs" />
@@ -83,7 +85,7 @@
     <Compile Include="NavigatePanel\VerilogFileNode.cs" />
     <Compile Include="Verilog\ModuleReference.cs" />
     <Compile Include="Verilog\ParsedDocument.cs" />
-    <Compile Include="Parser\Parser.cs" />
+    <Compile Include="Parser\VerilogParser.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

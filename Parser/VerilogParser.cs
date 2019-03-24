@@ -7,9 +7,9 @@ using codeEditor.CodeEditor;
 
 namespace pluginVerilog.Parser
 {
-    public class Parser : codeEditor.CodeEditor.DocumentParser
+    public class VerilogParser : codeEditor.CodeEditor.DocumentParser
     {
-        public Parser(codeEditor.CodeEditor.CodeDocument document, string id, codeEditor.Data.Project project) : base(document, id, project)
+        public VerilogParser(codeEditor.CodeEditor.CodeDocument document, string id, codeEditor.Data.Project project) : base(document, id, project)
         {
             parsedDocument = new Verilog.ParsedDocument(project, id, document.EditID);
             word = new Verilog.WordScanner(this.document, parsedDocument);
