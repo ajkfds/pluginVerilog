@@ -56,6 +56,7 @@ namespace pluginVerilog.Verilog.Statements
                 word.AddError("( expected");
                 return null;
             }
+            word.MoveNext();
 
             repeatStatement.Expression = Expressions.Expression.ParseCreate(word, nameSpace);
 
@@ -64,6 +65,7 @@ namespace pluginVerilog.Verilog.Statements
                 word.AddError("( expected");
                 return null;
             }
+            word.MoveNext();
 
             repeatStatement.Statement = Statements.ParseCreateStatement(word, nameSpace);
 

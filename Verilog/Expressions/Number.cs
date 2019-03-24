@@ -196,7 +196,8 @@ namespace pluginVerilog.Verilog.Expressions
                     if (word.GetCharAt(index) == '_')
                     {
                         index++;
-                        break;
+                        continue;
+//                        break;
                     }
                     if (!isDecimalDigit(word.GetCharAt(index))) return false;
                     sb.Append(word.GetCharAt(index));
@@ -224,7 +225,8 @@ namespace pluginVerilog.Verilog.Expressions
                     if (word.GetCharAt(index) == '_')
                     {
                         index++;
-                        break;
+                        continue;
+//                        break;
                     }
                     if (!isDecimalDigit(word.GetCharAt(index))) return false;
                     sb.Append(word.GetCharAt(index));

@@ -52,7 +52,7 @@ namespace pluginVerilog.Verilog.Statements
                 word.AddError("illegal non blocking assignment");
                 return null;
             }
-            if (lExpression.BitWidth != null && expression.BitWidth != null)
+            if (lExpression != null && lExpression.BitWidth != null && expression.BitWidth != null)
             {
                 if (lExpression.BitWidth != expression.BitWidth)
                 {
@@ -111,7 +111,7 @@ namespace pluginVerilog.Verilog.Statements
                 word.AddError("illegal non blocking assignment");
                 return null;
             }
-            if(lExpression.BitWidth != null && expression.BitWidth != null)
+            if(lExpression != null && lExpression.BitWidth != null && expression.BitWidth != null)
             {
                 if(lExpression.BitWidth != expression.BitWidth)
                 {

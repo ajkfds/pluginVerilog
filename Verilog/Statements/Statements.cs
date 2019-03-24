@@ -100,12 +100,24 @@ namespace pluginVerilog.Verilog.Statements
 
                     Expressions.Expression expression = Expressions.Expression.ParseCreateVariableLValue(word, nameSpace);
                     IStatement statement;
-                    if (expression == null)
+                    if(expression == null)
                     {
                         word.MoveNext();
-                        break;
                     }
-                    switch (word.Text)
+/*                    if(expression == null)
+                    {
+                        if (General.IsIdentifier(word.Text))
+                        {
+                            word.AddError("illegal identifier");
+                            word.MoveNext();
+                        }
+                        else
+                        {
+                            word.MoveNext();
+                            return null;
+                        }
+                    }
+*/                    switch (word.Text)
                     {
                         case "=":
                             statement = BlockingAssignment.ParseCreate(word, nameSpace, expression);

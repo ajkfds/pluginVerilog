@@ -87,6 +87,7 @@ namespace pluginVerilog.Verilog.Variables
                 }
 
                 Reg reg = new Reg();
+                WordReference nameRef = word.GetReference();
                 reg.Signed = signed;
                 reg.Range = range;
                 reg.Name = word.Text;
@@ -103,7 +104,7 @@ namespace pluginVerilog.Verilog.Variables
                         }
                         else
                         {
-                            word.AddError("duplicated reg name");
+                            nameRef.AddError("duplicated reg name");
                         }
                     }
                     else

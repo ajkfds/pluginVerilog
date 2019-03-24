@@ -31,6 +31,7 @@ namespace pluginVerilog.Verilog.Variables
                     return;
                 }
                 Integer val = new Integer();
+                WordReference nameRef = word.GetReference();
                 val.Name = word.Text;
 
                 word.Color(CodeDrawStyle.ColorType.Variable);
@@ -54,7 +55,7 @@ namespace pluginVerilog.Verilog.Variables
                 {
                     if (nameSpace.Variables.ContainsKey(val.Name))
                     {
-                        word.AddError("duplicated name");
+                        nameRef.AddError("duplicated name");
                     }
                     else
                     {
