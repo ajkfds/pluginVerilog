@@ -53,17 +53,33 @@ namespace pluginVerilog.Verilog.Statements
                 }
                 else
                 {
-                    if (nameSpace.NameSpaces.ContainsKey(word.Text))
-                    {
-                        word.AddError("duplicated name");
-                        namedBlock.Name = word.Text;
+                    if (!word.Active)
+                    { // prototype
+                        if (nameSpace.NameSpaces.ContainsKey(word.Text))
+                        {
+                            word.AddError("duplicated name");
+                            namedBlock.Name = word.Text;
+                        }
+                        else
+                        {
+                            namedBlock.Name = word.Text;
+                            nameSpace.NameSpaces.Add(namedBlock.Name, namedBlock);
+                        }
+                        word.MoveNext();
                     }
                     else
-                    {
-                        namedBlock.Name = word.Text;
-                        nameSpace.NameSpaces.Add(namedBlock.Name, namedBlock);
+                    { // implementation
+                        if (nameSpace.NameSpaces.ContainsKey(word.Text) && nameSpace.NameSpaces[word.Text] is NamedSequentialBlock)
+                        {
+                            word.Color(CodeDrawStyle.ColorType.Identifier);
+                            namedBlock = nameSpace.NameSpaces[word.Text] as NamedSequentialBlock;
+                        }
+                        else
+                        {
+                            System.Diagnostics.Debugger.Break();
+                        }
+                        word.MoveNext();
                     }
-                    word.MoveNext();
                 }
 
                 while (!word.Eof && word.Text != "end")
