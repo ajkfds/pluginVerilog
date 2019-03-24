@@ -373,9 +373,12 @@ namespace pluginVerilog.Verilog
         {
             //nextIndex++;
             while (
-                document.Length > nextIndex &&
-                document.GetCharAt(nextIndex) < 128 &&
-                (charClass[document.GetCharAt(nextIndex)] == 1) // 0-9
+                    document.Length > nextIndex &&
+                    document.GetCharAt(nextIndex) < 128 &&
+                    (
+                        charClass[document.GetCharAt(nextIndex)] == 1 ||  // 0-9
+                        document.GetCharAt(nextIndex) == '_'
+                    )
                 )
             {
                 nextIndex++;
@@ -388,9 +391,12 @@ namespace pluginVerilog.Verilog
                     nextIndex++;
                     if (document.Length <= nextIndex) return;
                     while (
-                        document.Length > nextIndex &&
-                        document.GetCharAt(nextIndex) < 128 &&
-                        (charClass[document.GetCharAt(nextIndex)] == 1) // 0-9
+                            document.Length > nextIndex &&
+                            document.GetCharAt(nextIndex) < 128 &&
+                            (
+                                charClass[document.GetCharAt(nextIndex)] == 1 || // 0-9
+                                document.GetCharAt(nextIndex) == '_'
+                            )
                         )
                     {
                         nextIndex++;
@@ -407,9 +413,12 @@ namespace pluginVerilog.Verilog
                         if (document.Length <= nextIndex) return;
                     }
                     while (
-                        document.Length > nextIndex &&
-                        document.GetCharAt(nextIndex) < 128 &&
-                        (charClass[document.GetCharAt(nextIndex)] == 1) // 0-9
+                            document.Length > nextIndex &&
+                            document.GetCharAt(nextIndex) < 128 &&
+                            (
+                                charClass[document.GetCharAt(nextIndex)] == 1 || // 0-9
+                                document.GetCharAt(nextIndex) == '_'
+                            )
                         )
                     {
                         nextIndex++;
