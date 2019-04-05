@@ -198,13 +198,23 @@ namespace pluginVerilog.Verilog.Variables
                 net.Name = word.Text;
                 if (word.Active)
                 {
-                    if (nameSpace.Variables.ContainsKey(net.Name))
+                    if (word.Prototype)
                     {
-                        nameRef.AddError("duplicated net name");
+                        if (nameSpace.Variables.ContainsKey(net.Name))
+                        {
+                            nameRef.AddError("duplicated net name");
+                        }
+                        else
+                        {
+                            nameSpace.Variables.Add(net.Name, net);
+                        }
                     }
                     else
                     {
-                        nameSpace.Variables.Add(net.Name, net);
+                        if(nameSpace.Variables.ContainsKey(net.Name) && nameSpace.Variables[net.Name] is Net)
+                        {
+                            net = nameSpace.Variables[net.Name] as Net;
+                        }
                     }
                 }
 

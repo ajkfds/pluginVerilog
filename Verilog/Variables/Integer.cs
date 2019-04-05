@@ -53,13 +53,26 @@ namespace pluginVerilog.Verilog.Variables
 
                 if (word.Active)
                 {
-                    if (nameSpace.Variables.ContainsKey(val.Name))
+                    if (word.Prototype)
                     {
-                        nameRef.AddError("duplicated name");
+                        if (nameSpace.Variables.ContainsKey(val.Name))
+                        {
+                            nameRef.AddError("duplicated name");
+                        }
+                        else
+                        {
+                            nameSpace.Variables.Add(val.Name, val);
+                        }
                     }
                     else
                     {
-                        nameSpace.Variables.Add(val.Name, val);
+                        if (nameSpace.Variables.ContainsKey(val.Name))
+                        {
+                            if(nameSpace.Variables[val.Name] is Integer)
+                            {
+                                val = nameSpace.Variables[val.Name] as Integer;
+                            }
+                        }
                     }
                 }
 

@@ -74,10 +74,6 @@ namespace pluginVerilog.Verilog.Statements
                             word.Color(CodeDrawStyle.ColorType.Identifier);
                             namedBlock = nameSpace.NameSpaces[word.Text] as NamedSequentialBlock;
                         }
-                        else
-                        {
-                            System.Diagnostics.Debugger.Break();
-                        }
                         word.MoveNext();
                     }
                 }
@@ -132,7 +128,7 @@ namespace pluginVerilog.Verilog.Statements
                 namedBlock.LastIndex = word.RootIndex;
                 word.MoveNext(); // end
 
-                if (!nameSpace.NameSpaces.ContainsKey(namedBlock.Name))
+                if (namedBlock.Name != null && !nameSpace.NameSpaces.ContainsKey(namedBlock.Name))
                 {
                     nameSpace.NameSpaces.Add(namedBlock.Name,namedBlock);
                 }

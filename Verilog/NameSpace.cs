@@ -18,12 +18,17 @@ namespace pluginVerilog.Verilog
         public int BeginIndex = -1;
         public int LastIndex = -1;
 
-        public Dictionary<string, Variables.Variable> Variables = new Dictionary<string, Variables.Variable>();
+        private Dictionary<string, Variables.Variable> variables = new Dictionary<string, Variables.Variable>();
+        private Dictionary<string, Variables.Parameter> parameters = new Dictionary<string, Variables.Parameter>();
+        private Dictionary<string, Variables.Parameter> localParameters = new Dictionary<string, Variables.Parameter>();
+        private Dictionary<string, NameSpace> nameSpaces = new Dictionary<string, NameSpace>();
+
+        public Dictionary<string, Variables.Variable> Variables { get { return variables; } }
         public NameSpace Parent { get; protected set; }
-        public Dictionary<string, Variables.Parameter> Parameters = new Dictionary<string, Variables.Parameter>();
-        public Dictionary<string, Variables.Parameter> LocalParameters = new Dictionary<string, Variables.Parameter>();
+        public Dictionary<string, Variables.Parameter> Parameters { get { return parameters; } }
+        public Dictionary<string, Variables.Parameter> LocalParameters { get { return localParameters; } }
         public Module Module { get; protected set; }
-        public Dictionary<string, NameSpace> NameSpaces = new Dictionary<string, NameSpace>();
+        public Dictionary<string, NameSpace> NameSpaces { get { return nameSpaces;  } }
 
         public NameSpace GetHierNameSpace(int index)
         {

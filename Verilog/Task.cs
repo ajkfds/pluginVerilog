@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Verilog
 {
-    public class Task : NameSpace
+    public class Task : NameSpace,IPortNameSpace
     {
         /*
         task_declaration ::=    (From Annex A - A.2.7)  
@@ -47,10 +47,14 @@ namespace pluginVerilog.Verilog
         {
         }
 
-        public Dictionary<string, Variables.Port> Ports = new Dictionary<string, Variables.Port>();
+        private Dictionary<string, Variables.Port> ports = new Dictionary<string, Variables.Port>();
+        public Dictionary<string, Variables.Port> Ports { get { return ports; } }
+        private List<Variables.Port> portsList = new List<Variables.Port>();
+        public List<Variables.Port> PortsList { get { return portsList; } }
+
         public Statements.IStatement Statement;
 
-        public static void Parse(WordScanner word, Module module, bool protoType)
+        public static void Parse(WordScanner word, Module module)
         {
             if (word.Text != "task")
             {
@@ -60,8 +64,6 @@ namespace pluginVerilog.Verilog
             word.Color(CodeDrawStyle.ColorType.Keyword);
             task.BeginIndex = word.RootIndex;
             word.MoveNext();
-
-            if (!protoType) word.StartSkip();
 
             if (word.Text == "automatic")
             {
@@ -136,17 +138,9 @@ namespace pluginVerilog.Verilog
 
             }
 
-            if (protoType)
+            if (module.Tasks.ContainsKey(task.Name) && module.Tasks[task.Name].BeginIndex == task.BeginIndex)
             {
-                word.StartSkip();
-            }
-            else
-            {
-                word.EndSkip();
-                if (module.Tasks.ContainsKey(task.Name) && module.Tasks[task.Name].BeginIndex == task.BeginIndex)
-                {
-                    task = module.Tasks[task.Name];
-                }
+                task = module.Tasks[task.Name];
             }
 
             if (word.Text == "endtask")
@@ -155,7 +149,7 @@ namespace pluginVerilog.Verilog
             }
             else
             {
-                if (protoType)
+                if (word.Prototype)
                 {
                     while (!word.Eof)
                     {
@@ -180,8 +174,6 @@ namespace pluginVerilog.Verilog
                 }
             }
 
-            if (protoType) word.EndSkip();
-
             if (word.Text != "endtask")
             {
                 word.AddError("endtask expected");
@@ -191,7 +183,7 @@ namespace pluginVerilog.Verilog
             task.LastIndex = word.RootIndex;
             word.MoveNext();
 
-            if (protoType)
+            if (word.Prototype)
             {
                 if (module.Tasks.ContainsKey(task.Name)) return;
                 if (module.NameSpaces.ContainsKey(task.Name)) return;

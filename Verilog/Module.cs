@@ -6,14 +6,18 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Verilog
 {
-    public class Module : NameSpace
+    public class Module : NameSpace,IPortNameSpace
     {
         protected Module() : base(null,null)
         {
 
         }
 
-        public Dictionary<string, Variables.Port> Ports = new Dictionary<string, Variables.Port>();
+        private Dictionary<string, Variables.Port> ports = new Dictionary<string, Variables.Port>();
+        public Dictionary<string, Variables.Port> Ports { get { return ports; } }
+        private List<Variables.Port> portsList = new List<Variables.Port>();
+        public List<Variables.Port> PortsList { get { return portsList; } }
+
         public Dictionary<string, Function> Functions = new Dictionary<string, Function>();
         public Dictionary<string, Task> Tasks = new Dictionary<string, Task>();
         public Dictionary<string, ModuleItems.ModuleInstantiation> ModuleInstantiations = new Dictionary<string, ModuleItems.ModuleInstantiation>();
@@ -46,9 +50,20 @@ namespace pluginVerilog.Verilog
             word.MoveNext();
 
 
-            // module body
-            parseBody(word.Clone(), null, module, true);
-            parseBody(word, null, module, false);
+            // parse definitions
+            Dictionary<string, string> macroKeep = new Dictionary<string, string>();
+            foreach(var kvpair in word.RootParsedDocument.Macros)
+            {
+                macroKeep.Add(kvpair.Key, kvpair.Value);
+            }
+
+            WordScanner prototypeWord = word.Clone();
+            prototypeWord.Prototype = true;
+            parseModuleItems(prototypeWord, null, module);
+
+            // parse
+            word.RootParsedDocument.Macros = macroKeep;
+            parseModuleItems(word, null, module);
 
            // endmodule keyword
            if (word.Text == "endmodule")
@@ -66,7 +81,7 @@ namespace pluginVerilog.Verilog
             return module;
         }
 
-        protected static void parseBody(WordScanner word, Attribute attribute, Module module, bool protoType)
+        protected static void parseModuleItems(WordScanner word, Attribute attribute, Module module)
         {
             /*
             module_declaration  ::= { attribute_instance } module_keyword module_identifier [ module_parameter_port_list ]
@@ -94,55 +109,51 @@ namespace pluginVerilog.Verilog
                 {
                     break;
                 }
-                if (!protoType) word.StartSkip();
-                { // for prototype only
-                    if (word.Text == "#")
-                    { // module_parameter_port_list
-                        word.MoveNext();
-                        do
+                if (word.Text == "#")
+                { // module_parameter_port_list
+                    word.MoveNext();
+                    do
+                    {
+                        if (word.GetCharAt(0) != '(')
                         {
-                            if (word.GetCharAt(0) != '(')
-                            {
-                                word.AddError("( expected");
-                                break;
-                            }
-                            word.MoveNext();
-                            while (!word.Eof)
-                            {
-                                if (word.Text == "parameter") Verilog.Variables.Parameter.ParseCreateDeclarationForPort(word, module, null);
-                                if (word.Text != ",") break;
-                                word.MoveNext();
-                            }
-
-                            if (word.GetCharAt(0) != ')')
-                            {
-                                word.AddError(") expected");
-                                break;
-                            }
-                            word.MoveNext();
-                        } while (false);
-                    }
-
-                    if (word.Eof || word.Text == "endmodule") break;
-                    if (word.Text == "(")
-                    {
-                        parseListOfPorts_ListOfPortsDeclarations(word, module);
-                    } // list_of_ports or list_of_posrt_declarations
-
-                    if (word.Eof || word.Text == "endmodule") break;
-
-                    if (word.GetCharAt(0) == ';')
-                    {
+                            word.AddError("( expected");
+                            break;
+                        }
                         word.MoveNext();
-                    }
-                    else
-                    {
-                        word.AddError("; expected");
-                    }
-                }
-                if (!protoType) word.EndSkip();
+                        while (!word.Eof)
+                        {
+                            if (word.Text == "parameter") Verilog.Variables.Parameter.ParseCreateDeclarationForPort(word, module, null);
+                            if (word.Text != ",") break;
+                            word.MoveNext();
+                        }
 
-                parseModuleItems(word, module, protoType);
+                        if (word.GetCharAt(0) != ')')
+                        {
+                            word.AddError(") expected");
+                            break;
+                        }
+                        word.MoveNext();
+                    } while (false);
+                }
+
+                if (word.Eof || word.Text == "endmodule") break;
+                if (word.Text == "(")
+                {
+                    parseListOfPorts_ListOfPortsDeclarations(word, module);
+                } // list_of_ports or list_of_posrt_declarations
+
+                if (word.Eof || word.Text == "endmodule") break;
+
+                if (word.GetCharAt(0) == ';')
+                {
+                    word.MoveNext();
+                }
+                else
+                {
+                    word.AddError("; expected");
+                }
+
+                parseModuleItems(word, module);
                 break;
             }
 
@@ -303,7 +314,7 @@ namespace pluginVerilog.Verilog
             | function_declaration          
         parameter_override ::= defparam list_of_param_assignments ;  
         */
-        private static void parseModuleItems(WordScanner word, Module module, bool protoType)
+        private static void parseModuleItems(WordScanner word, Module module)
         {
             while (!word.Eof)
             {
@@ -315,27 +326,19 @@ namespace pluginVerilog.Verilog
                     case "input":
                     case "output":
                     case "inout":
-                        if(!protoType) word.StartSkip();
-                        { // for prototype only
-                            Verilog.Variables.Port.ParsePortDeclaration(word, module, null);
-                            if (word.GetCharAt(0) != ';')
-                            {
-                                word.AddError("; expected");
-                            }
-                            else
-                            {
-                                word.MoveNext();
-                            }
+                        Verilog.Variables.Port.ParsePortDeclaration(word, module, null);
+                        if (word.GetCharAt(0) != ';')
+                        {
+                            word.AddError("; expected");
                         }
-                        if (!protoType) word.EndSkip();
+                        else
+                        {
+                            word.MoveNext();
+                        }
                         break;
                     // module_or_generate_item_declaration
                     case "reg":
-                        if (!protoType) word.StartSkip();
-                        { // for prototype only
-                            Verilog.Variables.Reg.ParseCreateFromDeclaration(word, module);
-                        }
-                        if (!protoType) word.EndSkip();
+                        Verilog.Variables.Reg.ParseCreateFromDeclaration(word, module);
                         break;
                     case "supply0":
                     case "supply1":
@@ -347,103 +350,54 @@ namespace pluginVerilog.Verilog
                     case "wire":
                     case "wand":
                     case "wor":
-                        if (!protoType) word.StartSkip();
-                        { // for prototype only
-                            Verilog.Variables.Net.ParseCreateFromDeclaration(word, module);
-                        }
-                        if (!protoType) word.EndSkip();
+                        Verilog.Variables.Net.ParseCreateFromDeclaration(word, module);
                         break;
                     case "integer":
-                        if (!protoType) word.StartSkip();
-                        { // for prototype only
-                            Verilog.Variables.Integer.ParseCreateFromDeclaration(word, module);
-                        }
-                        if (!protoType) word.EndSkip();
+                        Verilog.Variables.Integer.ParseCreateFromDeclaration(word, module);
                         break;
                     case "real":
-                        if (!protoType) word.StartSkip();
-                        { // for prototype only
-                            Verilog.Variables.Real.ParseCreateFromDeclaration(word, module);
-                        }
-                        if (!protoType) word.EndSkip();
+                        Verilog.Variables.Real.ParseCreateFromDeclaration(word, module);
                         break;
                     case "realtime":
-                        if (!protoType) word.StartSkip();
-                        { // for prototype only
-                            Verilog.Variables.RealTime.ParseCreateFromDeclaration(word, module);
-                        }
-                        if (!protoType) word.EndSkip();
+                        Verilog.Variables.RealTime.ParseCreateFromDeclaration(word, module);
                         break;
                     case "time":
-                        if (!protoType) word.StartSkip();
-                        { // for prototype only
-                            Verilog.Variables.Time.ParseCreateFromDeclaration(word, module);
-                        }
-                        if (!protoType) word.EndSkip();
+                        Verilog.Variables.Time.ParseCreateFromDeclaration(word, module);
                         break;
                     case "event":
-                        if (!protoType) word.StartSkip();
-                        { // for prototype only
-                            Verilog.Variables.Event.ParseCreateFromDeclaration(word, module);
-                        }
-                        if (!protoType) word.EndSkip();
+                        Verilog.Variables.Event.ParseCreateFromDeclaration(word, module);
                         break;
                     case "genvar":
-                        if (!protoType) word.StartSkip();
-                        { // for prototype only
-                            Verilog.Variables.Genvar.ParseCreateFromDeclaration(word, module);
-                        }
-                        if (!protoType) word.EndSkip();
+                        Verilog.Variables.Genvar.ParseCreateFromDeclaration(word, module);
                         break;
                     // always_construct
                     case "always":
-                        if (protoType) word.StartSkip();
-                        { // for implementation only
-                            ModuleItems.AlwaysConstruct always = ModuleItems.AlwaysConstruct.ParseCreate(word, module);
-                        }
-                        if (protoType) word.EndSkip();
+                        ModuleItems.AlwaysConstruct always = ModuleItems.AlwaysConstruct.ParseCreate(word, module);
                         break;
                     // initial_construct
                     case "initial":
-                        if (protoType) word.StartSkip();
-                        { // for implementation only
-                            ModuleItems.InitialConstruct initial = ModuleItems.InitialConstruct.ParseCreate(word, module);
-                        }
-                        if (protoType) word.EndSkip();
+                        ModuleItems.InitialConstruct initial = ModuleItems.InitialConstruct.ParseCreate(word, module);
                         break;
                     // parameter_declaration
                     case "parameter":
                     // local_parameter_declaration
                     case "localparam":
-                        if (!protoType) word.StartSkip();
-                        { // for prototype only
-                            Verilog.Variables.Parameter.ParseCreateDeclaration(word, module, null);
-                        }
-                        if (!protoType) word.EndSkip();
+                        Verilog.Variables.Parameter.ParseCreateDeclaration(word, module, null);
                         break;
                     // continuous_assign
                     case "assign":
-                        if (protoType) word.StartSkip();
-                        { // for implementation only
-                            ModuleItems.ContinuousAssign continuousAssign = ModuleItems.ContinuousAssign.ParseCreate(word, module);
-                        }
-                        if (protoType) word.EndSkip();
+                        ModuleItems.ContinuousAssign continuousAssign = ModuleItems.ContinuousAssign.ParseCreate(word, module);
                         break;
                     case "function":
-                        Function.Parse(word, module,protoType);
-                        if (!protoType) word.EndSkip();
+                        Function.Parse(word, module);
                         break;
                     case "task":
-                        if (!protoType) word.StartSkip();
-                        { // for prototype only
-                            Task.Parse(word, module, protoType);
-                        }
-                        if (!protoType) word.EndSkip();
+                        Task.Parse(word, module);
                         break;
                     case "generate":
                         word.Color(CodeDrawStyle.ColorType.Keyword);
                         word.MoveNext();
-                        ParseGenerateItems(word, module,protoType);
+                        ParseGenerateItems(word, module);
                         if(word.Text != "endgenerate")
                         {
                             word.AddError("endgenerate expected");
@@ -455,11 +409,7 @@ namespace pluginVerilog.Verilog
                         }
                         break;
                     default:
-                        if (!protoType) word.StartSkip();
-                        { // for prottype only
-                            ModuleItems.ModuleInstantiation.Parse(word, module);
-                        }
-                        if (!protoType) word.EndSkip();
+                        ModuleItems.ModuleInstantiation.Parse(word, module);
                         break;
                 }
             }
@@ -471,15 +421,15 @@ namespace pluginVerilog.Verilog
         generate_item ::=   generate_conditional_statement | generate_case_statement | generate_loop_statement | generate_block | module_or_generate_item  
 
          */
-        public static void ParseGenerateItems(WordScanner word, Module module, bool protoType)
+        public static void ParseGenerateItems(WordScanner word, Module module)
         {
             while (!word.Eof)
             {
-                if (!ParseGenerateItem(word, module,protoType)) break;
+                if (!ParseGenerateItem(word, module)) break;
             }
         }
 
-        public static bool ParseGenerateItem(WordScanner word, Module module, bool protoType)
+        public static bool ParseGenerateItem(WordScanner word, Module module)
         {
             switch (word.Text)
             {
@@ -492,41 +442,33 @@ namespace pluginVerilog.Verilog
                     return false;
 
                 case "if":
-                    Generate.ParseGenerateConditionalStatement(word, module, protoType);
+                    Generate.ParseGenerateConditionalStatement(word, module);
                     break;
                 case "case":
-                    Generate.ParseGenerateCaseStatement(word, module, protoType);
+                    Generate.ParseGenerateCaseStatement(word, module);
                     break;
                 case "for":
-                    Generate.ParseGenerateLoopStatement(word, module, protoType);
+                    Generate.ParseGenerateLoopStatement(word, module);
                     break;
                 case "begin":
-                    Generate.ParseGenerateBlockStatement(word, module, protoType);
+                    Generate.ParseGenerateBlockStatement(word, module);
                     break;
 
                 case "input":
                 case "output":
                 case "inout":
-                    if (!protoType) word.StartSkip();
-                    { // for prototype only
-                        Verilog.Variables.Port.ParsePortDeclaration(word, module, null);
-                        if (word.GetCharAt(0) != ';')
-                        {
-                            word.AddError("; expected");
-                        }
-                        else
-                        {
-                            word.MoveNext();
-                        }
+                    Verilog.Variables.Port.ParsePortDeclaration(word, module, null);
+                    if (word.GetCharAt(0) != ';')
+                    {
+                        word.AddError("; expected");
                     }
-                    if (!protoType) word.EndSkip();
+                    else
+                    {
+                        word.MoveNext();
+                    }
                     break;
                 case "reg":
-                    if (!protoType) word.StartSkip();
-                    { // for prototype only
-                        Verilog.Variables.Reg.ParseCreateFromDeclaration(word, module);
-                    }
-                    if (!protoType) word.EndSkip();
+                    Verilog.Variables.Reg.ParseCreateFromDeclaration(word, module);
                     break;
                 case "supply0":
                 case "supply1":
@@ -538,92 +480,44 @@ namespace pluginVerilog.Verilog
                 case "wire":
                 case "wand":
                 case "wor":
-                    if (!protoType) word.StartSkip();
-                    { // for prototype only
-                        Verilog.Variables.Net.ParseCreateFromDeclaration(word, module);
-                    }
-                    if (!protoType) word.EndSkip();
+                    Verilog.Variables.Net.ParseCreateFromDeclaration(word, module);
                     break;
                 case "integer":
-                    if (!protoType) word.StartSkip();
-                    { // for prototype only
-                        Verilog.Variables.Integer.ParseCreateFromDeclaration(word, module);
-                    }
-                    if (!protoType) word.EndSkip();
+                    Verilog.Variables.Integer.ParseCreateFromDeclaration(word, module);
                     break;
                 case "real":
-                    if (!protoType) word.StartSkip();
-                    { // for prototype only
-                        Verilog.Variables.Real.ParseCreateFromDeclaration(word, module);
-                    }
-                    if (!protoType) word.EndSkip();
+                    Verilog.Variables.Real.ParseCreateFromDeclaration(word, module);
                     break;
                 case "realtime":
-                    if (!protoType) word.StartSkip();
-                    { // for prototype only
-                        Verilog.Variables.RealTime.ParseCreateFromDeclaration(word, module);
-                    }
-                    if (!protoType) word.EndSkip();
+                    Verilog.Variables.RealTime.ParseCreateFromDeclaration(word, module);
                     break;
                 case "time":
-                    if (!protoType) word.StartSkip();
-                    { // for prototype only
-                        Verilog.Variables.Time.ParseCreateFromDeclaration(word, module);
-                    }
-                    if (!protoType) word.EndSkip();
+                    Verilog.Variables.Time.ParseCreateFromDeclaration(word, module);
                     break;
                 case "event":
-                    if (!protoType) word.StartSkip();
-                    { // for prototype only
-                        Verilog.Variables.Event.ParseCreateFromDeclaration(word, module);
-                    }
-                    if (!protoType) word.EndSkip();
+                    Verilog.Variables.Event.ParseCreateFromDeclaration(word, module);
                     break;
                 case "genvar":
-                    if (!protoType) word.StartSkip();
-                    { // for prototype only
-                        Verilog.Variables.Genvar.ParseCreateFromDeclaration(word, module);
-                    }
-                    if (!protoType) word.EndSkip();
+                    Verilog.Variables.Genvar.ParseCreateFromDeclaration(word, module);
                     break;
                 case "initial":
-                    if (protoType) word.StartSkip();
-                    { // for implementation only
-                        ModuleItems.InitialConstruct initial = ModuleItems.InitialConstruct.ParseCreate(word, module);
-                    }
-                    if (protoType) word.EndSkip();
+                    ModuleItems.InitialConstruct initial = ModuleItems.InitialConstruct.ParseCreate(word, module);
                     break;
                 case "always":
-                    if (protoType) word.StartSkip();
-                    { // for implementation only
-                        ModuleItems.AlwaysConstruct always = ModuleItems.AlwaysConstruct.ParseCreate(word, module);
-                    }
-                    if (protoType) word.EndSkip();
+                    ModuleItems.AlwaysConstruct always = ModuleItems.AlwaysConstruct.ParseCreate(word, module);
                     break;
                 case "parameter":
                 case "localparam":
-                    if (!protoType) word.StartSkip();
-                    { // for prototype only
-                        Verilog.Variables.Parameter.ParseCreateDeclaration(word, module, null);
-                    }
-                    if (!protoType) word.EndSkip();
+                    Verilog.Variables.Parameter.ParseCreateDeclaration(word, module, null);
                     break;
                 case "assign":
-                    if (protoType) word.StartSkip();
-                    { // for implementation only
-                        ModuleItems.ContinuousAssign continuousAssign = ModuleItems.ContinuousAssign.ParseCreate(word, module);
-                    }
-                    if (protoType) word.EndSkip();
+                    ModuleItems.ContinuousAssign continuousAssign = ModuleItems.ContinuousAssign.ParseCreate(word, module);
                     break;
                 case "function":
-                    Function.Parse(word, module,protoType);
+                    Function.Parse(word, module);
                     break;
                 case "task":
-                    if (!protoType) word.StartSkip();
-                    { // for prototype only
-                        Task.Parse(word, module,protoType);
-                    }
-                    if (!protoType) word.EndSkip();
+                    Task.Parse(word, module);
                     break;
                 case "cmos":
                 case "rcmos":
@@ -649,18 +543,10 @@ namespace pluginVerilog.Verilog
                 case "rtranif1":
                 case "tran":
                 case "rtran":
-                    if (!protoType) word.StartSkip();
-                    { // for prototype only
-                        ModuleItems.GateInstantialtion.ParseCreate(word, module);
-                    }
-                    if (!protoType) word.EndSkip();
+                    ModuleItems.GateInstantialtion.ParseCreate(word, module);
                     break;
                 default:
-                    if (!protoType) word.StartSkip();
-                    { // for prottype only
-                        ModuleItems.ModuleInstantiation.Parse(word, module);
-                    }
-                    if (!protoType) word.EndSkip();
+                    ModuleItems.ModuleInstantiation.Parse(word, module);
                     break;
             }
 

@@ -76,10 +76,12 @@ namespace pluginVerilog.Verilog.Variables
                     break;
             }
 
+            WordReference nameReference;
             while (!word.Eof)
             {
                 if (!General.IsIdentifier(word.Text)) break;
                 string identifier = word.Text;
+                nameReference = word.GetReference();
                 word.Color(CodeDrawStyle.ColorType.Paramater);
                 word.MoveNext();
 
@@ -93,7 +95,7 @@ namespace pluginVerilog.Verilog.Variables
                     {
                         if (module.LocalParameters.ContainsKey(identifier))
                         {
-                            word.AddError("local parameter name duplicated");
+                            nameReference.AddError("local parameter name duplicated");
                         }
                         else
                         {
@@ -107,7 +109,7 @@ namespace pluginVerilog.Verilog.Variables
                     {
                         if (module.Parameters.ContainsKey(identifier))
                         {
-                            word.AddError("parameter name duplicated");
+                            nameReference.AddError("parameter name duplicated");
                         }
                         else
                         {
@@ -193,41 +195,67 @@ namespace pluginVerilog.Verilog.Variables
                 if (!General.IsIdentifier(word.Text)) break;
                 string identifier = word.Text;
                 word.Color(CodeDrawStyle.ColorType.Paramater);
+                Parameter param = new Parameter();
+                if (local)
+                {
+                    if (!word.Active)
+                    {
+                        // skip
+                    }else if (word.Prototype)
+                    {
+                        if (nameSpace.LocalParameters.ContainsKey(identifier))
+                        {
+                            word.AddError("name duplicated");
+                        }
+                        else
+                        {
+                            param.Name = identifier;
+                            nameSpace.LocalParameters.Add(param.Name, param);
+                        }
+                    }
+                    else
+                    {
+                        if (nameSpace.LocalParameters.ContainsKey(identifier))
+                        {
+                            param = nameSpace.LocalParameters[identifier];
+                        }
+                    }
+
+                }
+                else
+                {
+                    if (!word.Active)
+                    {
+                        // skip
+                    }
+                    else if (word.Prototype)
+                    {
+                        if (nameSpace.Parameters.ContainsKey(identifier))
+                        {
+                            word.AddError("name duplicated");
+                        }
+                        else
+                        {
+                            param.Name = identifier;
+                            nameSpace.Parameters.Add(param.Name, param);
+                        }
+                    }
+                    else
+                    {
+                        if (nameSpace.Parameters.ContainsKey(identifier))
+                        {
+                            param = nameSpace.Parameters[identifier];
+                        }
+                    }
+                }
                 word.MoveNext();
 
                 if (word.Text != "=") break;
                 word.MoveNext();
-                Expressions.Expression expression = Expressions.Expression.ParseCreate(word, nameSpace);
-                if (expression == null) break;
+                
+                param.Expression = Expressions.Expression.ParseCreate(word, nameSpace);
+                if (param.Expression == null) break;
 
-                if (local)
-                {
-                    if (nameSpace.LocalParameters.ContainsKey(identifier))
-                    {
-                        word.AddError("local parameter name duplicated");
-                    }
-                    else
-                    {
-                        Parameter param = new Parameter();
-                        param.Name = identifier;
-                        param.Expression = expression;
-                        nameSpace.LocalParameters.Add(param.Name, param);
-                    }
-                }
-                else
-                {
-                    if (nameSpace.Parameters.ContainsKey(identifier))
-                    {
-                        word.AddError("parameter name duplicated");
-                    }
-                    else
-                    {
-                        Parameter param = new Parameter();
-                        param.Name = identifier;
-                        param.Expression = expression;
-                        nameSpace.Parameters.Add(param.Name, param);
-                    }
-                }
                 if (word.Text != ",") break;
                 word.MoveNext();
             }

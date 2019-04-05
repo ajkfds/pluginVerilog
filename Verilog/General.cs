@@ -180,5 +180,6 @@ namespace pluginVerilog
             "xnor","xor"
         };
 
+
     }
 }

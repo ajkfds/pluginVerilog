@@ -93,7 +93,10 @@ namespace pluginVerilog.Verilog.Variables
                 reg.Name = word.Text;
 
                 // register valiable
-                if (word.Active)
+                if (!word.Active)
+                {
+                    // skip
+                }else if (word.Prototype)
                 {
                     if (nameSpace.Variables.ContainsKey(reg.Name))
                     {
@@ -110,6 +113,13 @@ namespace pluginVerilog.Verilog.Variables
                     else
                     {
                         nameSpace.Variables.Add(reg.Name, reg);
+                    }
+                }
+                else
+                {
+                    if(nameSpace.Variables.ContainsKey(reg.Name) && nameSpace.Variables[reg.Name] is Reg)
+                    {
+                        reg = nameSpace.Variables[reg.Name] as Reg;
                     }
                 }
 

@@ -33,7 +33,7 @@ namespace pluginVerilog.Verilog.ModuleItems
 
             moduleIdentifier.Color(CodeDrawStyle.ColorType.Identifier);
 
-            if(word.Text == "#")
+            if (word.Text == "#")
             {
                 word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext();
@@ -106,19 +106,41 @@ namespace pluginVerilog.Verilog.ModuleItems
             word.Color(CodeDrawStyle.ColorType.Identifier);
             if (!General.IsIdentifier(word.Text))
             {
-                word.AddError("illegal instance name");
-                error = true;
-            }else if(!word.Active)
-            {
-                error = true;
-            } else if (module.ModuleInstantiations.ContainsKey(word.Text))
-            {
-                word.AddError("instance name duplicated");
-                error = true;
+                moduleInstantiation.Name = word.Text;
             }
             else
             {
-                moduleInstantiation.Name = word.Text;
+                if(word.Prototype) word.AddError("illegal instance name");
+            }
+
+            if (word.Prototype)
+            {
+                if(moduleInstantiation.Name == null)
+                {
+                    // 
+                }else if (module.ModuleInstantiations.ContainsKey(moduleInstantiation.Name))
+                {   // duplicated
+                    word.AddError("instance name duplicated");
+                }
+                else
+                {
+                    module.ModuleInstantiations.Add(moduleInstantiation.Name, moduleInstantiation);
+                }
+            }
+            else
+            {
+                if (moduleInstantiation.Name == null)
+                {
+                    // 
+                }
+                else if (module.ModuleInstantiations.ContainsKey(moduleInstantiation.Name))
+                {   // duplicated
+                    moduleInstantiation = module.ModuleInstantiations[moduleInstantiation.Name];
+                }
+                else
+                {
+                    //module.ModuleInstantiations.Add(moduleInstantiation.Name, moduleInstantiation);
+                }
             }
 
             word.MoveNext();
@@ -192,10 +214,6 @@ namespace pluginVerilog.Verilog.ModuleItems
             }
             word.MoveNext();
 
-            if (!error)
-            {
-                module.ModuleInstantiations.Add(moduleInstantiation.Name, moduleInstantiation);
-            }
         }
 
         /*

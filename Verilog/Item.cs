@@ -10,5 +10,6 @@ namespace pluginVerilog.Verilog
     {
         public string Name { get; set; }
         public Attribute Attribute { get; set; }
+        public WordReference DefinitionRefrecnce { get; set; }
     }
 }

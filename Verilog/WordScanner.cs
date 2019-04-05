@@ -28,16 +28,18 @@ namespace pluginVerilog.Verilog
 
 
         private int nonGeneratedCount = 0;
-        private bool skipWords = false;
+        private bool prototype = false;
 
-        public void StartSkip()
+        public bool Prototype
         {
-            skipWords = true;
-        }
-
-        public void EndSkip()
-        {
-            skipWords = false;
+            set
+            {
+                prototype = value;
+            }
+            get
+            {
+                return prototype;
+            }
         }
 
         public void StartNonGenenerated()
@@ -59,7 +61,7 @@ namespace pluginVerilog.Verilog
             WordScanner ret = new WordScanner(wordPointer.Document, RootParsedDocument);
             ret.wordPointer = wordPointer.Clone();
             ret.nonGeneratedCount = nonGeneratedCount;
-            ret.skipWords = skipWords;
+            ret.prototype = prototype;
             foreach (var wp in stock)
             {
                 ret.stock.Add(wp.Clone());
@@ -86,19 +88,31 @@ namespace pluginVerilog.Verilog
 
         public void Color(CodeDrawStyle.ColorType colorType)
         {
-            if (nonGeneratedCount != 0 || skipWords) return;
+            if (nonGeneratedCount != 0 || prototype) return;
             wordPointer.Color(colorType);
         }
 
         public void AddError(string message)
         {
-            if (nonGeneratedCount != 0 || skipWords) return;
+            if (nonGeneratedCount != 0 || !prototype) return;
             wordPointer.AddError(message);
         }
 
         public void AddWarning(string message)
         {
-            if (nonGeneratedCount != 0 || skipWords) return;
+            if (nonGeneratedCount != 0 || !prototype) return;
+            wordPointer.AddWarning(message);
+        }
+
+        public void AddPrototypeError(string message)
+        {
+            if (nonGeneratedCount != 0) return;
+            wordPointer.AddError(message);
+        }
+
+        public void AddPrototypeWarning(string message)
+        {
+            if (nonGeneratedCount != 0) return;
             wordPointer.AddWarning(message);
         }
 
@@ -122,7 +136,6 @@ namespace pluginVerilog.Verilog
             get
             {
                 if (nonGeneratedCount != 0) return false;
-                if (skipWords) return false;
                 return true;
             }
         }

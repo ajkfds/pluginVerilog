@@ -104,6 +104,7 @@
     <Compile Include="Verilog\Popup\PortPopup.cs" />
     <Compile Include="Verilog\Popup\TaskPopup.cs" />
     <Compile Include="Verilog\Popup\VariablePopup.cs" />
+    <Compile Include="Verilog\IPortNameSpace.cs" />
     <Compile Include="Verilog\Snippets\AlwaysFFSnippet.cs" />
     <Compile Include="Verilog\Snippets\BeginAutoCompleteItem.cs" />
     <Compile Include="Verilog\Snippets\FunctionAutocompleteItem.cs" />

@@ -33,21 +33,28 @@ namespace pluginVerilog.Verilog.Variables
                 Genvar val = new Genvar();
                 WordReference nameRef = word.GetReference();
                 val.Name = word.Text;
-                if (nameSpace.Variables.ContainsKey(val.Name))
+
+
+                if (word.Active)
                 {
-                    if (nameSpace.Variables[val.Name] is Net)
+                    if (word.Prototype)
                     {
-                        nameSpace.Variables.Remove(val.Name);
-                        nameSpace.Variables.Add(val.Name, val);
+                        if (nameSpace.Variables.ContainsKey(val.Name))
+                        {
+                            nameRef.AddError("duplicated net name");
+                        }
+                        else
+                        {
+                            nameSpace.Variables.Add(val.Name, val);
+                        }
                     }
                     else
                     {
-                        nameRef.AddError("duplicated real name");
+                        if (nameSpace.Variables.ContainsKey(val.Name) && nameSpace.Variables[val.Name] is Genvar)
+                        {
+                            val = nameSpace.Variables[val.Name] as Genvar;
+                        }
                     }
-                }
-                else
-                {
-                    nameSpace.Variables.Add(val.Name, val);
                 }
 
                 word.Color(CodeDrawStyle.ColorType.Variable);

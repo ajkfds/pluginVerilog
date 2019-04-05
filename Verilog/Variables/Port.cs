@@ -88,86 +88,16 @@ namespace pluginVerilog.Verilog.Variables
             // list_of_port_identifiers::= port_identifier { , port_identifier }
             // range ::= [ msb_constant_expression : lsb_constant_expression ]  
 
-            List<Variable> variables;
             switch (word.Text)
             {
                 case "input":
-                    parseInputDeclaration(word, module, attribute, out variables);
-                    if (variables.Count == 0) return;
-                    foreach (Variable variable in variables)
-                    {
-                        Port port = new Port();
-                        port.Name = variable.Name;
-                        port.Direction = DirectionEnum.Input;
-                        port.Variable = variable;
-                        if (word.Active)
-                        {
-                            if (!module.Ports.ContainsKey(variable.Name))
-                            {
-                                module.Ports.Add(port.Name, port);
-                            }
-                            if (module.Variables.ContainsKey(variable.Name))
-                            {
-                                word.AddError("illegal port name");
-                            }
-                            else
-                            {
-                                module.Variables.Add(variable.Name, variable);
-                            }
-                        }
-                    }
+                    parseInputDeclaration(word, module, module, attribute);
                     break;
                 case "output":
-                    parseOutputDeclaration(word, module, attribute, out variables);
-                    if (variables.Count == 0) return;
-                    foreach (Variable variable in variables)
-                    {
-                        Port port = new Port();
-                        port.Name = variable.Name;
-                        port.Direction = DirectionEnum.Output;
-                        port.Variable = variable;
-                        if (word.Active)
-                        {
-                            if (!module.Ports.ContainsKey(variable.Name))
-                            {
-                                module.Ports.Add(port.Name, port);
-                            }
-                            if (module.Variables.ContainsKey(variable.Name))
-                            {
-                                word.AddError("illegal port name");
-                            }
-                            else
-                            {
-                                module.Variables.Add(variable.Name, variable);
-                            }
-                        }
-                    }
-                    break;
+                    parseOutputDeclaration(word, module, module, attribute);
+                   break;
                 case "inout":
-                    parseInoutDeclaration(word, module, attribute, out variables);
-                    if (variables.Count == 0) return;
-                    foreach (Variable variable in variables)
-                    {
-                        Port port = new Port();
-                        port.Name = variable.Name;
-                        port.Direction = DirectionEnum.Inout;
-                        port.Variable = variable;
-                        if (word.Active)
-                        {
-                            if (!module.Ports.ContainsKey(variable.Name))
-                            {
-                                module.Ports.Add(port.Name, port);
-                            }
-                            if (module.Variables.ContainsKey(variable.Name))
-                            {
-                                word.AddError("illegal port name");
-                            }
-                            else
-                            {
-                                module.Variables.Add(variable.Name, variable);
-                            }
-                        }
-                    }
+                    parseInoutDeclaration(word, module,module, attribute);
                     break;
                 default:
                     break;
@@ -189,36 +119,10 @@ namespace pluginVerilog.Verilog.Variables
             // list_of_port_identifiers::= (From Annex A -A.2.3) port_identifier { , port_identifier }
             // range ::= [ msb_constant_expression : lsb_constant_expression ]  
 
-            List<Variable> variables;
             switch (word.Text)
             {
                 case "input":
-                    ParseTfInputDeclaration(word,function.Module,attribute, out variables);
-                    if (variables.Count == 0) return;
-                    foreach (Variable variable in variables)
-                    {
-                        Port port = new Port();
-                        port.Name = variable.Name;
-//                        if(variable is Net)
-//                        {
-//                            port.Range = ((Net)variable).Range;
-//                        }
-
-                        port.Direction = DirectionEnum.Input;
-                        if (!function.Ports.ContainsKey(variable.Name))
-                        {
-                            function.Ports.Add(port.Name, port);
-                            function.PortsList.Add(port);
-                        }
-                        if (function.Variables.ContainsKey(variable.Name))
-                        {
-                            word.AddError("illegal port name");
-                        }
-                        else
-                        {
-                            function.Variables.Add(variable.Name, variable);
-                        }
-                    }
+                    ParseTfInputDeclaration(word,function.Module,function,attribute);
                     break;
                 default:
                     break;
@@ -239,74 +143,16 @@ namespace pluginVerilog.Verilog.Variables
 */
         public static void ParseTaskPortDeclaration(WordScanner word, Task task, Attribute attribute)
         {
-            List<Variable> variables;
             switch (word.Text)
             {
                 case "input":
-                    ParseTfInputDeclaration(word, task.Module, attribute, out variables);
-                    if (variables.Count == 0) return;
-                    foreach (Variable variable in variables)
-                    {
-                        Port port = new Port();
-                        port.Name = variable.Name;
-                        port.Direction = DirectionEnum.Input;
-                        if (!task.Ports.ContainsKey(variable.Name))
-                        {
-                            task.Ports.Add(port.Name, port);
-                        }
-                        if (task.Variables.ContainsKey(variable.Name))
-                        {
-                            word.AddError("illegal port name");
-                        }
-                        else
-                        {
-                            task.Variables.Add(variable.Name, variable);
-                        }
-                    }
+                    ParseTfInputDeclaration(word, task.Module,task, attribute);
                     break;
                 case "inout":
-                    ParseTfInoutDeclaration(word, task.Module, attribute, out variables);
-                    if (variables.Count == 0) return;
-                    foreach (Variable variable in variables)
-                    {
-                        Port port = new Port();
-                        port.Name = variable.Name;
-                        port.Direction = DirectionEnum.Inout;
-                        if (!task.Ports.ContainsKey(variable.Name))
-                        {
-                            task.Ports.Add(port.Name, port);
-                        }
-                        if (task.Variables.ContainsKey(variable.Name))
-                        {
-                            word.AddError("illegal port name");
-                        }
-                        else
-                        {
-                            task.Variables.Add(variable.Name, variable);
-                        }
-                    }
+                    ParseTfInoutDeclaration(word, task.Module, task, attribute);
                     break;
                 case "output":
-                    ParseTfOutputDeclaration(word, task.Module, attribute, out variables);
-                    if (variables.Count == 0) return;
-                    foreach (Variable variable in variables)
-                    {
-                        Port port = new Port();
-                        port.Name = variable.Name;
-                        port.Direction = DirectionEnum.Output;
-                        if (!task.Ports.ContainsKey(variable.Name))
-                        {
-                            task.Ports.Add(port.Name, port);
-                        }
-                        if (task.Variables.ContainsKey(variable.Name))
-                        {
-                            word.AddError("illegal port name");
-                        }
-                        else
-                        {
-                            task.Variables.Add(variable.Name, variable);
-                        }
-                    }
+                    ParseTfOutputDeclaration(word, task.Module, task, attribute);
                     break;
                 default:
                     break;
@@ -314,10 +160,10 @@ namespace pluginVerilog.Verilog.Variables
             return;
         }
 
-        private static void parseInputDeclaration(WordScanner word, Module module, Attribute attribute, out List<Variable> variables)
+
+        private static void parseInputDeclaration(WordScanner word, NameSpace nameSpace, IPortNameSpace portNameSpace, Attribute attribute)
         {
             // input_declaration ::= input[net_type][signed][range] list_of_port_identifiers
-            variables = new List<Variable>();
             if (word.Text != "input") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
@@ -334,22 +180,54 @@ namespace pluginVerilog.Verilog.Variables
             }
 
             Range range = null;
-            if(word.GetCharAt(0) == '[')
+            if (word.GetCharAt(0) == '[')
             {
-                range = Range.ParseCreate(word, module);
+                range = Range.ParseCreate(word, nameSpace);
             }
 
             while (!word.Eof)
             {
-                if (!General.IsIdentifier(word.Text)) return;
+                if (!General.IsIdentifier(word.Text))
+                {
+                    word.AddError("illegal port name");
+                    return;
+                }
 
                 Net net = new Net();
                 net.Name = word.Text;
                 net.Range = range;
                 net.Signed = signed;
                 if (netType != null) net.NetType = (Net.NetTypeEnum)netType;
-                variables.Add(net);
                 word.Color(CodeDrawStyle.ColorType.Net);
+
+                Port port = new Port();
+                port.Name = net.Name;
+                port.Direction = DirectionEnum.Input;
+                port.Variable = net;
+
+                if (!word.Active)
+                {
+                    // skip
+                }
+                else if (word.Prototype)
+                {
+                    if (portNameSpace.Ports.ContainsKey(port.Name))
+                    {
+                        word.AddError("port name duplicated");
+                    }
+                    else
+                    {
+                        portNameSpace.Ports.Add(port.Name, port);
+                    }
+                }
+                else
+                {
+                    if (!portNameSpace.Ports.ContainsKey(port.Name))
+                    {
+                        port = portNameSpace.Ports[port.Name];
+                    }
+                }
+
                 word.MoveNext();
 
                 if (word.GetCharAt(0) == ',')
@@ -371,11 +249,10 @@ namespace pluginVerilog.Verilog.Variables
             }
 
         }
-
-        private static void parseInoutDeclaration(WordScanner word, Module module, Attribute attribute, out List<Variable> variables)
+        
+        private static void parseInoutDeclaration(WordScanner word, Module module, IPortNameSpace portNameSpace, Attribute attribute)
         {
             // inout_declaration::= inout[net_type][signed][range] list_of_port_identifiers
-            variables = new List<Variable>();
             if (word.Text != "inout") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
@@ -407,8 +284,36 @@ namespace pluginVerilog.Verilog.Variables
                 net.Range = range;
                 net.Signed = signed;
                 if (netType != null) net.NetType = (Net.NetTypeEnum)netType;
-                variables.Add(net);
                 word.Color(CodeDrawStyle.ColorType.Net);
+
+                Port port = new Port();
+                port.Name = net.Name;
+                port.Direction = DirectionEnum.Inout;
+                port.Variable = net;
+
+                if (!word.Active)
+                {
+                    // skip
+                }
+                else if (word.Prototype)
+                {
+                    if (portNameSpace.Ports.ContainsKey(port.Name))
+                    {
+                        word.AddError("port name duplicated");
+                    }
+                    else
+                    {
+                        portNameSpace.Ports.Add(port.Name, port);
+                        portNameSpace.PortsList.Add(port);
+                    }
+                }
+                else
+                {
+                    if (portNameSpace.Ports.ContainsKey(port.Name))
+                    {
+                        port = portNameSpace.Ports[port.Name];
+                    }
+                }
                 word.MoveNext();
 
                 if (word.GetCharAt(0) == ',')
@@ -429,7 +334,7 @@ namespace pluginVerilog.Verilog.Variables
                 }
             }
         }
-
+        
         private enum portVariableType
         {
             wire,
@@ -439,7 +344,8 @@ namespace pluginVerilog.Verilog.Variables
             integer,
             reg
         }
-        private static void parseOutputDeclaration(WordScanner word, Module module, Attribute attribute, out List<Variable> variables)
+
+        private static void parseOutputDeclaration(WordScanner word, Module module, IPortNameSpace portNameSpace, Attribute attribute)
         {
             // output_declaration ::=     output       [net_type] [signed][range] list_of_port_identifiers
             //                          | output [reg]            [signed][range] list_of_port_identifiers
@@ -451,7 +357,6 @@ namespace pluginVerilog.Verilog.Variables
             // list_of_port_identifiers::= port_identifier { , port_identifier }
             // list_of_variable_port_identifiers::= port_identifier[ = constant_expression] { , port_identifier[ = constant_expression] }
 
-            variables = new List<Variable>();
             if (word.Text != "output") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
@@ -498,6 +403,7 @@ namespace pluginVerilog.Verilog.Variables
                 range = Range.ParseCreate(word, module);
             }
 
+            Variable variable;
             while (!word.Eof)
             {
                 if (!General.IsIdentifier(word.Text)) return;
@@ -505,22 +411,16 @@ namespace pluginVerilog.Verilog.Variables
                 switch (varType)
                 {
                     case portVariableType.reg:
-                        Reg reg = new Reg(word.Text, range, signed);
-                        variables.Add(reg);
+                        variable = new Reg(word.Text, range, signed);
                         word.Color(CodeDrawStyle.ColorType.Net);
-                        word.MoveNext();
                         break;
                     case portVariableType.integer:
-                        Integer integer = new Integer(word.Text);
-                        variables.Add(integer);
+                        variable = new Integer(word.Text);
                         word.Color(CodeDrawStyle.ColorType.Variable);
-                        word.MoveNext();
                         break;
                     case portVariableType.time:
-                        Time time = new Time(word.Text);
-                        variables.Add(time);
+                        variable = new Time(word.Text);
                         word.Color(CodeDrawStyle.ColorType.Variable);
-                        word.MoveNext();
                         break;
                     case portVariableType.wire:
                         Net net = new Net();
@@ -528,15 +428,44 @@ namespace pluginVerilog.Verilog.Variables
                         net.Range = range;
                         net.Signed = signed;
                         if (netType != null) net.NetType = (Net.NetTypeEnum)netType;
-                        variables.Add(net);
+                        variable = net;
                         word.Color(CodeDrawStyle.ColorType.Net);
-                        word.MoveNext();
                         break;
                     default:
                         throw new NotImplementedException();
                 }
 
-                if(varType != portVariableType.wire && word.Text == "=")
+                Port port = new Port();
+                port.Name = variable.Name;
+                port.Direction = DirectionEnum.Output;
+                port.Variable = variable;
+
+                if (!word.Active)
+                {
+                    // skip
+                }
+                else if (word.Prototype)
+                {
+                    if (portNameSpace.Ports.ContainsKey(port.Name))
+                    {
+                        word.AddError("port name duplicated");
+                    }
+                    else
+                    {
+                        portNameSpace.Ports.Add(port.Name, port);
+                        portNameSpace.PortsList.Add(port);
+                    }
+                }
+                else
+                {
+                    if (portNameSpace.Ports.ContainsKey(port.Name))
+                    {
+                        port = portNameSpace.Ports[port.Name];
+                    }
+                }
+                word.MoveNext();
+
+                if (varType != portVariableType.wire && word.Text == "=")
                 {
                     word.MoveNext();
                     Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
@@ -613,7 +542,7 @@ namespace pluginVerilog.Verilog.Variables
             }
         }
 
-        public static void ParseTfOutputDeclaration(WordScanner word, Module module, Attribute attribute, out List<Variable> variables)
+        public static void ParseTfOutputDeclaration(WordScanner word, Module module, IPortNameSpace portNameSpace, Attribute attribute)
         {
             // tf_output_declaration::= output[reg][signed][range] list_of_port_identifiers
             //                        | output[task_port_type] list_of_port_identifiers
@@ -621,7 +550,6 @@ namespace pluginVerilog.Verilog.Variables
 
             portVariableType varType = portVariableType.wire;
 
-            variables = new List<Variable>();
             if (word.Text != "output") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
@@ -686,6 +614,7 @@ namespace pluginVerilog.Verilog.Variables
                 }
             }
 
+            Variable variable;
             while (!word.Eof)
             {
                 if (!General.IsIdentifier(word.Text)) return;
@@ -697,42 +626,69 @@ namespace pluginVerilog.Verilog.Variables
                         val.Name = word.Text;
                         val.Range = range;
                         val.Signed = signed;
-                        variables.Add(val);
+                        variable = val;
                         word.Color(CodeDrawStyle.ColorType.Net);
-                        word.MoveNext();
                         break;
                     case portVariableType.reg:
                         Reg reg = new Reg(word.Text, range, signed);
-                        variables.Add(reg);
+                        variable = reg;
                         word.Color(CodeDrawStyle.ColorType.Register);
-                        word.MoveNext();
                         break;
                     case portVariableType.integer:
                         Integer integer = new Integer(word.Text);
-                        variables.Add(integer);
+                        variable = integer;
                         word.Color(CodeDrawStyle.ColorType.Variable);
-                        word.MoveNext();
                         break;
                     case portVariableType.real:
                         Real real = new Real(word.Text);
-                        variables.Add(real);
+                        variable = real;
                         word.Color(CodeDrawStyle.ColorType.Variable);
-                        word.MoveNext();
                         break;
                     case portVariableType.realtime:
                         RealTime realtime = new RealTime(word.Text);
-                        variables.Add(realtime);
+                        variable = realtime;
                         word.Color(CodeDrawStyle.ColorType.Variable);
-                        word.MoveNext();
                         break;
                     case portVariableType.time:
                         Time time = new Time(word.Text);
-                        variables.Add(time);
+                        variable = time;
                         word.Color(CodeDrawStyle.ColorType.Variable);
-                        word.MoveNext();
                         break;
-
+                    default:
+                        System.Diagnostics.Debugger.Break();
+                        variable = null;
+                        break;
                 }
+
+                Port port = new Port();
+                port.Name = variable.Name;
+                port.Direction = DirectionEnum.Output;
+                port.Variable = variable;
+
+                if (!word.Active)
+                {
+                    // skip
+                }
+                else if (word.Prototype)
+                {
+                    if (portNameSpace.Ports.ContainsKey(port.Name))
+                    {
+                        word.AddError("port name duplicated");
+                    }
+                    else
+                    {
+                        portNameSpace.Ports.Add(port.Name, port);
+                        portNameSpace.PortsList.Add(port);
+                    }
+                }
+                else
+                {
+                    if (portNameSpace.Ports.ContainsKey(port.Name))
+                    {
+                        port = portNameSpace.Ports[port.Name];
+                    }
+                }
+                word.MoveNext();
 
                 if (word.GetCharAt(0) == ',')
                 {
@@ -753,7 +709,7 @@ namespace pluginVerilog.Verilog.Variables
             }
         }
 
-        public static void ParseTfInoutDeclaration(WordScanner word, Module module, Attribute attribute, out List<Variable> variables)
+        public static void ParseTfInoutDeclaration(WordScanner word, Module module, IPortNameSpace portNameSpace, Attribute attribute)
         {
             // tf_inout_declaration::= inout[reg][signed][range] list_of_port_identifiers
             //                       | inout[task_port_type] list_of_port_identifiers
@@ -761,7 +717,6 @@ namespace pluginVerilog.Verilog.Variables
 
             portVariableType varType = portVariableType.wire;
 
-            variables = new List<Variable>();
             if (word.Text != "inout") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
@@ -830,6 +785,7 @@ namespace pluginVerilog.Verilog.Variables
             {
                 if (!General.IsIdentifier(word.Text)) return;
 
+                Variable variable;
                 switch (varType)
                 {
                     case portVariableType.wire:
@@ -837,42 +793,69 @@ namespace pluginVerilog.Verilog.Variables
                         val.Name = word.Text;
                         val.Range = range;
                         val.Signed = signed;
-                        variables.Add(val);
+                        variable = val;
                         word.Color(CodeDrawStyle.ColorType.Net);
-                        word.MoveNext();
                         break;
                     case portVariableType.reg:
                         Reg reg = new Reg(word.Text, range, signed);
-                        variables.Add(reg);
+                        variable = reg;
                         word.Color(CodeDrawStyle.ColorType.Register);
-                        word.MoveNext();
                         break;
                     case portVariableType.integer:
                         Integer integer = new Integer(word.Text);
-                        variables.Add(integer);
+                        variable = integer;
                         word.Color(CodeDrawStyle.ColorType.Variable);
-                        word.MoveNext();
                         break;
                     case portVariableType.real:
                         Real real = new Real(word.Text);
-                        variables.Add(real);
+                        variable = real;
                         word.Color(CodeDrawStyle.ColorType.Variable);
-                        word.MoveNext();
                         break;
                     case portVariableType.realtime:
                         RealTime realtime = new RealTime(word.Text);
-                        variables.Add(realtime);
+                        variable = realtime;
                         word.Color(CodeDrawStyle.ColorType.Variable);
-                        word.MoveNext();
                         break;
                     case portVariableType.time:
                         Time time = new Time(word.Text);
-                        variables.Add(time);
+                        variable = time;
                         word.Color(CodeDrawStyle.ColorType.Variable);
-                        word.MoveNext();
                         break;
-
+                    default:
+                        System.Diagnostics.Debugger.Break();
+                        variable = null;
+                        break;
                 }
+
+                Port port = new Port();
+                port.Name = variable.Name;
+                port.Direction = DirectionEnum.Inout;
+                port.Variable = variable;
+
+                if (!word.Active)
+                {
+                    // skip
+                }
+                else if (word.Prototype)
+                {
+                    if (portNameSpace.Ports.ContainsKey(port.Name))
+                    {
+                        word.AddError("port name duplicated");
+                    }
+                    else
+                    {
+                        portNameSpace.Ports.Add(port.Name, port);
+                        portNameSpace.PortsList.Add(port);
+                    }
+                }
+                else
+                {
+                    if (portNameSpace.Ports.ContainsKey(port.Name))
+                    {
+                        port = portNameSpace.Ports[port.Name];
+                    }
+                }
+                word.MoveNext();
 
                 if (word.GetCharAt(0) == ',')
                 {
@@ -893,7 +876,7 @@ namespace pluginVerilog.Verilog.Variables
             }
         }
 
-        public static void ParseTfInputDeclaration(WordScanner word, Module module, Attribute attribute, out List<Variable> variables)
+        public static void ParseTfInputDeclaration(WordScanner word, Module module, IPortNameSpace portNameSpace, Attribute attribute)
         {
             //            tf_input_declaration::= input[reg][signed][range] list_of_port_identifiers
             //                          | input[task_port_type] list_of_port_identifiers
@@ -901,7 +884,6 @@ namespace pluginVerilog.Verilog.Variables
 
             portVariableType varType = portVariableType.wire;
 
-            variables = new List<Variable>();
             if (word.Text != "input") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
@@ -970,6 +952,7 @@ namespace pluginVerilog.Verilog.Variables
             {
                 if (!General.IsIdentifier(word.Text)) return;
 
+                Variable variable;
                 switch (varType)
                 {
                     case portVariableType.wire:
@@ -977,42 +960,69 @@ namespace pluginVerilog.Verilog.Variables
                         val.Name = word.Text;
                         val.Range = range;
                         val.Signed = signed;
-                        variables.Add(val);
+                        variable = val;
                         word.Color(CodeDrawStyle.ColorType.Net);
-                        word.MoveNext();
                         break;
                     case portVariableType.reg:
                         Reg reg = new Reg(word.Text, range, signed);
-                        variables.Add(reg);
+                        variable = reg;
                         word.Color(CodeDrawStyle.ColorType.Register);
-                        word.MoveNext();
                         break;
                     case portVariableType.integer:
                         Integer integer = new Integer(word.Text);
-                        variables.Add(integer);
+                        variable = integer;
                         word.Color(CodeDrawStyle.ColorType.Variable);
-                        word.MoveNext();
                         break;
                     case portVariableType.real:
                         Real real = new Real(word.Text);
-                        variables.Add(real);
+                        variable = real;
                         word.Color(CodeDrawStyle.ColorType.Variable);
-                        word.MoveNext();
                         break;
                     case portVariableType.realtime:
                         RealTime realtime = new RealTime(word.Text);
-                        variables.Add(realtime);
+                        variable = realtime;
                         word.Color(CodeDrawStyle.ColorType.Variable);
-                        word.MoveNext();
                         break;
                     case portVariableType.time:
                         Time time = new Time(word.Text);
-                        variables.Add(time);
+                        variable = time;
                         word.Color(CodeDrawStyle.ColorType.Variable);
-                        word.MoveNext();
+                        break;
+                    default:
+                        System.Diagnostics.Debugger.Break();
+                        variable = null;
                         break;
 
                 }
+                Port port = new Port();
+                port.Name = variable.Name;
+                port.Direction = DirectionEnum.Input;
+                port.Variable = variable;
+
+                if (!word.Active)
+                {
+                    // skip
+                }
+                else if (word.Prototype)
+                {
+                    if (portNameSpace.Ports.ContainsKey(port.Name))
+                    {
+                        word.AddError("port name duplicated");
+                    }
+                    else
+                    {
+                        portNameSpace.Ports.Add(port.Name, port);
+                        portNameSpace.PortsList.Add(port);
+                    }
+                }
+                else
+                {
+                    if (portNameSpace.Ports.ContainsKey(port.Name))
+                    {
+                        port = portNameSpace.Ports[port.Name];
+                    }
+                }
+                word.MoveNext();
 
                 if (word.GetCharAt(0) == ',')
                 {

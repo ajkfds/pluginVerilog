@@ -6,14 +6,17 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Verilog
 {
-    public class Function : NameSpace
+    public class Function : NameSpace, IPortNameSpace
     {
         protected Function(Module module, NameSpace parent) : base(module,parent)
         {
         }
 
-        public Dictionary<string, Variables.Port> Ports = new Dictionary<string, Variables.Port>();
-        public List<Variables.Port> PortsList = new List<Variables.Port>();
+        private Dictionary<string, Variables.Port> ports = new Dictionary<string, Variables.Port>();
+        public Dictionary<string, Variables.Port> Ports { get { return ports; } }
+        private List<Variables.Port> portsList = new List<Variables.Port>();
+        public List<Variables.Port> PortsList { get { return portsList; } }
+
         public Statements.IStatement Statement;
 
         private enum valType
@@ -25,7 +28,7 @@ namespace pluginVerilog.Verilog
             time
         }
 
-        public static void Parse(WordScanner word, Module module, bool protoType)
+        public static void Parse(WordScanner word, Module module)
         {
             if(word.Text != "function")
             {
@@ -50,7 +53,6 @@ namespace pluginVerilog.Verilog
             // tf_input_declaration { , { attribute_instance } tf_input_declaration }
             // range_or_type::= range | integer | real | realtime | time
 
-            if (!protoType) word.StartSkip();
             if (word.Text == "automatic")
             {
                 word.Color(CodeDrawStyle.ColorType.Keyword);
@@ -104,11 +106,31 @@ namespace pluginVerilog.Verilog
             }
 
             function.Name = word.Text;
-            word.Color(CodeDrawStyle.ColorType.Identifier);
-            if (word.Active && (module.Functions.ContainsKey(function.Name) || module.NameSpaces.ContainsKey(function.Name)))
+
+            if (!word.Active)
             {
-                word.AddError("duplicated name");
+                // skip
             }
+            else if (word.Prototype)
+            {
+                if (!module.Functions.ContainsKey(function.Name) && !module.NameSpaces.ContainsKey(function.Name))
+                {
+                    module.Functions.Add(function.Name, function);
+                    module.NameSpaces.Add(function.Name, function);
+                }
+                else
+                {
+                    word.AddError("duplicated name");
+                }
+            }
+            else
+            {
+                if (module.Functions.ContainsKey(function.Name))
+                {
+                    function = module.Functions[function.Name];
+                }
+            }
+            word.Color(CodeDrawStyle.ColorType.Identifier);
             word.MoveNext();
 
             Variables.Variable retVal;
@@ -133,7 +155,7 @@ namespace pluginVerilog.Verilog
                     throw new Exception();
             }
 
-            function.Variables.Add(retVal.Name, retVal);
+            if(word.Active && word.Prototype) function.Variables.Add(retVal.Name, retVal);
 
 
             /*            A.2.8 Block item declarations
@@ -186,17 +208,9 @@ namespace pluginVerilog.Verilog
 
             }
 
-            if (protoType)
+            if (module.Functions.ContainsKey(function.Name) && module.Functions[function.Name].BeginIndex == function.BeginIndex)
             {
-                word.StartSkip();
-            }
-            else
-            {
-                word.EndSkip();
-                if (module.Functions.ContainsKey(function.Name) && module.Functions[function.Name].BeginIndex == function.BeginIndex)
-                {
-                    function = module.Functions[function.Name];
-                }
+                function = module.Functions[function.Name];
             }
 
             if(word.Text == "endfunction")
@@ -205,7 +219,7 @@ namespace pluginVerilog.Verilog
             }
             else
             {
-                if(protoType)
+                if(word.Prototype)
                 {
                     while (!word.Eof)
                     {
@@ -230,8 +244,6 @@ namespace pluginVerilog.Verilog
                 }
             }
 
-            if (protoType) word.EndSkip();
-
             if(word.Text != "endfunction")
             {
                 word.AddError("endfunction expected");
@@ -244,14 +256,6 @@ namespace pluginVerilog.Verilog
                 word.MoveNext();
             }
 
-            if (protoType && word.Active)
-            {
-                if (module.Functions.ContainsKey(function.Name)) return;
-                if (module.NameSpaces.ContainsKey(function.Name)) return;
-
-                module.Functions.Add(function.Name, function);
-                module.NameSpaces.Add(function.Name, function);
-            }
 
             return;
         }
