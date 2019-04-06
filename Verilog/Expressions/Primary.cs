@@ -124,7 +124,7 @@ namespace pluginVerilog.Verilog.Expressions
 
                         if(word.Eof) return null;
                         if (General.ListOfKeywords.Contains(word.Text)) return null;
-                        if(General.IsIdentifier(word.Text) & !nameSpace.Variables.ContainsKey(word.Text))
+                        if(General.IsIdentifier(word.Text) && !nameSpace.Variables.ContainsKey(word.Text) && !word.Prototype)
                         {   // undefined net
                             word.AddWarning("undefined");
                             Variables.Net net = new Variables.Net();

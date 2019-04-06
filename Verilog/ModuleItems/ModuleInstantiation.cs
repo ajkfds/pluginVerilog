@@ -18,7 +18,6 @@ namespace pluginVerilog.Verilog.ModuleItems
         public static void Parse(WordScanner word,Module module)
         {
             ModuleInstantiation moduleInstantiation = new ModuleInstantiation();
-            bool error = false;
 
             WordScanner moduleIdentifier = word.Clone();
             moduleInstantiation.ModuleName = word.Text;
@@ -30,10 +29,9 @@ namespace pluginVerilog.Verilog.ModuleItems
                 moduleIdentifier.AddError("illegal module item");
                 return;
             }
-
             moduleIdentifier.Color(CodeDrawStyle.ColorType.Identifier);
 
-            if (word.Text == "#")
+            if (word.Text == "#") // parameter
             {
                 word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext();
@@ -104,7 +102,7 @@ namespace pluginVerilog.Verilog.ModuleItems
             }
 
             word.Color(CodeDrawStyle.ColorType.Identifier);
-            if (!General.IsIdentifier(word.Text))
+            if (General.IsIdentifier(word.Text))
             {
                 moduleInstantiation.Name = word.Text;
             }

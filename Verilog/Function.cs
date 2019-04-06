@@ -155,8 +155,6 @@ namespace pluginVerilog.Verilog
                     throw new Exception();
             }
 
-            if(word.Active && word.Prototype) function.Variables.Add(retVal.Name, retVal);
-
 
             /*            A.2.8 Block item declarations
                         block_item_declaration ::=            { attribute_instance }
@@ -208,10 +206,10 @@ namespace pluginVerilog.Verilog
 
             }
 
-            if (module.Functions.ContainsKey(function.Name) && module.Functions[function.Name].BeginIndex == function.BeginIndex)
-            {
-                function = module.Functions[function.Name];
-            }
+            //if (module.Functions.ContainsKey(function.Name) && module.Functions[function.Name].BeginIndex == function.BeginIndex)
+            //{
+            //    function = module.Functions[function.Name];
+            //}
 
             if(word.Text == "endfunction")
             {

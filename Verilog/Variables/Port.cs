@@ -211,6 +211,11 @@ namespace pluginVerilog.Verilog.Variables
                 }
                 else if (word.Prototype)
                 {
+                    if (!portNameSpace.Variables.ContainsKey(port.Name))
+                    {
+                        portNameSpace.Variables.Add(net.Name, net);
+                    }
+
                     if (portNameSpace.Ports.ContainsKey(port.Name))
                     {
                         word.AddError("port name duplicated");
@@ -297,6 +302,11 @@ namespace pluginVerilog.Verilog.Variables
                 }
                 else if (word.Prototype)
                 {
+                    if (!portNameSpace.Variables.ContainsKey(port.Name))
+                    {
+                        portNameSpace.Variables.Add(net.Name, net);
+                    }
+
                     if (portNameSpace.Ports.ContainsKey(port.Name))
                     {
                         word.AddError("port name duplicated");
@@ -446,6 +456,11 @@ namespace pluginVerilog.Verilog.Variables
                 }
                 else if (word.Prototype)
                 {
+                    if (!portNameSpace.Variables.ContainsKey(variable.Name))
+                    {
+                        portNameSpace.Variables.Add(variable.Name, variable);
+                    }
+
                     if (portNameSpace.Ports.ContainsKey(port.Name))
                     {
                         word.AddError("port name duplicated");
@@ -671,6 +686,11 @@ namespace pluginVerilog.Verilog.Variables
                 }
                 else if (word.Prototype)
                 {
+                    if (!portNameSpace.Variables.ContainsKey(variable.Name))
+                    {
+                        portNameSpace.Variables.Add(variable.Name, variable);
+                    }
+
                     if (portNameSpace.Ports.ContainsKey(port.Name))
                     {
                         word.AddError("port name duplicated");
@@ -838,6 +858,11 @@ namespace pluginVerilog.Verilog.Variables
                 }
                 else if (word.Prototype)
                 {
+                    if (!portNameSpace.Variables.ContainsKey(variable.Name))
+                    {
+                        portNameSpace.Variables.Add(variable.Name, variable);
+                    }
+
                     if (portNameSpace.Ports.ContainsKey(port.Name))
                     {
                         word.AddError("port name duplicated");
@@ -1005,6 +1030,11 @@ namespace pluginVerilog.Verilog.Variables
                 }
                 else if (word.Prototype)
                 {
+                    if (!portNameSpace.Variables.ContainsKey(variable.Name))
+                    {
+                        portNameSpace.Variables.Add(variable.Name, variable);
+                    }
+
                     if (portNameSpace.Ports.ContainsKey(port.Name))
                     {
                         word.AddError("port name duplicated");

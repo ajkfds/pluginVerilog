@@ -79,10 +79,45 @@ namespace pluginVerilog.Verilog
 
             task.Name = word.Text;
             word.Color(CodeDrawStyle.ColorType.Identifier);
-            if (word.Active && module.Tasks.ContainsKey(task.Name) || module.NameSpaces.ContainsKey(task.Name))
+//            if (word.Active && module.Tasks.ContainsKey(task.Name) || module.NameSpaces.ContainsKey(task.Name))
+//            {
+//                word.AddError("duplicated name");
+//            }
+            if (!word.Active)
             {
-                word.AddError("duplicated name");
+                // skip
             }
+            else if (word.Prototype)
+            {
+                if (!module.Tasks.ContainsKey(task.Name) && !module.NameSpaces.ContainsKey(task.Name))
+                {
+                    module.Tasks.Add(task.Name, task);
+                    module.NameSpaces.Add(task.Name, task);
+                }
+                else
+                {
+                    word.AddError("duplicated name");
+                }
+            }
+            else
+            {
+                if (module.Functions.ContainsKey(task.Name))
+                {
+                    task = module.Tasks[task.Name];
+                }
+            }
+
+
+
+
+
+
+
+
+
+
+
+
             word.MoveNext();
 
 
@@ -138,10 +173,10 @@ namespace pluginVerilog.Verilog
 
             }
 
-            if (module.Tasks.ContainsKey(task.Name) && module.Tasks[task.Name].BeginIndex == task.BeginIndex)
-            {
-                task = module.Tasks[task.Name];
-            }
+//            if (module.Tasks.ContainsKey(task.Name) && module.Tasks[task.Name].BeginIndex == task.BeginIndex)
+//            {
+//                task = module.Tasks[task.Name];
+//            }
 
             if (word.Text == "endtask")
             {

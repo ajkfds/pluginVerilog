@@ -88,19 +88,19 @@ namespace pluginVerilog.Verilog
 
         public void Color(CodeDrawStyle.ColorType colorType)
         {
-            if (nonGeneratedCount != 0 || !prototype) return;
+            if (nonGeneratedCount != 0 || prototype) return;
             wordPointer.Color(colorType);
         }
 
         public void AddError(string message)
         {
-            if (nonGeneratedCount != 0 || !prototype) return;
+            if (nonGeneratedCount != 0 || prototype) return;
             wordPointer.AddError(message);
         }
 
         public void AddWarning(string message)
         {
-            if (nonGeneratedCount != 0 || !prototype) return;
+            if (nonGeneratedCount != 0 || prototype) return;
             wordPointer.AddWarning(message);
         }
 
