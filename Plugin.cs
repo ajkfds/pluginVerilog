@@ -19,10 +19,17 @@ namespace pluginVerilog
                 FileTypes.VerilogHeaderFile fileType = new FileTypes.VerilogHeaderFile();
                 codeEditor.Global.FileTypes.Add(fileType.ID, fileType);
             }
+            {
+                FileTypes.SystemVerilogFile fileType = new FileTypes.SystemVerilogFile();
+                codeEditor.Global.FileTypes.Add(fileType.ID, fileType);
+            }
+
+            // test rtl project
             string absolutePath = System.IO.Path.GetFullPath(@"..\\..\\..\\..\\pluginVerilog\\TestRTL");
             codeEditor.Data.Project project = codeEditor.Data.Project.Create(absolutePath);
             codeEditor.Global.Controller.AddProject(project);
 
+            // append menu items
             System.Windows.Forms.ContextMenuStrip menu = codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip();
             menu.Items.Add(Global.SetupForm.icarusVerilogSimulationToolStripMenuItem);
         }

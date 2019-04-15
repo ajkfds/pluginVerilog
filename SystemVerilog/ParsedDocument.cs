@@ -6,15 +6,12 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.SystemVerilog
 {
-    public class ParsedDocument : codeEditor.CodeEditor.ParsedDocument
+    public class ParsedDocument : Verilog.ParsedDocument
     {
         public ParsedDocument(codeEditor.Data.Project project, string itemID, int editID) : base(project, itemID, editID)
         {
 
         }
-        public Dictionary<string, Verilog.Module> Modules = new Dictionary<string, Verilog.Module>();
-        public Dictionary<string, Data.VerilogHeaderFile> IncludeFiles = new Dictionary<string, Data.VerilogHeaderFile>();
-        public Dictionary<string, string> Macros = new Dictionary<string, string>();
 
         public ProjectProperty ProjectProperty
         {
@@ -28,7 +25,7 @@ namespace pluginVerilog.SystemVerilog
         {
             base.Accept();
 
-            Data.VerilogFile verilogFile = Project.GetRegisterdItem(ItemID) as Data.VerilogFile;
+            Data.SystemVerilogFile verilogFile = Project.GetRegisterdItem(ItemID) as Data.SystemVerilogFile;
             foreach (Verilog.Module module in Modules.Values)
             {
                 bool suceed = verilogFile.ProjectProperty.RegisterModule(verilogFile.RelativePath, module.Name);
@@ -43,7 +40,7 @@ namespace pluginVerilog.SystemVerilog
         {
             base.Dispose();
 
-            Data.VerilogFile verilogFile = Project.GetRegisterdItem(ItemID) as Data.VerilogFile;
+            Data.SystemVerilogFile verilogFile = Project.GetRegisterdItem(ItemID) as Data.SystemVerilogFile;
             foreach (Verilog.Module module in Modules.Values)
             {
                 verilogFile.ProjectProperty.RemoveModule(verilogFile.RelativePath, module.Name);

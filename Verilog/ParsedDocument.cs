@@ -20,7 +20,10 @@ namespace pluginVerilog.Verilog
         {
             get
             {
-                return Project.ProjectProperties[Plugin.StaticID] as ProjectProperty; 
+                // ProjectProperty is initialized in verilogFile.ProjectProperty
+                // so ParsedDocument.ProjectPrperty must be called via verilogFile.ProjectProperty
+                Data.VerilogFile verilogFile = Project.GetRegisterdItem(ItemID) as Data.VerilogFile;
+                return verilogFile.ProjectProperty;
             }
         }
 
@@ -260,6 +263,8 @@ namespace pluginVerilog.Verilog
                 if(words.Count>2) words.RemoveAt(words.Count - 1);
             }
 
+
+
             NameSpace target = getSearchNameSpace(space, words);
             if(target != null) appendAutoCompleteItems(items, target);
 
@@ -318,6 +323,14 @@ namespace pluginVerilog.Verilog
             {
                 if (mi.Name == null) System.Diagnostics.Debugger.Break();
                 items.Add(newItem(mi.Name, CodeDrawStyle.ColorType.Identifier));
+            }
+
+            List<string> moduleNames = ProjectProperty.GetModuleNameList();
+            foreach(string moduleName in moduleNames)
+            {
+                items.Add(
+                    new Snippets.ModuleInstanceAutocompleteItem(moduleName, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword),Project)
+                );
             }
         }
 

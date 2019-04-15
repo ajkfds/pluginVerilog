@@ -130,29 +130,48 @@ namespace pluginVerilog.Verilog.Variables
             return;
         }
 
-/*        tf_input_declaration::= input[reg][signed][range] list_of_port_identifiers 
-                                    | input[task_port_type] list_of_port_identifiers
-        tf_output_declaration::= output[reg][signed][range] list_of_port_identifiers 
-                                    | output[task_port_type] list_of_port_identifiers
-        tf_inout_declaration::= inout[reg][signed][range] list_of_port_identifiers 
-                                    | inout[task_port_type] list_of_port_identifiers
-        task_port_type::= time 
-                                    | real 
-                                    | realtime 
-                                    | integer
-*/
+        /*        tf_input_declaration::= input[reg][signed][range] list_of_port_identifiers 
+                                            | input[task_port_type] list_of_port_identifiers
+                tf_output_declaration::= output[reg][signed][range] list_of_port_identifiers 
+                                            | output[task_port_type] list_of_port_identifiers
+                tf_inout_declaration::= inout[reg][signed][range] list_of_port_identifiers 
+                                            | inout[task_port_type] list_of_port_identifiers
+                task_port_type::= time 
+                                            | real 
+                                            | realtime 
+                                            | integer
+        */
         public static void ParseTaskPortDeclaration(WordScanner word, Task task, Attribute attribute)
         {
             switch (word.Text)
             {
                 case "input":
-                    ParseTfInputDeclaration(word, task.Module,task, attribute);
+                    ParseTfInputDeclaration(word, task.Module, task, attribute);
                     break;
                 case "inout":
                     ParseTfInoutDeclaration(word, task.Module, task, attribute);
                     break;
                 case "output":
                     ParseTfOutputDeclaration(word, task.Module, task, attribute);
+                    break;
+                default:
+                    break;
+            }
+            return;
+        }
+
+        public static void ParseClassPortDeclaration(WordScanner word, Class classItem, Attribute attribute)
+        {
+            switch (word.Text)
+            {
+                case "input":
+                    ParseTfInputDeclaration(word, classItem.Module, classItem, attribute);
+                    break;
+                case "inout":
+                    ParseTfInoutDeclaration(word, classItem.Module, classItem, attribute);
+                    break;
+                case "output":
+                    ParseTfOutputDeclaration(word, classItem.Module, classItem, attribute);
                     break;
                 default:
                     break;

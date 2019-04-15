@@ -53,7 +53,7 @@ namespace pluginVerilog.Verilog.Statements
                 }
                 else
                 {
-                    if (!word.Active)
+                    if (word.Prototype)
                     { // prototype
                         if (nameSpace.NameSpaces.ContainsKey(word.Text))
                         {

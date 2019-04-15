@@ -4,85 +4,72 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace pluginVerilog.Verilog
+namespace pluginVerilog.SystemVerilog
 {
-    public class Module : NameSpace,IPortNameSpace
+    public class ProgramItem : Verilog.Module
     {
-        protected Module() : base(null,null)
-        {
+        //protected ProgramItem() : base(null, null)
+        //{
 
-        }
+        //}
 
-        private Dictionary<string, Variables.Port> ports = new Dictionary<string, Variables.Port>();
-        public Dictionary<string, Variables.Port> Ports { get { return ports; } }
-        private List<Variables.Port> portsList = new List<Variables.Port>();
-        public List<Variables.Port> PortsList { get { return portsList; } }
-
-        public Dictionary<string, Function> Functions = new Dictionary<string, Function>();
-        public Dictionary<string, Task> Tasks = new Dictionary<string, Task>();
-        public Dictionary<string, Class> Classes = new Dictionary<string, Class>();
-        public Dictionary<string, ModuleItems.ModuleInstantiation> ModuleInstantiations = new Dictionary<string, ModuleItems.ModuleInstantiation>();
-        public string FileId { get; protected set; }
-
-
-        public static Module Create(WordScanner word,Attribute attribute,string fileId)
+        public static new ProgramItem Create(Verilog.WordScanner word, Attribute attribute, string fileId)
         {
             /*
-            module_declaration  ::= { attribute_instance } module_keyword module_identifier [ module_parameter_port_list ]
-                                        [ list_of_ports ] ; { module_item }
-                                        endmodule
-                                    | { attribute_instance } module_keyword module_identifier [ module_parameter_port_list ]
-                                        [ list_of_port_declarations ] ; { non_port_module_item }
-                                        endmodule
-            module_keyword      ::= module | macromodule  
-            module_identifier   ::= identifier
-
-            module_parameter_port_list  ::= # ( parameter_declaration { , parameter_declaration } ) 
-            list_of_ports ::= ( port { , port } )
+            program_nonansi_header ::= 
+	            { attribute_instance } program [ lifetime ] program_identifier [ parameter_port_list ] list_of_ports ; 
+            program_ansi_header ::= 
+	            {attribute_instance } program [ lifetime ] program_identifier [ parameter_port_list ] [ list_of_port_declarations ] ; 
+            program_declaration ::= 
+	            program_nonansi_header [ timeunits_declaration ] { program_item } endprogram [ : program_identifier ] 
+	            | program_ansi_header [ timeunits_declaration ] { non_port_program_item } endprogram [ : program_identifier ] 
+	            | { attribute_instance } program program_identifier ( .* ) ; [ timeunits_declaration ] { program_item } endprogram [ : program_identifier ] 
+	            | extern program_nonansi_header 
+	            | extern program_ansi_header 
             */
 
             // module_keyword ( module | macromodule )
-            if (word.Text != "module" && word.Text != "macromodule") System.Diagnostics.Debugger.Break();
+            if (word.Text != "program") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);
-            Module module = new Module();
-            module.Module = module;
-            module.FileId = fileId;
-            module.BeginIndex = word.RootIndex;
+            ProgramItem program = new ProgramItem();
+            program.Module = program;
+            program.FileId = fileId;
+            program.BeginIndex = word.RootIndex;
             word.MoveNext();
 
 
             // parse definitions
             Dictionary<string, string> macroKeep = new Dictionary<string, string>();
-            foreach(var kvpair in word.RootParsedDocument.Macros)
+            foreach (var kvpair in word.RootParsedDocument.Macros)
             {
                 macroKeep.Add(kvpair.Key, kvpair.Value);
             }
 
-            WordScanner prototypeWord = word.Clone();
+            Verilog.WordScanner prototypeWord = word.Clone();
             prototypeWord.Prototype = true;
-            parseModuleItems(prototypeWord, null, module);
+            parseProgramItems(prototypeWord, null, program);
 
             // parse
             word.RootParsedDocument.Macros = macroKeep;
-            parseModuleItems(word, null, module);
+            parseProgramItems(word, null, program);
 
-           // endmodule keyword
-           if (word.Text == "endmodule")
+            // endmodule keyword
+            if (word.Text == "endprogram")
             {
                 word.Color(CodeDrawStyle.ColorType.Keyword);
-                module.LastIndex = word.RootIndex;
+                program.LastIndex = word.RootIndex;
                 word.MoveNext();
-                return module;
+                return program;
             }
             else
             {
                 word.AddError("endmodule expected");
             }
 
-            return module;
+            return program;
         }
 
-        protected static void parseModuleItems(WordScanner word, Attribute attribute, Module module)
+        protected static void parseProgramItems(Verilog.WordScanner word, Attribute attribute, Verilog.Module module)
         {
             /*
             module_declaration  ::= { attribute_instance } module_keyword module_identifier [ module_parameter_port_list ]
@@ -161,132 +148,6 @@ namespace pluginVerilog.Verilog
             return;
         }
 
-        protected static void parseListOfPorts_ListOfPortsDeclarations(WordScanner word, Module module)
-        {
-            // list_of_ports::= (port { , port } )
-            // list_of_port_declarations::= (port_declaration { , port_declaration } ) | ( )
-
-            // port::= [port_expression] | .port_identifier( [port_expression] )
-            // port_expression::= port_reference | { port_reference { , port_reference } }
-            // port_reference::= port_identifier | port_identifier[constant_expression] | port_identifier[range_expression]
-
-            // port_declaration::= { attribute_instance} inout_declaration | { attribute_instance} input_declaration | { attribute_instance} output_declaration  
-
-            // inout_declaration::= inout[net_type][signed][range] list_of_port_identifiers
-            // input_declaration ::= input[net_type][signed][range] list_of_port_identifiers
-            // output_declaration ::= output[net_type][signed][range]      
-            // list_of_port_identifiers | output[reg][signed][range]     
-            // list_of_port_identifiers | output reg[signed][range]      
-            // list_of_variable_port_identifiers | output[output_variable_type]      
-            // list_of_port_identifiers | output output_variable_type list_of_variable_port_identifiers 
-            // list_of_port_identifiers::= (From Annex A -A.2.3) port_identifier { , port_identifier }
-
-            // list_of_variable_port_identifiers ::= port_identifier [ = constant_expression ]                               { , port_identifier [ = constant_expression ] }  
-
-            if (word.Text != "(") return;
-            word.MoveNext();
-            if (word.Text == ")")
-            {
-                word.MoveNext();
-                return;
-            }
-
-            if (word.Text == "input" || word.Text == "output" || word.Text == "inout")
-            {
-                Verilog.Variables.Port.ParsePortDeclaration(word, module, null);
-
-                while (!word.Eof && word.Text != ")")
-                {
-                    if (word.Text == ",")
-                    {
-                        word.MoveNext();
-                    }
-                    else
-                    {
-                        word.AddError(", expected");
-                    }
-                    if (word.Text == "input" || word.Text == "output" || word.Text == "inout")
-                    {
-                        Verilog.Variables.Port.ParsePortDeclaration(word, module, null);
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                if (word.Text == ")")
-                {
-                    word.MoveNext();
-                }
-                else
-                {
-                    word.AddError(") expected");
-                }
-            }
-            else
-            {
-                Verilog.Variables.Port port = Verilog.Variables.Port.Create(word, null);
-                if (port == null)
-                {
-                    word.AddError("illegal port identifier");
-                    return;
-                }
-                if (module.Ports.ContainsKey(port.Name))
-                {
-                    word.AddError("duplicated port name");
-                }
-                else
-                {
-                    module.Ports.Add(port.Name, port);
-                }
-
-                while (!word.Eof && word.Text != ")")
-                {
-                    if (word.Text == ",")
-                    {
-                        word.MoveNext();
-                    }
-                    else
-                    {
-                        word.AddError(", expected");
-                    }
-                    if (word.Eof)
-                    {
-                        word.AddError("port identifier expected");
-                        return;
-                    }
-                    if (word.Text == ")")
-                    {
-                        word.AddError("illegal ,");
-                        break;
-                    }
-
-                    port = Verilog.Variables.Port.Create(word, null);
-                    if (port == null)
-                    {
-                        word.AddError("illegal port identifier");
-                        return;
-                    }
-                    else if (module.Ports.ContainsKey(port.Name))
-                    {
-                        word.AddError("duplicated port identifier");
-                    }
-                    else
-                    {
-                        module.Ports.Add(port.Name, port);
-                    }
-                }
-                if (word.Text == ")")
-                {
-                    word.MoveNext();
-                }
-                else
-                {
-                    word.AddError(") expected");
-                }
-            }
-        }
-
         /*
         module_item ::= module_or_generate_item
             | port_declaration ;
@@ -315,13 +176,13 @@ namespace pluginVerilog.Verilog
             | function_declaration          
         parameter_override ::= defparam list_of_param_assignments ;  
         */
-        private static void parseModuleItems(WordScanner word, Module module)
+        private static void parseModuleItems(Verilog.WordScanner word, Verilog.Module module)
         {
             while (!word.Eof)
             {
                 switch (word.Text)
                 {
-                    case "endmodule":
+                    case "endprogram":
                         return;
                     // port_declaration
                     case "input":
@@ -373,11 +234,13 @@ namespace pluginVerilog.Verilog
                         break;
                     // always_construct
                     case "always":
-                        ModuleItems.AlwaysConstruct always = ModuleItems.AlwaysConstruct.ParseCreate(word, module);
+                        word.Color(CodeDrawStyle.ColorType.Keyword);
+                        word.AddError("not allowes in program block");
+                        word.MoveNext();
                         break;
                     // initial_construct
                     case "initial":
-                        ModuleItems.InitialConstruct initial = ModuleItems.InitialConstruct.ParseCreate(word, module);
+                        Verilog.ModuleItems.InitialConstruct initial = Verilog.ModuleItems.InitialConstruct.ParseCreate(word, module);
                         break;
                     // parameter_declaration
                     case "parameter":
@@ -387,19 +250,22 @@ namespace pluginVerilog.Verilog
                         break;
                     // continuous_assign
                     case "assign":
-                        ModuleItems.ContinuousAssign continuousAssign = ModuleItems.ContinuousAssign.ParseCreate(word, module);
+                        Verilog.ModuleItems.ContinuousAssign continuousAssign = Verilog.ModuleItems.ContinuousAssign.ParseCreate(word, module);
                         break;
                     case "function":
-                        Function.Parse(word, module);
+                        Verilog.Function.Parse(word, module);
                         break;
                     case "task":
-                        Task.Parse(word, module);
+                        Verilog.Task.Parse(word, module);
+                        break;
+                    case "class":
+                        Verilog.Class.Parse(word, module);
                         break;
                     case "generate":
                         word.Color(CodeDrawStyle.ColorType.Keyword);
                         word.MoveNext();
                         ParseGenerateItems(word, module);
-                        if(word.Text != "endgenerate")
+                        if (word.Text != "endgenerate")
                         {
                             word.AddError("endgenerate expected");
                         }
@@ -410,16 +276,7 @@ namespace pluginVerilog.Verilog
                         }
                         break;
                     default:
-                        if (word.SystemVerilog)
-                        {
-                            if(word.Text == "class")
-                            {
-                                Verilog.Class.Parse(word, module);
-                                break;
-                            }
-                        }
-
-                        ModuleItems.ModuleInstantiation.Parse(word, module);
+                        Verilog.ModuleItems.ModuleInstantiation.Parse(word, module);
                         break;
                 }
             }
@@ -431,7 +288,7 @@ namespace pluginVerilog.Verilog
         generate_item ::=   generate_conditional_statement | generate_case_statement | generate_loop_statement | generate_block | module_or_generate_item  
 
          */
-        public static void ParseGenerateItems(WordScanner word, Module module)
+        public static new void ParseGenerateItems(Verilog.WordScanner word, Verilog.Module module)
         {
             while (!word.Eof)
             {
@@ -439,7 +296,7 @@ namespace pluginVerilog.Verilog
             }
         }
 
-        public static bool ParseGenerateItem(WordScanner word, Module module)
+        public static new bool ParseGenerateItem(Verilog.WordScanner word, Verilog.Module module)
         {
             switch (word.Text)
             {
@@ -452,16 +309,16 @@ namespace pluginVerilog.Verilog
                     return false;
 
                 case "if":
-                    Generate.ParseGenerateConditionalStatement(word, module);
+                    Verilog.Generate.ParseGenerateConditionalStatement(word, module);
                     break;
                 case "case":
-                    Generate.ParseGenerateCaseStatement(word, module);
+                    Verilog.Generate.ParseGenerateCaseStatement(word, module);
                     break;
                 case "for":
-                    Generate.ParseGenerateLoopStatement(word, module);
+                    Verilog.Generate.ParseGenerateLoopStatement(word, module);
                     break;
                 case "begin":
-                    Generate.ParseGenerateBlockStatement(word, module);
+                    Verilog.Generate.ParseGenerateBlockStatement(word, module);
                     break;
 
                 case "input":
@@ -511,23 +368,25 @@ namespace pluginVerilog.Verilog
                     Verilog.Variables.Genvar.ParseCreateFromDeclaration(word, module);
                     break;
                 case "initial":
-                    ModuleItems.InitialConstruct initial = ModuleItems.InitialConstruct.ParseCreate(word, module);
+                    Verilog.ModuleItems.InitialConstruct initial = Verilog.ModuleItems.InitialConstruct.ParseCreate(word, module);
                     break;
                 case "always":
-                    ModuleItems.AlwaysConstruct always = ModuleItems.AlwaysConstruct.ParseCreate(word, module);
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
+                    word.AddError("not allowes in program block");
+                    word.MoveNext();
                     break;
                 case "parameter":
                 case "localparam":
                     Verilog.Variables.Parameter.ParseCreateDeclaration(word, module, null);
                     break;
                 case "assign":
-                    ModuleItems.ContinuousAssign continuousAssign = ModuleItems.ContinuousAssign.ParseCreate(word, module);
+                    Verilog.ModuleItems.ContinuousAssign continuousAssign = Verilog.ModuleItems.ContinuousAssign.ParseCreate(word, module);
                     break;
                 case "function":
-                    Function.Parse(word, module);
+                    Verilog.Function.Parse(word, module);
                     break;
                 case "task":
-                    Task.Parse(word, module);
+                    Verilog.Task.Parse(word, module);
                     break;
                 case "cmos":
                 case "rcmos":
@@ -553,10 +412,10 @@ namespace pluginVerilog.Verilog
                 case "rtranif1":
                 case "tran":
                 case "rtran":
-                    ModuleItems.GateInstantialtion.ParseCreate(word, module);
+                    Verilog.ModuleItems.GateInstantialtion.ParseCreate(word, module);
                     break;
                 default:
-                    ModuleItems.ModuleInstantiation.Parse(word, module);
+                    Verilog.ModuleItems.ModuleInstantiation.Parse(word, module);
                     break;
             }
 

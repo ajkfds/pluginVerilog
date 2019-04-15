@@ -24,6 +24,10 @@ namespace pluginVerilog.Verilog.Expressions
             {
                 function = nameSpace.Module.Functions[functionCall.FunctionName];
             }
+            else if (word.RootParsedDocument.ProjectProperty.SystemFunctions.ContainsKey(word.Text))
+            {
+            //
+            }
             else
             {
                 word.AddError("undefined");

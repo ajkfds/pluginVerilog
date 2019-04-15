@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Data
 {
-    public class SystemVerilogFile : codeEditor.Data.File, codeEditor.Data.ITextFile
+    public class SystemVerilogFile : VerilogFile
     {
         public new static SystemVerilogFile Create(string relativePath, codeEditor.Data.Project project)
         {
@@ -94,12 +94,12 @@ namespace pluginVerilog.Data
 
         public override codeEditor.NavigatePanel.NavigatePanelNode CreateNode()
         {
-            return new NavigatePanel.VerilogFileNode(ID, Project);
+            return new NavigatePanel.SystemVerilogFileNode(ID, Project);
         }
 
-        public virtual codeEditor.CodeEditor.DocumentParser CreateDocumentParser(codeEditor.CodeEditor.CodeDocument document, string id, codeEditor.Data.Project project)
+        public override codeEditor.CodeEditor.DocumentParser CreateDocumentParser(codeEditor.CodeEditor.CodeDocument document, string id, codeEditor.Data.Project project)
         {
-            return new Parser.VerilogParser(document, id, project);
+            return new Parser.SystemVerilogParser(document, id, project);
         }
 
 

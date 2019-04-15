@@ -8,10 +8,11 @@ namespace pluginVerilog.Verilog
 {
     public class WordScanner : IDisposable
     {
-        public WordScanner( codeEditor.CodeEditor.CodeDocument document, Verilog.ParsedDocument parsedDocument)
+        public WordScanner( codeEditor.CodeEditor.CodeDocument document, Verilog.ParsedDocument parsedDocument,bool systemVerilog)
         {
             RootParsedDocument = parsedDocument;
             wordPointer = new WordPointer(document, parsedDocument);
+            this.systemVerilog = systemVerilog;
         }
 
         public void GetFirst()
@@ -42,6 +43,12 @@ namespace pluginVerilog.Verilog
             }
         }
 
+        private bool systemVerilog;
+        public bool SystemVerilog
+        {
+            get { return systemVerilog; }
+        }
+
         public void StartNonGenenerated()
         {
             nonGeneratedCount++;
@@ -58,7 +65,7 @@ namespace pluginVerilog.Verilog
 
         public WordScanner Clone()
         {
-            WordScanner ret = new WordScanner(wordPointer.Document, RootParsedDocument);
+            WordScanner ret = new WordScanner(wordPointer.Document, RootParsedDocument,systemVerilog);
             ret.wordPointer = wordPointer.Clone();
             ret.nonGeneratedCount = nonGeneratedCount;
             ret.prototype = prototype;

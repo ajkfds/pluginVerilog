@@ -12,7 +12,7 @@ namespace pluginVerilog.Parser
         public VerilogParser(codeEditor.CodeEditor.CodeDocument document, string id, codeEditor.Data.Project project) : base(document, id, project)
         {
             parsedDocument = new Verilog.ParsedDocument(project, id, document.EditID);
-            word = new Verilog.WordScanner(this.document, parsedDocument);
+            word = new Verilog.WordScanner(this.document, parsedDocument,false);
         }
 
         public Verilog.WordScanner word;
