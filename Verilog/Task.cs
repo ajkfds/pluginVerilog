@@ -101,21 +101,11 @@ namespace pluginVerilog.Verilog
             }
             else
             {
-                if (module.Functions.ContainsKey(task.Name))
+                if (module.Tasks.ContainsKey(task.Name))
                 {
                     task = module.Tasks[task.Name];
                 }
             }
-
-
-
-
-
-
-
-
-
-
 
 
             word.MoveNext();

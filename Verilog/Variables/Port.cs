@@ -246,7 +246,7 @@ namespace pluginVerilog.Verilog.Variables
                 }
                 else
                 {
-                    if (!portNameSpace.Ports.ContainsKey(port.Name))
+                    if (portNameSpace.Ports.ContainsKey(port.Name))
                     {
                         port = portNameSpace.Ports[port.Name];
                     }
