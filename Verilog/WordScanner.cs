@@ -15,6 +15,11 @@ namespace pluginVerilog.Verilog
             this.systemVerilog = systemVerilog;
         }
 
+        public static System.Diagnostics.Stopwatch sw0 = new System.Diagnostics.Stopwatch();
+        public static System.Diagnostics.Stopwatch sw1 = new System.Diagnostics.Stopwatch();
+        public static System.Diagnostics.Stopwatch sw2 = new System.Diagnostics.Stopwatch();
+        public static System.Diagnostics.Stopwatch sw3 = new System.Diagnostics.Stopwatch();
+
         public void GetFirst()
         {
             recheckWord();
@@ -95,32 +100,42 @@ namespace pluginVerilog.Verilog
 
         public void Color(CodeDrawStyle.ColorType colorType)
         {
+            sw3.Start();
             if (nonGeneratedCount != 0 || prototype) return;
             wordPointer.Color(colorType);
+            sw3.Stop();
         }
 
         public void AddError(string message)
         {
+            sw2.Start();
             if (nonGeneratedCount != 0 || prototype) return;
             wordPointer.AddError(message);
+            sw2.Stop();
         }
 
         public void AddWarning(string message)
         {
+//            sw2.Start();
             if (nonGeneratedCount != 0 || prototype) return;
             wordPointer.AddWarning(message);
+//            sw2.Stop();
         }
 
         public void AddPrototypeError(string message)
         {
+//            sw2.Start();
             if (nonGeneratedCount != 0) return;
             wordPointer.AddError(message);
+//            sw2.Stop();
         }
 
         public void AddPrototypeWarning(string message)
         {
+//            sw2.Start();
             if (nonGeneratedCount != 0) return;
             wordPointer.AddWarning(message);
+//            sw2.Stop();
         }
 
         public int RootIndex
@@ -149,6 +164,7 @@ namespace pluginVerilog.Verilog
 
         public void MoveNext()
         {
+            sw0.Start();
             if (nonGeneratedCount != 0)
             {
                 wordPointer.Color(CodeDrawStyle.ColorType.Inactivated);
@@ -172,6 +188,7 @@ namespace pluginVerilog.Verilog
 
             wordPointer.MoveNext();
             recheckWord();
+            sw0.Stop();
         }
 
         private void recheckWord()
@@ -210,7 +227,10 @@ namespace pluginVerilog.Verilog
         {
             get
             {
-                return wordPointer.Text;
+                sw1.Start();
+                string ret = wordPointer.Text;
+                sw1.Stop();
+                return ret;
             }
         }
 
@@ -273,6 +293,8 @@ namespace pluginVerilog.Verilog
                 case "`celldefine":
                 case "`default_nettype":
                 case "`endcelldefine":
+                    wordPointer.AddError("not supported");
+                    wordPointer.MoveNext();
                     break;
                 case "`endif":
                     wordPointer.Color(CodeDrawStyle.ColorType.Keyword);

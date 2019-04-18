@@ -45,7 +45,7 @@ namespace pluginVerilog.NavigatePanel
                 System.Windows.Forms.TextFormatFlags.NoPadding
                 );
 
-            if(VerilogFile != null && VerilogFile.ParsedDocument != null && VerilogFile.VerilogParsedDocument.Status == Verilog.ParsedDocument.FileStatus.Error)
+            if(VerilogFile != null && VerilogFile.ParsedDocument != null && VerilogFile.VerilogParsedDocument.ErrorCount != 0)
             {
                 graphics.DrawImage(Global.Icons.Exclamation.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Red), new Point(x, y));
             }
