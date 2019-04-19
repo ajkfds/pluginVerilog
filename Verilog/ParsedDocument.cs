@@ -53,14 +53,8 @@ namespace pluginVerilog.Verilog
             }
         }
 
-        public enum FileStatus
-        {
-            Normal,
-            Error,
-            Warning
-        }
-
-        public FileStatus Status = FileStatus.Normal;
+        public int ErrorCount = 0;
+        public int WarningCount = 0;
 
 
         public List<codeEditor.CodeEditor.PopupItem> GetPopupItems(int index,string text)
@@ -262,8 +256,6 @@ namespace pluginVerilog.Verilog
                 }
                 if(words.Count>2) words.RemoveAt(words.Count - 1);
             }
-
-
 
             NameSpace target = getSearchNameSpace(space, words);
             if(target != null) appendAutoCompleteItems(items, target);
