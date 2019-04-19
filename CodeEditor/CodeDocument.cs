@@ -48,6 +48,11 @@ namespace pluginVerilog.CodeEditor
             int nextIndex = headIndex;
             Verilog.WordPointer.WordTypeEnum wordType;
 
+            // return blank if on space char
+            char ch = GetCharAt(index);
+            if( ch == ' ' || ch == '\t') return new List<string>();
+
+            // get words on the index line until index
             while (headIndex < Length)
             {
                 Verilog.WordPointer.FetchNext(this, ref headIndex, out length, out nextIndex, out wordType);
@@ -57,15 +62,16 @@ namespace pluginVerilog.CodeEditor
                 headIndex = nextIndex;
             }
 
+            // search wors from end
             int i= ret.Count - 1;
             if (i >= 0 && ret[i] != ".")
             {
-//                ret.RemoveAt(i);
-                i--;
+                i--; // skip last non . word
             }
+
             while (i>=0)
             {
-                if (ret[i] != ".") break;
+                if (ret[i] != ".") break; // end if not .
                 ret.RemoveAt(i);
                 i--;
 
@@ -73,7 +79,7 @@ namespace pluginVerilog.CodeEditor
                 i--;
             }
 
-            for(int j = 0; j <= i; j++)
+            for(int j = 0; j <= i; j++) // remove before heir description
             {
                 ret.RemoveAt(0);
             }
