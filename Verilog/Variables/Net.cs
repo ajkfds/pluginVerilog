@@ -79,6 +79,13 @@ namespace pluginVerilog.Verilog.Variables
             }
 
             label.AppendText(Name, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net));
+
+            foreach (Dimension dimension in Dimensions)
+            {
+                label.AppendText(" ");
+                label.AppendLabel(dimension.GetLabel());
+            }
+
             label.AppendText("\r\n");
             return label;
         }
@@ -208,6 +215,7 @@ namespace pluginVerilog.Verilog.Variables
                         {
                             nameSpace.Variables.Add(net.Name, net);
                         }
+                        word.Color(CodeDrawStyle.ColorType.Net);
                     }
                     else
                     {
@@ -215,10 +223,10 @@ namespace pluginVerilog.Verilog.Variables
                         {
                             net = nameSpace.Variables[net.Name] as Net;
                         }
+                        word.Color(CodeDrawStyle.ColorType.Net);
                     }
                 }
 
-                word.Color(CodeDrawStyle.ColorType.Net);
                 word.MoveNext();
 
                 if (word.Text == "=")
@@ -231,7 +239,10 @@ namespace pluginVerilog.Verilog.Variables
                     while (word.Text == "[")
                     {
                         Dimension dimension = Dimension.ParseCreate(word, nameSpace);
-                        net.dimensions.Add(dimension);
+                        if(word.Active && word.Prototype)
+                        {
+                            net.dimensions.Add(dimension);
+                        }
                     }
                 }
 

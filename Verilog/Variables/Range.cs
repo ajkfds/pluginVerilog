@@ -41,7 +41,7 @@ namespace pluginVerilog.Verilog.Variables
             label.AppendLabel(LsbBitExpression.GetLabel());
             label.AppendText("]");
             return label;
-       }
+        }
 
         /*
         A.2.5 Declaration ranges

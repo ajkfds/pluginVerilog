@@ -37,7 +37,15 @@ namespace pluginVerilog.Verilog.Variables
                 label.AppendText(" ");
             }
 
+
             label.AppendText(Name, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Register));
+
+            foreach (Dimension dimension in Dimensions)
+            {
+                label.AppendText(" ");
+                label.AppendLabel(dimension.GetLabel());
+            }
+
             label.AppendText("\r\n");
             return label;
         }
@@ -114,6 +122,7 @@ namespace pluginVerilog.Verilog.Variables
                     {
                         nameSpace.Variables.Add(reg.Name, reg);
                     }
+                    word.Color(CodeDrawStyle.ColorType.Register);
                 }
                 else
                 {
@@ -121,9 +130,9 @@ namespace pluginVerilog.Verilog.Variables
                     {
                         reg = nameSpace.Variables[reg.Name] as Reg;
                     }
+                    word.Color(CodeDrawStyle.ColorType.Register);
                 }
 
-                word.Color(CodeDrawStyle.ColorType.Register);
                 word.MoveNext();
 
                 if (word.Text == "=")
@@ -136,7 +145,10 @@ namespace pluginVerilog.Verilog.Variables
                     while (word.Text == "[")
                     {
                         Dimension dimension = Dimension.ParseCreate(word, nameSpace);
-                        reg.dimensions.Add(dimension);
+                        if(word.Active && word.Prototype)
+                        {
+                            reg.dimensions.Add(dimension);
+                        }
                     }
                 }
 

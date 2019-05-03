@@ -19,6 +19,17 @@ namespace pluginVerilog.Verilog.Variables
         constant_expression ::= (From Annex A - A.8.3)
         constant_primary | unary_operator { attribute_instance } constant_primary | constant_expression binary_operator { attribute_instance } constant_expression | constant_expression ? { attribute_instance } constant_expression     constant_expression | string 
          */
+        public ajkControls.ColorLabel GetLabel()
+        {
+            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            label.AppendText("[");
+            label.AppendLabel(MsbBitExpression.GetLabel());
+            label.AppendText(":");
+            label.AppendLabel(LsbBitExpression.GetLabel());
+            label.AppendText("]");
+            return label;
+        }
+
         public static Dimension ParseCreate(WordScanner word, NameSpace nameSpace)
         {
             if (word.GetCharAt(0) != '[') System.Diagnostics.Debugger.Break();
