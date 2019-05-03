@@ -93,30 +93,52 @@ namespace pluginVerilog.Verilog.Variables
                 {
                     if (local)
                     {
-                        if (module.LocalParameters.ContainsKey(identifier))
+                        if (!word.Active)
                         {
-                            nameReference.AddError("local parameter name duplicated");
+
+                        }
+                        else if (word.Prototype)
+                        {
+                            if (module.LocalParameters.ContainsKey(identifier))
+                            {
+                                nameReference.AddError("local parameter name duplicated");
+                            }
+                            else
+                            {
+                                Parameter param = new Parameter();
+                                param.Name = identifier;
+                                param.Expression = expression;
+                                module.LocalParameters.Add(param.Name, param);
+                            }
                         }
                         else
                         {
-                            Parameter param = new Parameter();
-                            param.Name = identifier;
-                            param.Expression = expression;
-                            module.LocalParameters.Add(param.Name, param);
+                            
                         }
                     }
                     else
                     {
-                        if (module.Parameters.ContainsKey(identifier))
+                        if (!word.Active)
                         {
-                            nameReference.AddError("parameter name duplicated");
+                            // skip
+                        }
+                        else if (word.Prototype)
+                        {
+                            if (module.Parameters.ContainsKey(identifier))
+                            {
+                                nameReference.AddError("parameter name duplicated");
+                            }
+                            else
+                            {
+                                Parameter param = new Parameter();
+                                param.Name = identifier;
+                                param.Expression = expression;
+                                module.Parameters.Add(param.Name, param);
+                            }
                         }
                         else
                         {
-                            Parameter param = new Parameter();
-                            param.Name = identifier;
-                            param.Expression = expression;
-                            module.Parameters.Add(param.Name, param);
+
                         }
                     }
                 }

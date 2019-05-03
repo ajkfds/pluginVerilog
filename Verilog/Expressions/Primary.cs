@@ -233,7 +233,7 @@ namespace pluginVerilog.Verilog.Expressions
 
             if (word.GetCharAt(0) == '[')
             {
-                word.AddError("bit select can't used for parameters");
+//                word.AddError("bit select can't used for parameters");
                 word.MoveNext();
 
                 Expression exp1 = Expression.ParseCreate(word, nameSpace);
