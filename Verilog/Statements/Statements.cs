@@ -91,6 +91,10 @@ namespace pluginVerilog.Verilog.Statements
                     {
                         if (word.Text.StartsWith("$"))
                         {
+                            if (!word.RootParsedDocument.ProjectProperty.SystemTaskParsers.ContainsKey(word.Text))
+                            {
+                                word.AddError("illegal system task");
+                            }
                             return TaskEnable.ParseCreate(word, nameSpace); // system task enable
                         }
                         else if (General.IsIdentifier(word.Text)){

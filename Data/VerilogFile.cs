@@ -30,12 +30,15 @@ namespace pluginVerilog.Data
             {
                 fileItem.Name = relativePath;
             }
+            fileItem.ParseRequested = true;
 
             project.RegisterProjectItem(fileItem);
             return fileItem;
         }
 
         public codeEditor.CodeEditor.ParsedDocument ParsedDocument { get; set; }
+        public bool ParseRequested { get; set; }
+
         public Verilog.ParsedDocument VerilogParsedDocument
         {
             get

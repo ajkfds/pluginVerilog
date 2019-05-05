@@ -125,7 +125,7 @@ namespace pluginVerilog
         public Dictionary<string, string> Macros = new Dictionary<string, string>();
 
         // system tasks
-        public Dictionary<string, Action<Verilog.WordScanner>> SystemTaskParsrs = new Dictionary<string, Action<Verilog.WordScanner>>
+        public Dictionary<string, Action<Verilog.WordScanner>> SystemTaskParsers = new Dictionary<string, Action<Verilog.WordScanner>>
         {
             // Display task
             {"$display",null },
