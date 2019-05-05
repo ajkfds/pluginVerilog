@@ -88,7 +88,11 @@ namespace pluginVerilog.Verilog.Expressions
                         var parameter = ParameterReference.ParseCreate(word, nameSpace);
                         if (parameter != null) return parameter;
 
-                        if(word.NextText == "(")
+                        if (word.Text.StartsWith("$") && word.RootParsedDocument.ProjectProperty.SystemFunctions.Keys.Contains(word.Text)) {
+                            return FunctionCall.ParseCreate(word, nameSpace);
+                        }
+
+                        if (word.NextText == "(")
                         {
                             return FunctionCall.ParseCreate(word, nameSpace);
                         }

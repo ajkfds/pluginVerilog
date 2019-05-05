@@ -38,8 +38,15 @@ namespace pluginVerilog.Verilog.Expressions
 
             if(word.GetCharAt(0) != '(')
             {
-                word.AddError("illegal function call");
-                return null;
+                if(function != null && function.Ports.Count != 0)
+                {
+                    word.AddError("illegal function call");
+                    return null;
+                }
+                else
+                {
+                    return functionCall;
+                }
             }
             word.MoveNext();
 
