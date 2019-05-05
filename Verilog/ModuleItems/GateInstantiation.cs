@@ -85,8 +85,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                     {
                         word.AddError("; expected");
                     }
-                    word.MoveNext();
-                    break;
+                    return ngate;
                 // n_output_gatetype
                 case "buf":
                 case "not":
@@ -103,7 +102,16 @@ namespace pluginVerilog.Verilog.ModuleItems
                     break;
                 case "pullup":
                 case "pulldown":
-                    break;
+                    PullUpPullDown pull = PullUpPullDown.ParseCreate(word, module);
+                    if (word.Text == ";")
+                    {
+                        word.MoveNext();
+                    }
+                    else
+                    {
+                        word.AddError("; expected");
+                    }
+                    return pull;
                 default:
                     break;
 
@@ -114,6 +122,39 @@ namespace pluginVerilog.Verilog.ModuleItems
                 word.MoveNext();
             }
             return null;
+        }
+
+    }
+
+    public class PullUpPullDown : GateInstantiation
+    {
+        protected PullUpPullDown() { }
+        public bool PullUp = false;
+
+        public static new PullUpPullDown ParseCreate(WordScanner word, Module module)
+        {
+            PullUpPullDown pull = new PullUpPullDown();
+            if (word.Text == "pullup") pull.PullUp = true;
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext();
+
+            DriveStrength.ParseCreate(word, module);
+
+            if(word.Text != "(")
+            {
+                word.AddError("( expected");
+                return null;
+            }
+            word.MoveNext();
+            Expressions.Expression exp = Expressions.Expression.ParseCreate(word, module);
+            if (word.Text != ")")
+            {
+                word.AddError(") expected");
+                return null;
+            }
+            word.MoveNext();
+
+            return pull;
         }
 
     }
