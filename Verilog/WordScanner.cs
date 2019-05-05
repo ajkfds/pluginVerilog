@@ -48,6 +48,15 @@ namespace pluginVerilog.Verilog
             }
         }
 
+        private bool cellDefine;
+        public bool CellDefine
+        {
+            get
+            {
+                return cellDefine;
+            }
+        }
+
         private bool systemVerilog;
         public bool SystemVerilog
         {
@@ -291,8 +300,16 @@ namespace pluginVerilog.Verilog
                     parseDefine();
                     break;
                 case "`celldefine":
-                case "`default_nettype":
+                    wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
+                    cellDefine = true;
+                    wordPointer.MoveNext();
+                    break;
                 case "`endcelldefine":
+                    wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
+                    cellDefine = false;
+                    wordPointer.MoveNext();
+                    break;
+                case "`default_nettype":
                     wordPointer.AddError("not supported");
                     wordPointer.MoveNext();
                     break;

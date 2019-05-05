@@ -23,7 +23,11 @@ namespace pluginVerilog.Verilog
         public Dictionary<string, Class> Classes = new Dictionary<string, Class>();
         public Dictionary<string, ModuleItems.ModuleInstantiation> ModuleInstantiations = new Dictionary<string, ModuleItems.ModuleInstantiation>();
         public string FileId { get; protected set; }
-
+        private bool cellDefine = false;
+        public bool CellDefine
+        {
+            get { return cellDefine; }
+        }
 
         public static Module Create(WordScanner word,Attribute attribute,string fileId)
         {
@@ -45,9 +49,11 @@ namespace pluginVerilog.Verilog
             if (word.Text != "module" && word.Text != "macromodule") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);
             Module module = new Module();
+
             module.Module = module;
             module.FileId = fileId;
             module.BeginIndex = word.RootIndex;
+            if (word.CellDefine) module.cellDefine = true;
             word.MoveNext();
 
 
@@ -225,56 +231,107 @@ namespace pluginVerilog.Verilog
             }
             else
             {
-                Verilog.Variables.Port port = Verilog.Variables.Port.Create(word, null);
-                if (port == null)
-                {
-                    word.AddError("illegal port identifier");
-                    return;
-                }
-                if (module.Ports.ContainsKey(port.Name))
-                {
-                    word.AddError("duplicated port name");
-                }
-                else
-                {
-                    module.Ports.Add(port.Name, port);
-                }
+                //Verilog.Variables.Port port = Verilog.Variables.Port.Create(word, null);
+
+                //if (port == null)
+                //{
+                //    word.AddError("illegal port identifier");
+                //    return;
+                //}
+
+                //if (!word.Active)
+                //{
+
+                //}else if (word.Prototype)
+                //{
+                //    if (module.Ports.ContainsKey(port.Name))
+                //    {
+                //        word.AddError("duplicated port name");
+                //    }
+                //    else
+                //    {
+                //        module.Ports.Add(port.Name, port);
+                //    }
+                //}
+                //else
+                //{
+                //    if (module.Ports.ContainsKey(port.Name))
+                //    {
+                //        port = module.Ports[port.Name];
+                //    }
+                //}
 
                 while (!word.Eof && word.Text != ")")
                 {
+                    Verilog.Variables.Port port = Verilog.Variables.Port.Create(word, null);
+
+                    if (port == null)
+                    {
+                        word.AddError("illegal port identifier");
+                        return;
+                    }
+
+                    if (!word.Active)
+                    {
+
+                    }
+                    else if (word.Prototype)
+                    {
+                        if (module.Ports.ContainsKey(port.Name))
+                        {
+                            word.AddError("duplicated port name");
+                        }
+                        else
+                        {
+                            module.Ports.Add(port.Name, port);
+                        }
+                    }
+                    else
+                    {
+                        if (module.Ports.ContainsKey(port.Name))
+                        {
+                            port = module.Ports[port.Name];
+                        }
+                    }
+
+
                     if (word.Text == ",")
                     {
                         word.MoveNext();
                     }
                     else
                     {
-                        word.AddError(", expected");
-                    }
-                    if (word.Eof)
-                    {
-                        word.AddError("port identifier expected");
-                        return;
-                    }
-                    if (word.Text == ")")
-                    {
-                        word.AddError("illegal ,");
                         break;
                     }
+                    //else
+                    //{
+                    //    word.AddError(", expected");
+                    //}
+                    //if (word.Eof)
+                    //{
+                    //    word.AddError("port identifier expected");
+                    //    return;
+                    //}
+                    //if (word.Text == ")")
+                    //{
+                    //    word.AddError("illegal ,");
+                    //    break;
+                    //}
 
-                    port = Verilog.Variables.Port.Create(word, null);
-                    if (port == null)
-                    {
-                        word.AddError("illegal port identifier");
-                        return;
-                    }
-                    else if (module.Ports.ContainsKey(port.Name))
-                    {
-                        word.AddError("duplicated port identifier");
-                    }
-                    else
-                    {
-                        module.Ports.Add(port.Name, port);
-                    }
+                    //port = Verilog.Variables.Port.Create(word, null);
+                    //if (port == null)
+                    //{
+                    //    word.AddError("illegal port identifier");
+                    //    return;
+                    //}
+                    //else if (module.Ports.ContainsKey(port.Name))
+                    //{
+                    //    word.AddError("duplicated port identifier");
+                    //}
+                    //else
+                    //{
+                    //    module.Ports.Add(port.Name, port);
+                    //}
                 }
                 if (word.Text == ")")
                 {
