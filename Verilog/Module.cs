@@ -231,35 +231,6 @@ namespace pluginVerilog.Verilog
             }
             else
             {
-                //Verilog.Variables.Port port = Verilog.Variables.Port.Create(word, null);
-
-                //if (port == null)
-                //{
-                //    word.AddError("illegal port identifier");
-                //    return;
-                //}
-
-                //if (!word.Active)
-                //{
-
-                //}else if (word.Prototype)
-                //{
-                //    if (module.Ports.ContainsKey(port.Name))
-                //    {
-                //        word.AddError("duplicated port name");
-                //    }
-                //    else
-                //    {
-                //        module.Ports.Add(port.Name, port);
-                //    }
-                //}
-                //else
-                //{
-                //    if (module.Ports.ContainsKey(port.Name))
-                //    {
-                //        port = module.Ports[port.Name];
-                //    }
-                //}
 
                 while (!word.Eof && word.Text != ")")
                 {
@@ -303,35 +274,6 @@ namespace pluginVerilog.Verilog
                     {
                         break;
                     }
-                    //else
-                    //{
-                    //    word.AddError(", expected");
-                    //}
-                    //if (word.Eof)
-                    //{
-                    //    word.AddError("port identifier expected");
-                    //    return;
-                    //}
-                    //if (word.Text == ")")
-                    //{
-                    //    word.AddError("illegal ,");
-                    //    break;
-                    //}
-
-                    //port = Verilog.Variables.Port.Create(word, null);
-                    //if (port == null)
-                    //{
-                    //    word.AddError("illegal port identifier");
-                    //    return;
-                    //}
-                    //else if (module.Ports.ContainsKey(port.Name))
-                    //{
-                    //    word.AddError("duplicated port identifier");
-                    //}
-                    //else
-                    //{
-                    //    module.Ports.Add(port.Name, port);
-                    //}
                 }
                 if (word.Text == ")")
                 {
@@ -445,6 +387,49 @@ namespace pluginVerilog.Verilog
                     // continuous_assign
                     case "assign":
                         ModuleItems.ContinuousAssign continuousAssign = ModuleItems.ContinuousAssign.ParseCreate(word, module);
+                        break;
+                    // specify_block
+                    case "specify":
+                        // specify_block::= specify { specify_item } endspecify
+                        word.Color(CodeDrawStyle.ColorType.Keyword);
+                        while (!word.Eof && word.Text !="endspecify")
+                        {
+                            word.MoveNext();
+                        }
+                        if (word.Text == "endspecify")
+                        {
+                            word.Color(CodeDrawStyle.ColorType.Keyword);
+                            word.MoveNext();
+                        }
+                        break;
+                    // gate_instantiation
+                    case "cmos":
+                    case "rcmos":
+                    case "bufif0":
+                    case "bufif1":
+                    case "notif0":
+                    case "notif1":
+                    case "nmos":
+                    case "pmos":
+                    case "rnmos":
+                    case "rpmos":
+                    case "and":
+                    case "nand":
+                    case "or":
+                    case "nor":
+                    case "xor":
+                    case "xnor":
+                    case "buf":
+                    case "not":
+                    case "tranif0":
+                    case "tranif1":
+                    case "rtranif0":
+                    case "rtranif1":
+                    case "tran":
+                    case "rtran":
+                    case "pullup":
+                    case "pulldown":
+                        ModuleItems.GateInstantiation gate = ModuleItems.GateInstantiation.ParseCreate(word, module);
                         break;
                     case "function":
                         Function.Parse(word, module);
@@ -586,6 +571,7 @@ namespace pluginVerilog.Verilog
                 case "task":
                     Task.Parse(word, module);
                     break;
+                // gate_instantiation
                 case "cmos":
                 case "rcmos":
                 case "bufif0":
@@ -610,7 +596,9 @@ namespace pluginVerilog.Verilog
                 case "rtranif1":
                 case "tran":
                 case "rtran":
-                    ModuleItems.GateInstantialtion.ParseCreate(word, module);
+                case "pullup":
+                case "pulldown":
+                    ModuleItems.GateInstantiation gate = ModuleItems.GateInstantiation.ParseCreate(word, module);
                     break;
                 default:
                     ModuleItems.ModuleInstantiation.Parse(word, module);

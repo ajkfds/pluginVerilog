@@ -412,7 +412,7 @@ namespace pluginVerilog.SystemVerilog
                 case "rtranif1":
                 case "tran":
                 case "rtran":
-                    Verilog.ModuleItems.GateInstantialtion.ParseCreate(word, module);
+                    Verilog.ModuleItems.GateInstantiation.ParseCreate(word, module);
                     break;
                 default:
                     Verilog.ModuleItems.ModuleInstantiation.Parse(word, module);

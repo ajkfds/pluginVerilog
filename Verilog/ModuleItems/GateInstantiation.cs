@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Verilog.ModuleItems
 {
-    public class GateInstantialtion : Item
+    public class GateInstantiation : Item
     {
-        protected GateInstantialtion() { }
+        protected GateInstantiation() { }
 
         // gate_instantiation::=    cmos_switchtype                             [delay3]    cmos_switch_instance        { , cmos_switch_instance }; 
         //                          | enable_gatetype   [drive_strength]        [delay3]    enable_gate_instance        { , enable_gate_instance }; 
@@ -49,77 +49,83 @@ namespace pluginVerilog.Verilog.ModuleItems
         //        private List<Verilog.Variables.Port> ports = new List<Variables.Port>();
         //        public IReadOnlyList<Verilog.Variables.Port> Ports { get { return ports; } }
 
-        public static GateInstantialtion ParseCreate(WordScanner word, Module module)
+        public static GateInstantiation ParseCreate(WordScanner word, Module module)
         {
             switch (word.Text)
             {
+                // cmos_switchtype
                 case "cmos":
                 case "rcmos":
-                    // cmos_switchtype      ::= cmos | rcmos 
                     break;
+                // enable_gatetype
                 case "bufif0":
                 case "bufif1":
                 case "notif0":
                 case "notif1":
-                    // enable_gatetype      ::= bufif0 | bufif1 | notif0 | notif1 
                     break;
+                // mos_switchtype
                 case "nmos":
                 case "pmos":
                 case "rnmos":
                 case "rpmos":
-                    // mos_switchtype       ::= nmos | pmos | rnmos | rpmos 
                     break;
+                // n_input_gatetype
                 case "and":
                 case "nand":
                 case "or":
                 case "nor":
                 case "xor":
                 case "xnor":
-                    // n_input_gatetype     ::= and | nand | or | nor | xor | xnor 
                     NInputGate ngate = NInputGate.ParseCreate(word, module);
-                    if(word.Text != ";")
-                    {
-                        word.AddError("; required");
-                    }
-                    else
+                    if(word.Text == ";")
                     {
                         word.MoveNext();
                     }
-                    return ngate;
+                    else
+                    {
+                        word.AddError("; expected");
+                    }
+                    word.MoveNext();
+                    break;
+                // n_output_gatetype
                 case "buf":
                 case "not":
-                    // n_output_gatetype    ::= buf | not 
                     break;
+                // pass_en_switchtype
                 case "tranif0":
                 case "tranif1":
                 case "rtranif0":
                 case "rtranif1":
-                    // pass_en_switchtype   ::= tranif0 | tranif1 | rtranif1 | rtranif0 
                     break;
+                // pass_switchtype
                 case "tran":
                 case "rtran":
-                    // pass_switchtype      ::= tran | rtran
+                    break;
+                case "pullup":
+                case "pulldown":
                     break;
                 default:
                     break;
 
             }
             word.AddError("not implemented");
-            word.MoveNext();
+            while(!word.Eof && word.Text != ";")
+            {
+                word.MoveNext();
+            }
             return null;
-
         }
 
     }
 
-    public class CmosSwitchInstiation : GateInstantialtion
+    public class CmosSwitchInstiation : GateInstantiation
     {
         protected CmosSwitchInstiation() { }
 
         Delay3 delay3;
 
         // gate_instantiation::=    cmos_switchtype                             [delay3]    cmos_switch_instance        { , cmos_switch_instance }; 
-        public static GateInstantialtion ParseCreate(WordScanner word, Module module)
+        public static new GateInstantiation ParseCreate(WordScanner word, Module module)
         {
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
@@ -136,7 +142,7 @@ namespace pluginVerilog.Verilog.ModuleItems
         }
     }
 
-    public class NInputGate : GateInstantialtion
+    public class NInputGate : GateInstantiation
     {
         protected NInputGate() { }
 
