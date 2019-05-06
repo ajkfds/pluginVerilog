@@ -109,6 +109,14 @@ namespace pluginVerilog.Verilog.Statements
                     }
 
                     Expressions.Expression expression = Expressions.Expression.ParseCreateVariableLValue(word, nameSpace);
+                    if(expression != null && expression.RpnExpressionItems.Count == 1 && expression.RpnExpressionItems[0] is Expressions.TaskReference)
+                    {
+                        Expressions.TaskReference taskReference = expression.RpnExpressionItems[0] as Expressions.TaskReference;
+                        return TaskEnable.ParseCreate(taskReference, word, nameSpace);
+                    }
+
+
+
                     IStatement statement;
                     if(expression == null)
                     {

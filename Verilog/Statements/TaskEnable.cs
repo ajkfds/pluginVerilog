@@ -47,5 +47,41 @@ namespace pluginVerilog.Verilog.Statements
 
             return taskEnable;
         }
+
+        public static TaskEnable ParseCreate(Expressions.TaskReference taskReference,WordScanner word,NameSpace nameSpace)
+        {
+            TaskEnable taskEnable = new TaskEnable();
+
+            if (word.Text == "(")
+            {
+                word.MoveNext();
+                while (!word.Eof)
+                {
+                    Expressions.Expression expression = Expressions.Expression.ParseCreate(word, nameSpace);
+                    if (expression == null) word.AddError("missed expression");
+                    if (word.Text == ")")
+                    {
+                        break;
+                    }
+                    else if (word.Text == ",")
+                    {
+                        word.MoveNext();
+                        continue;
+                    }
+                    else
+                    {
+                        word.AddError("illegal expression");
+                        return null;
+                    }
+                }
+                if (word.Text == ")") word.MoveNext();
+                else word.AddError(") required");
+            }
+
+            if (word.Text == ";") word.MoveNext();
+            else word.AddError("; required");
+
+            return taskEnable;
+        }
     }
 }

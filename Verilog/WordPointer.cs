@@ -114,6 +114,7 @@ namespace pluginVerilog.Verilog
             {
                 for (int i = index; i < index + length; i++)
                 {
+
                     Document.SetMarkAt(i, 0);
                 }
             }

@@ -99,31 +99,50 @@ namespace pluginVerilog.Verilog.Expressions
 
                         if(word.NextText == ".")
                         {
+                            NameSpace space = null;
                             if (nameSpace.Module.ModuleInstantiations.ContainsKey(word.Text))
                             {
-                                word.Color(CodeDrawStyle.ColorType.Identifier);
-                                string moduleName = nameSpace.Module.ModuleInstantiations[word.Text].ModuleName;
-                                Module module = word.RootParsedDocument.ProjectProperty.GetModule(moduleName);
-                                if (module == null) return null;
-                                word.MoveNext();
-                                word.MoveNext(); // .
-
-                                Primary primary = subParseCreate(word, module);
-                                if (primary == null) word.AddError("illegal variable");
-                                return primary;
+                                ModuleItems.ModuleInstantiation inst = nameSpace.Module.ModuleInstantiations[word.Text];
+                                space = word.RootParsedDocument.ProjectProperty.GetModule(inst.ModuleName);
                             }
-                            if (nameSpace.NameSpaces.ContainsKey(word.Text))
+                            else
+                            {
+                                space = getSpace(word.Text, nameSpace);
+                            }
+                            if (space != null)
                             {
                                 word.Color(CodeDrawStyle.ColorType.Identifier);
-                                NameSpace space = nameSpace.NameSpaces[word.Text];
-                                if (space == null) return null;
                                 word.MoveNext();
                                 word.MoveNext(); // .
-
                                 Primary primary = subParseCreate(word, space);
                                 if (primary == null) word.AddError("illegal variable");
                                 return primary;
                             }
+                            //if (nameSpace.Module.ModuleInstantiations.ContainsKey(word.Text))
+                            //{
+                            //    word.Color(CodeDrawStyle.ColorType.Identifier);
+                            //    string moduleName = nameSpace.Module.ModuleInstantiations[word.Text].ModuleName;
+                            //    Module module = word.RootParsedDocument.ProjectProperty.GetModule(moduleName);
+                            //    if (module == null) return null;
+                            //    word.MoveNext();
+                            //    word.MoveNext(); // .
+
+                            //    Primary primary = subParseCreate(word, module);
+                            //    if (primary == null) word.AddError("illegal variable");
+                            //    return primary;
+                            //}
+                            //if (nameSpace.NameSpaces.ContainsKey(word.Text))
+                            //{
+                            //    word.Color(CodeDrawStyle.ColorType.Identifier);
+                            //    NameSpace space = nameSpace.NameSpaces[word.Text];
+                            //    if (space == null) return null;
+                            //    word.MoveNext();
+                            //    word.MoveNext(); // .
+
+                            //    Primary primary = subParseCreate(word, space);
+                            //    if (primary == null) word.AddError("illegal variable");
+                            //    return primary;
+                            //}
                         }
 
                         if(word.Eof) return null;
@@ -173,6 +192,24 @@ namespace pluginVerilog.Verilog.Expressions
 
                         if (word.NextText == ".")
                         {
+                            //NameSpace space = null;
+                            //if (nameSpace.Module.ModuleInstantiations.ContainsKey(word.Text))
+                            //{
+                            //    space = word.RootParsedDocument.ProjectProperty.GetModule(word.Text);
+                            //} else
+                            //{
+                            //    space = getSpace(word.Text, nameSpace);
+                            //}
+                            //if(space != null)
+                            //{
+                            //    word.Color(CodeDrawStyle.ColorType.Identifier);
+                            //    word.MoveNext();
+                            //    word.MoveNext(); // .
+                            //    Primary primary = subParseCreate(word, space);
+                            //    if (primary == null) word.AddError("illegal variable");
+                            //    return primary;
+                            //}
+
                             if (nameSpace.Module.ModuleInstantiations.ContainsKey(word.Text))
                             {
                                 word.Color(CodeDrawStyle.ColorType.Identifier);
@@ -200,14 +237,57 @@ namespace pluginVerilog.Verilog.Expressions
                             }
                         }
 
-                        if (word.Eof) return null;
-                        if (General.ListOfKeywords.Contains(word.Text)) return null;
+                        if (nameSpace is Module && nameSpace.Module.Tasks.ContainsKey(word.Text))
+                        {
+                            Primary primary = new TaskReference(nameSpace.Module.Tasks[word.Text], nameSpace.Module);
+                            word.Color(CodeDrawStyle.ColorType.Identifier);
+                            word.MoveNext();
+                            return primary;
+                        }
+                        if (word.Eof || General.ListOfKeywords.Contains(word.Text))
+                        {
+                            return new NameSpaceReference(nameSpace);
+                        }
+//                            return null;
                     }
                     break;
             }
             return null;
         }
+
+        private static NameSpace getSpace(string identifier, NameSpace nameSpace)
+        {
+            if (nameSpace.NameSpaces.ContainsKey(identifier))
+            {
+                return nameSpace.NameSpaces[identifier];
+            }
+            if (nameSpace.Parent == null) return null;
+
+            return getSpace(identifier, nameSpace.Parent);
+        }
     }
+
+    public class TaskReference : Primary
+    {
+        public string TaskName { get; protected set; }
+        public string ModuleName { get; protected set; }
+
+        public TaskReference(Task task,NameSpace nameSpace)
+        {
+            TaskName = task.Name;
+            ModuleName = nameSpace.Module.Name;
+        }
+    }
+
+    public class NameSpaceReference : Primary
+    {
+        public string Name { get; protected set; }
+        public NameSpaceReference(NameSpace nameSpace)
+        {
+            Name = nameSpace.Name;
+        }
+    }
+
 
     public class ParameterReference : Primary
     {
