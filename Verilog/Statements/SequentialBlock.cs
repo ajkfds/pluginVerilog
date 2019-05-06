@@ -121,7 +121,25 @@ namespace pluginVerilog.Verilog.Statements
                 }
                 if (word.Text != "end")
                 {
+                    int beginCount = 0;
                     word.AddError("illegal sequential block");
+                    while(!word.Eof && !Module.UniqueKeywords.Contains(word.Text))
+                    {
+                        if (word.Text == "begin")
+                        {
+                            beginCount++;
+                        }else if(word.Text == "end")
+                        {
+                            if (beginCount == 0)
+                            {
+                                word.Color(CodeDrawStyle.ColorType.Keyword);
+                                word.MoveNext();
+                                break;
+                            }
+                            beginCount--;
+                        }
+                        word.MoveNext();
+                    }
                     return null;
                 }
                 word.Color(CodeDrawStyle.ColorType.Keyword);

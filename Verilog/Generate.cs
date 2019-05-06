@@ -266,7 +266,31 @@ namespace pluginVerilog.Verilog
                 word.MoveNext();
             }
 
-            Module.ParseGenerateItems(word, module);
+            if (word.Active)
+            {
+                Module.ParseGenerateItems(word, module);
+            }
+            else
+            {
+                int beginCount = 0;
+                word.AddError("illegal sequential block");
+                while (!word.Eof && word.Text != "endgenerate")
+                {
+                    if (word.Text == "begin")
+                    {
+                        beginCount++;
+                    }
+                    else if (word.Text == "end")
+                    {
+                        if (beginCount == 0)
+                        {
+                            break;
+                        }
+                        beginCount--;
+                    }
+                    word.MoveNext();
+                }
+            }
 
             if (word.Text == "end")
             {
@@ -303,7 +327,31 @@ namespace pluginVerilog.Verilog
                 word.MoveNext();
             }
 
-            Module.ParseGenerateItems(word, module);
+            if (word.Active)
+            {
+                Module.ParseGenerateItems(word, module);
+            }
+            else
+            {
+                int beginCount = 0;
+                word.AddError("illegal sequential block");
+                while (!word.Eof && word.Text != "endgenerate")
+                {
+                    if (word.Text == "begin")
+                    {
+                        beginCount++;
+                    }
+                    else if (word.Text == "end")
+                    {
+                        if (beginCount == 0)
+                        {
+                            break;
+                        }
+                        beginCount--;
+                    }
+                    word.MoveNext();
+                }
+            }
 
             if (word.Text == "end")
             {

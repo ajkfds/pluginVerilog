@@ -121,6 +121,28 @@ namespace pluginVerilog.Verilog
             if (nonGeneratedCount != 0 || prototype) return;
             wordPointer.AddError(message);
             sw2.Stop();
+
+            WordPointer wp;
+            if(stock.Count == 0)
+            {
+                wp = wordPointer;
+            }
+            else
+            {
+                wp = stock[0];
+            }
+
+            if (wp.ParsedDocument is Verilog.ParsedDocument && (wp.ParsedDocument as Verilog.ParsedDocument).ErrorCount < 100)
+            {
+                int lineNo = wp.Document.GetLineAt(wp.Index);
+                wp.ParsedDocument.Messages.Add(new Verilog.ParsedDocument.Message(message, Verilog.ParsedDocument.Message.MessageType.Error, wp.Index, lineNo, wp.Length, wp.ParsedDocument.ItemID, wp.ParsedDocument.Project));
+            }
+            else if (wp.ParsedDocument is Verilog.ParsedDocument && (wp.ParsedDocument as Verilog.ParsedDocument).ErrorCount == 100)
+            {
+                wp.ParsedDocument.Messages.Add(new Verilog.ParsedDocument.Message(">100 errors", Verilog.ParsedDocument.Message.MessageType.Error, 0, 0, 0, wp.ParsedDocument.ItemID, wp.ParsedDocument.Project));
+            }
+            if (wp.ParsedDocument is Verilog.ParsedDocument) (wp.ParsedDocument as Verilog.ParsedDocument).ErrorCount++;
+
         }
 
         public void AddWarning(string message)

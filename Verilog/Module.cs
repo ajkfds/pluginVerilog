@@ -451,6 +451,9 @@ namespace pluginVerilog.Verilog
                             word.MoveNext();
                         }
                         break;
+                    case "": // blank at include return
+                        word.MoveNext();
+                        break;
                     default:
                         if (word.SystemVerilog)
                         {
@@ -607,6 +610,15 @@ namespace pluginVerilog.Verilog
 
             return true;
         }
+
+        public static List<string> UniqueKeywords = new List<string> {
+            "module","endmodule",
+            "function","endfunction",
+            "task","endtask",
+            "always","initial",
+            "assign","specify","endspecify",
+            "generate","endgenerate"
+        };
 
     }
 }
