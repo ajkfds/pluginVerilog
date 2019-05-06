@@ -61,7 +61,7 @@ namespace pluginVerilog.Verilog.Expressions
                 functionCall.Expressions.Add(expression);
                 if(function != null)
                 {
-                    if (i > function.Ports.Count)
+                    if (i >= function.Ports.Count)
                     {
                         word.AddError("illegal argument");
                     }
