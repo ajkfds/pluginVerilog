@@ -52,11 +52,11 @@ namespace pluginVerilog.Verilog.Statements
                             | { attribute_instance } disable_statement
                             | { attribute_instance } seq_block
                             | { attribute_instance } par_block
-
-                            | { attribute_instance } event_trigger
                             | { attribute_instance } procedural_continuous_assignments ;
                             | { attribute_instance } system_task_enable
                             | { attribute_instance } task_enable
+
+                            | { attribute_instance } event_trigger
                             | { attribute_instance } wait_statement
             procedural_timing_control_statement ::= delay_or_event_control statement_or_null 
             */
@@ -85,6 +85,12 @@ namespace pluginVerilog.Verilog.Statements
                     return CaseStatement.ParseCreate(word, nameSpace);
                 case "disable":
                     return DisableStatement.ParseCreate(word,nameSpace);
+                case "force":
+                    return ForceStatement.ParseCreate(word,nameSpace);
+                case "release":
+                    return ReleaseStatement.ParseCreate(word, nameSpace);
+                case "assign":
+                    return ProceduralContinuousAssignment.ParseCreate(word, nameSpace);
                 default:
                     string nextText = word.NextText;
                     if (nextText == "(" || nextText == ";")
@@ -108,20 +114,7 @@ namespace pluginVerilog.Verilog.Statements
                     {
                         word.MoveNext();
                     }
-/*                    if(expression == null)
-                    {
-                        if (General.IsIdentifier(word.Text))
-                        {
-                            word.AddError("illegal identifier");
-                            word.MoveNext();
-                        }
-                        else
-                        {
-                            word.MoveNext();
-                            return null;
-                        }
-                    }
-*/                    switch (word.Text)
+                    switch (word.Text)
                     {
                         case "=":
                             statement = BlockingAssignment.ParseCreate(word, nameSpace, expression);

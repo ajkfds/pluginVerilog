@@ -126,6 +126,7 @@
     <Compile Include="Verilog\General.cs" />
     <Compile Include="Verilog\Item.cs" />
     <Compile Include="Verilog\Statements\DisableStatement.cs" />
+    <Compile Include="Verilog\Statements\ForceStatement.cs" />
     <Compile Include="Verilog\Statements\IStatement.cs" />
     <Compile Include="Verilog\Statements\LoopingStatememt.cs" />
     <Compile Include="Verilog\Module.cs" />
@@ -134,7 +135,9 @@
     <Compile Include="Verilog\Expressions\Operator.cs" />
     <Compile Include="Style.cs" />
     <Compile Include="Verilog\Statements\ParallelBlock.cs" />
+    <Compile Include="Verilog\Statements\ProceduralContinuousAssignment.cs" />
     <Compile Include="Verilog\Statements\ProceduralTimingControlStatement.cs" />
+    <Compile Include="Verilog\Statements\ReleaseStatement.cs" />
     <Compile Include="Verilog\Statements\TaskEnable.cs" />
     <Compile Include="Verilog\Strength.cs" />
     <Compile Include="Verilog\Task.cs" />
