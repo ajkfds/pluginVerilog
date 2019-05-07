@@ -381,7 +381,7 @@ namespace pluginVerilog.Verilog.Expressions
 
         private static bool parseVariableLValue(WordScanner word, NameSpace nameSpace, List<ExpressionItem> expressionItems, List<Operator> operatorStock)
         {
-            Primary primary = Primary.ParseCreate(word, nameSpace);
+            Primary primary = Primary.ParseCreateLValue(word, nameSpace);
             if (primary != null)
             {
                 expressionItems.Add(primary);

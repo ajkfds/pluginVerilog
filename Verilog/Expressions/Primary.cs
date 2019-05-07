@@ -64,6 +64,14 @@ namespace pluginVerilog.Verilog.Expressions
         */
         public static Primary ParseCreate(WordScanner word, NameSpace nameSpace)
         {
+            return parseCreate(word, nameSpace, false);
+        }
+        public static Primary ParseCreateLValue(WordScanner word, NameSpace nameSpace)
+        {
+            return parseCreate(word, nameSpace, true);
+        }
+        private static Primary parseCreate(WordScanner word, NameSpace nameSpace,bool lValue)
+        {
             if (nameSpace == null) System.Diagnostics.Debugger.Break();
             switch (word.WordType)
             {
@@ -114,35 +122,10 @@ namespace pluginVerilog.Verilog.Expressions
                                 word.Color(CodeDrawStyle.ColorType.Identifier);
                                 word.MoveNext();
                                 word.MoveNext(); // .
-                                Primary primary = subParseCreate(word, space);
+                                Primary primary = subParseCreate(word, space,lValue);
                                 if (primary == null) word.AddError("illegal variable");
                                 return primary;
                             }
-                            //if (nameSpace.Module.ModuleInstantiations.ContainsKey(word.Text))
-                            //{
-                            //    word.Color(CodeDrawStyle.ColorType.Identifier);
-                            //    string moduleName = nameSpace.Module.ModuleInstantiations[word.Text].ModuleName;
-                            //    Module module = word.RootParsedDocument.ProjectProperty.GetModule(moduleName);
-                            //    if (module == null) return null;
-                            //    word.MoveNext();
-                            //    word.MoveNext(); // .
-
-                            //    Primary primary = subParseCreate(word, module);
-                            //    if (primary == null) word.AddError("illegal variable");
-                            //    return primary;
-                            //}
-                            //if (nameSpace.NameSpaces.ContainsKey(word.Text))
-                            //{
-                            //    word.Color(CodeDrawStyle.ColorType.Identifier);
-                            //    NameSpace space = nameSpace.NameSpaces[word.Text];
-                            //    if (space == null) return null;
-                            //    word.MoveNext();
-                            //    word.MoveNext(); // .
-
-                            //    Primary primary = subParseCreate(word, space);
-                            //    if (primary == null) word.AddError("illegal variable");
-                            //    return primary;
-                            //}
                         }
 
                         if(word.Eof) return null;
@@ -166,7 +149,7 @@ namespace pluginVerilog.Verilog.Expressions
             return null;
         }
 
-        private static Primary subParseCreate(WordScanner word, NameSpace nameSpace)
+        private static Primary subParseCreate(WordScanner word, NameSpace nameSpace,bool lValue)
         {
             if (nameSpace == null) System.Diagnostics.Debugger.Break();
             switch (word.WordType)
@@ -185,31 +168,13 @@ namespace pluginVerilog.Verilog.Expressions
                         var parameter = ParameterReference.ParseCreate(word, nameSpace);
                         if (parameter != null) return parameter;
 
-                        if (word.NextText == "(")
+                        if (!lValue && word.NextText == "(")
                         {
                             return FunctionCall.ParseCreate(word, nameSpace);
                         }
 
                         if (word.NextText == ".")
                         {
-                            //NameSpace space = null;
-                            //if (nameSpace.Module.ModuleInstantiations.ContainsKey(word.Text))
-                            //{
-                            //    space = word.RootParsedDocument.ProjectProperty.GetModule(word.Text);
-                            //} else
-                            //{
-                            //    space = getSpace(word.Text, nameSpace);
-                            //}
-                            //if(space != null)
-                            //{
-                            //    word.Color(CodeDrawStyle.ColorType.Identifier);
-                            //    word.MoveNext();
-                            //    word.MoveNext(); // .
-                            //    Primary primary = subParseCreate(word, space);
-                            //    if (primary == null) word.AddError("illegal variable");
-                            //    return primary;
-                            //}
-
                             if (nameSpace.Module.ModuleInstantiations.ContainsKey(word.Text))
                             {
                                 word.Color(CodeDrawStyle.ColorType.Identifier);
@@ -219,7 +184,7 @@ namespace pluginVerilog.Verilog.Expressions
                                 word.MoveNext();
                                 word.MoveNext(); // .
 
-                                Primary primary = subParseCreate(word, module);
+                                Primary primary = subParseCreate(word, module,lValue);
                                 if (primary == null) word.AddError("illegal variable");
                                 return primary;
                             }
@@ -231,7 +196,7 @@ namespace pluginVerilog.Verilog.Expressions
                                 word.MoveNext();
                                 word.MoveNext(); // .
 
-                                Primary primary = subParseCreate(word, space);
+                                Primary primary = subParseCreate(word, space, lValue);
                                 if (primary == null) word.AddError("illegal variable");
                                 return primary;
                             }
