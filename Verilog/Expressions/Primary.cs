@@ -132,7 +132,7 @@ namespace pluginVerilog.Verilog.Expressions
                         if (General.ListOfKeywords.Contains(word.Text)) return null;
                         if(General.IsIdentifier(word.Text) && !nameSpace.Variables.ContainsKey(word.Text) && !word.Prototype)
                         {   // undefined net
-                            word.AddWarning("undefined");
+                            if(!word.CellDefine) word.AddWarning("undefined");
                             Variables.Net net = new Variables.Net();
                             net.Name = word.Text;
                             net.Signed = false;

@@ -62,7 +62,16 @@ namespace pluginVerilog.Verilog.ModuleItems
                 case "bufif1":
                 case "notif0":
                 case "notif1":
-                    break;
+                    EnableGate engate = EnableGate.ParseCreate(word, module);
+                    if (word.Text == ";")
+                    {
+                        word.MoveNext();
+                    }
+                    else
+                    {
+                        word.AddError("; expected");
+                    }
+                    return engate;
                 // mos_switchtype
                 case "nmos":
                 case "pmos":
@@ -89,7 +98,16 @@ namespace pluginVerilog.Verilog.ModuleItems
                 // n_output_gatetype
                 case "buf":
                 case "not":
-                    break;
+                    NOutputGate nogate = NOutputGate.ParseCreate(word, module);
+                    if (word.Text == ";")
+                    {
+                        word.MoveNext();
+                    }
+                    else
+                    {
+                        word.AddError("; expected");
+                    }
+                    return nogate;
                 // pass_en_switchtype
                 case "tranif0":
                 case "tranif1":
@@ -182,7 +200,51 @@ namespace pluginVerilog.Verilog.ModuleItems
             return null;
         }
     }
+    public class EnableGate : GateInstantiation
+    {
+        protected EnableGate() { }
 
+        Delay3 Delay3;
+        DriveStrength DriveStrength;
+
+        //                          | enable_gatetype   [drive_strength]        [delay3]    enable_gate_instance        { , enable_gate_instance }; 
+        // enable_gate_instance             ::= [name_of_gate_instance] (output_terminal, input_terminal, enable_terminal) 
+        public static new EnableGate ParseCreate(WordScanner word, Module module)
+        {
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext();
+
+            EnableGate ret = new EnableGate();
+
+            ret.DriveStrength = DriveStrength.ParseCreate(word, module);
+            ret.Delay3 = Delay3.ParseCreate(word, module);
+
+            while (!word.Eof)
+            {
+                if (General.IsIdentifier(word.Text))
+                {
+                    word.Color(CodeDrawStyle.ColorType.Identifier);
+                    word.MoveNext();
+                }
+                if (word.Text != "(") return null;
+                word.MoveNext();
+
+                while (!word.Eof)
+                {
+                    Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
+                    if (word.Text != ",")
+                    {
+                        break;
+                    }
+                    word.MoveNext();
+                }
+                if (word.Text != ")") return null;
+                word.MoveNext();
+            }
+
+            return ret;
+        }
+    }
     public class NInputGate : GateInstantiation
     {
         protected NInputGate() { }
@@ -190,7 +252,8 @@ namespace pluginVerilog.Verilog.ModuleItems
         Delay2 Delay2;
         DriveStrength DriveStrength;
 
-        //  n_input_gatetype  [drive_strength]        [delay2]    n_input_gate_instance       {, n_input_gate_instance }; 
+        // n_input_gatetype  [drive_strength]        [delay2]    n_input_gate_instance       {, n_input_gate_instance }; 
+        // n_input_gate_instance            ::= [name_of_gate_instance] (output_terminal, input_terminal { , input_terminal } ) 
         public static new NInputGate ParseCreate(WordScanner word, Module module)
         {
             word.Color(CodeDrawStyle.ColorType.Keyword);
@@ -230,4 +293,51 @@ namespace pluginVerilog.Verilog.ModuleItems
         }
     }
 
+    public class NOutputGate : GateInstantiation
+    {
+        protected NOutputGate() { }
+
+        Delay2 Delay2;
+        DriveStrength DriveStrength;
+
+        // n_output_gatetype [drive_strength]        [delay2]    n_output_gate_instance      { , n_output_gate_instance }; 
+        // n_output_gate_instance           ::= [name_of_gate_instance] (output_terminal { , output_terminal } , input_terminal ) 
+        public static new NOutputGate ParseCreate(WordScanner word, Module module)
+        {
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext();
+
+            NOutputGate ret = new NOutputGate();
+
+            ret.DriveStrength = DriveStrength.ParseCreate(word, module);
+            ret.Delay2 = Delay2.ParseCreate(word, module);
+
+            while (!word.Eof)
+            {
+                if (General.IsIdentifier(word.Text))
+                {
+                    word.Color(CodeDrawStyle.ColorType.Identifier);
+                    word.MoveNext();
+                }
+                if (word.Text != "(") return null;
+                word.MoveNext();
+
+                while (!word.Eof)
+                {
+                    Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
+                    if (word.Text != ",")
+                    {
+                        break;
+                    }
+                    word.MoveNext();
+                }
+                if (word.Text != ")") return null;
+                word.MoveNext();
+            }
+
+            // n_input_gate_instance            ::= [name_of_gate_instance] (output_terminal, input_terminal { , input_terminal } ) 
+
+            return ret;
+        }
+    }
 }
