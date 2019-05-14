@@ -10,7 +10,6 @@ namespace pluginVerilog.Verilog.Variables
     {
         public NetTypeEnum NetType = NetTypeEnum.Wire;
         public bool Signed = false;
-        public int DefinedIndex = 0;
 
         public Range Range { get; set; }
 
@@ -84,6 +83,12 @@ namespace pluginVerilog.Verilog.Variables
             {
                 label.AppendText(" ");
                 label.AppendLabel(dimension.GetLabel());
+            }
+
+            if (Comment != "")
+            {
+                label.AppendText(" ");
+                label.AppendText(Comment.Trim(new char[] {'\r','\n','\t',' '}),CodeDrawStyle.Color(CodeDrawStyle.ColorType.Comment));
             }
 
             label.AppendText("\r\n");
@@ -196,9 +201,11 @@ namespace pluginVerilog.Verilog.Variables
             //[delay3]
             // TODO
 
+            List<Net> nets = new List<Net>();
             while (!word.Eof)
             {
                 Net net = new Net();
+                nets.Add(net);
                 net.Signed = signed;
                 net.Range = range;
                 WordReference nameRef = word.GetReference();
@@ -257,6 +264,11 @@ namespace pluginVerilog.Verilog.Variables
             else
             {
                 word.MoveNext();
+                string comment = word.GetFollowedComment();
+                foreach(Net net in nets)
+                {
+                    net.Comment = comment;
+                }
             }
 
             return;

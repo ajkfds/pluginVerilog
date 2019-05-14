@@ -46,6 +46,12 @@ namespace pluginVerilog.Verilog.Variables
                 label.AppendLabel(dimension.GetLabel());
             }
 
+            if (Comment != "")
+            {
+                label.AppendText(" ");
+                label.AppendText(Comment.Trim(new char[] { '\r', '\n', '\t', ' ' }), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Comment));
+            }
+
             label.AppendText("\r\n");
             return label;
         }
@@ -86,6 +92,7 @@ namespace pluginVerilog.Verilog.Variables
                 }
             }
 
+            List<Reg> regs = new List<Reg>();
             while (!word.Eof)
             {
                 if (!General.IsSimpleIdentifier(word.Text))
@@ -95,6 +102,7 @@ namespace pluginVerilog.Verilog.Variables
                 }
 
                 Reg reg = new Reg();
+                regs.Add(reg);
                 WordReference nameRef = word.GetReference();
                 reg.Signed = signed;
                 reg.Range = range;
@@ -163,6 +171,11 @@ namespace pluginVerilog.Verilog.Variables
             else
             {
                 word.MoveNext();
+                string comment = word.GetFollowedComment();
+                foreach (Reg reg in regs)
+                {
+                    reg.Comment = comment;
+                }
             }
 
             return;

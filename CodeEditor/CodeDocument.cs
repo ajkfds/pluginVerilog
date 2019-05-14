@@ -49,8 +49,11 @@ namespace pluginVerilog.CodeEditor
             Verilog.WordPointer.WordTypeEnum wordType;
 
             // return blank if on space char
-            char ch = GetCharAt(index);
-            if( ch == ' ' || ch == '\t') return new List<string>();
+            if (index != 0)
+            {
+                char ch = GetCharAt(index - 1);
+                if (ch == ' ' || ch == '\t') return new List<string>();
+            }
 
             // get words on the index line until index
             while (headIndex < Length)

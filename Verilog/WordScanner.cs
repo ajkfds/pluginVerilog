@@ -222,6 +222,11 @@ namespace pluginVerilog.Verilog
             sw0.Stop();
         }
 
+        public string GetFollowedComment()
+        {
+            return wordPointer.GetFollowedComment();
+        }
+
         private void recheckWord()
         {
             while (!wordPointer.Eof)

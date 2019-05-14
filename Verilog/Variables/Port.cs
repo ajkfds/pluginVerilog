@@ -9,9 +9,9 @@ namespace pluginVerilog.Verilog.Variables
     public class Port : Item
     {
         public DirectionEnum Direction = DirectionEnum.Undefined;
-//        public bool Signed = false;
         public Range Range = null;
         public Variable Variable = null;
+        public string Comment = "";
 
         public enum DirectionEnum
         {
@@ -204,12 +204,13 @@ namespace pluginVerilog.Verilog.Variables
                 range = Range.ParseCreate(word, nameSpace);
             }
 
+            List<Port> ports = new List<Port>();
             while (!word.Eof)
             {
                 if (!General.IsIdentifier(word.Text))
                 {
                     word.AddError("illegal port name");
-                    return;
+                    break;
                 }
 
                 Net net = new Net();
@@ -220,6 +221,7 @@ namespace pluginVerilog.Verilog.Variables
                 word.Color(CodeDrawStyle.ColorType.Net);
 
                 Port port = new Port();
+                ports.Add(port);
                 port.Name = net.Name;
                 port.Direction = DirectionEnum.Input;
                 port.Variable = net;
@@ -254,26 +256,24 @@ namespace pluginVerilog.Verilog.Variables
 
                 word.MoveNext();
 
-                if (word.GetCharAt(0) == ',')
-                {
-                    string next = word.NextText;
-                    if (next == "input" || next == "output" || next == "inout")
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        word.MoveNext(); // ,
-                    }
-                }
-                else
+                if (word.GetCharAt(0) != ',')
                 {
                     break;
                 }
+                word.MoveNext();
+                if (word.Text == "input") break;
+                if (word.Text == "output") break;
+                if (word.Text == "inout") break;
+            }
+            foreach (Port port in ports)
+            {
+                string comment = word.GetFollowedComment();
+                port.Comment = comment;
+                port.Variable.Comment = comment;
             }
 
         }
-        
+
         private static void parseInoutDeclaration(WordScanner word, Module module, IPortNameSpace portNameSpace, Attribute attribute)
         {
             // inout_declaration::= inout[net_type][signed][range] list_of_port_identifiers
@@ -298,10 +298,10 @@ namespace pluginVerilog.Verilog.Variables
                 range = Range.ParseCreate(word, module);
             }
 
-
+            List<Port> ports = new List<Port>();
             while (!word.Eof)
             {
-                if (!General.IsIdentifier(word.Text)) return;
+                if (!General.IsIdentifier(word.Text)) break;
 
                 Net net = new Net();
                 net.Name = word.Text;
@@ -311,6 +311,7 @@ namespace pluginVerilog.Verilog.Variables
                 word.Color(CodeDrawStyle.ColorType.Net);
 
                 Port port = new Port();
+                ports.Add(port);
                 port.Name = net.Name;
                 port.Direction = DirectionEnum.Inout;
                 port.Variable = net;
@@ -345,25 +346,24 @@ namespace pluginVerilog.Verilog.Variables
                 }
                 word.MoveNext();
 
-                if (word.GetCharAt(0) == ',')
-                {
-                    string next = word.NextText;
-                    if (next == "input" || next == "output" || next == "inout")
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        word.MoveNext(); // ,
-                    }
-                }
-                else
+
+                if (word.GetCharAt(0) != ',')
                 {
                     break;
                 }
+                word.MoveNext();
+                if (word.Text == "input") break;
+                if (word.Text == "output") break;
+                if (word.Text == "inout") break;
+            }
+            foreach (Port port in ports)
+            {
+                string comment = word.GetFollowedComment();
+                port.Comment = comment;
+                port.Variable.Comment = comment;
             }
         }
-        
+
         private enum portVariableType
         {
             wire,
@@ -432,10 +432,11 @@ namespace pluginVerilog.Verilog.Variables
                 range = Range.ParseCreate(word, module);
             }
 
+            List<Port> ports = new List<Port>();
             Variable variable;
             while (!word.Eof)
             {
-                if (!General.IsIdentifier(word.Text)) return;
+                if (!General.IsIdentifier(word.Text)) break;
 
                 switch (varType)
                 {
@@ -465,6 +466,7 @@ namespace pluginVerilog.Verilog.Variables
                 }
 
                 Port port = new Port();
+                ports.Add(port);
                 port.Name = variable.Name;
                 port.Direction = DirectionEnum.Output;
                 port.Variable = variable;
@@ -506,24 +508,21 @@ namespace pluginVerilog.Verilog.Variables
 
                 }
 
-                if (word.GetCharAt(0) == ',')
-                {
-                    string next = word.NextText;
-                    if (next == "input" || next == "output" || next == "inout")
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        word.MoveNext(); // ,
-                    }
-                }
-                else
+                if (word.GetCharAt(0) != ',')
                 {
                     break;
                 }
+                word.MoveNext();
+                if (word.Text == "input") break;
+                if (word.Text == "output") break;
+                if (word.Text == "inout") break;
             }
-
+            foreach (Port port in ports)
+            {
+                string comment = word.GetFollowedComment();
+                port.Comment = comment;
+                port.Variable.Comment = comment;
+            }
         }
 
         private static Net.NetTypeEnum? parseNetType(WordScanner word)
@@ -648,10 +647,11 @@ namespace pluginVerilog.Verilog.Variables
                 }
             }
 
+            List<Port> ports = new List<Port>();
             Variable variable;
             while (!word.Eof)
             {
-                if (!General.IsIdentifier(word.Text)) return;
+                if (!General.IsIdentifier(word.Text)) break;
 
                 switch (varType)
                 {
@@ -695,6 +695,7 @@ namespace pluginVerilog.Verilog.Variables
                 }
 
                 Port port = new Port();
+                ports.Add(port);
                 port.Name = variable.Name;
                 port.Direction = DirectionEnum.Output;
                 port.Variable = variable;
@@ -729,22 +730,20 @@ namespace pluginVerilog.Verilog.Variables
                 }
                 word.MoveNext();
 
-                if (word.GetCharAt(0) == ',')
-                {
-                    string next = word.NextText;
-                    if (next == "input" || next == "output" || next == "inout")
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        word.MoveNext(); // ,
-                    }
-                }
-                else
+                if (word.GetCharAt(0) != ',')
                 {
                     break;
                 }
+                word.MoveNext();
+                if (word.Text == "input") break;
+                if (word.Text == "output") break;
+                if (word.Text == "inout") break;
+            }
+            foreach (Port port in ports)
+            {
+                string comment = word.GetFollowedComment();
+                port.Comment = comment;
+                port.Variable.Comment = comment;
             }
         }
 
@@ -820,9 +819,10 @@ namespace pluginVerilog.Verilog.Variables
                 }
             }
 
+            List<Port> ports = new List<Port>();
             while (!word.Eof)
             {
-                if (!General.IsIdentifier(word.Text)) return;
+                if (!General.IsIdentifier(word.Text)) break;
 
                 Variable variable;
                 switch (varType)
@@ -867,6 +867,7 @@ namespace pluginVerilog.Verilog.Variables
                 }
 
                 Port port = new Port();
+                ports.Add(port);
                 port.Name = variable.Name;
                 port.Direction = DirectionEnum.Inout;
                 port.Variable = variable;
@@ -901,22 +902,20 @@ namespace pluginVerilog.Verilog.Variables
                 }
                 word.MoveNext();
 
-                if (word.GetCharAt(0) == ',')
-                {
-                    string next = word.NextText;
-                    if (next == "input" || next == "output" || next == "inout")
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        word.MoveNext(); // ,
-                    }
-                }
-                else
+                if (word.GetCharAt(0) != ',')
                 {
                     break;
                 }
+                word.MoveNext();
+                if (word.Text == "input") break;
+                if (word.Text == "output") break;
+                if (word.Text == "inout") break;
+            }
+            foreach (Port port in ports)
+            {
+                string comment = word.GetFollowedComment();
+                port.Comment = comment;
+                port.Variable.Comment = comment;
             }
         }
 
@@ -992,9 +991,10 @@ namespace pluginVerilog.Verilog.Variables
                 }
             }
 
+            List<Port> ports = new List<Port>();
             while (!word.Eof)
             {
-                if (!General.IsIdentifier(word.Text)) return;
+                if (!General.IsIdentifier(word.Text)) break;
 
                 Variable variable;
                 switch (varType)
@@ -1039,6 +1039,7 @@ namespace pluginVerilog.Verilog.Variables
 
                 }
                 Port port = new Port();
+                ports.Add(port);
                 port.Name = variable.Name;
                 port.Direction = DirectionEnum.Input;
                 port.Variable = variable;
@@ -1073,22 +1074,20 @@ namespace pluginVerilog.Verilog.Variables
                 }
                 word.MoveNext();
 
-                if (word.GetCharAt(0) == ',')
-                {
-                    string next = word.NextText;
-                    if (next == "input" || next == "output" || next == "inout")
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        word.MoveNext(); // ,
-                    }
-                }
-                else
+                if (word.GetCharAt(0) != ',')
                 {
                     break;
                 }
+                word.MoveNext();
+                if (word.Text == "input") break;
+                if (word.Text == "output") break;
+                if (word.Text == "inout") break;
+            }
+            foreach (Port port in ports)
+            {
+                string comment = word.GetFollowedComment();
+                port.Comment = comment;
+                port.Variable.Comment = comment;
             }
 
         }

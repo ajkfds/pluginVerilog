@@ -27,6 +27,8 @@ namespace pluginVerilog.Verilog
         protected int index = 0;
         protected int length = 0;
         protected int nextIndex;
+        protected bool commentSkipped = false;
+        protected int commentIndex = -1;
 
         protected WordTypeEnum wordType = WordTypeEnum.Eof;
 
@@ -176,21 +178,33 @@ namespace pluginVerilog.Verilog
         {
             index = nextIndex;
             FetchNext(Document, ref index, out length, out nextIndex, out wordType);
+            commentSkipped = false;
+            commentIndex = index;
 
             while (!Eof && wordType == WordTypeEnum.Comment)
             {
+                commentSkipped = true;
                 index = nextIndex;
                 FetchNext(Document, ref index, out length, out nextIndex, out wordType);
             }
+            if (!commentSkipped) commentIndex = -1;
+        }
+
+        public string GetFollowedComment()
+        {
+            if (!commentSkipped) return "";
+            return Document.CreateString(commentIndex, index-commentIndex);
         }
 
         public void MoveNextUntilEol()
         {
             index = nextIndex;
             FetchNextUntilEol(Document, ref index, out length, out nextIndex, out wordType);
+            commentSkipped = false;
 
             while (!Eof && wordType == WordTypeEnum.Comment)
             {
+                commentSkipped = true;
                 index = nextIndex;
                 FetchNext(Document, ref index, out length, out nextIndex, out wordType);
             }
