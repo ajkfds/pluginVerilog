@@ -7,9 +7,9 @@ using System.Drawing;
 
 namespace pluginVerilog.NavigatePanel
 {
-    public class VerilogHeaderNode : codeEditor.NavigatePanel.FileNode
+    public class SystemVerilogHeaderNode : codeEditor.NavigatePanel.FileNode
     {
-        public VerilogHeaderNode(string ID, codeEditor.Data.Project project) : base(ID, project)
+        public SystemVerilogHeaderNode(string ID, codeEditor.Data.Project project) : base(ID, project)
         {
 
         }
@@ -26,7 +26,7 @@ namespace pluginVerilog.NavigatePanel
 
         public override void DrawNode(Graphics graphics, int x, int y, Font font, Color color, Color backgroundColor, Color selectedColor, int lineHeight, bool selected)
         {
-            graphics.DrawImage(Global.Icons.VerilogHeader.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Blue), new Point(x, y));
+            graphics.DrawImage(Global.Icons.SystemVerilogHeader.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Blue), new Point(x, y));
             Color bgColor = backgroundColor;
             if (selected) bgColor = selectedColor;
             System.Windows.Forms.TextRenderer.DrawText(

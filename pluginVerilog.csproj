@@ -50,6 +50,7 @@
     <Compile Include="Data\SystemVerilogFile.cs" />
     <Compile Include="FileTypes\SystemVerilogFile.cs" />
     <Compile Include="NavigatePanel\SystemVerilogFileNode.cs" />
+    <Compile Include="NavigatePanel\SystemVerilogHeaderNode.cs" />
     <Compile Include="Parser\SystemVerilogParser.cs" />
     <Compile Include="PluginExtensions.cs" />
     <Compile Include="Global.cs" />
@@ -214,7 +215,12 @@
   <ItemGroup>
     <None Include="Resources\pause.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\systemVerilog.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\systemVerilogHeader.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /I /D /Y "$(ProjectDir)\bin\$(Configuration)\$(ProjectName).dll" "$(SolutionDir)codeEditor\codeEditor\bin\$(Configuration)\dlls" 

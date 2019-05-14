@@ -58,7 +58,8 @@ namespace pluginVerilog
             Keyword = 4,
             Identifier = 6,
             Number = 8,
-            Inactivated = 1
+            Inactivated = 1,
+            HighLightedComment = 10
         }
 
         public override Color[] MarkColor
