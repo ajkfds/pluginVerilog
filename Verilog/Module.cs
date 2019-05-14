@@ -64,16 +64,30 @@ namespace pluginVerilog.Verilog
                 macroKeep.Add(kvpair.Key, kvpair.Value);
             }
 
-            WordScanner prototypeWord = word.Clone();
-            prototypeWord.Prototype = true;
-            parseModuleItems(prototypeWord, null, module);
 
-            // parse
-            word.RootParsedDocument.Macros = macroKeep;
-            parseModuleItems(word, null, module);
+            if(!word.CellDefine)
+            {
+                // protptype parse
+                WordScanner prototypeWord = word.Clone();
+                prototypeWord.Prototype = true;
+                parseModuleItems(prototypeWord, null, module);
+                prototypeWord.Dispose();
+                prototypeWord = null;
 
-           // endmodule keyword
-           if (word.Text == "endmodule")
+                // parse
+                word.RootParsedDocument.Macros = macroKeep;
+                parseModuleItems(word, null, module);
+            }
+            else
+            {
+                // parse prototype only
+                word.Prototype = true;
+                parseModuleItems(word, null, module);
+                word.Prototype = false;
+            }
+
+            // endmodule keyword
+            if (word.Text == "endmodule")
             {
                 word.Color(CodeDrawStyle.ColorType.Keyword);
                 module.LastIndex = word.RootIndex;
@@ -84,6 +98,7 @@ namespace pluginVerilog.Verilog
             {
                 word.AddError("endmodule expected");
             }
+  //          word.Dispose();
 
             return module;
         }
@@ -199,18 +214,8 @@ namespace pluginVerilog.Verilog
 
             if (word.Text == "input" || word.Text == "output" || word.Text == "inout")
             {
-                Verilog.Variables.Port.ParsePortDeclaration(word, module, null);
-
-                while (!word.Eof && word.Text != ")")
+                while (!word.Eof)
                 {
-                    if (word.Text == ",")
-                    {
-                        word.MoveNext();
-                    }
-                    else
-                    {
-                        word.AddError(", expected");
-                    }
                     if (word.Text == "input" || word.Text == "output" || word.Text == "inout")
                     {
                         Verilog.Variables.Port.ParsePortDeclaration(word, module, null);
@@ -264,7 +269,6 @@ namespace pluginVerilog.Verilog
                             port = module.Ports[port.Name];
                         }
                     }
-
 
                     if (word.Text == ",")
                     {

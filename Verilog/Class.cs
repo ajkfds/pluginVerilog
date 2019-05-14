@@ -108,16 +108,6 @@ namespace pluginVerilog.Verilog
             }
 
 
-
-
-
-
-
-
-
-
-
-
             word.MoveNext();
 
 
