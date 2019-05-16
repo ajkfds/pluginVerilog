@@ -148,7 +148,6 @@ namespace pluginVerilog
             {"$monitoron", null },
             // File I/O tasks
             {"$fclose", null },
-            {"$fopen", null },
             {"$fdisplay", null },
             {"$fstrobe", null } ,
             {"$fdisplayb", null },
@@ -157,12 +156,8 @@ namespace pluginVerilog
             {"$fstrobeh", null },
             {"$fdisplayo", null },
             {"$fstrobeo", null },
-            {"$fgetc", null },
             {"$ungetc", null },
             {"$fflush", null },
-            {"$ferror", null },
-            {"$fgets", null },
-            {"$rewind", null },
             {"$fmonitor", null },
             {"$fwrite", null },
             {"$fmonitorb", null },
@@ -177,13 +172,7 @@ namespace pluginVerilog
             {"$swriteb", null },
             {"$swriteo", null },
             {"$swriteh", null } ,
-            {"$sformat", null },
             {"$sdf_annotate", null } ,
-            {"$fscanf", null },
-            {"$sscanf", null } ,
-            {"$fread", null },
-            {"$ftell", null } ,
-            {"$fseek", null },
             // Timescale tasks
             {"$printtimescale", null },
             {"$timeformat", null },
@@ -217,6 +206,18 @@ namespace pluginVerilog
 
         public Dictionary<string, Func<Verilog.Variables.Variable, Verilog.WordScanner>> SystemFunctions = new Dictionary<string, Func<Verilog.Variables.Variable, Verilog.WordScanner>>
         {
+            {"$sformat", null },
+            {"$ferror", null },
+            {"$rewind", null },
+            {"$fseek", null },
+            {"$fread", null },
+            {"$ftell", null } ,
+            {"$sscanf", null } ,
+            {"$fscanf", null },
+            {"$fgetc", null },
+            {"$fgets", null },
+            {"$fopen", null },
+
             // Simulation time functions
             {"$realtime",null },
             {"$stime",null },
