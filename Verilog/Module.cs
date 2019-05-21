@@ -435,6 +435,9 @@ namespace pluginVerilog.Verilog
                     case "pulldown":
                         ModuleItems.GateInstantiation gate = ModuleItems.GateInstantiation.ParseCreate(word, module);
                         break;
+                    case "defparam":
+                        ModuleItems.ParameterOverride.Parse(word, module);
+                        break;
                     case "function":
                         Function.Parse(word, module);
                         break;
@@ -606,6 +609,9 @@ namespace pluginVerilog.Verilog
                 case "pullup":
                 case "pulldown":
                     ModuleItems.GateInstantiation gate = ModuleItems.GateInstantiation.ParseCreate(word, module);
+                    break;
+                case "defparam":
+                    ModuleItems.ParameterOverride.Parse(word, module);
                     break;
                 default:
                     ModuleItems.ModuleInstantiation.Parse(word, module);
