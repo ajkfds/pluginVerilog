@@ -237,8 +237,10 @@ namespace pluginVerilog.SystemVerilog
                 return items;
             }
 
-            List<string> words = document.GetHierWords(index);
-            if (document.GetCharAt(index - 1) == '.')
+            bool endWithDot;
+            List<string> words = document.GetHierWords(index,out endWithDot);
+//            if (document.GetCharAt(index - 1) == '.')
+            if(endWithDot)
             {
                 cantidateWord = "";
                 items = new List<codeEditor.CodeEditor.AutocompleteItem>();

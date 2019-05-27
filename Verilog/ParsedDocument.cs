@@ -106,7 +106,6 @@ namespace pluginVerilog.Verilog
             {
                 ret.Add(new Popup.TaskPopup(space.Module.Tasks[text]));
             }
-
             return ret;
         }
 
@@ -198,7 +197,7 @@ namespace pluginVerilog.Verilog
             new Snippets.NonBlockingAssignmentAutoCompleteItem("<=",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Normal), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
         };
 
-        private NameSpace getSearchNameSpace(NameSpace nameSpace,List<string> hier)
+        private NameSpace getSearchNameSpace(NameSpace nameSpace,List<string> hier,bool endWithDot)
         {
             if (hier.Count == 0) return nameSpace;
 
@@ -206,23 +205,25 @@ namespace pluginVerilog.Verilog
             {
                 Module module = ProjectProperty.GetModule(nameSpace.Module.ModuleInstantiations[hier[0]].ModuleName);
                 hier.RemoveAt(0);
-                return getSearchNameSpace(module,hier);
+                return getSearchNameSpace(module,hier, endWithDot);
             }
             else if(nameSpace.NameSpaces.ContainsKey(hier[0]))
             {
                 NameSpace space = nameSpace.NameSpaces[hier[0]];
                 hier.RemoveAt(0);
-                return getSearchNameSpace(space, hier);
+                return getSearchNameSpace(space, hier, endWithDot);
             }
+            if (endWithDot) return null;
             return nameSpace;
         }
 
         public List<codeEditor.CodeEditor.AutocompleteItem> GetAutoCompleteItems(int index,int lineStartIndex,int line,CodeEditor.CodeDocument document,out string cantidateWord)
         {
             cantidateWord = null;
-
+            
             List<codeEditor.CodeEditor.AutocompleteItem> items = null;
 
+            // get current nameSpace
             NameSpace space = null;
             foreach (Module module in Modules.Values)
             {
@@ -231,33 +232,45 @@ namespace pluginVerilog.Verilog
                 space = module.GetHierNameSpace(lineStartIndex);
                 break;
             }
-            if (space == null)
+
+            if (space == null) // external module/class/program
             {
                 items = verilogKeywords.ToList();
                 return items;
             }
 
-            List<string> words = document.GetHierWords(index);
-            if (document.GetCharAt(index - 1) == '.')
-            {
+            bool endWithDot;
+            List<string> words = document.GetHierWords(index,out endWithDot);
+ //           if (document.GetCharAt(index - 1) == '.')
+            if(endWithDot)
+            { // after dot cantidate
                 cantidateWord = "";
                 items = new List<codeEditor.CodeEditor.AutocompleteItem>();
+            }
+            else if(words.Count <= 1)
+            { // non hier word
+                cantidateWord = words.LastOrDefault();
+                items = verilogKeywords.ToList();
+
+                if(space is Module)
+                {
+                    List<string> moduleNames = ProjectProperty.GetModuleNameList();
+                    foreach (string moduleName in moduleNames)
+                    {
+                        items.Add(
+                            new Snippets.ModuleInstanceAutocompleteItem(moduleName, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword), Project)
+                        );
+                    }
+                }
             }
             else
             {
                 cantidateWord = words.LastOrDefault();
-                if(words.Count <= 1)
-                {
-                    items = verilogKeywords.ToList();
-                }
-                else
-                {
-                    items = new List<codeEditor.CodeEditor.AutocompleteItem>();
-                }
+                items = new List<codeEditor.CodeEditor.AutocompleteItem>();
                 if(words.Count>2) words.RemoveAt(words.Count - 1);
             }
 
-            NameSpace target = getSearchNameSpace(space, words);
+            NameSpace target = getSearchNameSpace(space, words, endWithDot);
             if(target != null) appendAutoCompleteItems(items, target);
 
             return items;
@@ -311,18 +324,13 @@ namespace pluginVerilog.Verilog
                 items.Add(newItem(space.Name, CodeDrawStyle.ColorType.Identifier));
             }
 
-            foreach (ModuleItems.ModuleInstantiation mi in nameSpace.Module.ModuleInstantiations.Values)
+            if (nameSpace is Module)
             {
-                if (mi.Name == null) System.Diagnostics.Debugger.Break();
-                items.Add(newItem(mi.Name, CodeDrawStyle.ColorType.Identifier));
-            }
-
-            List<string> moduleNames = ProjectProperty.GetModuleNameList();
-            foreach(string moduleName in moduleNames)
-            {
-                items.Add(
-                    new Snippets.ModuleInstanceAutocompleteItem(moduleName, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword),Project)
-                );
+                foreach (ModuleItems.ModuleInstantiation mi in nameSpace.Module.ModuleInstantiations.Values)
+                {
+                    if (mi.Name == null) System.Diagnostics.Debugger.Break();
+                    items.Add(newItem(mi.Name, CodeDrawStyle.ColorType.Identifier));
+                }
             }
         }
 

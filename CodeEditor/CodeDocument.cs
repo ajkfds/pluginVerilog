@@ -40,13 +40,14 @@ namespace pluginVerilog.CodeEditor
             }
         }
 
-        public List<string> GetHierWords(int index)
+        public List<string> GetHierWords(int index,out bool endWithDot)
         {
             List<string> ret = new List<string>();
             int headIndex = GetLineStartIndex(GetLineAt(index));
             int length;
             int nextIndex = headIndex;
             Verilog.WordPointer.WordTypeEnum wordType;
+            endWithDot = true;
 
             // return blank if on space char
             if (index != 0)
@@ -69,6 +70,7 @@ namespace pluginVerilog.CodeEditor
             int i= ret.Count - 1;
             if (i >= 0 && ret[i] != ".")
             {
+                endWithDot = false;
                 i--; // skip last non . word
             }
 
@@ -82,7 +84,7 @@ namespace pluginVerilog.CodeEditor
                 i--;
             }
 
-            for(int j = 0; j <= i; j++) // remove before heir description
+            for(int j = 0; j < i; j++) // remove before heir description
             {
                 ret.RemoveAt(0);
             }

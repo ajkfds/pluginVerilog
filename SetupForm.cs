@@ -16,7 +16,7 @@ namespace pluginVerilog
         {
             InitializeComponent();
 
-            icarusVerilogSimulationToolStripMenuItem.Image = Global.Icons.Play.GetImage(
+            icarusVerilogSimulationTsmi.Image = Global.Icons.Play.GetImage(
                 codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip().ImageScalingSize.Height,
                 ajkControls.IconImage.ColorStyle.Blue);
         }

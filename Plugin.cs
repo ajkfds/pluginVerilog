@@ -31,7 +31,7 @@ namespace pluginVerilog
 
             // append menu items
             System.Windows.Forms.ContextMenuStrip menu = codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip();
-            menu.Items.Add(Global.SetupForm.icarusVerilogSimulationToolStripMenuItem);
+            menu.Items.Add(Global.SetupForm.icarusVerilogSimulationTsmi);
         }
         public string Id { get { return StaticID; } }
 

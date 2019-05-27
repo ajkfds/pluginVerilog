@@ -31,7 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SetupForm));
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.icarusVerilogSimulationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.icarusVerilogSimulationTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -44,16 +44,16 @@
             // 
             this.contextMenuStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.icarusVerilogSimulationToolStripMenuItem});
+            this.icarusVerilogSimulationTsmi});
             this.contextMenuStrip.Name = "contextMenuStrip";
             this.contextMenuStrip.Size = new System.Drawing.Size(274, 67);
             // 
-            // icarusVerilogSimulationToolStripMenuItem
+            // icarusVerilogSimulationTsmi
             // 
-            this.icarusVerilogSimulationToolStripMenuItem.Name = "icarusVerilogSimulationToolStripMenuItem";
-            this.icarusVerilogSimulationToolStripMenuItem.Size = new System.Drawing.Size(273, 30);
-            this.icarusVerilogSimulationToolStripMenuItem.Text = "icarusVerilog Simulation";
-            this.icarusVerilogSimulationToolStripMenuItem.Click += new System.EventHandler(this.icarusVerilogSimulationToolStripMenuItem_Click);
+            this.icarusVerilogSimulationTsmi.Name = "icarusVerilogSimulationTsmi";
+            this.icarusVerilogSimulationTsmi.Size = new System.Drawing.Size(273, 30);
+            this.icarusVerilogSimulationTsmi.Text = "icarusVerilog Simulation";
+            this.icarusVerilogSimulationTsmi.Click += new System.EventHandler(this.icarusVerilogSimulationToolStripMenuItem_Click);
             // 
             // imageList
             // 
@@ -112,7 +112,7 @@
         #endregion
 
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
-        public System.Windows.Forms.ToolStripMenuItem icarusVerilogSimulationToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem icarusVerilogSimulationTsmi;
         private System.Windows.Forms.ImageList imageList;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;

@@ -52,6 +52,7 @@ namespace pluginVerilog.NavigatePanel
 
         public override void Selected()
         {
+            codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip().Items["icarusVerilogSimulationTsmi"].Visible = true;
             codeEditor.Global.Controller.CodeEditor.SetTextFile(ITextFile);
         }
 
