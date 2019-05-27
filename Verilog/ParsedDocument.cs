@@ -241,6 +241,10 @@ namespace pluginVerilog.Verilog
 
             bool endWithDot;
             List<string> words = document.GetHierWords(index,out endWithDot);
+            if(words.Count == 0)
+            {
+                return new List<codeEditor.CodeEditor.AutocompleteItem>();
+            }
  //           if (document.GetCharAt(index - 1) == '.')
             if(endWithDot)
             { // after dot cantidate

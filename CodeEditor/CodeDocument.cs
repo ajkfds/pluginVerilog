@@ -53,7 +53,11 @@ namespace pluginVerilog.CodeEditor
             if (index != 0)
             {
                 char ch = GetCharAt(index - 1);
-                if (ch == ' ' || ch == '\t') return new List<string>();
+                if (ch == ' ' || ch == '\t')
+                {
+                    endWithDot = false;
+                    return new List<string>();
+                }
             }
 
             // get words on the index line until index
