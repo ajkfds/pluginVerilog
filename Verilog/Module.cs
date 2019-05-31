@@ -91,10 +91,12 @@ namespace pluginVerilog.Verilog
             {
                 word.Color(CodeDrawStyle.ColorType.Keyword);
                 module.LastIndex = word.RootIndex;
+
+                word.AppendBlock(module.BeginIndex, module.LastIndex);
                 word.MoveNext();
                 return module;
             }
-            else
+       
             {
                 word.AddError("endmodule expected");
             }

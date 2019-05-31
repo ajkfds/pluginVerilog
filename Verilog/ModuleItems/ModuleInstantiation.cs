@@ -14,13 +14,15 @@ namespace pluginVerilog.Verilog.ModuleItems
 
         private List<Verilog.Variables.Port> ports = new List<Variables.Port>();
         public IReadOnlyList<Verilog.Variables.Port> Ports { get { return ports; } }
-
+        public int BeginIndex;
+        public int LastIndex;
         public static void Parse(WordScanner word,Module module)
         {
             ModuleInstantiation moduleInstantiation = new ModuleInstantiation();
 
             WordScanner moduleIdentifier = word.Clone();
             moduleInstantiation.ModuleName = word.Text;
+            moduleInstantiation.BeginIndex = word.RootIndex;
             word.MoveNext();
 
             string next = word.NextText;
@@ -29,7 +31,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                 moduleIdentifier.AddError("illegal module item");
                 return;
             }
-            moduleIdentifier.Color(CodeDrawStyle.ColorType.Identifier);
+            moduleIdentifier.Color(CodeDrawStyle.ColorType.Keyword);
 
             if (word.Text == "#") // parameter
             {
@@ -205,13 +207,14 @@ namespace pluginVerilog.Verilog.ModuleItems
                 return;
             }
             word.MoveNext();
+            moduleInstantiation.LastIndex = word.RootIndex;
             if (word.Text != ";")
             {
                 word.AddError("; expected");
                 return;
             }
             word.MoveNext();
-
+            if(!word.Prototype && word.Active) word.AppendBlock(moduleInstantiation.BeginIndex, moduleInstantiation.LastIndex);
         }
 
         /*

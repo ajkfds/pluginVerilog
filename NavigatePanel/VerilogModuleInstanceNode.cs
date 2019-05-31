@@ -16,23 +16,22 @@ namespace pluginVerilog.NavigatePanel
 
         public codeEditor.Data.ITextFile ITextFile
         {
-            get => Project.GetRegisterdItem(ID) as codeEditor.Data.ITextFile;
+            get { return Project.GetRegisterdItem(ID) as codeEditor.Data.ITextFile; }
         }
 
         public virtual Data.VerilogFile VerilogFile
         {
-            get => Project.GetRegisterdItem(ID) as Data.VerilogFile;
+            get { return Project.GetRegisterdItem(ID) as Data.VerilogFile; }
         }
 
         public override string Text
         {
-            get => FileItem.Name;
+            get { return FileItem.Name; }
         }
 
-        private static ajkControls.Icon icon = new ajkControls.Icon(Properties.Resources.verilog);
         public override void DrawNode(Graphics graphics, int x, int y, Font font, Color color, Color backgroundColor, Color selectedColor, int lineHeight, bool selected)
         {
-            graphics.DrawImage(icon.GetImage(lineHeight, ajkControls.Icon.ColorStyle.Gray), new Point(x, y));
+            graphics.DrawImage(Global.Icons.Verilog.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Blue), new Point(x, y));
             Color bgColor = backgroundColor;
             if (selected) bgColor = selectedColor;
             System.Windows.Forms.TextRenderer.DrawText(
@@ -44,11 +43,17 @@ namespace pluginVerilog.NavigatePanel
                 bgColor,
                 System.Windows.Forms.TextFormatFlags.NoPadding
                 );
+
+            if (VerilogFile != null && VerilogFile.ParsedDocument != null && VerilogFile.VerilogParsedDocument.ErrorCount != 0)
+            {
+                graphics.DrawImage(Global.Icons.Exclamation.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Red), new Point(x, y));
+            }
         }
 
         public override void Selected()
         {
-            codeEditor.Global.ViewController.CodeEditor.SetTextFile(ITextFile);
+            codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip().Items["icarusVerilogSimulationTsmi"].Visible = true;
+            codeEditor.Global.Controller.CodeEditor.SetTextFile(ITextFile);
         }
 
         public override void Update()
@@ -88,4 +93,5 @@ namespace pluginVerilog.NavigatePanel
         }
 
     }
+
 }

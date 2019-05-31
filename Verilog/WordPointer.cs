@@ -61,6 +61,11 @@ namespace pluginVerilog.Verilog
             }
         }
 
+        public void AppendBlock(int startIndex,int lastIndex)
+        {
+            Document.AppendBlock(startIndex, lastIndex);
+        }
+
         public int Index
         {
             get

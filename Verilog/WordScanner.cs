@@ -115,6 +115,11 @@ namespace pluginVerilog.Verilog
             sw3.Stop();
         }
 
+        public void AppendBlock(int startIndex, int lastIndex)
+        {
+            if (stock.Count != 0) return;
+            wordPointer.AppendBlock(startIndex, lastIndex);
+        }
         public void AddError(string message)
         {
             sw2.Start();
