@@ -117,8 +117,22 @@ namespace pluginVerilog.Verilog.Expressions
                             {
                                 space = getSpace(word.Text, nameSpace);
                             }
-                            if (space != null)
-                            {
+
+                            if(space == null)
+                            { // root module
+                                Module module = word.RootParsedDocument.ProjectProperty.GetModule(word.Text);
+                                if(module != null)
+                                {
+                                    word.Color(CodeDrawStyle.ColorType.Identifier);
+                                    word.MoveNext();
+                                    word.MoveNext(); // .
+                                    Primary primary = subParseCreate(word, module, lValue);
+                                    if (primary == null) word.AddError("illegal variable");
+                                    return primary;
+                                }
+                            }
+                            else
+                            { // 
                                 word.Color(CodeDrawStyle.ColorType.Identifier);
                                 word.MoveNext();
                                 word.MoveNext(); // .
@@ -175,8 +189,9 @@ namespace pluginVerilog.Verilog.Expressions
 
                         if (word.NextText == ".")
                         {
-                            if (nameSpace.Module.ModuleInstantiations.ContainsKey(word.Text))
-                            {
+//                            if(word.RootParsedDocument.Project.)
+                           if (nameSpace.Module.ModuleInstantiations.ContainsKey(word.Text))
+                            { // module instancce
                                 word.Color(CodeDrawStyle.ColorType.Identifier);
                                 string moduleName = nameSpace.Module.ModuleInstantiations[word.Text].ModuleName;
                                 Module module = word.RootParsedDocument.ProjectProperty.GetModule(moduleName);
@@ -187,9 +202,8 @@ namespace pluginVerilog.Verilog.Expressions
                                 Primary primary = subParseCreate(word, module,lValue);
                                 if (primary == null) word.AddError("illegal variable");
                                 return primary;
-                            }
-                            if (nameSpace.NameSpaces.ContainsKey(word.Text))
-                            {
+                            } else if (nameSpace.NameSpaces.ContainsKey(word.Text))
+                            { // namespaces
                                 word.Color(CodeDrawStyle.ColorType.Identifier);
                                 NameSpace space = nameSpace.NameSpaces[word.Text];
                                 if (space == null) return null;

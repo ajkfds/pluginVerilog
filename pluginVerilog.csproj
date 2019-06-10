@@ -48,6 +48,7 @@
     <Compile Include="CodeEditor\CodeDocument.cs" />
     <Compile Include="Data\IVerilogRelatedFile.cs" />
     <Compile Include="Data\SystemVerilogFile.cs" />
+    <Compile Include="Data\VerilogModuleInstance.cs" />
     <Compile Include="FileTypes\SystemVerilogFile.cs" />
     <Compile Include="NavigatePanel\SystemVerilogFileNode.cs" />
     <Compile Include="NavigatePanel\SystemVerilogHeaderNode.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="Verilog\Expressions\ExpressionItem.cs" />
     <Compile Include="Verilog\Expressions\String.cs" />
     <Compile Include="Verilog\Generate.cs" />
+    <Compile Include="Verilog\ModuleInstance.cs" />
     <Compile Include="Verilog\ModuleItems\ContinuousAssign.cs" />
     <Compile Include="Data\VerilogFile.cs" />
     <Compile Include="Data\VerilogHeaderFile.cs" />
