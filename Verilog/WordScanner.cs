@@ -287,14 +287,56 @@ namespace pluginVerilog.Verilog
         {
             get
             {
-                WordPointer temp = wordPointer.Clone();
-                wordPointer.MoveNext();
-                while (!wordPointer.Eof && wordPointer.WordType == WordPointer.WordTypeEnum.Comment)
+                WordPointer _wp = wordPointer.Clone();
+                int _nonGeneratedCount = nonGeneratedCount;
+                bool _prototype = prototype;
+                List<WordPointer> _stock = new List<WordPointer>();
+                foreach (var wp in stock)
                 {
-                    wordPointer.MoveNext();
+                    _stock.Add(wp.Clone());
                 }
+
+                //                WordPointer temp = wordPointer.Clone();
+
+                while (wordPointer.Eof && stock.Count != 0)
+                {
+                    bool error = false;
+                    if (wordPointer.ParsedDocument.Messages.Count != 0) error = true;
+
+                    if (wordPointer.ParsedDocument == stock.Last().ParsedDocument)
+                    {
+                        error = false;
+                    }
+
+                    wordPointer.Dispose();
+                    wordPointer = stock.Last();
+                    stock.Remove(stock.Last());
+                    if (error) wordPointer.AddError("include errors");
+                }
+
+                wordPointer.MoveNext();
+                recheckWord();
                 string text = wordPointer.Text;
-                wordPointer = temp;
+
+                //wordPointer.MoveNext();
+                //while (!wordPointer.Eof && wordPointer.WordType == WordPointer.WordTypeEnum.Comment)
+                //{
+                //    wordPointer.MoveNext();
+                //}
+                //string text = wordPointer.Text;
+
+
+                wordPointer = _wp;
+                nonGeneratedCount = _nonGeneratedCount;
+                prototype = _prototype;
+                if(stock.Count != _stock.Count)
+                {
+                    stock.Clear();
+                    foreach (var wp in _stock)
+                    {
+                        stock.Add(wp);
+                    }
+                }
                 return text;
             }
         }

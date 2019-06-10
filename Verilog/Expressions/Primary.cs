@@ -123,7 +123,7 @@ namespace pluginVerilog.Verilog.Expressions
                                 Module module = word.RootParsedDocument.ProjectProperty.GetModule(word.Text);
                                 if(module != null)
                                 {
-                                    word.Color(CodeDrawStyle.ColorType.Identifier);
+                                    word.Color(CodeDrawStyle.ColorType.Keyword);
                                     word.MoveNext();
                                     word.MoveNext(); // .
                                     Primary primary = subParseCreate(word, module, lValue);

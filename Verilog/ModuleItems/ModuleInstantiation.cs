@@ -18,11 +18,10 @@ namespace pluginVerilog.Verilog.ModuleItems
         public int LastIndex;
         public static void Parse(WordScanner word,Module module)
         {
-            ModuleInstantiation moduleInstantiation = new ModuleInstantiation();
 
             WordScanner moduleIdentifier = word.Clone();
-            moduleInstantiation.ModuleName = word.Text;
-            moduleInstantiation.BeginIndex = word.RootIndex;
+            string moduleName = word.Text;
+            int beginIndex = word.RootIndex;
             word.MoveNext();
 
             string next = word.NextText;
@@ -103,118 +102,132 @@ namespace pluginVerilog.Verilog.ModuleItems
                 word.MoveNext();
             }
 
-            word.Color(CodeDrawStyle.ColorType.Identifier);
-            if (General.IsIdentifier(word.Text))
-            {
-                moduleInstantiation.Name = word.Text;
-            }
-            else
-            {
-                if(word.Prototype) word.AddError("illegal instance name");
-            }
 
-            if (word.Prototype)
+            while (!word.Eof)
             {
-                if(moduleInstantiation.Name == null)
+                ModuleInstantiation moduleInstantiation = new ModuleInstantiation();
+                moduleInstantiation.ModuleName = moduleName;
+                moduleInstantiation.BeginIndex = beginIndex;
+
+                word.Color(CodeDrawStyle.ColorType.Identifier);
+                if (General.IsIdentifier(word.Text))
                 {
-                    // 
-                }else if (module.ModuleInstantiations.ContainsKey(moduleInstantiation.Name))
-                {   // duplicated
-                    word.AddError("instance name duplicated");
+                    moduleInstantiation.Name = word.Text;
                 }
                 else
                 {
-                    module.ModuleInstantiations.Add(moduleInstantiation.Name, moduleInstantiation);
+                    if (word.Prototype) word.AddError("illegal instance name");
                 }
-            }
-            else
-            {
-                if (moduleInstantiation.Name == null)
+
+                if (word.Prototype)
                 {
-                    // 
-                }
-                else if (module.ModuleInstantiations.ContainsKey(moduleInstantiation.Name))
-                {   // duplicated
-                    moduleInstantiation = module.ModuleInstantiations[moduleInstantiation.Name];
+                    if (moduleInstantiation.Name == null)
+                    {
+                        // 
+                    }
+                    else if (module.ModuleInstantiations.ContainsKey(moduleInstantiation.Name))
+                    {   // duplicated
+                        word.AddError("instance name duplicated");
+                    }
+                    else
+                    {
+                        module.ModuleInstantiations.Add(moduleInstantiation.Name, moduleInstantiation);
+                    }
                 }
                 else
                 {
-                    //module.ModuleInstantiations.Add(moduleInstantiation.Name, moduleInstantiation);
+                    if (moduleInstantiation.Name == null)
+                    {
+                        // 
+                    }
+                    else if (module.ModuleInstantiations.ContainsKey(moduleInstantiation.Name))
+                    {   // duplicated
+                        moduleInstantiation = module.ModuleInstantiations[moduleInstantiation.Name];
+                    }
+                    else
+                    {
+                        //module.ModuleInstantiations.Add(moduleInstantiation.Name, moduleInstantiation);
+                    }
                 }
-            }
 
-            word.MoveNext();
+                word.MoveNext();
 
-            if (word.Text != "(")
-            {
-                word.AddError("( expected");
-                return;
-            }
-            word.MoveNext();
-
-            if (word.GetCharAt(0) == '.')
-            { // named parameter assignment
-                while (!word.Eof && word.Text == ".")
+                if (word.Text != "(")
                 {
-                    word.MoveNext();
-                    word.Color(CodeDrawStyle.ColorType.Identifier);
-                    word.MoveNext();
-                    if (word.Text != "(")
-                    {
-                        word.AddError("( expected");
-                    }
-                    else
-                    {
-                        word.MoveNext();
-                    }
-                    Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
-                    if (word.Text != ")")
-                    {
-                        word.AddError(") expected");
-                    }
-                    else
+                    word.AddError("( expected");
+                    return;
+                }
+                word.MoveNext();
+
+                if (word.GetCharAt(0) == '.')
+                { // named parameter assignment
+                    while (!word.Eof && word.Text == ".")
                     {
                         word.MoveNext();
-                    }
-                    if (word.Text != ",")
-                    {
-                        break;
-                    }
-                    else
-                    {
+                        word.Color(CodeDrawStyle.ColorType.Identifier);
                         word.MoveNext();
+                        if (word.Text != "(")
+                        {
+                            word.AddError("( expected");
+                        }
+                        else
+                        {
+                            word.MoveNext();
+                        }
+                        Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
+                        if (word.Text != ")")
+                        {
+                            word.AddError(") expected");
+                        }
+                        else
+                        {
+                            word.MoveNext();
+                        }
+                        if (word.Text != ",")
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            word.MoveNext();
+                        }
                     }
                 }
-            }
-            else
-            { // ordered paramater assignment
-                while (!word.Eof && word.Text != ")")
+                else
+                { // ordered paramater assignment
+                    while (!word.Eof && word.Text != ")")
+                    {
+                        Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
+                        if (word.Text != ",")
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            word.MoveNext();
+                        }
+                    }
+                }
+                if (word.Text != ")")
                 {
-                    Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
-                    if (word.Text != ",")
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        word.MoveNext();
-                    }
+                    word.AddError(") expected");
+                    return;
                 }
+                word.MoveNext();
+                moduleInstantiation.LastIndex = word.RootIndex;
+
+                if (!word.Prototype && word.Active) word.AppendBlock(moduleInstantiation.BeginIndex, moduleInstantiation.LastIndex);
+                if (word.Text != ",") break;
+                word.MoveNext();
             }
-            if (word.Text != ")")
-            {
-                word.AddError(") expected");
-                return;
-            }
-            word.MoveNext();
-            moduleInstantiation.LastIndex = word.RootIndex;
+
+
             if (word.Text != ";")
             {
                 word.AddError("; expected");
                 return;
             }
             word.MoveNext();
-            if(!word.Prototype && word.Active) word.AppendBlock(moduleInstantiation.BeginIndex, moduleInstantiation.LastIndex);
         }
 
         /*
