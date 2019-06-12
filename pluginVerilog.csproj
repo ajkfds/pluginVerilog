@@ -92,7 +92,9 @@
     <Compile Include="Verilog\ModuleItems\ModuleInstantiation.cs" />
     <Compile Include="NavigatePanel\VerilogFileNode.cs" />
     <Compile Include="Verilog\ModuleItems\ParameterOverride.cs" />
+    <Compile Include="Verilog\IModuleOrGeneratedBlock.cs" />
     <Compile Include="Verilog\ModuleReference.cs" />
+    <Compile Include="Verilog\NamedGeneratedBlock.cs" />
     <Compile Include="Verilog\ParsedDocument.cs" />
     <Compile Include="Parser\VerilogParser.cs" />
     <Compile Include="Plugin.cs" />

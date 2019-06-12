@@ -12,7 +12,7 @@ namespace pluginVerilog.Verilog.ModuleItems
 
         public Variables.VariableAssignment VariableAssignment { get; protected set; }
 
-        public static ContinuousAssign ParseCreate(WordScanner word,Module module)
+        public static ContinuousAssign ParseCreate(WordScanner word, IModuleOrGeneratedBlock module)
         {
             // continuous_assign::= assign[drive_strength][delay3] list_of_net_assignments;
             // list_of_net_assignments::= net_assignment { , net_assignment }
@@ -25,7 +25,7 @@ namespace pluginVerilog.Verilog.ModuleItems
             word.MoveNext();
 
             ContinuousAssign continuousAssign = new ContinuousAssign();
-            continuousAssign.VariableAssignment = Variables.VariableAssignment.ParseCreate(word, module);
+            continuousAssign.VariableAssignment = Variables.VariableAssignment.ParseCreate(word, module as NameSpace);
 
             if(word.GetCharAt(0) == ';')
             {

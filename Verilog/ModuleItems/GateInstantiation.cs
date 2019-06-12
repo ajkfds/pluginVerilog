@@ -49,7 +49,7 @@ namespace pluginVerilog.Verilog.ModuleItems
         //        private List<Verilog.Variables.Port> ports = new List<Variables.Port>();
         //        public IReadOnlyList<Verilog.Variables.Port> Ports { get { return ports; } }
 
-        public static GateInstantiation ParseCreate(WordScanner word, Module module)
+        public static GateInstantiation ParseCreate(WordScanner word, IModuleOrGeneratedBlock module)
         {
             switch (word.Text)
             {
@@ -149,14 +149,14 @@ namespace pluginVerilog.Verilog.ModuleItems
         protected PullUpPullDown() { }
         public bool PullUp = false;
 
-        public static new PullUpPullDown ParseCreate(WordScanner word, Module module)
+        public static new PullUpPullDown ParseCreate(WordScanner word, IModuleOrGeneratedBlock module)
         {
             PullUpPullDown pull = new PullUpPullDown();
             if (word.Text == "pullup") pull.PullUp = true;
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
-            DriveStrength.ParseCreate(word, module);
+            DriveStrength.ParseCreate(word, module as NameSpace);
 
             if(word.Text != "(")
             {
@@ -164,7 +164,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                 return null;
             }
             word.MoveNext();
-            Expressions.Expression exp = Expressions.Expression.ParseCreate(word, module);
+            Expressions.Expression exp = Expressions.Expression.ParseCreate(word, module as NameSpace);
             if (word.Text != ")")
             {
                 word.AddError(") expected");
@@ -184,7 +184,7 @@ namespace pluginVerilog.Verilog.ModuleItems
         Delay3 delay3;
 
         // gate_instantiation::=    cmos_switchtype                             [delay3]    cmos_switch_instance        { , cmos_switch_instance }; 
-        public static new GateInstantiation ParseCreate(WordScanner word, Module module)
+        public static new GateInstantiation ParseCreate(WordScanner word, IModuleOrGeneratedBlock module)
         {
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
@@ -192,7 +192,7 @@ namespace pluginVerilog.Verilog.ModuleItems
             CmosSwitchInstiation ret = new CmosSwitchInstiation();
             if (word.Text == "(")
             {
-                ret.delay3 = Delay3.ParseCreate(word, module);
+                ret.delay3 = Delay3.ParseCreate(word, module as NameSpace);
                 if (ret.delay3 == null) return null;
             }
             // cmos_switch_instance             ::= [name_of_gate_instance] (output_terminal, input_terminal, ncontrol_terminal, pcontrol_terminal) 
@@ -209,15 +209,15 @@ namespace pluginVerilog.Verilog.ModuleItems
 
         //                          | enable_gatetype   [drive_strength]        [delay3]    enable_gate_instance        { , enable_gate_instance }; 
         // enable_gate_instance             ::= [name_of_gate_instance] (output_terminal, input_terminal, enable_terminal) 
-        public static new EnableGate ParseCreate(WordScanner word, Module module)
+        public static new EnableGate ParseCreate(WordScanner word, IModuleOrGeneratedBlock module)
         {
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
             EnableGate ret = new EnableGate();
 
-            ret.DriveStrength = DriveStrength.ParseCreate(word, module);
-            ret.Delay3 = Delay3.ParseCreate(word, module);
+            ret.DriveStrength = DriveStrength.ParseCreate(word, module as NameSpace);
+            ret.Delay3 = Delay3.ParseCreate(word, module as NameSpace);
 
             while (!word.Eof)
             {
@@ -231,7 +231,7 @@ namespace pluginVerilog.Verilog.ModuleItems
 
                 while (!word.Eof)
                 {
-                    Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
+                    Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
                     if (word.Text != ",")
                     {
                         break;
@@ -254,15 +254,15 @@ namespace pluginVerilog.Verilog.ModuleItems
 
         // n_input_gatetype  [drive_strength]        [delay2]    n_input_gate_instance       {, n_input_gate_instance }; 
         // n_input_gate_instance            ::= [name_of_gate_instance] (output_terminal, input_terminal { , input_terminal } ) 
-        public static new NInputGate ParseCreate(WordScanner word, Module module)
+        public static new NInputGate ParseCreate(WordScanner word, IModuleOrGeneratedBlock module)
         {
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
             NInputGate ret = new NInputGate();
 
-            ret.DriveStrength = DriveStrength.ParseCreate(word, module);
-            ret.Delay2 = Delay2.ParseCreate(word, module);
+            ret.DriveStrength = DriveStrength.ParseCreate(word, module as NameSpace);
+            ret.Delay2 = Delay2.ParseCreate(word, module as NameSpace);
 
             while (!word.Eof)
             {
@@ -276,7 +276,7 @@ namespace pluginVerilog.Verilog.ModuleItems
 
                 while (!word.Eof)
                 {
-                    Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
+                    Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
                     if(word.Text != ",")
                     {
                         break;
@@ -302,15 +302,15 @@ namespace pluginVerilog.Verilog.ModuleItems
 
         // n_output_gatetype [drive_strength]        [delay2]    n_output_gate_instance      { , n_output_gate_instance }; 
         // n_output_gate_instance           ::= [name_of_gate_instance] (output_terminal { , output_terminal } , input_terminal ) 
-        public static new NOutputGate ParseCreate(WordScanner word, Module module)
+        public static new NOutputGate ParseCreate(WordScanner word, IModuleOrGeneratedBlock module)
         {
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
             NOutputGate ret = new NOutputGate();
 
-            ret.DriveStrength = DriveStrength.ParseCreate(word, module);
-            ret.Delay2 = Delay2.ParseCreate(word, module);
+            ret.DriveStrength = DriveStrength.ParseCreate(word, module as NameSpace);
+            ret.Delay2 = Delay2.ParseCreate(word, module as NameSpace);
 
             while (!word.Eof)
             {
@@ -324,7 +324,7 @@ namespace pluginVerilog.Verilog.ModuleItems
 
                 while (!word.Eof)
                 {
-                    Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
+                    Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
                     if (word.Text != ",")
                     {
                         break;

@@ -11,7 +11,7 @@ namespace pluginVerilog.Verilog.ModuleItems
         protected AlwaysConstruct() { }
         public Statements.IStatement Statetment { get; protected set;}
 
-        public static AlwaysConstruct ParseCreate(WordScanner word,Module module)
+        public static AlwaysConstruct ParseCreate(WordScanner word, IModuleOrGeneratedBlock module)
         {
         //  always_construct::= always statement
             System.Diagnostics.Debug.Assert(word.Text == "always");
@@ -19,7 +19,7 @@ namespace pluginVerilog.Verilog.ModuleItems
             word.MoveNext();
 
             AlwaysConstruct always = new AlwaysConstruct();
-            always.Statetment = Statements.Statements.ParseCreateStatement(word, module);
+            always.Statetment = Statements.Statements.ParseCreateStatement(word, module as NameSpace);
             if(always.Statetment == null)
             {
                 word.AddError("illegal always construct");

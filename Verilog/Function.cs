@@ -28,13 +28,13 @@ namespace pluginVerilog.Verilog
             time
         }
 
-        public static void Parse(WordScanner word, Module module)
+        public static void Parse(WordScanner word, IModuleOrGeneratedBlock module)
         {
             if(word.Text != "function")
             {
                 System.Diagnostics.Debugger.Break();
             }
-            Function function = new Function(module, module);
+            Function function = new Function(module.Module, module as NameSpace);
             word.Color(CodeDrawStyle.ColorType.Keyword);
             function.BeginIndex = word.RootIndex;
             word.MoveNext();
@@ -125,7 +125,7 @@ namespace pluginVerilog.Verilog
             }
             else
             {
-                if (module.Functions.ContainsKey(function.Name))
+                if (module.Module.Functions.ContainsKey(function.Name))
                 {
                     function = module.Functions[function.Name];
                 }

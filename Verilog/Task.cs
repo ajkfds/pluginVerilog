@@ -54,13 +54,13 @@ namespace pluginVerilog.Verilog
 
         public Statements.IStatement Statement;
 
-        public static void Parse(WordScanner word, Module module)
+        public static void Parse(WordScanner word, IModuleOrGeneratedBlock module)
         {
             if (word.Text != "task")
             {
                 System.Diagnostics.Debugger.Break();
             }
-            Task task = new Task(module, module);
+            Task task = new Task(module.Module, module as NameSpace);
             word.Color(CodeDrawStyle.ColorType.Keyword);
             task.BeginIndex = word.RootIndex;
             word.MoveNext();

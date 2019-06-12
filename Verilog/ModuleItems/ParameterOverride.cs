@@ -11,7 +11,7 @@ namespace pluginVerilog.Verilog.ModuleItems
         protected ParameterOverride() { }
 
 
-        public static void Parse(WordScanner word, Module module)
+        public static void Parse(WordScanner word, IModuleOrGeneratedBlock module)
         {
             //  always_construct::= always statement
             System.Diagnostics.Debug.Assert(word.Text == "defparam");
@@ -22,14 +22,14 @@ namespace pluginVerilog.Verilog.ModuleItems
             {
 
                 ParameterOverride defparam = new ParameterOverride();
-                Expressions.Expression param = Expressions.Expression.ParseCreate(word, module);
+                Expressions.Expression param = Expressions.Expression.ParseCreate(word, module as NameSpace);
                 if (word.Text != "=")
                 {
                     word.AddError("= required");
                     return;
                 }
                 word.MoveNext();
-                Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
+                Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
                 if(param != null && expression != null)
                 {
 

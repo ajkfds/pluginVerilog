@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Verilog
 {
-    public class Module : NameSpace,IPortNameSpace
+    public class Module : NameSpace,IPortNameSpace,IModuleOrGeneratedBlock
     {
         protected Module() : base(null,null)
         {
@@ -18,10 +18,14 @@ namespace pluginVerilog.Verilog
         private List<Variables.Port> portsList = new List<Variables.Port>();
         public List<Variables.Port> PortsList { get { return portsList; } }
 
-        public Dictionary<string, Function> Functions = new Dictionary<string, Function>();
-        public Dictionary<string, Task> Tasks = new Dictionary<string, Task>();
-        public Dictionary<string, Class> Classes = new Dictionary<string, Class>();
-        public Dictionary<string, ModuleItems.ModuleInstantiation> ModuleInstantiations = new Dictionary<string, ModuleItems.ModuleInstantiation>();
+        private Dictionary<string, Function> functions = new Dictionary<string, Function>();
+        private Dictionary<string, Task> tasks = new Dictionary<string, Task>();
+        private Dictionary<string, Class> classes = new Dictionary<string, Class>();
+        private Dictionary<string, ModuleItems.ModuleInstantiation> moduleInstantiations = new Dictionary<string, ModuleItems.ModuleInstantiation>();
+        public Dictionary<string, Function> Functions { get { return functions; } }
+        public Dictionary<string, Task> Tasks { get { return tasks; } }
+        public Dictionary<string, Class> Classes { get { return classes;  } }
+        public Dictionary<string, ModuleItems.ModuleInstantiation> ModuleInstantiations { get { return moduleInstantiations; } }
         public string FileId { get; protected set; }
         private bool cellDefine = false;
         public bool CellDefine
@@ -485,7 +489,7 @@ namespace pluginVerilog.Verilog
         generate_item ::=   generate_conditional_statement | generate_case_statement | generate_loop_statement | generate_block | module_or_generate_item  
 
          */
-        public static void ParseGenerateItems(WordScanner word, Module module)
+        public static void ParseGenerateItems(WordScanner word, IModuleOrGeneratedBlock module)
         {
             while (!word.Eof)
             {
@@ -493,7 +497,7 @@ namespace pluginVerilog.Verilog
             }
         }
 
-        public static bool ParseGenerateItem(WordScanner word, Module module)
+        public static bool ParseGenerateItem(WordScanner word, IModuleOrGeneratedBlock module)
         {
             switch (word.Text)
             {
@@ -521,18 +525,26 @@ namespace pluginVerilog.Verilog
                 case "input":
                 case "output":
                 case "inout":
-                    Verilog.Variables.Port.ParsePortDeclaration(word, module, null);
-                    if (word.GetCharAt(0) != ';')
+                    if (module is Module)
                     {
-                        word.AddError("; expected");
+                        Verilog.Variables.Port.ParsePortDeclaration(word, module as Module, null);
+                        if (word.GetCharAt(0) != ';')
+                        {
+                            word.AddError("; expected");
+                        }
+                        else
+                        {
+                            word.MoveNext();
+                        }
                     }
                     else
                     {
+                        word.AddError("port in named block is not supported");
                         word.MoveNext();
                     }
                     break;
                 case "reg":
-                    Verilog.Variables.Reg.ParseCreateFromDeclaration(word, module);
+                    Verilog.Variables.Reg.ParseCreateFromDeclaration(word, module as NameSpace);
                     break;
                 case "supply0":
                 case "supply1":
@@ -544,25 +556,25 @@ namespace pluginVerilog.Verilog
                 case "wire":
                 case "wand":
                 case "wor":
-                    Verilog.Variables.Net.ParseCreateFromDeclaration(word, module);
+                    Verilog.Variables.Net.ParseCreateFromDeclaration(word, module as NameSpace);
                     break;
                 case "integer":
-                    Verilog.Variables.Integer.ParseCreateFromDeclaration(word, module);
+                    Verilog.Variables.Integer.ParseCreateFromDeclaration(word, module as NameSpace);
                     break;
                 case "real":
-                    Verilog.Variables.Real.ParseCreateFromDeclaration(word, module);
+                    Verilog.Variables.Real.ParseCreateFromDeclaration(word, module as NameSpace);
                     break;
                 case "realtime":
-                    Verilog.Variables.RealTime.ParseCreateFromDeclaration(word, module);
+                    Verilog.Variables.RealTime.ParseCreateFromDeclaration(word, module as NameSpace);
                     break;
                 case "time":
-                    Verilog.Variables.Time.ParseCreateFromDeclaration(word, module);
+                    Verilog.Variables.Time.ParseCreateFromDeclaration(word, module as NameSpace);
                     break;
                 case "event":
-                    Verilog.Variables.Event.ParseCreateFromDeclaration(word, module);
+                    Verilog.Variables.Event.ParseCreateFromDeclaration(word, module as NameSpace);
                     break;
                 case "genvar":
-                    Verilog.Variables.Genvar.ParseCreateFromDeclaration(word, module);
+                    Verilog.Variables.Genvar.ParseCreateFromDeclaration(word, module as NameSpace);
                     break;
                 case "initial":
                     ModuleItems.InitialConstruct initial = ModuleItems.InitialConstruct.ParseCreate(word, module);
@@ -572,7 +584,7 @@ namespace pluginVerilog.Verilog
                     break;
                 case "parameter":
                 case "localparam":
-                    Verilog.Variables.Parameter.ParseCreateDeclaration(word, module, null);
+                    Verilog.Variables.Parameter.ParseCreateDeclaration(word, module as NameSpace, null);
                     break;
                 case "assign":
                     ModuleItems.ContinuousAssign continuousAssign = ModuleItems.ContinuousAssign.ParseCreate(word, module);

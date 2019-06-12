@@ -16,7 +16,7 @@ namespace pluginVerilog.Verilog.ModuleItems
         public IReadOnlyList<Verilog.Variables.Port> Ports { get { return ports; } }
         public int BeginIndex;
         public int LastIndex;
-        public static void Parse(WordScanner word,Module module)
+        public static void Parse(WordScanner word, IModuleOrGeneratedBlock module)
         {
 
             WordScanner moduleIdentifier = word.Clone();
@@ -59,7 +59,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                         {
                             word.MoveNext();
                         }
-                        Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
+                        Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
                         if (word.Text != ")")
                         {
                             word.AddError(") expected");
@@ -82,7 +82,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                 { // ordered paramater assignment
                     while (!word.Eof && word.Text != ")")
                     {
-                        Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
+                        Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
                         if (word.Text != ",")
                         {
                             break;
@@ -125,13 +125,13 @@ namespace pluginVerilog.Verilog.ModuleItems
                     {
                         // 
                     }
-                    else if (module.ModuleInstantiations.ContainsKey(moduleInstantiation.Name))
+                    else if (module.Module.ModuleInstantiations.ContainsKey(moduleInstantiation.Name))
                     {   // duplicated
                         word.AddError("instance name duplicated");
                     }
                     else
                     {
-                        module.ModuleInstantiations.Add(moduleInstantiation.Name, moduleInstantiation);
+                        module.Module.ModuleInstantiations.Add(moduleInstantiation.Name, moduleInstantiation);
                     }
                 }
                 else
@@ -140,9 +140,9 @@ namespace pluginVerilog.Verilog.ModuleItems
                     {
                         // 
                     }
-                    else if (module.ModuleInstantiations.ContainsKey(moduleInstantiation.Name))
+                    else if (module.Module.ModuleInstantiations.ContainsKey(moduleInstantiation.Name))
                     {   // duplicated
-                        moduleInstantiation = module.ModuleInstantiations[moduleInstantiation.Name];
+                        moduleInstantiation = module.Module.ModuleInstantiations[moduleInstantiation.Name];
                     }
                     else
                     {
@@ -174,7 +174,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                         {
                             word.MoveNext();
                         }
-                        Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
+                        Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
                         if (word.Text != ")")
                         {
                             word.AddError(") expected");
@@ -197,7 +197,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                 { // ordered paramater assignment
                     while (!word.Eof && word.Text != ")")
                     {
-                        Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
+                        Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
                         if (word.Text != ",")
                         {
                             break;
