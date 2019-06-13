@@ -8,7 +8,7 @@ namespace pluginVerilog
 {
     public class Plugin : codeEditorPlugin.IPlugin
     {
-        public void Initialize()
+        public bool Register()
         {
             // register filetype
             {
@@ -24,14 +24,20 @@ namespace pluginVerilog
                 codeEditor.Global.FileTypes.Add(fileType.ID, fileType);
             }
 
+            // append menu items
+            System.Windows.Forms.ContextMenuStrip menu = codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip();
+            menu.Items.Insert(0,Global.SetupForm.IcarusVerilogTsmi);
+
+            return true;
+        }
+        public bool Initialize()
+        {
             // test rtl project
             string absolutePath = System.IO.Path.GetFullPath(@"..\\..\\..\\..\\pluginVerilog\\TestRTL");
             codeEditor.Data.Project project = codeEditor.Data.Project.Create(absolutePath);
             codeEditor.Global.Controller.AddProject(project);
 
-            // append menu items
-            System.Windows.Forms.ContextMenuStrip menu = codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip();
-            menu.Items.Add(Global.SetupForm.icarusVerilogSimulationTsmi);
+            return true;
         }
         public string Id { get { return StaticID; } }
 

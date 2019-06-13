@@ -113,12 +113,13 @@ namespace pluginVerilog.IcarusVerilog
             shell.ClearLogs();
             shell.StartLogging();
             shell.Execute(Setup.BinPath + "iverilog -f command -o " + simName + ".o");
+            shell.Execute("");
             while (shell.GetLastLine() != "icarusVerilogShell>") { System.Threading.Thread.Sleep(10); }
             List<string> logs = shell.GetLogs();
-            if(logs.Count != 3 || logs[1] !="")
-            {
-                return;
-            }
+            //if(logs.Count != 3 || logs[1] !="")
+            //{
+            //    return;
+            //}
             shell.EndLogging();
             shell.Execute(Setup.BinPath + "vvp " + simName + ".o");
 

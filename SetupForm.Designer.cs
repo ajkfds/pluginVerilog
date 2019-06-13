@@ -31,29 +31,43 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SetupForm));
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.icarusVerilogSimulationTsmi = new System.Windows.Forms.ToolStripMenuItem();
+            this.IcarusVerilogTsmi = new System.Windows.Forms.ToolStripMenuItem();
+            this.iVerilogRunTsmi = new System.Windows.Forms.ToolStripMenuItem();
+            this.gtkWaveTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.contextMenuStrip.SuspendLayout();
-            this.tabControl1.SuspendLayout();
             this.SuspendLayout();
             // 
             // contextMenuStrip
             // 
             this.contextMenuStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.icarusVerilogSimulationTsmi});
+            this.IcarusVerilogTsmi});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(274, 67);
+            this.contextMenuStrip.Size = new System.Drawing.Size(241, 67);
             // 
-            // icarusVerilogSimulationTsmi
+            // IcarusVerilogTsmi
             // 
-            this.icarusVerilogSimulationTsmi.Name = "icarusVerilogSimulationTsmi";
-            this.icarusVerilogSimulationTsmi.Size = new System.Drawing.Size(273, 30);
-            this.icarusVerilogSimulationTsmi.Text = "icarusVerilog Simulation";
-            this.icarusVerilogSimulationTsmi.Click += new System.EventHandler(this.icarusVerilogSimulationToolStripMenuItem_Click);
+            this.IcarusVerilogTsmi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.iVerilogRunTsmi,
+            this.gtkWaveTsmi});
+            this.IcarusVerilogTsmi.Name = "IcarusVerilogTsmi";
+            this.IcarusVerilogTsmi.Size = new System.Drawing.Size(240, 30);
+            this.IcarusVerilogTsmi.Text = "icarusVerilog";
+            // 
+            // iVerilogRunTsmi
+            // 
+            this.iVerilogRunTsmi.Name = "iVerilogRunTsmi";
+            this.iVerilogRunTsmi.Size = new System.Drawing.Size(252, 30);
+            this.iVerilogRunTsmi.Text = "Run";
+            this.iVerilogRunTsmi.Click += new System.EventHandler(this.IVerilogRunTsmi_Click);
+            // 
+            // gtkWaveTsmi
+            // 
+            this.gtkWaveTsmi.Name = "gtkWaveTsmi";
+            this.gtkWaveTsmi.Size = new System.Drawing.Size(252, 30);
+            this.gtkWaveTsmi.Text = "GTKWave";
+            this.gtkWaveTsmi.Click += new System.EventHandler(this.GtkWaveTsmi_Click);
             // 
             // imageList
             // 
@@ -61,50 +75,14 @@
             this.imageList.TransparentColor = System.Drawing.Color.Transparent;
             this.imageList.Images.SetKeyName(0, "box.png");
             // 
-            // tabControl1
-            // 
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Font = new System.Drawing.Font("MS UI Gothic", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.tabControl1.ImageList = this.imageList;
-            this.tabControl1.Location = new System.Drawing.Point(158, 91);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(341, 187);
-            this.tabControl1.TabIndex = 1;
-            // 
-            // tabPage1
-            // 
-            this.tabPage1.Font = new System.Drawing.Font("MS UI Gothic", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.tabPage1.Location = new System.Drawing.Point(4, 38);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(333, 145);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "tabPage1";
-            this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.ImageIndex = 0;
-            this.tabPage2.Location = new System.Drawing.Point(4, 38);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(333, 145);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "tabPage2";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
             // SetupForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(538, 326);
-            this.Controls.Add(this.tabControl1);
             this.Name = "SetupForm";
             this.Text = "SetupForm";
             this.contextMenuStrip.ResumeLayout(false);
-            this.tabControl1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -112,10 +90,9 @@
         #endregion
 
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
-        public System.Windows.Forms.ToolStripMenuItem icarusVerilogSimulationTsmi;
         private System.Windows.Forms.ImageList imageList;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
+        public System.Windows.Forms.ToolStripMenuItem IcarusVerilogTsmi;
+        private System.Windows.Forms.ToolStripMenuItem iVerilogRunTsmi;
+        private System.Windows.Forms.ToolStripMenuItem gtkWaveTsmi;
     }
 }

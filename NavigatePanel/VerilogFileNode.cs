@@ -11,8 +11,13 @@ namespace pluginVerilog.NavigatePanel
     {
         public VerilogFileNode(string ID, codeEditor.Data.Project project) : base(ID, project)
         {
-
+            if (NodeCreated != null) NodeCreated(this);
         }
+
+        public static Action<VerilogFileNode> NodeCreated;
+
+        public Action NodeSelected;
+
 
         public codeEditor.Data.ITextFile ITextFile
         {
@@ -52,8 +57,10 @@ namespace pluginVerilog.NavigatePanel
 
         public override void Selected()
         {
-            codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip().Items["icarusVerilogSimulationTsmi"].Visible = true;
+            codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip().Items["IcarusVerilogTsmi"].Visible = true;
             codeEditor.Global.Controller.CodeEditor.SetTextFile(ITextFile);
+
+            if (NodeSelected != null) NodeSelected();
         }
 
         public override void Update()

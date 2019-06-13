@@ -16,12 +16,19 @@ namespace pluginVerilog
         {
             InitializeComponent();
 
-            icarusVerilogSimulationTsmi.Image = Global.Icons.Play.GetImage(
+            IcarusVerilogTsmi.Image = Global.Icons.IcarusVerilog.GetImage(
+                codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip().ImageScalingSize.Height,
+                ajkControls.IconImage.ColorStyle.Original );
+            iVerilogRunTsmi.Image = codeEditor.Global.IconImages.Play.GetImage(
                 codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip().ImageScalingSize.Height,
                 ajkControls.IconImage.ColorStyle.Blue);
+            gtkWaveTsmi.Image = codeEditor.Global.IconImages.Wave0.GetImage(
+                codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip().ImageScalingSize.Height,
+                ajkControls.IconImage.ColorStyle.Blue);
+
         }
 
-        private void icarusVerilogSimulationToolStripMenuItem_Click(object sender, EventArgs e)
+        private void IVerilogRunTsmi_Click(object sender, EventArgs e)
         {
             string projectName, id;
             codeEditor.Global.Controller.NavigatePanel.GetSelectedNode(out projectName, out id);
@@ -30,14 +37,14 @@ namespace pluginVerilog
             Data.VerilogFile topFile = project.GetRegisterdItem(id) as Data.VerilogFile;
             if (topFile == null) return;
 
-            //ajkControls.TabPage page = new IcarusVerilog.SimulationTab(topFile);
-            //codeEditor.Global.Controller.Tabs.AddPage(page);
-
-
-
             IcarusVerilog.SimulationPanel panel = new IcarusVerilog.SimulationPanel(topFile);
             codeEditor.Controller.MainTabPage mainTabPage = new codeEditor.Controller.MainTabPage(panel, topFile.Name);
             codeEditor.Global.Controller.Tabs.AddPage(mainTabPage);
+        }
+
+        private void GtkWaveTsmi_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

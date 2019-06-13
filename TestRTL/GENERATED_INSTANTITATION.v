@@ -176,6 +176,7 @@ endmodule
 //Example 7 Generate with a case to handle widths less that 3 
 
 module example7;
+
 localparam WIDTH = 8;
 
 generate  
@@ -189,6 +190,8 @@ generate
 	endcase // The generated instance name is x1 
 endgenerate
 endmodule
+
+
 
 
 // Example 8 A module of memory dimm

@@ -19,6 +19,12 @@ namespace pluginVerilog.Verilog.Statements
             if(word.Text == "(")
             {
                 word.MoveNext();
+                if(word.Text == ")")
+                {
+                    word.AddError("remove ()");
+                    return null;
+                }
+
                 while (!word.Eof)
                 {
                     Expressions.Expression expression = Expressions.Expression.ParseCreate(word, nameSpace);

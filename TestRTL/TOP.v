@@ -3,12 +3,11 @@
 module TOP(
 input [7:0]			DATA_I,		// @sync CLK_I
 output reg [7:0]	DATA_O,		// @sync CLK_I
-input	CLK_I,					// @clock
-input	RST_X					// @reset
+input	CLK_I,					// @sync clock
+input	RST_X					// @sync reset for CLK_I
 );
 
 `include "TEST.vh"
-
 
 localparam P_DELAY = 1; // @delay
 
@@ -43,13 +42,7 @@ begin
 end
 endfunction
 
-task tastas;
-begin
-	
-end
-endtask
-
-
-
 endmodule
+
+
 

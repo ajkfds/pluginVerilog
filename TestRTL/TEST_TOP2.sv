@@ -38,7 +38,10 @@ end
 
 
 class test;
-end class;
+begin
+
+end
+endclass
 
 endprogram
 
