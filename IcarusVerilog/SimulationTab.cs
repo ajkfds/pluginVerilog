@@ -6,27 +6,28 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.IcarusVerilog
 {
-    public class SimulationTab : ajkControls.TabPage
+    public class SimulationTab : codeEditor.Controller.MainTabPage
     {
-        public SimulationTab(Data.VerilogFile topFile)
+        public SimulationTab(pluginVerilog.Data.VerilogFile topFile) : base(new SimulationPanel(topFile), topFile.Name)
         {
             Text = topFile.Name;
             CloseButtonEnable = true;
+            IconImage = codeEditor.Global.IconImages.Wave0;
 
-            panel = new SimulationPanel(topFile);
-            panel.Dock = System.Windows.Forms.DockStyle.Fill;
+            (panel as SimulationPanel).RequestTabIconChange += changeIcon;
             Controls.Add(panel);
         }
 
-        private SimulationPanel panel;
-
-        public override void CloseButtonClicked()
+        private void changeIcon(ajkControls.IconImage iconImage, ajkControls.IconImage.ColorStyle color)
         {
-            codeEditor.Global.Controller.Tabs.RemovePage(this);
-            panel.Dispose();
-            Dispose();
+            Invoke(new Action(
+                () => {
+                    IconImage = iconImage;
+                    IconColor = color;
+                    Invalidate();
+                }
+                ));
         }
-
 
     }
 }

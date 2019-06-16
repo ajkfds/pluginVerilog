@@ -37,9 +37,8 @@ namespace pluginVerilog
             Data.VerilogFile topFile = project.GetRegisterdItem(id) as Data.VerilogFile;
             if (topFile == null) return;
 
-            IcarusVerilog.SimulationPanel panel = new IcarusVerilog.SimulationPanel(topFile);
-            codeEditor.Controller.MainTabPage mainTabPage = new codeEditor.Controller.MainTabPage(panel, topFile.Name);
-            codeEditor.Global.Controller.Tabs.AddPage(mainTabPage);
+            IcarusVerilog.SimulationTab tabPage = new IcarusVerilog.SimulationTab(topFile);
+            codeEditor.Global.Controller.Tabs.AddPage(tabPage);
         }
 
         private void GtkWaveTsmi_Click(object sender, EventArgs e)

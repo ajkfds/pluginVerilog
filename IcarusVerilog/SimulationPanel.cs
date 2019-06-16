@@ -14,6 +14,8 @@ namespace pluginVerilog.IcarusVerilog
 
     public partial class SimulationPanel : UserControl
     {
+        public Action<ajkControls.IconImage, ajkControls.IconImage.ColorStyle> RequestTabIconChange;
+
         [System.Runtime.InteropServices.DllImport("kernel32.dll",CharSet = System.Runtime.InteropServices.CharSet.Auto)]
         private static extern uint GetShortPathName( [System.Runtime.InteropServices.MarshalAs(
             System.Runtime.InteropServices.UnmanagedType.LPTStr)]
@@ -29,6 +31,7 @@ namespace pluginVerilog.IcarusVerilog
             return sb.ToString();
         }
 
+
         public SimulationPanel(Data.VerilogFile topFile)
         {
             InitializeComponent();
@@ -37,13 +40,49 @@ namespace pluginVerilog.IcarusVerilog
             thread.Start();
         }
 
+        private int iconCount = 0;
+        private void moveTabIcon(ajkControls.IconImage.ColorStyle color)
+        {
+            iconCount++;
+            if (iconCount > 5) iconCount = 0;
+
+            if (RequestTabIconChange != null)
+            {
+                switch (iconCount)
+                {
+                    case 0:
+                        RequestTabIconChange(codeEditor.Global.IconImages.Wave0, color);
+                        break;
+                    case 1:
+                        RequestTabIconChange(codeEditor.Global.IconImages.Wave1, color);
+                        break;
+                    case 2:
+                        RequestTabIconChange(codeEditor.Global.IconImages.Wave2, color);
+                        break;
+                    case 3:
+                        RequestTabIconChange(codeEditor.Global.IconImages.Wave3, color);
+                        break;
+                    case 4:
+                        RequestTabIconChange(codeEditor.Global.IconImages.Wave4, color);
+                        break;
+                    case 5:
+                        RequestTabIconChange(codeEditor.Global.IconImages.Wave5, color);
+                        break;
+                }
+            }
+        }
+
         private void receiveLineString(string lineString)
         {
             logView.AppendLogLine(lineString);
+            moveTabIcon(ajkControls.IconImage.ColorStyle.White);
         }
 
+        volatile bool abort = false;
         private void disposed(object sender,EventArgs e)
         {
+            abort = true;
+            RequestTabIconChange = null;
             shell.Dispose();
         }
 
@@ -89,7 +128,6 @@ namespace pluginVerilog.IcarusVerilog
             }
 
 
-
             using (System.IO.StreamWriter sw = new System.IO.StreamWriter(simulationPath + "\\command"))
             {
                 foreach (string includePath in includeFileList)
@@ -109,12 +147,18 @@ namespace pluginVerilog.IcarusVerilog
             shell.LineReceived += receiveLineString;
             shell.Start();
 
-            while(shell.GetLastLine() != "icarusVerilogShell>") { System.Threading.Thread.Sleep(10); }
+            while(shell.GetLastLine() != "icarusVerilogShell>") {
+                if (abort) return;
+                System.Threading.Thread.Sleep(10);
+            }
             shell.ClearLogs();
             shell.StartLogging();
             shell.Execute(Setup.BinPath + "iverilog -f command -o " + simName + ".o");
             shell.Execute("");
-            while (shell.GetLastLine() != "icarusVerilogShell>") { System.Threading.Thread.Sleep(10); }
+            while (shell.GetLastLine() != "icarusVerilogShell>") {
+                if (abort) return;
+                System.Threading.Thread.Sleep(10);
+            }
             List<string> logs = shell.GetLogs();
             //if(logs.Count != 3 || logs[1] !="")
             //{

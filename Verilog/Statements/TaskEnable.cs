@@ -19,33 +19,36 @@ namespace pluginVerilog.Verilog.Statements
             if(word.Text == "(")
             {
                 word.MoveNext();
-                if(word.Text == ")")
+                if (word.Text == ")")
                 {
-                    word.AddError("remove ()");
-                    return null;
+                    word.MoveNext();
+                    word.AddWarning("remove ()");
                 }
+                else
+                {
 
-                while (!word.Eof)
-                {
-                    Expressions.Expression expression = Expressions.Expression.ParseCreate(word, nameSpace);
-                    if (expression == null) word.AddError("missed expression");
-                    if (word.Text == ")")
+                    while (!word.Eof)
                     {
-                        break;
+                        Expressions.Expression expression = Expressions.Expression.ParseCreate(word, nameSpace);
+                        if (expression == null) word.AddError("missed expression");
+                        if (word.Text == ")")
+                        {
+                            break;
+                        }
+                        else if (word.Text == ",")
+                        {
+                            word.MoveNext();
+                            continue;
+                        }
+                        else
+                        {
+                            word.AddError("illegal expression");
+                            return null;
+                        }
                     }
-                    else if (word.Text == ",")
-                    {
-                        word.MoveNext();
-                        continue;
-                    }
-                    else
-                    {
-                        word.AddError("illegal expression");
-                        return null;
-                    }
+                    if (word.Text == ")") word.MoveNext();
+                    else word.AddError(") required");
                 }
-                if (word.Text == ")") word.MoveNext();
-                else word.AddError(") required");
             }
 
             if (word.Text == ";") word.MoveNext();

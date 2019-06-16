@@ -37,7 +37,16 @@ namespace pluginVerilog.Data
         }
 
         public codeEditor.CodeEditor.ParsedDocument ParsedDocument { get; set; }
-        public bool ParseRequested { get; set; }
+        private volatile bool parseRequested = false;
+        public bool ParseRequested { get { return parseRequested; } set { parseRequested = value; } }
+
+        private volatile bool reloadRequested = false;
+        public bool ReloadRequested { get { return reloadRequested; } set { reloadRequested = value; } }
+
+        public void Reload()
+        {
+            CodeDocument = null;
+        }
 
         public Verilog.ParsedDocument VerilogParsedDocument
         {

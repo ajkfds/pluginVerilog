@@ -202,6 +202,15 @@ namespace pluginVerilog
             {"$q_remove", null },
             {"$q_full", null },
             {"$q_exam", null },
+
+            // Dump
+            {"$dumpfile",null },
+            {"$dumpall",null },
+            {"$dumpoff",null },
+            {"$dumpon",null },
+            {"$dumpvars",null },
+            {"$dumpflush",null },
+            {"$dumplimit",null },
         };
 
         public Dictionary<string, Func<Verilog.Variables.Variable, Verilog.WordScanner>> SystemFunctions = new Dictionary<string, Func<Verilog.Variables.Variable, Verilog.WordScanner>>
@@ -244,6 +253,7 @@ namespace pluginVerilog
             // Command line input
             {"$test$plusargs",null },
             {"$value$plusargs",null },
-        };
+
+    };
     }
 }

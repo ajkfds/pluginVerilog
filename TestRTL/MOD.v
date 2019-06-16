@@ -9,6 +9,16 @@ input	RST_X
 assign DATA_O = 8'h01;
 reg [7:0] regMod;
 
+// ets
+
+//aa
+
+//
+
+
+
+
+
 
 endmodule
 

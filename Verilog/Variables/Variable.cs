@@ -19,8 +19,8 @@ namespace pluginVerilog.Verilog.Variables
         public IReadOnlyList<Dimension> Dimensions { get { return dimensions; } }
         public string Comment = "";
         public int DefinedIndex = 0;
-        public List<int> UsedIndex = new List<int>();
-        public List<int> DrivenIndex = new List<int>();
+//        public List<int> UsedIndex = new List<int>();
+//        public List<int> DrivenIndex = new List<int>();
         public virtual ajkControls.ColorLabel GetLabel()
         {
             ajkControls.ColorLabel label = new ajkControls.ColorLabel();
