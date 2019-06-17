@@ -6,28 +6,33 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog
 {
-        public class Attribute
+    public class Attribute
+    {
+        /*
+        A.9.1 Attributes
+        attribute_instance ::= (* attr_spec { , attr_spec }  *)
+        attr_spec ::=            attr_name = constant_expression          | attr_name
+        attr_name ::= identifier 
+            */
+        protected Attribute() { }
+
+        public static Attribute ParseCreate(Verilog.WordScanner word)
         {
-            /*
-            A.9.1 Attributes
-            attribute_instance ::= (* attr_spec { , attr_spec }  *)
-            attr_spec ::=            attr_name = constant_expression          | attr_name
-            attr_name ::= identifier 
-             */
-            protected Attribute() { }
+            if (word.Text != "(*") return null;
 
-            public Attribute Create(Verilog.WordScanner word)
+            Attribute att = new Attribute();
+            while ( !word.Eof )
             {
-                if (word.Text != "(*") return null;
-
-                Attribute att = new Attribute();
-                while (!word.Eof && word.Text != "*)")
+                word.MoveNext();
+                if(word.Text == "*)")
                 {
                     word.MoveNext();
+                    break;
                 }
-                return att;
             }
+            return att;
         }
+    }
 
 
 }

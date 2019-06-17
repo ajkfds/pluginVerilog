@@ -33,15 +33,20 @@ namespace pluginVerilog.Parser
                                     endmodule
         module_keyword ::= module | macromodule  
         */
+        public static System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
 
         public override void Parse()
         {
+            sw.Reset();
+            sw.Start();
+
             word.GetFirst();
             while (!word.Eof)
             {
                 if (word.Text == "module")
                 {
                     Verilog.Module module = Verilog.Module.Create(word, null,parsedDocument.ItemID);
+                    System.Diagnostics.Debug.Print("parse1 " + sw.ElapsedMilliseconds.ToString() + "ms");
                     if (!parsedDocument.Modules.ContainsKey(module.Name))
                     {
                         parsedDocument.Modules.Add(module.Name, module);
@@ -58,6 +63,9 @@ namespace pluginVerilog.Parser
             }
             word.Dispose();
             word = null;
+
+            System.Diagnostics.Debug.Print("parse0 "+sw.ElapsedMilliseconds.ToString()+ "ms");
+            sw.Stop();
         }
     }
 }

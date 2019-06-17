@@ -132,6 +132,7 @@
     <Compile Include="Verilog\Expressions\Expression.cs" />
     <Compile Include="Verilog\General.cs" />
     <Compile Include="Verilog\Item.cs" />
+    <Compile Include="Verilog\Statements\DeassignStatement.cs" />
     <Compile Include="Verilog\Statements\DisableStatement.cs" />
     <Compile Include="Verilog\Statements\ForceStatement.cs" />
     <Compile Include="Verilog\Statements\IStatement.cs" />

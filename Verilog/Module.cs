@@ -181,7 +181,18 @@ namespace pluginVerilog.Verilog
                     word.AddError("; expected");
                 }
 
+                System.Diagnostics.Debug.Print("parse2 " + Parser.VerilogParser.sw.ElapsedMilliseconds.ToString() + "ms");
+
+                WordScanner.sw0.Reset();
+                WordScanner.sw1.Reset();
+                WordScanner.sw2.Reset();
+
                 parseModuleItems(word, module);
+                System.Diagnostics.Debug.Print("parse3 " + Parser.VerilogParser.sw.ElapsedMilliseconds.ToString() + "ms");
+                System.Diagnostics.Debug.Print("sw0 " + WordScanner.sw0.ElapsedMilliseconds.ToString() + "ms");
+                System.Diagnostics.Debug.Print("sw1 " + WordScanner.sw1.ElapsedMilliseconds.ToString() + "ms");
+                System.Diagnostics.Debug.Print("sw2 " + WordScanner.sw2.ElapsedMilliseconds.ToString() + "ms");
+                System.Diagnostics.Debug.Print("sw3 " + WordScanner.sw2.ElapsedMilliseconds.ToString() + "ms");
                 break;
             }
 
@@ -330,6 +341,9 @@ namespace pluginVerilog.Verilog
             {
                 switch (word.Text)
                 {
+                    case "(*":
+                        Attribute attribute = Attribute.ParseCreate(word);
+                        break;
                     case "endmodule":
                         return;
                     // port_declaration
@@ -501,6 +515,9 @@ namespace pluginVerilog.Verilog
         {
             switch (word.Text)
             {
+                case "(*":
+                    Attribute attribute = Attribute.ParseCreate(word);
+                    break;
                 case "endgenerate":
                     return false;
                 case "end":

@@ -62,6 +62,9 @@ namespace pluginVerilog.Verilog.Statements
             */
             switch (word.Text)
             {
+                case "(*":
+                    Attribute attribute = Attribute.ParseCreate(word);
+                    return Statements.ParseCreateStatement(word, nameSpace);
                 case "if":
                     return ConditionalStatement.ParseCreate(word, nameSpace);
                 case "#":
@@ -91,6 +94,8 @@ namespace pluginVerilog.Verilog.Statements
                     return ReleaseStatement.ParseCreate(word, nameSpace);
                 case "assign":
                     return ProceduralContinuousAssignment.ParseCreate(word, nameSpace);
+                case "deassign":
+                    return DeassignStatement.ParseCreate(word, nameSpace);
                 default:
                     string nextText = word.NextText;
                     if (nextText == "(" || nextText == ";")

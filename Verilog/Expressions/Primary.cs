@@ -90,7 +90,7 @@ namespace pluginVerilog.Verilog.Expressions
                     return ConstantString.ParseCreate(word);
                 case WordPointer.WordTypeEnum.Text:
                     {
-                        var variable = VariableReference.ParseCreate(word, nameSpace);
+                        var variable = VariableReference.ParseCreate(word, nameSpace,lValue);
                         if (variable != null) return variable;
 
                         var parameter = ParameterReference.ParseCreate(word, nameSpace);
@@ -154,7 +154,7 @@ namespace pluginVerilog.Verilog.Expressions
                             {
                                 nameSpace.Variables.Add(net.Name, net);
                             }
-                            variable = VariableReference.ParseCreate(word, nameSpace);
+                            variable = VariableReference.ParseCreate(word, nameSpace,lValue);
                             if (variable != null) return variable;
                         }
                     }
@@ -176,7 +176,7 @@ namespace pluginVerilog.Verilog.Expressions
                     return null;
                 case WordPointer.WordTypeEnum.Text:
                     {
-                        var variable = VariableReference.ParseCreate(word, nameSpace);
+                        var variable = VariableReference.ParseCreate(word, nameSpace,lValue);
                         if (variable != null) return variable;
 
                         var parameter = ParameterReference.ParseCreate(word, nameSpace);
@@ -416,7 +416,12 @@ namespace pluginVerilog.Verilog.Expressions
             return null;
         }
 
-        public new static VariableReference ParseCreate(WordScanner word,NameSpace nameSpace)
+        public new static VariableReference ParseCreate(WordScanner word, NameSpace nameSpace)
+        {
+            throw new Exception("illegal access");
+        }
+
+        public static VariableReference ParseCreate(WordScanner word,NameSpace nameSpace,bool assigned)
         {
             if (nameSpace == null) System.Diagnostics.Debugger.Break();
             Variables.Variable variable = getVariable(word,word.Text, nameSpace);
@@ -438,6 +443,16 @@ namespace pluginVerilog.Verilog.Expressions
             {
                 word.Color(CodeDrawStyle.ColorType.Net);
             }
+
+            if (assigned)
+            {
+                val.Variable.AssignedReferences.Add(word.GetReference());
+            }
+            else
+            {
+                val.Variable.UsedReferences.Add(word.GetReference());
+            }
+
             word.MoveNext();
 
             while(!word.Eof && val.Dimensions.Count < variable.Dimensions.Count)
