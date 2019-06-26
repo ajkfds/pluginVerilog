@@ -15,11 +15,6 @@ namespace pluginVerilog.Verilog
             this.systemVerilog = systemVerilog;
         }
 
-        public static System.Diagnostics.Stopwatch sw0 = new System.Diagnostics.Stopwatch();
-        public static System.Diagnostics.Stopwatch sw1 = new System.Diagnostics.Stopwatch();
-        public static System.Diagnostics.Stopwatch sw2 = new System.Diagnostics.Stopwatch();
-        public static System.Diagnostics.Stopwatch sw3 = new System.Diagnostics.Stopwatch();
-
         public void GetFirst()
         {
             recheckWord();
@@ -109,10 +104,8 @@ namespace pluginVerilog.Verilog
 
         public void Color(CodeDrawStyle.ColorType colorType)
         {
-            sw3.Start();
             if (nonGeneratedCount != 0 || prototype) return;
             wordPointer.Color(colorType);
-            sw3.Stop();
         }
 
         public void AppendBlock(int startIndex, int lastIndex)
@@ -122,10 +115,8 @@ namespace pluginVerilog.Verilog
         }
         public void AddError(string message)
         {
-            sw2.Start();
             if (nonGeneratedCount != 0 || prototype) return;
             wordPointer.AddError(message);
-            sw2.Stop();
 
             WordPointer wp;
             if(stock.Count == 0)
@@ -200,7 +191,6 @@ namespace pluginVerilog.Verilog
 
         public void MoveNext()
         {
-            sw0.Start();
             if (nonGeneratedCount != 0)
             {
                 wordPointer.Color(CodeDrawStyle.ColorType.Inactivated);
@@ -224,7 +214,6 @@ namespace pluginVerilog.Verilog
 
             wordPointer.MoveNext();
             recheckWord();
-            sw0.Stop();
         }
 
         public string GetFollowedComment()
@@ -268,9 +257,7 @@ namespace pluginVerilog.Verilog
         {
             get
             {
-                sw1.Start();
                 string ret = wordPointer.Text;
-                sw1.Stop();
                 return ret;
             }
         }
@@ -631,15 +618,21 @@ namespace pluginVerilog.Verilog
             wordPointer.Color(CodeDrawStyle.ColorType.Identifier);
             string macroIdentifier = wordPointer.Text.Substring(1);
 
-            if (!RootParsedDocument.Macros.ContainsKey(macroIdentifier))
+            string macroText;
+            if (RootParsedDocument.Macros.ContainsKey(macroIdentifier))
+            {
+                macroText = RootParsedDocument.Macros[macroIdentifier];
+            }
+            else if(RootParsedDocument.ProjectProperty.Macros.ContainsKey(macroIdentifier))
+            {
+                macroText = RootParsedDocument.ProjectProperty.Macros[macroIdentifier];
+            }
+            else
             {
                 wordPointer.AddError("unsupported macro call");
                 wordPointer.MoveNext();
                 return;
             }
-
-            string macroText = RootParsedDocument.Macros[macroIdentifier];
-//            wordPointer.MoveNext();
 
             codeEditor.CodeEditor.CodeDocument codeDocument = new codeEditor.CodeEditor.CodeDocument();
             codeDocument.Replace(0, 0, 0, macroText);
@@ -647,11 +640,13 @@ namespace pluginVerilog.Verilog
             WordPointer newPointer = new WordPointer(codeDocument, wordPointer.ParsedDocument);
             stock.Add(wordPointer);
             wordPointer = newPointer;
-            while (!wordPointer.Eof)
+
+            while (true)
             {
                 if (wordPointer.WordType == WordPointer.WordTypeEnum.Comment)
                 {
                     wordPointer.MoveNext();
+                    if (wordPointer.Eof) break;
                 }
                 else if (wordPointer.WordType == WordPointer.WordTypeEnum.CompilerDirective)
                 {

@@ -13,7 +13,6 @@ namespace pluginVerilog.NavigatePanel
         {
             if (NodeCreated != null) NodeCreated(this);
         }
-
         public static Action<VerilogFileNode> NodeCreated;
 
         public Action NodeSelected;

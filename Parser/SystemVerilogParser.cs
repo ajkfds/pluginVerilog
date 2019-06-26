@@ -34,14 +34,14 @@ namespace pluginVerilog.Parser
         module_keyword ::= module | macromodule  
         */
 
-        public override void Parse()
+        public override void Parse(codeEditor.CodeEditor.DocumentParser.ParseMode mode)
         {
             word.GetFirst();
             while (!word.Eof)
             {
                 if (word.Text == "module")
                 {
-                    Verilog.Module module = Verilog.Module.Create(word, null, parsedDocument.ItemID);
+                    Verilog.Module module = Verilog.Module.Create(word, null, parsedDocument.ItemID,false);
                     if (!parsedDocument.Modules.ContainsKey(module.Name))
                     {
                         parsedDocument.Modules.Add(module.Name, module);

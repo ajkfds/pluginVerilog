@@ -35,7 +35,7 @@ namespace pluginVerilog.Parser
         */
         public static System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
 
-        public override void Parse()
+        public override void Parse(ParseMode parseMode)
         {
             sw.Reset();
             sw.Start();
@@ -45,8 +45,7 @@ namespace pluginVerilog.Parser
             {
                 if (word.Text == "module")
                 {
-                    Verilog.Module module = Verilog.Module.Create(word, null,parsedDocument.ItemID);
-                    System.Diagnostics.Debug.Print("parse1 " + sw.ElapsedMilliseconds.ToString() + "ms");
+                    Verilog.Module module = Verilog.Module.Create(word, null,parsedDocument.ItemID,false);
                     if (!parsedDocument.Modules.ContainsKey(module.Name))
                     {
                         parsedDocument.Modules.Add(module.Name, module);
@@ -64,7 +63,10 @@ namespace pluginVerilog.Parser
             word.Dispose();
             word = null;
 
-            System.Diagnostics.Debug.Print("parse0 "+sw.ElapsedMilliseconds.ToString()+ "ms");
+            if (sw.ElapsedMilliseconds > 100)
+            {
+                System.Diagnostics.Debug.Print("parse0 " + sw.ElapsedMilliseconds.ToString() + "ms : "+ parsedDocument.ItemID );
+            }
             sw.Stop();
         }
     }

@@ -33,7 +33,7 @@ namespace pluginVerilog.Verilog
             get { return cellDefine; }
         }
 
-        public static Module Create(WordScanner word,Attribute attribute,string fileId)
+        public static Module Create(WordScanner word,Attribute attribute,string fileId, bool protoType)
         {
             /*
             module_declaration  ::= { attribute_instance } module_keyword module_identifier [ module_parameter_port_list ]
@@ -69,7 +69,7 @@ namespace pluginVerilog.Verilog
             }
 
 
-            if(!word.CellDefine)
+            if(!word.CellDefine && !protoType)
             {
                 // protptype parse
                 WordScanner prototypeWord = word.Clone();
@@ -181,18 +181,7 @@ namespace pluginVerilog.Verilog
                     word.AddError("; expected");
                 }
 
-                System.Diagnostics.Debug.Print("parse2 " + Parser.VerilogParser.sw.ElapsedMilliseconds.ToString() + "ms");
-
-                WordScanner.sw0.Reset();
-                WordScanner.sw1.Reset();
-                WordScanner.sw2.Reset();
-
                 parseModuleItems(word, module);
-                System.Diagnostics.Debug.Print("parse3 " + Parser.VerilogParser.sw.ElapsedMilliseconds.ToString() + "ms");
-                System.Diagnostics.Debug.Print("sw0 " + WordScanner.sw0.ElapsedMilliseconds.ToString() + "ms");
-                System.Diagnostics.Debug.Print("sw1 " + WordScanner.sw1.ElapsedMilliseconds.ToString() + "ms");
-                System.Diagnostics.Debug.Print("sw2 " + WordScanner.sw2.ElapsedMilliseconds.ToString() + "ms");
-                System.Diagnostics.Debug.Print("sw3 " + WordScanner.sw2.ElapsedMilliseconds.ToString() + "ms");
                 break;
             }
 
