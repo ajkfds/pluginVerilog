@@ -33,10 +33,11 @@ namespace pluginVerilog.Parser
                                     endmodule
         module_keyword ::= module | macromodule  
         */
-        public static System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+//        public static System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
 
         public override void Parse(ParseMode parseMode)
         {
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Reset();
             sw.Start();
 
