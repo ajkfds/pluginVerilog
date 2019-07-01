@@ -365,6 +365,10 @@ namespace pluginVerilog.Verilog
                     cellDefine = true;
                     wordPointer.MoveNext();
                     break;
+                case "`resetall":
+                    wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
+                    wordPointer.MoveNext();
+                    break;
                 case "`endcelldefine":
                     wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
                     cellDefine = false;
@@ -443,7 +447,6 @@ namespace pluginVerilog.Verilog
                     break;
                 case "`line":
                 case "`nounconnected_drive":
-                case "`resetall":
                 case "`unconnected_drive":
                 case "`undef":
                     wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
