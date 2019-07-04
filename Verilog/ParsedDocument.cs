@@ -14,7 +14,7 @@ namespace pluginVerilog.Verilog
         }
         public Dictionary<string, Module> Modules = new Dictionary<string, Module>();
         public Dictionary<string, Data.VerilogHeaderFile> IncludeFiles = new Dictionary<string, Data.VerilogHeaderFile>();
-        public Dictionary<string, string> Macros = new Dictionary<string, string>();
+        public Dictionary<string, Macro> Macros = new Dictionary<string, Macro>();
 
         public ProjectProperty ProjectProperty
         {
@@ -96,7 +96,7 @@ namespace pluginVerilog.Verilog
 
             if (text.StartsWith("`") && Macros.ContainsKey(text.Substring(1)))
             {
-                ret.Add(new Popup.MacroPopup(text.Substring(1), Macros[text.Substring(1)]));
+                ret.Add(new Popup.MacroPopup(text.Substring(1), Macros[text.Substring(1)].MacroText));
             }
             if (space.Module.Functions.ContainsKey(text))
             {

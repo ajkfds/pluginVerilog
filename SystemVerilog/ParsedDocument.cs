@@ -13,7 +13,7 @@ namespace pluginVerilog.SystemVerilog
 
         }
 
-        public ProjectProperty ProjectProperty
+        public new ProjectProperty ProjectProperty
         {
             get
             {
@@ -96,7 +96,7 @@ namespace pluginVerilog.SystemVerilog
 
             if (text.StartsWith("`") && Macros.ContainsKey(text.Substring(1)))
             {
-                ret.Add(new Verilog.Popup.MacroPopup(text.Substring(1), Macros[text.Substring(1)]));
+                ret.Add(new Verilog.Popup.MacroPopup(text.Substring(1), Macros[text.Substring(1)].MacroText));
             }
             if (space.Module.Functions.ContainsKey(text))
             {

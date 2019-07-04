@@ -62,7 +62,7 @@ namespace pluginVerilog.Verilog
 
 
             // parse definitions
-            Dictionary<string, string> macroKeep = new Dictionary<string, string>();
+            Dictionary<string, Verilog.Macro> macroKeep = new Dictionary<string, Verilog.Macro>();
             foreach(var kvpair in word.RootParsedDocument.Macros)
             {
                 macroKeep.Add(kvpair.Key, kvpair.Value);

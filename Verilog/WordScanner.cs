@@ -138,31 +138,24 @@ namespace pluginVerilog.Verilog
                 wp.ParsedDocument.Messages.Add(new Verilog.ParsedDocument.Message(">100 errors", Verilog.ParsedDocument.Message.MessageType.Error, 0, 0, 0, wp.ParsedDocument.ItemID, wp.ParsedDocument.Project));
             }
             if (wp.ParsedDocument is Verilog.ParsedDocument) (wp.ParsedDocument as Verilog.ParsedDocument).ErrorCount++;
-
         }
 
         public void AddWarning(string message)
         {
-//            sw2.Start();
             if (nonGeneratedCount != 0 || prototype) return;
             wordPointer.AddWarning(message);
-//            sw2.Stop();
         }
 
         public void AddPrototypeError(string message)
         {
-//            sw2.Start();
             if (nonGeneratedCount != 0) return;
             wordPointer.AddError(message);
-//            sw2.Stop();
         }
 
         public void AddPrototypeWarning(string message)
         {
-//            sw2.Start();
             if (nonGeneratedCount != 0) return;
             wordPointer.AddWarning(message);
-//            sw2.Stop();
         }
 
         public int RootIndex
@@ -196,24 +189,30 @@ namespace pluginVerilog.Verilog
                 wordPointer.Color(CodeDrawStyle.ColorType.Inactivated);
             }
 
-            while(wordPointer.Eof && stock.Count != 0)
+            if (wordPointer.Eof)
             {
-                bool error = false;
-                if (wordPointer.ParsedDocument.Messages.Count != 0) error = true;
-
-                if(wordPointer.ParsedDocument == stock.Last().ParsedDocument)
+                while (wordPointer.Eof && stock.Count != 0)
                 {
-                    error = false;
+                    bool error = false;
+                    if (wordPointer.ParsedDocument.Messages.Count != 0) error = true;
+
+                    if (wordPointer.ParsedDocument == stock.Last().ParsedDocument)
+                    {
+                        error = false;
+                    }
+
+                    wordPointer.Dispose();
+                    wordPointer = stock.Last();
+                    stock.Remove(stock.Last());
+                    if (error) wordPointer.AddError("include errors");
                 }
-
-                wordPointer.Dispose();
-                wordPointer = stock.Last();
-                stock.Remove(stock.Last());
-                if (error) wordPointer.AddError("include errors");
+                recheckWord();
             }
-
-            wordPointer.MoveNext();
-            recheckWord();
+            else
+            {
+                wordPointer.MoveNext();
+                recheckWord();
+            }
         }
 
         public string GetFollowedComment()
@@ -543,14 +542,36 @@ namespace pluginVerilog.Verilog
             }
 
             wordPointer.MoveNextUntilEol();
+
             string macroText = wordPointer.Text;
+            if (macroText.Contains("//"))
+            {
+                macroText = macroText.Substring(0, macroText.IndexOf("//"));
+            }
+            wordPointer.MoveNext();
+
+            while(!Eof && wordPointer.Text == "\\")
+            {
+                wordPointer.MoveNextUntilEol();
+                string text = wordPointer.Text;
+                if (text.Contains("//"))
+                {
+                    text = text.Substring(0, text.IndexOf("//"));
+                }
+                macroText = macroText + text;
+                wordPointer.MoveNext();
+            }
+
 
             if (!error)
             {
-                RootParsedDocument.Macros.Add(identifier, macroText);
+                Macro macro = Macro.Create(identifier, macroText);
+                RootParsedDocument.Macros.Add(identifier, macro);
+
+//                RootParsedDocument.Macros.Add(identifier, macroText);
             }
 
-            wordPointer.MoveNext();
+//            wordPointer.MoveNext();
             recheckWord();
         }
 
@@ -621,14 +642,14 @@ namespace pluginVerilog.Verilog
             wordPointer.Color(CodeDrawStyle.ColorType.Identifier);
             string macroIdentifier = wordPointer.Text.Substring(1);
 
-            string macroText;
+            Macro macro;
             if (RootParsedDocument.Macros.ContainsKey(macroIdentifier))
             {
-                macroText = RootParsedDocument.Macros[macroIdentifier];
+                macro = RootParsedDocument.Macros[macroIdentifier];
             }
             else if(RootParsedDocument.ProjectProperty.Macros.ContainsKey(macroIdentifier))
             {
-                macroText = RootParsedDocument.ProjectProperty.Macros[macroIdentifier];
+                macro = RootParsedDocument.ProjectProperty.Macros[macroIdentifier];
             }
             else
             {
@@ -636,6 +657,61 @@ namespace pluginVerilog.Verilog
                 wordPointer.MoveNext();
                 return;
             }
+            wordPointer.MoveNext();
+
+            string macroText = macro.MacroText;
+            if(macro.Aurguments != null)
+            {
+                List<string> wordAssingment = new List<string>();
+                if (wordPointer.Text != "(")
+                {
+                    wordPointer.AddError("missing macro arguments");
+                    return;
+                }
+                wordPointer.MoveNext();
+
+                while (!wordPointer.Eof && wordPointer.Text != ")")
+                {
+                    StringBuilder sb = new StringBuilder();
+                    while (!wordPointer.Eof && wordPointer.Text != ")" && wordPointer.Text !=",")
+                    {
+                        if (sb.Length != 0) sb.Append(" ");
+                        sb.Append(wordPointer.Text);
+                        wordPointer.MoveNext();
+                    }
+                    wordAssingment.Add(sb.ToString());
+                    if (wordPointer.Text == ")")
+                    {
+                        wordPointer.MoveNext();
+                        break;
+                    }
+                    if (wordPointer.Text == ",")
+                    {
+                        wordPointer.MoveNext();
+                        continue;
+                    }
+                    wordPointer.AddError("illegal macro call");
+                    break;
+                }
+
+                if(macro.Aurguments.Count != wordAssingment.Count)
+                {
+                    wordPointer.AddError("macro arguments mismatch");
+                    return;
+                }
+                else
+                {
+                    for(int i = 0; i < macro.Aurguments.Count; i++)
+                    {
+                        macroText = macroText.Replace(macro.Aurguments[i], "\0" + i.ToString("X4"));
+                    }
+                    for (int i = 0; i < macro.Aurguments.Count; i++)
+                    {
+                        macroText = macroText.Replace("\0" + i.ToString("X4"),wordAssingment[i]);
+                    }
+                }
+            }
+
 
             codeEditor.CodeEditor.CodeDocument codeDocument = new codeEditor.CodeEditor.CodeDocument();
             codeDocument.Replace(0, 0, 0, macroText);

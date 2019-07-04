@@ -22,7 +22,7 @@ namespace pluginVerilog
             {
                 foreach (var kvp in Macros)
                 {
-                    macroWriter.writeKeyValue(kvp.Key, kvp.Value);
+                    macroWriter.writeKeyValue(kvp.Key, kvp.Value.MacroText);
                 }
             }
         }
@@ -122,7 +122,7 @@ namespace pluginVerilog
         }
 
         // macros
-        public Dictionary<string, string> Macros = new Dictionary<string, string>();
+        public Dictionary<string, Verilog.Macro> Macros = new Dictionary<string, Verilog.Macro>();
 
         // system tasks
         public Dictionary<string, Action<Verilog.WordScanner>> SystemTaskParsers = new Dictionary<string, Action<Verilog.WordScanner>>
