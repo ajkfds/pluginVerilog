@@ -9,6 +9,8 @@ namespace pluginVerilog.Verilog.ModuleItems
     public class ContinuousAssign
     {
         protected ContinuousAssign() { }
+        public DriveStrength DriveStrength;
+        public Delay3 Delay3;
 
         public Variables.VariableAssignment VariableAssignment { get; protected set; }
 
@@ -25,6 +27,11 @@ namespace pluginVerilog.Verilog.ModuleItems
             word.MoveNext();
 
             ContinuousAssign continuousAssign = new ContinuousAssign();
+
+            continuousAssign.DriveStrength = DriveStrength.ParseCreate(word, module as NameSpace);
+            continuousAssign.Delay3 = Delay3.ParseCreate(word, module as NameSpace);
+
+
             continuousAssign.VariableAssignment = Variables.VariableAssignment.ParseCreate(word, module as NameSpace);
 
             if(word.GetCharAt(0) == ';')
