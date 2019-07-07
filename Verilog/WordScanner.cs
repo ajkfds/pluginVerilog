@@ -670,11 +670,31 @@ namespace pluginVerilog.Verilog
                 }
                 wordPointer.MoveNext();
 
-                while (!wordPointer.Eof && wordPointer.Text != ")")
+                while (!wordPointer.Eof)
                 {
                     StringBuilder sb = new StringBuilder();
-                    while (!wordPointer.Eof && wordPointer.Text != ")" && wordPointer.Text !=",")
+                    int bracketCount = 0;
+                    while (!wordPointer.Eof)
                     {
+                        if(wordPointer.Text == "(")
+                        {
+                            bracketCount++;
+                        } else if(wordPointer.Text == ")")
+                        {
+                            if(bracketCount == 0)
+                            {
+                                break;
+                            } else
+                            {
+                                bracketCount--;
+                            }
+                        }
+
+                        if(wordPointer.Text == "," && bracketCount == 0)
+                        {
+                            break;
+                        }
+
                         if (sb.Length != 0) sb.Append(" ");
                         sb.Append(wordPointer.Text);
                         wordPointer.MoveNext();
@@ -769,6 +789,13 @@ namespace pluginVerilog.Verilog
             WordPointer newPointer = new WordPointer(vhFile.CodeDocument, vhFile.ParsedDocument);
             stock.Add(wordPointer);
             wordPointer = newPointer;
+
+            if (wordPointer.Eof)
+            {
+                MoveNext();
+                return;
+            }
+
             while (!wordPointer.Eof)
             {
                 if (wordPointer.WordType == WordPointer.WordTypeEnum.Comment)
