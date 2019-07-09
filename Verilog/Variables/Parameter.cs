@@ -101,7 +101,7 @@ namespace pluginVerilog.Verilog.Variables
                         {
                             if (module.LocalParameters.ContainsKey(identifier))
                             {
-                                nameReference.AddError("local parameter name duplicated");
+//                                nameReference.AddError("local parameter name duplicated");
                             }
                             else
                             {
@@ -126,7 +126,7 @@ namespace pluginVerilog.Verilog.Variables
                         {
                             if (module.Parameters.ContainsKey(identifier))
                             {
-                                nameReference.AddError("parameter name duplicated");
+//                                nameReference.AddError("parameter name duplicated");
                             }
                             else
                             {

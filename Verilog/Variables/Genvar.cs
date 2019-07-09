@@ -41,7 +41,7 @@ namespace pluginVerilog.Verilog.Variables
                     {
                         if (nameSpace.Variables.ContainsKey(val.Name))
                         {
-                            nameRef.AddError("duplicated net name");
+//                            nameRef.AddError("duplicated net name");
                         }
                         else
                         {

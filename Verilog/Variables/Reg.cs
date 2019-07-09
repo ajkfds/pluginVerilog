@@ -123,7 +123,7 @@ namespace pluginVerilog.Verilog.Variables
                         }
                         else
                         {
-                            nameRef.AddError("duplicated reg name");
+//                            nameRef.AddError("duplicated reg name");
                         }
                     }
                     else

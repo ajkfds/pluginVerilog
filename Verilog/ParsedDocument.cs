@@ -16,12 +16,12 @@ namespace pluginVerilog.Verilog
         public Dictionary<string, Data.VerilogHeaderFile> IncludeFiles = new Dictionary<string, Data.VerilogHeaderFile>();
         public Dictionary<string, Macro> Macros = new Dictionary<string, Macro>();
 
+        public List<WordReference> DisposeReferences = new List<WordReference>();
+
         public ProjectProperty ProjectProperty
         {
             get
             {
-                // ProjectProperty is initialized in verilogFile.ProjectProperty
-                // so ParsedDocument.ProjectPrperty must be called via verilogFile.ProjectProperty
                 Data.VerilogFile verilogFile = Project.GetRegisterdItem(ItemID) as Data.VerilogFile;
                 return verilogFile.ProjectProperty;
             }

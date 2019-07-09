@@ -109,21 +109,21 @@ namespace pluginVerilog.Verilog
                 ParsedDocument.Messages.Add(new Verilog.ParsedDocument.Message(">100 errors", Verilog.ParsedDocument.Message.MessageType.Error, 0, 0, 0, ParsedDocument.ItemID, ParsedDocument.Project));
             }
 
-            if (fromReference.Document == Document)
+            //if (fromReference.Document == Document)
             {
                 for (int i = fromReference.Index; i < index + length; i++)
                 {
                     Document.SetMarkAt(i, 0);
                 }
             }
-            else
-            {
-                for (int i = index; i < index + length; i++)
-                {
+            //else
+            //{
+            //    for (int i = index; i < index + length; i++)
+            //    {
 
-                    Document.SetMarkAt(i, 0);
-                }
-            }
+            //        Document.SetMarkAt(i, 0);
+            //    }
+            //}
             if (ParsedDocument is Verilog.ParsedDocument) (ParsedDocument as Verilog.ParsedDocument).ErrorCount++;
         }
 
@@ -162,20 +162,20 @@ namespace pluginVerilog.Verilog
                 ParsedDocument.Messages.Add(new Verilog.ParsedDocument.Message(">100 warnings", Verilog.ParsedDocument.Message.MessageType.Warning, 0, 0, 0, ParsedDocument.ItemID, ParsedDocument.Project));
             }
 
-            if (fromReference.Document == Document)
+            //if (fromReference.Document == Document)
             {
                 for (int i = fromReference.Index; i < index + length; i++)
                 {
                     Document.SetMarkAt(i, 1);
                 }
             }
-            else
-            {
-                for (int i = index; i < index + length; i++)
-                {
-                    Document.SetMarkAt(i, 1);
-                }
-            }
+            //else
+            //{
+            //    for (int i = index; i < index + length; i++)
+            //    {
+            //        Document.SetMarkAt(i, 1);
+            //    }
+            //}
             if (ParsedDocument is Verilog.ParsedDocument) (ParsedDocument as Verilog.ParsedDocument).WarningCount++;
         }
 

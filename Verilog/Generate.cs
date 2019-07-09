@@ -37,7 +37,7 @@ namespace pluginVerilog.Verilog
             if (constant == null) return;
             if (!constant.Constant)
             {
-                constant.Reference.AddError("should be constant");
+                //constant.Reference.AddError("should be constant");
             }
 
             if (word.Text != ";")
