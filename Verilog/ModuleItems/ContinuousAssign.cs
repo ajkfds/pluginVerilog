@@ -41,6 +41,7 @@ namespace pluginVerilog.Verilog.ModuleItems
             else
             {
                 word.AddError("; expected");
+                word.SkipToKeyword(";");
             }
             return continuousAssign;
         }

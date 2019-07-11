@@ -27,6 +27,20 @@ namespace pluginVerilog.Verilog
 
         public Verilog.ParsedDocument RootParsedDocument { get; protected set; }
 
+        public WordPointer RootPointer
+        {
+            get
+            {
+                if(stock.Count == 0)
+                {
+                    return wordPointer;
+                }
+                else
+                {
+                    return stock[0];
+                }
+            }
+        }
 
         private int nonGeneratedCount = 0;
         private bool prototype = false;
@@ -87,8 +101,15 @@ namespace pluginVerilog.Verilog
 
         public WordReference GetReference()
         {
-            return new WordReference(wordPointer.Index, wordPointer.Length);
-//            return new WordReference(wordPointer.Document, wordPointer.ParsedDocument, wordPointer.Index, wordPointer.Length);
+            if (stock.Count == 0)
+            {
+                return new WordReference(wordPointer.Index, wordPointer.Length);
+            }
+            else
+            {
+                return new WordReference(stock[0].Index, stock[0].Length);
+            }
+            //            return new WordReference(wordPointer.Document, wordPointer.ParsedDocument, wordPointer.Index, wordPointer.Length);
         }
 
         public WordReference GetReference(WordReference fromReference)
@@ -181,6 +202,16 @@ namespace pluginVerilog.Verilog
             {
                 if (nonGeneratedCount != 0) return false;
                 return true;
+            }
+        }
+
+        public void SkipToKeyword(string stopWord)
+        {
+            while (!Eof)
+            {
+                if (Text == stopWord) return;
+                if (General.ListOfKeywords.Contains(Text)) return;
+                MoveNext();
             }
         }
 
@@ -733,7 +764,11 @@ namespace pluginVerilog.Verilog
                     }
                 }
             }
-
+            if(macroText == "")
+            {
+//                MoveNext();
+                return;
+            }
 
             codeEditor.CodeEditor.CodeDocument codeDocument = new codeEditor.CodeEditor.CodeDocument();
             codeDocument.Replace(0, 0, 0, macroText);

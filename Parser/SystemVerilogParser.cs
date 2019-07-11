@@ -9,7 +9,12 @@ namespace pluginVerilog.Parser
 {
     public class SystemVerilogParser : codeEditor.CodeEditor.DocumentParser
     {
-        public SystemVerilogParser(codeEditor.CodeEditor.CodeDocument document, string id, codeEditor.Data.Project project) : base(document, id, project)
+        public SystemVerilogParser(
+                codeEditor.CodeEditor.CodeDocument document,
+                string id,
+                codeEditor.Data.Project project,
+                codeEditor.CodeEditor.DocumentParser.ParseModeEnum parseMode
+            ) : base(document, id, project,parseMode)
         {
             parsedDocument = new Verilog.ParsedDocument(project, id, document.EditID);
             word = new Verilog.WordScanner(this.document, parsedDocument,true);
@@ -34,7 +39,7 @@ namespace pluginVerilog.Parser
         module_keyword ::= module | macromodule  
         */
 
-        public override void Parse(codeEditor.CodeEditor.DocumentParser.ParseMode mode)
+        public override void Parse()
         {
             word.GetFirst();
             while (!word.Eof)

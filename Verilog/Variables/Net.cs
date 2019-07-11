@@ -216,7 +216,7 @@ namespace pluginVerilog.Verilog.Variables
                     {
                         if (nameSpace.Variables.ContainsKey(net.Name))
                         {
-//                            nameRef.AddError("duplicated net name");
+                            word.RootPointer.AddError(nameRef,"duplicated net name");
                         }
                         else
                         {

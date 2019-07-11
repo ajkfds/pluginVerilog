@@ -111,9 +111,9 @@ namespace pluginVerilog.Data
             return new NavigatePanel.VerilogFileNode(ID, Project);
         }
 
-        public virtual codeEditor.CodeEditor.DocumentParser CreateDocumentParser(codeEditor.CodeEditor.CodeDocument document, string id, codeEditor.Data.Project project)
+        public virtual codeEditor.CodeEditor.DocumentParser CreateDocumentParser(codeEditor.CodeEditor.CodeDocument document, string id, codeEditor.Data.Project project,codeEditor.CodeEditor.DocumentParser.ParseModeEnum parseMode)
         {
-            return new Parser.VerilogParser(document, id, project);
+            return new Parser.VerilogParser(document, id, project,parseMode);
         }
 
 

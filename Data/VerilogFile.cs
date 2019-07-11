@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using codeEditor.CodeEditor;
+using codeEditor.Data;
 
 namespace pluginVerilog.Data
 {
@@ -112,10 +114,6 @@ namespace pluginVerilog.Data
             return new NavigatePanel.VerilogFileNode(ID, Project);
         }
 
-        public virtual codeEditor.CodeEditor.DocumentParser CreateDocumentParser(codeEditor.CodeEditor.CodeDocument document, string id, codeEditor.Data.Project project)
-        {
-            return new Parser.VerilogParser(document, id, project);
-        }
 
 
         public override void Update()
@@ -337,5 +335,9 @@ namespace pluginVerilog.Data
             return true;
         }
 
+        public virtual DocumentParser CreateDocumentParser(CodeDocument document, string id, Project project, DocumentParser.ParseModeEnum parseMode)
+        {
+            return new Parser.VerilogParser(document, id, project, parseMode);
+        }
     }
 }

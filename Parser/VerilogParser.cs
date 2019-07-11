@@ -9,7 +9,11 @@ namespace pluginVerilog.Parser
 {
     public class VerilogParser : codeEditor.CodeEditor.DocumentParser
     {
-        public VerilogParser(codeEditor.CodeEditor.CodeDocument document, string id, codeEditor.Data.Project project) : base(document, id, project)
+        public VerilogParser(
+            codeEditor.CodeEditor.CodeDocument document, 
+            string id, codeEditor.Data.Project project,
+            codeEditor.CodeEditor.DocumentParser.ParseModeEnum parseMode
+            ) : base(document, id, project,parseMode)
         {
             parsedDocument = new Verilog.ParsedDocument(project, id, document.EditID);
             word = new Verilog.WordScanner(this.document, parsedDocument,false);
@@ -35,7 +39,7 @@ namespace pluginVerilog.Parser
         */
 //        public static System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
 
-        public override void Parse(ParseMode parseMode)
+        public override void Parse()
         {
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Reset();
@@ -46,7 +50,15 @@ namespace pluginVerilog.Parser
             {
                 if (word.Text == "module")
                 {
-                    Verilog.Module module = Verilog.Module.Create(word, null,parsedDocument.ItemID,false);
+                    Verilog.Module module;
+                    if (ParseMode == ParseModeEnum.LoadParse || ParseMode == ParseModeEnum.BackgroundParse)
+                    {
+                        module = Verilog.Module.Create(word, null, parsedDocument.ItemID, true);
+                    }
+                    else
+                    {
+                        module = Verilog.Module.Create(word, null, parsedDocument.ItemID, false);
+                    }
                     if (!parsedDocument.Modules.ContainsKey(module.Name))
                     {
                         parsedDocument.Modules.Add(module.Name, module);
