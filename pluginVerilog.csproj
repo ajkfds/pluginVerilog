@@ -72,6 +72,13 @@
     <Compile Include="ProjectProperty.cs" />
     <Compile Include="SystemVerilog\ParsedDocument.cs" />
     <Compile Include="SystemVerilog\ProgramItem.cs" />
+    <Compile Include="Tools\ProjectPropertyPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Tools\ProjectPropertyPanel.Designer.cs">
+      <DependentUpon>ProjectPropertyPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Tools\ProjectPropertyTab.cs" />
     <Compile Include="Verilog\Class.cs" />
     <Compile Include="Verilog\Delay.cs" />
     <Compile Include="Verilog\Expressions\ExpressionItem.cs" />
@@ -197,6 +204,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="SetupForm.resx">
       <DependentUpon>SetupForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Tools\ProjectPropertyPanel.resx">
+      <DependentUpon>ProjectPropertyPanel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
