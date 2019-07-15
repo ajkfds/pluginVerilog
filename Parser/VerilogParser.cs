@@ -51,7 +51,7 @@ namespace pluginVerilog.Parser
                 if (word.Text == "module")
                 {
                     Verilog.Module module;
-                    if (ParseMode == ParseModeEnum.LoadParse || ParseMode == ParseModeEnum.BackgroundParse)
+                    if (ParseMode == ParseModeEnum.LoadParse)
                     {
                         module = Verilog.Module.Create(word, null, parsedDocument.ItemID, true);
                     }
