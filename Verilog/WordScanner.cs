@@ -636,6 +636,7 @@ namespace pluginVerilog.Verilog
 
                 string id = codeEditor.Data.File.GetID(sameFolderPath, wordPointer.ParsedDocument.Project);
                 if (wordPointer.ParsedDocument.Project.IsRegistered(id)){
+                    wordPointer.MoveNext();
                     diveIntoIncludeFile(sameFolderPath);
                     return;
                 }
@@ -660,6 +661,7 @@ namespace pluginVerilog.Verilog
                 codeEditor.Data.File ffile = item as codeEditor.Data.File;
                 if (ffile != null)
                 {
+                    wordPointer.MoveNext();
                     diveIntoIncludeFile(ffile.RelativePath);
                     return;
                 }
