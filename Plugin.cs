@@ -37,6 +37,8 @@ namespace pluginVerilog
             codeEditor.Data.Project project = codeEditor.Data.Project.Create(absolutePath);
             codeEditor.Global.Controller.AddProject(project);
 
+            codeEditor.Tools.ProjectPropertyForm.FormCreated += Tools.ProjectPropertyTab.ProjectPropertyFromCreated;
+
             return true;
         }
         public string Id { get { return StaticID; } }
