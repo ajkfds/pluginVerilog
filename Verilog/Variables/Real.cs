@@ -31,8 +31,8 @@ namespace pluginVerilog.Verilog.Variables
                     return;
                 }
                 Real val = new Real();
-                WordReference nameRef = word.GetReference();
                 val.Name = word.Text;
+                val.DefinedReference = word.GetReference();
 
                 word.Color(CodeDrawStyle.ColorType.Variable);
                 word.MoveNext();

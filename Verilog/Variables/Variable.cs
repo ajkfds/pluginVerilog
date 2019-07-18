@@ -18,7 +18,7 @@ namespace pluginVerilog.Verilog.Variables
         protected List<Dimension> dimensions = new List<Dimension>();
         public IReadOnlyList<Dimension> Dimensions { get { return dimensions; } }
         public string Comment = "";
-        public int DefinedIndex = 0;
+        public WordReference DefinedReference = null;
         public List<WordReference> UsedReferences = new List<WordReference>();
         public List<WordReference> AssignedReferences = new List<WordReference>();
         public virtual ajkControls.ColorLabel GetLabel()

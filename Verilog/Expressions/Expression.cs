@@ -66,7 +66,15 @@ namespace pluginVerilog.Verilog.Expressions
         range_expression                ::= expression  msb_constant_expression : lsb_constant_expression | base_expression +: width_constant_expression | base_expression -: width_constant_expression
         width_constant_expression ::= constant_expression
         */
-        public static Expression ParseCreate(WordScanner word,NameSpace nameSpace)
+        public static Expression ParseCreateForAssignment(WordScanner word, NameSpace nameSpace)
+        {
+            return ParseCreate(word, nameSpace, true);
+        }
+        public static Expression ParseCreate(WordScanner word, NameSpace nameSpace)
+        {
+            return ParseCreate(word, nameSpace, false);
+        }
+        public static Expression ParseCreate(WordScanner word,NameSpace nameSpace,bool assignment)
         {
             Expression expression = new Expression();
             List<Operator> operatorsStock = new List<Operator>();

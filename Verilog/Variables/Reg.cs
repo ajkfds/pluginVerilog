@@ -107,6 +107,7 @@ namespace pluginVerilog.Verilog.Variables
                 reg.Signed = signed;
                 reg.Range = range;
                 reg.Name = word.Text;
+                reg.DefinedReference = word.GetReference();
 
                 // register valiable
                 if (!word.Active)

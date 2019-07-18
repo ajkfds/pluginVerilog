@@ -139,46 +139,36 @@ namespace pluginVerilog.Verilog
         public void AddError(string message)
         {
             if (nonGeneratedCount != 0 || prototype) return;
-            wordPointer.AddError(message);
-
-            WordPointer wp;
-            if(stock.Count == 0)
-            {
-                wp = wordPointer;
-            }
-            else
-            {
-                wp = stock[0];
-            }
-
-            if (wp.ParsedDocument is Verilog.ParsedDocument && (wp.ParsedDocument as Verilog.ParsedDocument).ErrorCount < 100)
-            {
-                int lineNo = wp.Document.GetLineAt(wp.Index);
-                wp.ParsedDocument.Messages.Add(new Verilog.ParsedDocument.Message(message, Verilog.ParsedDocument.Message.MessageType.Error, wp.Index, lineNo, wp.Length, wp.ParsedDocument.ItemID, wp.ParsedDocument.Project));
-            }
-            else if (wp.ParsedDocument is Verilog.ParsedDocument && (wp.ParsedDocument as Verilog.ParsedDocument).ErrorCount == 100)
-            {
-                wp.ParsedDocument.Messages.Add(new Verilog.ParsedDocument.Message(">100 errors", Verilog.ParsedDocument.Message.MessageType.Error, 0, 0, 0, wp.ParsedDocument.ItemID, wp.ParsedDocument.Project));
-            }
-            if (wp.ParsedDocument is Verilog.ParsedDocument) (wp.ParsedDocument as Verilog.ParsedDocument).ErrorCount++;
+            RootPointer.AddError(message);
         }
 
         public void AddWarning(string message)
         {
             if (nonGeneratedCount != 0 || prototype) return;
-            wordPointer.AddWarning(message);
+            RootPointer.AddWarning(message);
         }
 
         public void AddPrototypeError(string message)
         {
             if (nonGeneratedCount != 0) return;
-            wordPointer.AddError(message);
+            RootPointer.AddError(message);
         }
 
         public void AddPrototypeWarning(string message)
         {
             if (nonGeneratedCount != 0) return;
-            wordPointer.AddWarning(message);
+            RootPointer.AddWarning(message);
+        }
+
+        public void AddNotice(WordReference reference, string message)
+        {
+            if (nonGeneratedCount != 0 || prototype) return;
+            RootPointer.AddNotice(reference, message);
+        }
+        public void AddHint(WordReference reference, string message)
+        {
+            if (nonGeneratedCount != 0 || prototype) return;
+            RootPointer.AddHint(reference, message);
         }
 
         public int RootIndex
@@ -768,7 +758,6 @@ namespace pluginVerilog.Verilog
             }
             if(macroText == "")
             {
-//                MoveNext();
                 return;
             }
 

@@ -208,15 +208,15 @@ namespace pluginVerilog.Verilog.Variables
                 nets.Add(net);
                 net.Signed = signed;
                 net.Range = range;
-                WordReference nameRef = word.GetReference();
                 net.Name = word.Text;
+                net.DefinedReference = word.GetReference();
                 if (word.Active)
                 {
                     if (word.Prototype)
                     {
                         if (nameSpace.Variables.ContainsKey(net.Name))
                         {
-                            word.RootPointer.AddError(nameRef,"duplicated net name");
+                            word.RootPointer.AddError(net.DefinedReference,"duplicated net name");
                         }
                         else
                         {

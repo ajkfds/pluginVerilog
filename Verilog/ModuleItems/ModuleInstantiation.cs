@@ -109,6 +109,8 @@ namespace pluginVerilog.Verilog.ModuleItems
                 moduleInstantiation.ModuleName = moduleName;
                 moduleInstantiation.BeginIndex = beginIndex;
 
+                Module instancedModule = word.RootParsedDocument.ProjectProperty.GetModule(moduleName);
+
                 word.Color(CodeDrawStyle.ColorType.Identifier);
                 if (General.IsIdentifier(word.Text))
                 {
@@ -164,7 +166,23 @@ namespace pluginVerilog.Verilog.ModuleItems
                     while (!word.Eof && word.Text == ".")
                     {
                         word.MoveNext();
+                        string pinName = word.Text;
+                        bool outPort = false;
                         word.Color(CodeDrawStyle.ColorType.Identifier);
+                        if (instancedModule != null && !word.Prototype) {
+                            if (instancedModule.Ports.ContainsKey(pinName))
+                            {
+                                if(instancedModule.Ports[pinName].Direction == Variables.Port.DirectionEnum.Output
+                                    || instancedModule.Ports[pinName].Direction == Variables.Port.DirectionEnum.Inout )
+                                {
+                                    outPort = true;
+                                }
+                            }
+                            else
+                            {
+                                word.AddError("illegal port name");
+                            }
+                        }
                         word.MoveNext();
                         if (word.Text != "(")
                         {
@@ -174,7 +192,14 @@ namespace pluginVerilog.Verilog.ModuleItems
                         {
                             word.MoveNext();
                         }
-                        Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
+                        if (outPort)
+                        {
+                            Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace,true);
+                        }
+                        else
+                        {
+                            Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
+                        }
                         if (word.Text != ")")
                         {
                             word.AddError(") expected");
@@ -220,7 +245,6 @@ namespace pluginVerilog.Verilog.ModuleItems
                 if (word.Text != ",") break;
                 word.MoveNext();
             }
-
 
             if (word.Text != ";")
             {

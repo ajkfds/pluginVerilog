@@ -185,7 +185,38 @@ namespace pluginVerilog.Verilog
                 break;
             }
 
+            if (!word.Prototype)
+            {
+                checkVariablesUseAndDriven(word,module);
+            }
+
             return;
+        }
+
+        protected static void checkVariablesUseAndDriven(WordScanner word, NameSpace nameSpace)
+        {
+            foreach (var variable in nameSpace.Variables.Values)
+            {
+                if (variable.DefinedReference == null) continue;
+                if (variable.AssignedReferences.Count == 0)
+                {
+                    if (variable.UsedReferences.Count == 0)
+                    {
+                        word.AddHint(variable.DefinedReference, "undriven & unused");
+                    }
+                    else
+                    {
+                        word.AddHint(variable.DefinedReference, "undriven");
+                    }
+                }
+                else
+                {
+                    if (variable.UsedReferences.Count == 0)
+                    {
+                        word.AddHint(variable.DefinedReference, "unused");
+                    }
+                }
+            }
         }
 
         protected static void parseListOfPorts_ListOfPortsDeclarations(WordScanner word, Module module)

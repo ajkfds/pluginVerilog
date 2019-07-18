@@ -31,7 +31,7 @@ namespace pluginVerilog.Verilog.Variables
                     return;
                 }
                 Genvar val = new Genvar();
-                WordReference nameRef = word.GetReference();
+                val.DefinedReference = word.GetReference();
                 val.Name = word.Text;
 
 

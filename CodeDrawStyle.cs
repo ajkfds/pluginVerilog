@@ -68,10 +68,10 @@ namespace pluginVerilog
             {
                 return new System.Drawing.Color[8]
                     {
-                        System.Drawing.Color.FromArgb(128,System.Drawing.Color.Red),    // 0
-                        System.Drawing.Color.FromArgb(128,System.Drawing.Color.Orange), // 1
-                        System.Drawing.Color.Red, // 2
-                        System.Drawing.Color.Red, // 3
+                        System.Drawing.Color.FromArgb(128,System.Drawing.Color.Red),    // 0 error
+                        System.Drawing.Color.FromArgb(128,System.Drawing.Color.Orange), // 1 warning
+                        System.Drawing.Color.Blue, // 2 notice
+                        System.Drawing.Color.Green, // 3 hint
                         System.Drawing.Color.Red, // 4
                         System.Drawing.Color.Red, // 5
                         System.Drawing.Color.Red, // 6
@@ -89,7 +89,7 @@ namespace pluginVerilog
                         ajkControls.CodeTextbox.MarkStyleEnum.wave,    // 0
                         ajkControls.CodeTextbox.MarkStyleEnum.wave,    // 1
                         ajkControls.CodeTextbox.MarkStyleEnum.underLine,
-                        ajkControls.CodeTextbox.MarkStyleEnum.underLine,
+                        ajkControls.CodeTextbox.MarkStyleEnum.wave,
                         ajkControls.CodeTextbox.MarkStyleEnum.underLine,
                         ajkControls.CodeTextbox.MarkStyleEnum.underLine,
                         ajkControls.CodeTextbox.MarkStyleEnum.underLine,
