@@ -33,6 +33,15 @@ namespace pluginVerilog.Tools
 
         ProjectPropertyPanel panel;
 
+        public override void PropertyAccept()
+        {
+            panel.PropertyAccept();
+        }
+
+        public override void PropertyCancel()
+        {
+            panel.PropertyCancel();
+        }
 
     }
 }
