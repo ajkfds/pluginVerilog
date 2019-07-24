@@ -409,7 +409,10 @@ namespace pluginVerilog.Verilog
                     wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
                     wordPointer.MoveNext();
                     wordPointer.Color(CodeDrawStyle.ColorType.Identifier);
-                    if (RootParsedDocument.Macros.ContainsKey(wordPointer.Text))
+                    if (
+                        RootParsedDocument.Macros.ContainsKey(wordPointer.Text) ||
+                        RootParsedDocument.ProjectProperty.Macros.ContainsKey(wordPointer.Text)
+                        )
                     {   // true
                         wordPointer.MoveNext();
                         if (wordPointer.Text == "`else")
@@ -428,7 +431,10 @@ namespace pluginVerilog.Verilog
                     wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
                     wordPointer.MoveNext();
                     wordPointer.Color(CodeDrawStyle.ColorType.Identifier);
-                    if (!RootParsedDocument.Macros.ContainsKey(wordPointer.Text))
+                    if (
+                        !RootParsedDocument.Macros.ContainsKey(wordPointer.Text) &&
+                        !RootParsedDocument.ProjectProperty.Macros.ContainsKey(wordPointer.Text)
+                        )
                     {   // true
                         wordPointer.MoveNext();
                         if (wordPointer.Text == "`else")
@@ -452,7 +458,10 @@ namespace pluginVerilog.Verilog
                     wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
                     wordPointer.MoveNext();
                     wordPointer.Color(CodeDrawStyle.ColorType.Identifier);
-                    if (RootParsedDocument.Macros.ContainsKey(wordPointer.Text))
+                    if (
+                        RootParsedDocument.Macros.ContainsKey(wordPointer.Text) ||
+                        RootParsedDocument.ProjectProperty.Macros.ContainsKey(wordPointer.Text)
+                        )
                     {   // true
                         wordPointer.MoveNext();
                         if (wordPointer.Text == "`else")
