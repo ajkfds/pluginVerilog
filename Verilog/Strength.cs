@@ -125,6 +125,8 @@ namespace pluginVerilog.Verilog
                     word.AddError("strength1 is required");
                     return null;
                 }
+                word.MoveNext();
+
                 strength = getStrengths(word, nameSpace);
                 if (strength == null)
                 {
