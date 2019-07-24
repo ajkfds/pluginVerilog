@@ -166,6 +166,7 @@
     <Compile Include="Verilog\Variables\RealTime.cs" />
     <Compile Include="Verilog\Variables\Reg.cs" />
     <Compile Include="Verilog\Variables\Time.cs" />
+    <Compile Include="Verilog\Variables\Trireg.cs" />
     <Compile Include="Verilog\Variables\VariableAssignment.cs" />
     <Compile Include="Verilog\Variables\Parameter.cs" />
     <Compile Include="Verilog\Variables\Port.cs" />

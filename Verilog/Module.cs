@@ -396,6 +396,9 @@ namespace pluginVerilog.Verilog
                     case "wor":
                         Verilog.Variables.Net.ParseCreateFromDeclaration(word, module);
                         break;
+                    case "trireg":
+                        Verilog.Variables.Trireg.ParseCreateFromDeclaration(word, module);
+                        break;
                     case "integer":
                         Verilog.Variables.Integer.ParseCreateFromDeclaration(word, module);
                         break;
