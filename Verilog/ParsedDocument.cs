@@ -254,9 +254,28 @@ namespace pluginVerilog.Verilog
             else if(words.Count <= 1)
             { // non hier word
                 cantidateWord = words.LastOrDefault();
-                items = verilogKeywords.ToList();
+                if (cantidateWord.StartsWith("$"))
+                {
+                    items = new List<codeEditor.CodeEditor.AutocompleteItem>();
+                    foreach(string key in ProjectProperty.SystemFunctions.Keys)
+                    {
+                        items.Add(
+                            new codeEditor.CodeEditor.AutocompleteItem(key, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword))
+                        );
+                    }
+                    foreach (string key in ProjectProperty.SystemTaskParsers.Keys)
+                    {
+                        items.Add(
+                            new codeEditor.CodeEditor.AutocompleteItem(key, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword))
+                        );
+                    }
+                }
+                else
+                {
+                    items = verilogKeywords.ToList();
+                }
 
-                if(space is Module)
+                if (space is Module)
                 {
                     List<string> moduleNames = ProjectProperty.GetModuleNameList();
                     foreach (string moduleName in moduleNames)
