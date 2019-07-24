@@ -148,38 +148,154 @@ namespace pluginVerilog
 
         public static List<string> ListOfKeywords =
         new List<string> {
-            "always",   "and",      "assign",   "automatic",
-            "begin",    "buf",      "bufif0",   "bufif1",
-            "case",     "casex",    "casez",    "cell",         "cmos",     "config",
-            "deassign", "default",  "defparam", "design",       "disable",
-            "edge",     "else",     "end",      "endcase",      "endconfig",            "endfunction",
-            "endgenerate",          "endmodule",        "endprimitive",     "endspecify",
-            "endtable","endtask","event","for",
-            "force","forever","fork","function",
-            "generate","genvar","highz0","highz1",
-            "if","ifnone","incdir","include",
-            "initial","inout","input","instance",
-            "integer","join","large","liblist",
-            "library","localparam","macromodule","medium",
-            "module","nand","negedge","nmos",
-            "nor","noshowcancelled","not","notif0",
-            "notif1","or","output","parameter",
-            "pmos","posedge","primitive","pull0",
-            "pull1","pulldown","pullup","pulsestyle_ondetect",
-            "pulsestyle_onevent","rcmos","real","realtime",
-            "reg","release","repeat","rnmos",
-            "rpmos","rtran","rtranif0","rtranif1",
-            "scalared","showcancelled","signed","small",
-            "specify","specparam","strong0","strong1",
-            "supply0","supply1","table","task",
-            "time","tran","tranif0","tranif1",
+            "module", "endmodule",
+            
+            // module items
+            "always",
+            "initial",
+            "function","endfunction",
+            "task","endtask",
+
+            // definition
+            "real",
+            "time","realtime",
+            "reg",
             "tri","tri0","tri1","triand",
-            "trior","trireg","unsigned","use",
-            "vectored","wait","wand","weak0",
-            "weak1","while","wire","wor",
-            "xnor","xor"
+            "wire","wor",
+            "genvar",
+            "trireg",
+            "parameter", "localparam",
+            "event",
+            
+            // statements or module item
+            "assign",
+            // statements
+            "begin", "end",
+            "fork","join",
+            "if","else",
+            "forever","repeat","while",
+            "force","release",
+            "case",     "casex",    "casez","default","endcase",
+            "disable",
+            "for",
+            "wait",
+
+            // gate
+            "bufif0","bufif1","notif0", "notif1",
+            "rnmos","rpmos","rtran","rtranif0","rtranif1","rcmos",
+            "pmos","nmos","cmos",
+            "buf","nand","and","nor","not","wand","xnor","xor","or",
+            "tranif0","tranif1",
+            "trior",
+            
+            // event
+            "posedge",
+            "negedge",
+
+            // strength
+            "supply0","supply1","strong0","strong1",
+            "highz0","highz1",
+            "pull0","pull1",
+            "weak0","weak1",
+
+            "large",
+            "small",
+            "medium",
+
+            //pre-processor
+            "generate",
+            "endgenerate",
+            "include",
+            
+            // port
+            "inout","input","output",
+
+            // etc
+            "pulldown","pullup",
+
+            "automatic",
+            "cell",
+            "config",
+            "deassign",
+            "defparam",
+            "design",       
+            "edge",
+            "endconfig",            
+            "endprimitive",
+            "endspecify",
+            "endtable",
+
+            "signed",
+            "unsigned",
+            "vectored",
+
+            "ifnone",
+            "incdir",
+            "instance",
+            "integer",
+            "liblist",
+            "library",
+            "macromodule",
+            "noshowcancelled",
+            "primitive",
+            "pulsestyle_ondetect",
+            "pulsestyle_onevent",
+            "scalared",
+            "showcancelled",
+            "specify",
+            "specparam",
+            "table",
+            "tran",
+            "use",
         };
 
+        public static List<string> ListOfStatementStopKeywords =
+        new List<string> {
+            "module", "endmodule",
+            // module items
+            "always",
+            "initial",
+            "function","endfunction",
+            "task","endtask",
+
+            // definition
+            "real",
+            "time","realtime",
+            "reg",
+            "tri","tri0","tri1","triand",
+            "wire","wor",
+            "genvar",
+            "trireg",
+            "parameter", "localparam",
+            "event",
+            
+            // statements or module item
+            "assign",
+            // statements
+            "begin", "end",
+            "fork","join",
+            "if","else",
+            "forever","repeat","while",
+            "force","release",
+            "case",     "casex",    "casez","default","endcase",
+            "disable",
+            "for",
+            "wait",
+
+            // gate
+            "bufif0","bufif1","notif0", "notif1",
+            "rnmos","rpmos","rtran","rtranif0","rtranif1","rcmos",
+            "pmos","nmos","cmos",
+            "buf","nand","and","nor","not","wand","xnor","xor","or",
+            "tranif0","tranif1",
+            "trior",
+
+            // port
+            "inout","input","output",
+
+            // etc
+            "pulldown","pullup",
+        };
 
     }
 }

@@ -200,7 +200,7 @@ namespace pluginVerilog.Verilog
             while (!Eof)
             {
                 if (Text == stopWord) return;
-                if (General.ListOfKeywords.Contains(Text)) return;
+                if (General.ListOfStatementStopKeywords.Contains(Text)) return;
                 MoveNext();
             }
         }
