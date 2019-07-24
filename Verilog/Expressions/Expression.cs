@@ -66,19 +66,12 @@ namespace pluginVerilog.Verilog.Expressions
         range_expression                ::= expression  msb_constant_expression : lsb_constant_expression | base_expression +: width_constant_expression | base_expression -: width_constant_expression
         width_constant_expression ::= constant_expression
         */
-        public static Expression ParseCreateForAssignment(WordScanner word, NameSpace nameSpace)
-        {
-            return ParseCreate(word, nameSpace, true);
-        }
-        public static Expression ParseCreate(WordScanner word, NameSpace nameSpace)
-        {
-            return ParseCreate(word, nameSpace, false);
-        }
-        public static Expression ParseCreate(WordScanner word,NameSpace nameSpace,bool assignment)
+        public static Expression ParseCreate(WordScanner word,NameSpace nameSpace)
         {
             Expression expression = new Expression();
             List<Operator> operatorsStock = new List<Operator>();
             WordReference reference = word.GetReference();
+
 
             parseExpression(word, nameSpace, expression.RpnExpressionItems, operatorsStock,ref reference);
             expression.Reference = reference;
@@ -336,7 +329,7 @@ namespace pluginVerilog.Verilog.Expressions
                         return false;
                     }
                     expressionItems.Add(primary);
-                    AddOperator(unaryOperator, expressionItems, operatorStock);
+                    addOperator(unaryOperator, expressionItems, operatorStock);
                 }
                 else
                 {
@@ -377,7 +370,7 @@ namespace pluginVerilog.Verilog.Expressions
             BinaryOperator binaryOperator = BinaryOperator.ParseCreate(word);
             if (binaryOperator == null) return true;
 
-            AddOperator(binaryOperator, expressionItems, operatorStock);
+            addOperator(binaryOperator, expressionItems, operatorStock);
 
             if (!parseExpression(word, nameSpace, expressionItems, operatorStock, ref reference))
             {
@@ -397,7 +390,7 @@ namespace pluginVerilog.Verilog.Expressions
             return true;
         }
 
-        private static void AddOperator(Operator newOperator,List<ExpressionItem> expressioItems, List<Operator> operatorStock)
+        private static void addOperator(Operator newOperator,List<ExpressionItem> expressioItems, List<Operator> operatorStock)
         {
             while (true)
             {

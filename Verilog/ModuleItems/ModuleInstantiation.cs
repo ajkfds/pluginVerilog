@@ -194,7 +194,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                         }
                         if (outPort)
                         {
-                            Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace,true);
+                            Expressions.Expression expression = Expressions.Expression.ParseCreateVariableLValue(word, module as NameSpace);
                         }
                         else
                         {
