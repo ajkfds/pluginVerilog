@@ -586,6 +586,9 @@ namespace pluginVerilog.Verilog
                 case "reg":
                     Verilog.Variables.Reg.ParseCreateFromDeclaration(word, module as NameSpace);
                     break;
+                case "trireg":
+                    Verilog.Variables.Trireg.ParseCreateFromDeclaration(word, module as NameSpace);
+                    break;
                 case "supply0":
                 case "supply1":
                 case "tri":
