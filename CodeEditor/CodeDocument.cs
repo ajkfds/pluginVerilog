@@ -65,7 +65,7 @@ namespace pluginVerilog.CodeEditor
             {
                 Verilog.WordPointer.FetchNext(this, ref headIndex, out length, out nextIndex, out wordType);
                 if (length == 0) break;
-                if (headIndex > index) break;
+                if (headIndex >= index) break;
                 ret.Add(CreateString(headIndex, length));
                 headIndex = nextIndex;
             }
