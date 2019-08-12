@@ -10,7 +10,7 @@ namespace pluginVerilog
     {
         public bool Register()
         {
-            // register filetype
+            // register filetypes
             {
                 FileTypes.VerilogFile fileType = new FileTypes.VerilogFile();
                 codeEditor.Global.FileTypes.Add(fileType.ID, fileType);
@@ -24,19 +24,37 @@ namespace pluginVerilog
                 codeEditor.Global.FileTypes.Add(fileType.ID, fileType);
             }
 
-            // append menu items
+            // append navigate context menu items
             System.Windows.Forms.ContextMenuStrip menu = codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip();
             menu.Items.Insert(0,Global.SetupForm.IcarusVerilogTsmi);
+
+            foreach(var menuItem in menu.Items)
+            {
+                if(menuItem is System.Windows.Forms.ToolStripMenuItem)
+                {
+                    var tsmi = menuItem as System.Windows.Forms.ToolStripMenuItem;
+                    if(tsmi.Text == "Add")
+                    {
+                        tsmi.DropDownItems.Add(Global.SetupForm.CreateVerilogFileTsmi);
+                    }
+                }
+            }
+
+            // register project property creator
+            codeEditor.Data.Project.ProjectPropertyCreated.Add(Id, new Func<codeEditor.Data.Project, codeEditor.Data.ProjectProperty>(
+                (project) => { return new ProjectProperty(project); }
+            ));
 
             return true;
         }
         public bool Initialize()
         {
-            // test rtl project
+            // add test rtl project
             string absolutePath = System.IO.Path.GetFullPath(@"..\\..\\..\\..\\pluginVerilog\\TestRTL");
             codeEditor.Data.Project project = codeEditor.Data.Project.Create(absolutePath);
             codeEditor.Global.Controller.AddProject(project);
 
+            // register project property form tab
             codeEditor.Tools.ProjectPropertyForm.FormCreated += Tools.ProjectPropertyTab.ProjectPropertyFromCreated;
 
             return true;

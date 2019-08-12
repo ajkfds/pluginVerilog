@@ -34,6 +34,8 @@
             this.IcarusVerilogTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.iVerilogRunTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.gtkWaveTsmi = new System.Windows.Forms.ToolStripMenuItem();
+            this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.CreateVerilogFileTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -42,9 +44,10 @@
             // 
             this.contextMenuStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.IcarusVerilogTsmi});
+            this.IcarusVerilogTsmi,
+            this.addToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(241, 67);
+            this.contextMenuStrip.Size = new System.Drawing.Size(241, 97);
             // 
             // IcarusVerilogTsmi
             // 
@@ -58,16 +61,31 @@
             // iVerilogRunTsmi
             // 
             this.iVerilogRunTsmi.Name = "iVerilogRunTsmi";
-            this.iVerilogRunTsmi.Size = new System.Drawing.Size(252, 30);
+            this.iVerilogRunTsmi.Size = new System.Drawing.Size(170, 30);
             this.iVerilogRunTsmi.Text = "Run";
             this.iVerilogRunTsmi.Click += new System.EventHandler(this.IVerilogRunTsmi_Click);
             // 
             // gtkWaveTsmi
             // 
             this.gtkWaveTsmi.Name = "gtkWaveTsmi";
-            this.gtkWaveTsmi.Size = new System.Drawing.Size(252, 30);
+            this.gtkWaveTsmi.Size = new System.Drawing.Size(170, 30);
             this.gtkWaveTsmi.Text = "GTKWave";
             this.gtkWaveTsmi.Click += new System.EventHandler(this.GtkWaveTsmi_Click);
+            // 
+            // addToolStripMenuItem
+            // 
+            this.addToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.CreateVerilogFileTsmi});
+            this.addToolStripMenuItem.Name = "addToolStripMenuItem";
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(240, 30);
+            this.addToolStripMenuItem.Text = "Add";
+            // 
+            // CreateVerilogFileTsmi
+            // 
+            this.CreateVerilogFileTsmi.Name = "CreateVerilogFileTsmi";
+            this.CreateVerilogFileTsmi.Size = new System.Drawing.Size(252, 30);
+            this.CreateVerilogFileTsmi.Text = "VerilogFile";
+            this.CreateVerilogFileTsmi.Click += new System.EventHandler(this.CreateVerilogFileTsmi_Click);
             // 
             // imageList
             // 
@@ -94,5 +112,7 @@
         public System.Windows.Forms.ToolStripMenuItem IcarusVerilogTsmi;
         private System.Windows.Forms.ToolStripMenuItem iVerilogRunTsmi;
         private System.Windows.Forms.ToolStripMenuItem gtkWaveTsmi;
+        private System.Windows.Forms.ToolStripMenuItem addToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem CreateVerilogFileTsmi;
     }
 }

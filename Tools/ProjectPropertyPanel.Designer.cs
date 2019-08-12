@@ -34,11 +34,15 @@
             // 
             // macroTxt
             // 
+            this.macroTxt.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.macroTxt.Font = new System.Drawing.Font("Consolas", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.macroTxt.Location = new System.Drawing.Point(3, 27);
             this.macroTxt.Multiline = true;
             this.macroTxt.Name = "macroTxt";
             this.macroTxt.Size = new System.Drawing.Size(515, 258);
             this.macroTxt.TabIndex = 0;
+            this.macroTxt.Leave += new System.EventHandler(this.MacroTxt_Leave);
             // 
             // label1
             // 

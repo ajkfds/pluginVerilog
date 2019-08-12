@@ -17,7 +17,7 @@ namespace pluginVerilog.SystemVerilog
         {
             get
             {
-                return Project.ProjectProperties[Plugin.StaticID] as ProjectProperty;
+                return Project.GetProjectProperty(Plugin.StaticID) as ProjectProperty;
             }
         }
 

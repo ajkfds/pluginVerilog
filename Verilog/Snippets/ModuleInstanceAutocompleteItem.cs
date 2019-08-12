@@ -28,7 +28,7 @@ namespace pluginVerilog.Verilog.Snippets
             char currentChar = codeDocument.GetCharAt(codeDocument.CaretIndex);
             if (currentChar != '\r' && currentChar != '\n') return;
 
-            ProjectProperty projectProperty = project.ProjectProperties[Plugin.StaticID] as ProjectProperty;
+            ProjectProperty projectProperty = project.GetProjectProperty(Plugin.StaticID) as ProjectProperty;
             string relativePath = projectProperty.GetRelativeFilePathOfModule(Text);
             if (relativePath == "") return;
 

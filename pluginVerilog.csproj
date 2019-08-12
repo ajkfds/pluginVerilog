@@ -80,6 +80,7 @@
     </Compile>
     <Compile Include="Tools\ProjectPropertyTab.cs" />
     <Compile Include="Verilog\Class.cs" />
+    <Compile Include="Verilog\Comment.cs" />
     <Compile Include="Verilog\Delay.cs" />
     <Compile Include="Verilog\Expressions\ExpressionItem.cs" />
     <Compile Include="Verilog\Expressions\String.cs" />

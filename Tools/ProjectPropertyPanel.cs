@@ -17,28 +17,75 @@ namespace pluginVerilog.Tools
             InitializeComponent();
 
             this.project = project;
-            ProjectProperty property = project.ProjectProperties[Plugin.StaticID] as ProjectProperty;
+            ProjectProperty property = project.GetProjectProperty(Plugin.StaticID) as ProjectProperty;
 
-            StringBuilder sb = new StringBuilder();
             foreach (var macro in property.Macros.Values)
             {
-                sb.Append("`define " + macro.Name + " " + macro.MacroText);
+                macros.Add(macro.Name, macro.MacroText);
             }
-            macroTxt.Text = sb.ToString();
+            setTxt();
         }
         codeEditor.Data.Project project;
 
+        private Dictionary<string, string> macros = new Dictionary<string, string>();
+
+        private void setTxt()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var macro in macros)
+            {
+                sb.Append("`define " + macro.Key + " " + macro.Value);
+            }
+            macroTxt.Text = sb.ToString();
+        }
+
+        private void readTxt()
+        {
+            macros.Clear();
+            string[] macroTxts = macroTxt.Text.Split('\n');
+            foreach (string line in macroTxts)
+            {
+                string text = line.Trim(new char[] { '\n', '\r', ' ', '\t' });
+                text = text.Replace("\t", " ");
+                if (!text.StartsWith("`define ")) continue;
+                text = text.Substring("`define ".Length);
+                string name, value;
+                if(text.Contains(" "))
+                {
+                    name = text.Substring(0, text.IndexOf(" "));
+                    value = text.Substring(text.IndexOf(" "));
+                }
+                else
+                {
+                    name = text;
+                    value = "";
+                }
+                if (!macros.ContainsKey(name)) macros.Add(name, value);
+            }
+
+        }
+
         public void PropertyAccept()
         {
-            string[] macros = macroTxt.Text.Split('\n');
-            foreach(string line in macros)
+            readTxt();
+            setTxt();
+            ProjectProperty property = project.GetProjectProperty(Plugin.StaticID) as ProjectProperty;
+
+            property.Macros.Clear();
+            foreach(var macro in macros)
             {
-                string text = line.Trim(new char[] {'\n','\r',' ','\t'});
+                property.Macros.Add(macro.Key, Verilog.Macro.Create(macro.Key,macro.Value));
             }
         }
         public void PropertyCancel()
         {
 
+        }
+
+        private void MacroTxt_Leave(object sender, EventArgs e)
+        {
+            readTxt();
+            setTxt();
         }
     }
 }

@@ -45,5 +45,48 @@ namespace pluginVerilog
         {
 
         }
+
+        private void CreateVerilogFileTsmi_Click(object sender, EventArgs e)
+        {
+            string projectName;
+            string id;
+            codeEditor.Global.Controller.NavigatePanel.GetSelectedNode(out projectName, out id);
+
+            codeEditor.Data.Project project = codeEditor.Global.Projects[projectName];
+            var item = project.GetRegisterdItem(id);
+
+            string path;
+            if(item == null)
+            {
+                path = project.RootPath;
+            }
+            else
+            {
+                path = project.GetAbsolutePath(item.RelativePath);
+            }
+            if (!System.IO.Directory.Exists(path))
+            {
+                path = path.Substring(0, path.LastIndexOf(@"\"));
+                if (!System.IO.Directory.Exists(path))
+                {
+                    return;
+                }
+            }
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.FileName = "new.v";
+            saveFileDialog.InitialDirectory = path;
+            saveFileDialog.Filter = "verilog file (*.v)|*.v";
+            if( codeEditor.Global.Controller.ShowDialogForm(saveFileDialog) == DialogResult.OK)
+            {
+                System.IO.Stream stream = saveFileDialog.OpenFile();
+                using (System.IO.StreamWriter sw = new System.IO.StreamWriter(stream))
+                {
+                    sw.Write("//");
+                }
+            }
+            item.Update();
+
+        }
     }
 }

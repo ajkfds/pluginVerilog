@@ -21,6 +21,8 @@ namespace pluginVerilog.Verilog.Variables
         public WordReference DefinedReference = null;
         public List<WordReference> UsedReferences = new List<WordReference>();
         public List<WordReference> AssignedReferences = new List<WordReference>();
+        public int DisposedIndex = -1;
+
         public virtual ajkControls.ColorLabel GetLabel()
         {
             ajkControls.ColorLabel label = new ajkControls.ColorLabel();

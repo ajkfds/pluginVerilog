@@ -52,7 +52,7 @@ namespace pluginVerilog.MessageView
                     graphics.DrawImage(icon.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Blue), new Point(x, y));
                     break;
                 case Verilog.ParsedDocument.Message.MessageType.Hint:
-                    graphics.DrawImage(icon.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.White), new Point(x, y));
+                    graphics.DrawImage(icon.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Green), new Point(x, y));
                     break;
             }
             Color bgColor = backgroundColor;

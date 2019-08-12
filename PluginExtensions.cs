@@ -10,7 +10,7 @@ namespace pluginVerilog
     {
         public static ProjectProperty GetPluginProperty(this codeEditor.Data.Project project)
         {
-            return project.ProjectProperties[Plugin.StaticID] as ProjectProperty;
+            return project.GetProjectProperty(Plugin.StaticID) as ProjectProperty;
         }
 
     }
