@@ -78,7 +78,9 @@
     <Compile Include="Tools\ProjectPropertyPanel.Designer.cs">
       <DependentUpon>ProjectPropertyPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Tools\ProjectPropertyTab.cs" />
+    <Compile Include="Tools\ProjectPropertyTab.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Verilog\Class.cs" />
     <Compile Include="Verilog\Comment.cs" />
     <Compile Include="Verilog\Delay.cs" />
