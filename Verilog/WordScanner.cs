@@ -134,6 +134,7 @@ namespace pluginVerilog.Verilog
         public void AppendBlock(int startIndex, int lastIndex)
         {
             if (stock.Count != 0) return;
+            if (wordPointer.Document.GetLineAt(startIndex) == wordPointer.Document.GetLineAt(lastIndex)) return;
             wordPointer.AppendBlock(startIndex, lastIndex);
         }
         public void AddError(string message)
