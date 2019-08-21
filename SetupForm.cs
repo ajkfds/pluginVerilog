@@ -85,8 +85,15 @@ namespace pluginVerilog
                     sw.Write("//");
                 }
             }
-            item.Update();
-
+            if(item == null)
+            {
+                project.Update();
+            }
+            else
+            {
+                item.Update();
+            }
+            codeEditor.Global.Controller.NavigatePanel.UpdateVisibleNode();
         }
     }
 }
