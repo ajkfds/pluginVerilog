@@ -287,23 +287,23 @@ namespace pluginVerilog.Verilog
         public static void FetchNext(ajkControls.Document document,ref int index, out int length, out int nextIndex, out WordTypeEnum wordType)
         {
             // skip blanks before word
-            while (document.Length > index && document.GetCharAt(index) < 128 && charClass[document.GetCharAt(index)] == 0)
+
+            int docLength = document.Length;
+            char ch;
+
+            while(docLength > index)
             {
-                index++;
-            }
-            if (index == document.Length)
-            {
-                length = 0;
-                nextIndex = index;
-                wordType = WordTypeEnum.Eof;
-                return;
+                ch = document.GetCharAt(index);
+                if ((ch & 0xff80) == 0 && charClass[ch] == 0) { index++; continue; }
+                break;
             }
 
             length = 0;
             nextIndex = index;
-            if (document.GetCharAt(nextIndex) < 128)
+            ch = document.GetCharAt(nextIndex);
+            if (ch < 128)
             {
-                switch (charClass[document.GetCharAt(nextIndex)])
+                switch (charClass[ch])
                 {
                     case 1: // number
                     case 7: // quote
@@ -313,35 +313,21 @@ namespace pluginVerilog.Verilog
                     case 2: // alphabet
                         wordType = WordTypeEnum.Text;
                         nextIndex++;
-                        while (
-                            document.Length > nextIndex &&
-                            document.GetCharAt(nextIndex) < 128 &&
-                            (
-                                charClass[document.GetCharAt(nextIndex)] == 1 ||
-                                charClass[document.GetCharAt(nextIndex)] == 2 ||
-                                charClass[document.GetCharAt(nextIndex)] == 4 ||
-                                charClass[document.GetCharAt(nextIndex)] == 6
-                            )
-                        )
+                        while (docLength > nextIndex)
                         {
-                            nextIndex++;
+                            ch = document.GetCharAt(nextIndex);
+                            if ((ch & 0xff80) == 0 && charClass1246[ch]) { nextIndex++; continue; }
+                            break;
                         }
                         break;
                     case 6: // backquote (compiler directive)
                         wordType = WordTypeEnum.CompilerDirective;
                         nextIndex++;
-                        while (
-                            document.Length > nextIndex &&
-                            document.GetCharAt(nextIndex) < 128 &&
-                            (
-                                charClass[document.GetCharAt(nextIndex)] == 1 ||
-                                charClass[document.GetCharAt(nextIndex)] == 2 ||
-                                charClass[document.GetCharAt(nextIndex)] == 4 ||
-                                charClass[document.GetCharAt(nextIndex)] == 6
-                            )
-                        )
+                        while (docLength > nextIndex)
                         {
-                            nextIndex++;
+                            ch = document.GetCharAt(nextIndex);
+                            if ((ch & 0xff80) == 0 && charClass1246[ch]) { nextIndex++; continue; }
+                            break;
                         }
                         break;
                     case 3: // operators
@@ -352,7 +338,7 @@ namespace pluginVerilog.Verilog
                         wordType = WordTypeEnum.String;
                         nextIndex++;
                         while (
-                            document.Length > nextIndex
+                            docLength > nextIndex
                         )
                         {
                             if(document.GetCharAt(nextIndex) == '\"')
@@ -367,16 +353,13 @@ namespace pluginVerilog.Verilog
                     case 5: // blackslash
                         wordType = WordTypeEnum.Text;
                         nextIndex++;
-                        while (
-                            document.Length > nextIndex &&
-                            (
-                                document.GetCharAt(nextIndex) != '\n' &&
-                                document.GetCharAt(nextIndex) != '\r' &&
-                                document.GetCharAt(nextIndex) != ' ' &&
-                                document.GetCharAt(nextIndex) != '\t'
-                            )
-                        )
+                        while (docLength > nextIndex)
                         {
+                            ch = document.GetCharAt(nextIndex);
+                            if (ch == '\n') break;
+                            if (ch == '\r') break;
+                            if (ch == ' ') break;
+                            if (ch == '\t') break;
                             nextIndex++;
                         }
                         break;
@@ -395,19 +378,22 @@ namespace pluginVerilog.Verilog
             }
             length = nextIndex - index;
 
-            //while (document.Length > nextIndex && document.GetCharAt(nextIndex) < 128 && charClass[document.GetCharAt(nextIndex)] == 0)
-            //{
-            //    nextIndex++;
-            //}
         }
 
         public static void FetchNextUntilEol(ajkControls.Document document, ref int index, out int length, out int nextIndex, out WordTypeEnum wordType)
         {
+            int docLength = document.Length;
+            char ch;
             // skip blanks before word
-            while (document.Length > index && ( document.GetCharAt(index)=='\t' || document.GetCharAt(index) == ' '))
+
+            while (docLength > index)
             {
-                index++;
+                ch = document.GetCharAt(index);
+                if (ch == '\t') { index++; continue; }
+                if (ch == ' ') { index++; continue; }
+                break;
             }
+
             if (index == document.Length - 1)
             {
                 length = 0;
@@ -421,133 +407,123 @@ namespace pluginVerilog.Verilog
 
             wordType = WordTypeEnum.Text;
             nextIndex++;
-            while (
-                document.Length > nextIndex &&
-                (
-                    document.GetCharAt(nextIndex) != '\n' &&
-                    document.GetCharAt(nextIndex) != '\r'
-                )
-            )
+
+            while (docLength > nextIndex)
             {
+                ch = document.GetCharAt(nextIndex);
+                if (ch == '\r') break;
+                if (ch == '\n') break;
                 nextIndex++;
             }
 
             length = nextIndex - index;
-
-            //while (document.Length > nextIndex && document.GetCharAt(nextIndex) < 128 && charClass[document.GetCharAt(index)] == 0)
-            //{
-            //    nextIndex++;
-            //}
         }
 
         private static void fetchNextAtNumber(ajkControls.Document document, ref int nextIndex, ref WordTypeEnum wordType)
         {
-            //nextIndex++;
-            while (
-                    document.Length > nextIndex &&
-                    document.GetCharAt(nextIndex) < 128 &&
-                    (
-                        charClass[document.GetCharAt(nextIndex)] == 1 ||  // 0-9
-                        document.GetCharAt(nextIndex) == '_'
-                    )
-                )
+            int docLength = document.Length;
+            char ch;
+
+            while (docLength > nextIndex)
             {
-                nextIndex++;
+                ch = document.GetCharAt(nextIndex);
+                if ((ch & 0xff80) != 0) break;
+                if (charClass[ch] == 1) { nextIndex++; continue; }
+                if (ch == '_') { nextIndex++; continue; }
+                break;
             }
-            if (document.Length <= nextIndex) return;
-            if (document.GetCharAt(nextIndex) == '.' | document.GetCharAt(nextIndex) == 'e' || document.GetCharAt(nextIndex) == 'E')
+
+            if (docLength <= nextIndex) return;
+
+            ch = document.GetCharAt(nextIndex);
+            if (ch == '.' | ch == 'e' || ch == 'E')
             { // real
-                if (document.GetCharAt(nextIndex) == '.')
+                if (ch == '.')
                 {
                     nextIndex++;
                     if (document.Length <= nextIndex) return;
-                    while (
-                            document.Length > nextIndex &&
-                            document.GetCharAt(nextIndex) < 128 &&
-                            (
-                                charClass[document.GetCharAt(nextIndex)] == 1 || // 0-9
-                                document.GetCharAt(nextIndex) == '_'
-                            )
-                        )
+
+                    while (docLength > nextIndex)
                     {
-                        nextIndex++;
+                        ch = document.GetCharAt(nextIndex);
+                        if ((ch & 0xff80) != 0) break;
+                        if (charClass[ch] == 1) { nextIndex++; continue; }
+                        if (ch == '_') { nextIndex++; continue; }
+                        break;
                     }
                 }
 
-                if (document.GetCharAt(nextIndex) == 'e' || document.GetCharAt(nextIndex) == 'E')
+                ch = document.GetCharAt(nextIndex);
+                if (ch == 'e' || ch == 'E')
                 {
                     nextIndex++;
                     if (document.Length <= nextIndex) return;
-                    if (document.GetCharAt(nextIndex) == '+' || document.GetCharAt(nextIndex) == '-')
+
+                    ch = document.GetCharAt(nextIndex);
+                    if (ch == '+' || ch == '-')
                     {
                         nextIndex++;
                         if (document.Length <= nextIndex) return;
                     }
-                    while (
-                            document.Length > nextIndex &&
-                            document.GetCharAt(nextIndex) < 128 &&
-                            (
-                                charClass[document.GetCharAt(nextIndex)] == 1 || // 0-9
-                                document.GetCharAt(nextIndex) == '_'
-                            )
-                        )
+                    while (docLength > nextIndex)
                     {
-                        nextIndex++;
+                        ch = document.GetCharAt(nextIndex);
+                        if ((ch & 0xff80) != 0) break;
+                        if (charClass[ch] == 1) { nextIndex++; continue; }
+                        if (ch == '_') { nextIndex++; continue; }
+                        break;
                     }
                 }
             }
-            else if (document.GetCharAt(nextIndex) == '\'')
+            else if (ch == '\'')
             {
                 nextIndex++;
-                if (document.Length <= nextIndex) return;
+                if (docLength <= nextIndex) return;
 
-                while (
-                    document.Length > nextIndex &&
-                    document.GetCharAt(nextIndex) < 128 &&
-                    (
-                        charClass[document.GetCharAt(nextIndex)] == 1 || // 0-9
-                        charClass[document.GetCharAt(nextIndex)] == 2 || // alphabet
-                        document.GetCharAt(nextIndex) == '?' ||
-                        document.GetCharAt(nextIndex) == 'x' ||
-                        document.GetCharAt(nextIndex) == 'X' ||
-                        document.GetCharAt(nextIndex) == 'z' ||
-                        document.GetCharAt(nextIndex) == 'Z'
-                        )
-                    )
+                ch = document.GetCharAt(nextIndex);
+                while (docLength > nextIndex)
                 {
-                    nextIndex++;
+                    ch = document.GetCharAt(nextIndex);
+                    if ((ch & 0xff80) != 0) break;
+                    if (charClass[ch] == 1) { nextIndex++; continue; } // 0-9
+                    if (charClass[ch] == 2) { nextIndex++; continue; } // alphabet
+                    if (ch == '?') { nextIndex++; continue; }
+                    if (ch == 'x') { nextIndex++; continue; }
+                    if (ch == 'X') { nextIndex++; continue; }
+                    if (ch == 'z') { nextIndex++; continue; }
+                    if (ch == 'Z') { nextIndex++; continue; }
+                    break;
                 }
             }
             else
             {
-                while (
-                    document.Length > nextIndex &&
-                    document.GetCharAt(nextIndex) < 128 &&
-                    (
-                        charClass[document.GetCharAt(nextIndex)] == 1 || // 0-9
-                        charClass[document.GetCharAt(nextIndex)] == 2 || // alphabet
-                        document.GetCharAt(nextIndex) == '?' ||
-                        document.GetCharAt(nextIndex) == 'x' ||
-                        document.GetCharAt(nextIndex) == 'X' ||
-                        document.GetCharAt(nextIndex) == 'z' ||
-                        document.GetCharAt(nextIndex) == 'Z'
-                        )
-                    )
+                while (docLength > nextIndex)
                 {
-                    nextIndex++;
+                    ch = document.GetCharAt(nextIndex);
+                    if ((ch & 0xff80) != 0) break;
+                    if (charClass[ch] == 1) { nextIndex++; continue; } // 0-9
+                    if (charClass[ch] == 2) { nextIndex++; continue; } // alphabet
+                    if (ch == '?') { nextIndex++; continue; }
+                    if (ch == 'x') { nextIndex++; continue; }
+                    if (ch == 'X') { nextIndex++; continue; }
+                    if (ch == 'z') { nextIndex++; continue; }
+                    if (ch == 'Z') { nextIndex++; continue; }
+                    break;
                 }
             }
         }
 
         private static void fetchNextAtOperator(ajkControls.Document document, ref int nextIndex, ref WordTypeEnum wordType)
         {
-            if (document.Length > nextIndex + 1 && document.GetCharAt(nextIndex) == '/' && document.GetCharAt(nextIndex + 1) == '*') // "/*"
+            int docLength = document.Length;
+
+            if (docLength > nextIndex + 1 && document.GetCharAt(nextIndex) == '/' && document.GetCharAt(nextIndex + 1) == '*') // "/*"
             { // comment block
                 document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Comment));
                 nextIndex++;
                 document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Comment));
                 nextIndex++;
-                while (document.Length > nextIndex)
+                while (docLength > nextIndex)
                 {
                     document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Comment));
                     if (document.GetCharAt(nextIndex) == '/' && document.GetCharAt(nextIndex - 1) == '*')
@@ -558,65 +534,79 @@ namespace pluginVerilog.Verilog
                     nextIndex++;
                 }
                 wordType = WordTypeEnum.Comment;
+                return;
             }
-            else if (document.Length > nextIndex + 1 && document.GetCharAt(nextIndex) == '/' && document.GetCharAt(nextIndex + 1) == '/') // "//"
+
+            if (docLength > nextIndex + 1 && document.GetCharAt(nextIndex) == '/' && document.GetCharAt(nextIndex + 1) == '/') // "//"
             { // line comment
                 document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Comment));
                 nextIndex++;
                 document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Comment));
                 nextIndex++;
-                while (document.Length > nextIndex && document.GetCharAt(nextIndex) != '\n')
+                while (docLength > nextIndex && document.GetCharAt(nextIndex) != '\n')
                 {
                     document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Comment));
                     nextIndex++;
                 }
-                if (document.Length > nextIndex && document.GetCharAt(nextIndex) == '\n')
+                if (docLength > nextIndex && document.GetCharAt(nextIndex) == '\n')
                 {
                     document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Comment));
                     nextIndex++;
                 }
                 wordType = WordTypeEnum.Comment;
+                return;
             }
-            else if ((document.Length > nextIndex + 2) && // ">>>","<<<","===","!=="
-                (
-                    document.CreateString(nextIndex, 3) == ">>>" ||
-                    document.CreateString(nextIndex, 3) == "<<<" ||
-                    document.CreateString(nextIndex, 3) == "===" ||
-                    document.CreateString(nextIndex, 3) == "!=="
-                )
+
+            string op3 = "";
+            if (docLength > nextIndex + 2)
+            {
+                op3 = document.CreateString(nextIndex, 3);
+            }
+
+            string op2 = "";
+            if (docLength > nextIndex + 1)
+            {
+                op2 = document.CreateString(nextIndex, 2);
+            }
+
+
+            if (
+                    op3 == ">>>" ||
+                    op3 == "<<<" ||
+                    op3 == "===" ||
+                    op3 == "!=="
             )
             {
                 nextIndex = nextIndex + 3;
+                return;
             }
-            else if ((document.Length > nextIndex + 1) && // "==","!=","&&","||",">>","<<","<=",">=","~|","~&","~^","^~","**","(*","*)","//","/*","*/"
-               (
-                   document.CreateString(nextIndex, 2) == "==" ||
-                   document.CreateString(nextIndex, 2) == "!=" ||
-                   document.CreateString(nextIndex, 2) == "&&" ||
-                   document.CreateString(nextIndex, 2) == "||" ||
-                   document.CreateString(nextIndex, 2) == ">>" ||
-                   document.CreateString(nextIndex, 2) == "<<" ||
-                   document.CreateString(nextIndex, 2) == "<=" ||
-                   document.CreateString(nextIndex, 2) == ">=" ||
-                   document.CreateString(nextIndex, 2) == "~|" ||
-                   document.CreateString(nextIndex, 2) == "~&" ||
-                   document.CreateString(nextIndex, 2) == "~^" ||
-                   document.CreateString(nextIndex, 2) == "^~" ||
-                   document.CreateString(nextIndex, 2) == "**" ||
-                   document.CreateString(nextIndex, 2) == "(*" ||
-                   document.CreateString(nextIndex, 2) == "*)" ||
-                   document.CreateString(nextIndex, 2) == "+:" ||
-                   document.CreateString(nextIndex, 2) == "-:" ||
-                   document.CreateString(nextIndex, 2) == "=>"
-               )
-           )
+
+            if (
+                op2 == "==" ||
+                op2 == "!=" ||
+                op2 == "&&" ||
+                op2 == "||" ||
+                op2 == ">>" ||
+                op2 == "<<" ||
+                op2 == "<=" ||
+                op2 == ">=" ||
+                op2 == "~|" ||
+                op2 == "~&" ||
+                op2 == "~^" ||
+                op2 == "^~" ||
+                op2 == "**" ||
+                op2 == "(*" ||
+                op2 == "*)" ||
+                op2 == "+:" ||
+                op2 == "-:" ||
+                op2 == "=>"
+            )
             {
                 nextIndex = nextIndex + 2;
+                return;
             }
-            else
-            {
-                nextIndex++;
-            }
+
+            nextIndex++;
         }
 
         private static byte[] charClass = new byte[128]
@@ -640,6 +630,26 @@ namespace pluginVerilog.Verilog
                     2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,0
         };
 
+        private static bool[] charClass1246 = new bool[128]
+        {
+            //      0,1,2,3,4,5,6,7,8,9,a,b,c,e,d,f
+            // 0*
+                    false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+            // 1*
+                    false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+            // 2*     ! " # $ % & ' ( ) * + , - . /
+                    false,false,true,false,true,false,false,false,false,false,false,false,false,false,false,false,
+            // 3*   0 1 2 3 4 5 6 7 8 9 : ; < = > ?
+                    true,true,true,true,true,true,true,true,true,true,false,false,false,false,false,false,
+            // 4*   @ A B C D E F G H I J K L M N O
+                    false,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,
+            // 5*   P Q R S T U V W X Y Z [ \ ] ^ _
+                    true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,true,
+            // 6*   ` a b c d e f g h i j k l m n o
+                    true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,
+            // 7*   p q r s t u v w x y z { | } ~ 
+                    true,true,true,true,true,true,true,true,true,true,true,false,false,false,false,false
+        };
 
     }
 }
