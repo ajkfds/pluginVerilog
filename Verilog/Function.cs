@@ -246,13 +246,12 @@ namespace pluginVerilog.Verilog
                 word.AddError("endfunction expected");
                 return;
             }
-            else
-            {
-                word.Color(CodeDrawStyle.ColorType.Keyword);
-                function.LastIndex = word.RootIndex;
-                word.MoveNext();
-            }
 
+
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            function.LastIndex = word.RootIndex;
+            word.AppendBlock(function.BeginIndex, function.LastIndex);
+            word.MoveNext();
 
             return;
         }

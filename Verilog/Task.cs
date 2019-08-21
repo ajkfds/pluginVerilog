@@ -206,6 +206,7 @@ namespace pluginVerilog.Verilog
             }
             word.Color(CodeDrawStyle.ColorType.Keyword);
             task.LastIndex = word.RootIndex;
+            word.AppendBlock(task.BeginIndex, task.LastIndex);
             word.MoveNext();
 
             if (word.Prototype)
