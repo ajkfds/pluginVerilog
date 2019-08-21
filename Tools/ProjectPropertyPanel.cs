@@ -34,7 +34,11 @@ namespace pluginVerilog.Tools
             StringBuilder sb = new StringBuilder();
             foreach (var macro in macros)
             {
-                sb.Append("`define " + macro.Key + " " + macro.Value);
+                sb.Append("`define ");
+                sb.Append(macro.Key);
+                sb.Append(" ");
+                sb.Append(macro.Value);
+                sb.Append("\r\n");
             }
             macroTxt.Text = sb.ToString();
         }
