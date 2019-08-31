@@ -199,6 +199,7 @@ namespace pluginVerilog.Verilog
 
         private NameSpace getSearchNameSpace(NameSpace nameSpace,List<string> hier,bool endWithDot)
         {
+            if(nameSpace == null) return null;
             if (hier.Count == 0) return nameSpace;
 
             if (nameSpace.Module.ModuleInstantiations.ContainsKey(hier[0]))

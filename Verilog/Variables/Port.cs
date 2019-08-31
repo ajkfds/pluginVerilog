@@ -442,7 +442,7 @@ namespace pluginVerilog.Verilog.Variables
                 {
                     case portVariableType.reg:
                         variable = new Reg(word.Text, range, signed);
-                        word.Color(CodeDrawStyle.ColorType.Net);
+                        word.Color(CodeDrawStyle.ColorType.Register);
                         break;
                     case portVariableType.integer:
                         variable = new Integer(word.Text);
@@ -505,7 +505,6 @@ namespace pluginVerilog.Verilog.Variables
                 {
                     word.MoveNext();
                     Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
-
                 }
 
                 if (word.GetCharAt(0) != ',')
