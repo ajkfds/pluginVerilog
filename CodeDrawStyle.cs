@@ -29,7 +29,7 @@ namespace pluginVerilog
                 System.Drawing.Color.Orchid,                    // variable-fixed
                 System.Drawing.Color.SandyBrown,                // number
                 System.Drawing.Color.Salmon,                    // variable-light
-                System.Drawing.Color.Green,                     // highlighted comment
+                System.Drawing.Color.FromArgb(0,30,0),          // highlighted comment
                 System.Drawing.Color.Pink,                     // 11
                 System.Drawing.Color.Black,                     // 12
                 System.Drawing.Color.Black,                     // 13

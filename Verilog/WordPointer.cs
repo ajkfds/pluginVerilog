@@ -12,7 +12,9 @@ namespace pluginVerilog.Verilog
         {
             this.Document = document;
             this.ParsedDocument = parsedDocument;
-            FetchNext(this.Document,ref index, out length, out nextIndex, out wordType);
+            string sectionName = SectionName;
+            FetchNext(this.Document,ref index, out length, out nextIndex, out wordType, ref sectionName);
+            SectionName = sectionName;
         }
 
         public void Dispose()
@@ -24,11 +26,17 @@ namespace pluginVerilog.Verilog
         public codeEditor.CodeEditor.CodeDocument Document { get; protected set; }
         public codeEditor.CodeEditor.ParsedDocument ParsedDocument { get; protected set; }
 
+        public string SectionName { get; protected set; }
+
         protected int index = 0;
         protected int length = 0;
         protected int nextIndex;
         protected bool commentSkipped = false;
         protected int commentIndex = -1;
+
+        protected int indexPrev = 0;
+        protected bool commentSkippedPrev = false;
+        protected int commentIndexPrev = -1;
 
         protected WordTypeEnum wordType = WordTypeEnum.Eof;
 
@@ -204,10 +212,16 @@ namespace pluginVerilog.Verilog
 
         public void MoveNext()
         {
+            indexPrev = index;
             index = nextIndex;
             if (Eof) return;
 
-            FetchNext(Document, ref index, out length, out nextIndex, out wordType);
+            string sectionName = SectionName;
+            FetchNext(Document, ref index, out length, out nextIndex, out wordType,ref sectionName);
+            SectionName = sectionName;
+            commentSkippedPrev = commentSkipped;
+            commentIndexPrev = commentIndex;
+
             commentSkipped = false;
             commentIndex = index;
 
@@ -215,9 +229,17 @@ namespace pluginVerilog.Verilog
             {
                 commentSkipped = true;
                 index = nextIndex;
-                FetchNext(Document, ref index, out length, out nextIndex, out wordType);
+                sectionName = SectionName;
+                FetchNext(Document, ref index, out length, out nextIndex, out wordType,ref sectionName);
+                SectionName = sectionName;
             }
             if (!commentSkipped) commentIndex = -1;
+        }
+
+        public string GetPreviousComment()
+        {
+            if (!commentSkippedPrev) return "";
+            return Document.CreateString(commentIndexPrev, indexPrev - commentIndexPrev);
         }
 
         public string GetFollowedComment()
@@ -236,7 +258,9 @@ namespace pluginVerilog.Verilog
             {
                 commentSkipped = true;
                 index = nextIndex;
-                FetchNext(Document, ref index, out length, out nextIndex, out wordType);
+                string sectionName = SectionName;
+                FetchNext(Document, ref index, out length, out nextIndex, out wordType, ref sectionName);
+                SectionName = sectionName;
             }
         }
 
@@ -284,7 +308,12 @@ namespace pluginVerilog.Verilog
             return Document.GetCharAt(index + wordIndex);
         }
 
-        public static void FetchNext(ajkControls.Document document,ref int index, out int length, out int nextIndex, out WordTypeEnum wordType)
+        public static void FetchNext(
+            ajkControls.Document document,
+            ref int index, out int length, out int nextIndex, 
+            out WordTypeEnum wordType,
+            ref string sectionName
+            )
         {
             // skip blanks before word
 
@@ -545,6 +574,11 @@ namespace pluginVerilog.Verilog
                 nextIndex++;
                 while (docLength > nextIndex && document.GetCharAt(nextIndex) != '\n')
                 {
+                    if(document.GetCharAt(nextIndex) == '@')
+                    {
+                        ParseInLineComments(document, ref nextIndex, ref wordType);
+                        continue;
+                    }
                     document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Comment));
                     nextIndex++;
                 }
@@ -607,6 +641,54 @@ namespace pluginVerilog.Verilog
             }
 
             nextIndex++;
+        }
+
+        private static void ParseInLineComments(
+            ajkControls.Document document, 
+            ref int nextIndex, 
+            ref WordTypeEnum wordType
+            )
+        {
+            int docLength = document.Length;
+            char ch;
+            if (docLength <= nextIndex || document.GetCharAt(nextIndex) == '\n') return;
+
+            string target = "@section";
+            int i = 0;
+
+            while (docLength > nextIndex)
+            {
+                ch = document.GetCharAt(nextIndex);
+                if (ch == '\n') break;
+                if (ch != target[i]) break;
+                document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Comment));
+                nextIndex++;
+                i++;
+
+                if(i>= target.Length)
+                {
+                    for(int j = nextIndex-i ; j< nextIndex;j++)
+                    {
+                        document.SetColorAt(j, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.HighLightedComment));
+                    }
+                    while (docLength > nextIndex)
+                    {
+                        ch = document.GetCharAt(nextIndex);
+                        if (ch != ' '&& ch != '\t') break;
+                        nextIndex++;
+                    }
+                    StringBuilder sb = new StringBuilder();
+                    while (docLength > nextIndex)
+                    {
+                        ch = document.GetCharAt(nextIndex);
+                        if (ch == '\n' || ch == '\r') break;
+                        document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.HighLightedComment));
+                        sb.Append(ch);
+                        nextIndex++;
+                    }
+                    break;
+                }
+            }
         }
 
         private static byte[] charClass = new byte[128]

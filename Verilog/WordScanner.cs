@@ -83,6 +83,8 @@ namespace pluginVerilog.Verilog
             nonGeneratedCount--;
         }
 
+        public string Section { get; protected set; }
+
         protected WordPointer wordPointer = null;
         protected List<WordPointer> stock = new List<WordPointer>();
 
@@ -103,18 +105,18 @@ namespace pluginVerilog.Verilog
         {
             if (stock.Count == 0)
             {
-                return new WordReference(wordPointer.Index, wordPointer.Length);
+                return new WordReference(wordPointer.Index, wordPointer.Length, wordPointer.ParsedDocument);
             }
             else
             {
-                return new WordReference(stock[0].Index, stock[0].Length);
+                return new WordReference(stock[0].Index, stock[0].Length, wordPointer.ParsedDocument);
             }
             //            return new WordReference(wordPointer.Document, wordPointer.ParsedDocument, wordPointer.Index, wordPointer.Length);
         }
 
         public WordReference GetReference(WordReference fromReference)
         {
-            return new WordReference(fromReference.Index, wordPointer.Index + wordPointer.Length - fromReference.Index);
+            return new WordReference(fromReference.Index, wordPointer.Index + wordPointer.Length - fromReference.Index, wordPointer.ParsedDocument);
             //if (fromReference.Document == wordPointer.Document)
             //{
             //    return new WordReference(wordPointer.Document, wordPointer.ParsedDocument, fromReference.Index, wordPointer.Index + wordPointer.Length - fromReference.Index);
@@ -203,6 +205,14 @@ namespace pluginVerilog.Verilog
                 if (Text == stopWord) return;
                 if (General.ListOfStatementStopKeywords.Contains(Text)) return;
                 MoveNext();
+            }
+        }
+
+        public string SectionName
+        {
+            get
+            {
+                return wordPointer.SectionName;
             }
         }
 
@@ -327,14 +337,6 @@ namespace pluginVerilog.Verilog
                 wordPointer.MoveNext();
                 recheckWord();
                 string text = wordPointer.Text;
-
-                //wordPointer.MoveNext();
-                //while (!wordPointer.Eof && wordPointer.WordType == WordPointer.WordTypeEnum.Comment)
-                //{
-                //    wordPointer.MoveNext();
-                //}
-                //string text = wordPointer.Text;
-
 
                 wordPointer = _wp;
                 nonGeneratedCount = _nonGeneratedCount;
@@ -824,8 +826,11 @@ namespace pluginVerilog.Verilog
             }
             vhFile.ParsedDocument = new codeEditor.CodeEditor.ParsedDocument(RootParsedDocument.Project, id, -1);
 
+            wordPointer.ParsedDocument.ShouldDisposeObjects.Add(vhFile.ParsedDocument);
+
             WordPointer newPointer = new WordPointer(vhFile.CodeDocument, vhFile.ParsedDocument);
             stock.Add(wordPointer);
+
             wordPointer = newPointer;
 
             if (wordPointer.Eof)
