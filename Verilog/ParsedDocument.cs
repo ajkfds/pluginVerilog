@@ -16,7 +16,6 @@ namespace pluginVerilog.Verilog
         public Dictionary<string, Data.VerilogHeaderFile> IncludeFiles = new Dictionary<string, Data.VerilogHeaderFile>();
         public Dictionary<string, Macro> Macros = new Dictionary<string, Macro>();
 
-        public List<WordReference> DisposeReferences = new List<WordReference>();
 
         public ProjectProperty ProjectProperty
         {
@@ -44,13 +43,12 @@ namespace pluginVerilog.Verilog
 
         public override void Dispose()
         {
-            base.Dispose();
-
             Data.VerilogFile verilogFile = Project.GetRegisterdItem(ItemID) as Data.VerilogFile;
             foreach (Verilog.Module module in Modules.Values)
             {
                 verilogFile.ProjectProperty.RemoveModule(verilogFile.RelativePath, module.Name);
             }
+            base.Dispose();
         }
 
         public int ErrorCount = 0;
