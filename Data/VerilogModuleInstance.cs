@@ -8,8 +8,9 @@ namespace pluginVerilog.Data
 {
     public class VerilogModuleInstance : codeEditor.Data.File, codeEditor.Data.ITextFile
     {
-        public new static VerilogModuleInstance Create(string relativePath, codeEditor.Data.Project project)
+        public new static VerilogModuleInstance Create( string relativePath, codeEditor.Data.Project project)
         {
+
             string id = GetID(relativePath, project);
             if (project.IsRegistered(id))
             {
