@@ -88,7 +88,6 @@
     <Compile Include="Verilog\Expressions\String.cs" />
     <Compile Include="Verilog\Generate.cs" />
     <Compile Include="Verilog\Macro.cs" />
-    <Compile Include="Verilog\ModuleInstance.cs" />
     <Compile Include="Verilog\ModuleItems\ContinuousAssign.cs" />
     <Compile Include="Data\VerilogFile.cs" />
     <Compile Include="Data\VerilogHeaderFile.cs" />
