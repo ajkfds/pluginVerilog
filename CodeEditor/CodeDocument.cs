@@ -31,12 +31,13 @@ namespace pluginVerilog.CodeEditor
 
             int nextIndex;
             Verilog.WordPointer.WordTypeEnum wordType;
-            Verilog.WordPointer.FetchNext(this, ref headIndex, out length, out nextIndex, out wordType);
+            string sectionName = "";
+            Verilog.WordPointer.FetchNext(this, ref headIndex, out length, out nextIndex, out wordType,ref sectionName);
 
             while(nextIndex <= index && index < Length)
             {
                 headIndex = nextIndex;
-                Verilog.WordPointer.FetchNext(this, ref headIndex, out length, out nextIndex, out wordType);
+                Verilog.WordPointer.FetchNext(this, ref headIndex, out length, out nextIndex, out wordType,ref sectionName);
             }
         }
 
@@ -60,10 +61,11 @@ namespace pluginVerilog.CodeEditor
                 }
             }
 
+            string sectioName = "";
             // get words on the index line until index
             while (headIndex < Length)
             {
-                Verilog.WordPointer.FetchNext(this, ref headIndex, out length, out nextIndex, out wordType);
+                Verilog.WordPointer.FetchNext(this, ref headIndex, out length, out nextIndex, out wordType,ref sectioName);
                 if (length == 0) break;
                 if (headIndex >= index) break;
                 ret.Add(CreateString(headIndex, length));
