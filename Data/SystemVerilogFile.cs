@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Data
 {
-    public class SystemVerilogFile : VerilogFile
+    public class SystemVerilogFile : VerilogFile, IVerilogRelatedFile
     {
         public new static SystemVerilogFile Create(string relativePath, codeEditor.Data.Project project)
         {

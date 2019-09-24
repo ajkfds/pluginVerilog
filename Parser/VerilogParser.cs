@@ -19,11 +19,27 @@ namespace pluginVerilog.Parser
             word = new Verilog.WordScanner(this.document, parsedDocument,false);
         }
 
+        public VerilogParser(
+            codeEditor.CodeEditor.CodeDocument document,
+            string moduleName,
+            Dictionary<string, Verilog.Expressions.Expression> parameterOverrides,
+            string id, codeEditor.Data.Project project,
+            codeEditor.CodeEditor.DocumentParser.ParseModeEnum parseMode
+            ) : base(document, id, project, parseMode)
+        {
+            this.moduleName = moduleName;
+            this.parameterOverrides = parameterOverrides;
+            parsedDocument = new Verilog.ParsedDocument(project, id, document.EditID);
+            word = new Verilog.WordScanner(this.document, parsedDocument, false);
+        }
+
         public Verilog.WordScanner word;
         private Verilog.ParsedDocument parsedDocument = null;
 
         public override ParsedDocument ParsedDocument { get { return parsedDocument as codeEditor.CodeEditor.ParsedDocument; } }
 
+        private string moduleName;
+        private Dictionary<string, Verilog.Expressions.Expression> parameterOverrides;
 
         /*
         source_text ::= { description }
@@ -53,11 +69,25 @@ namespace pluginVerilog.Parser
                     Verilog.Module module;
                     if (ParseMode == ParseModeEnum.LoadParse)
                     {
-                        module = Verilog.Module.Create(word, null, parsedDocument.ItemID, true);
+                        if(moduleName == null)
+                        {
+                            module = Verilog.Module.Create(word, null, parsedDocument.ItemID, true);
+                        }
+                        else
+                        {
+                            module = Verilog.Module.Create(word, moduleName,parameterOverrides, null, parsedDocument.ItemID, true);
+                        }
                     }
                     else
                     {
-                        module = Verilog.Module.Create(word, null, parsedDocument.ItemID, false);
+                        if (moduleName == null)
+                        {
+                            module = Verilog.Module.Create(word, null, parsedDocument.ItemID, false);
+                        }
+                        else
+                        {
+                            module = Verilog.Module.Create(word, moduleName, parameterOverrides, null, parsedDocument.ItemID, false);
+                        }
                     }
                     if (!parsedDocument.Modules.ContainsKey(module.Name))
                     {

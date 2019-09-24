@@ -27,6 +27,64 @@ namespace pluginVerilog
             }
         }
 
+        // VerilogModuleParsedData
+
+        private Dictionary<string, codeEditor.CodeEditor.ParsedDocument> pdocs = new Dictionary<string, codeEditor.CodeEditor.ParsedDocument>();
+        public IReadOnlyDictionary<string, codeEditor.CodeEditor.ParsedDocument> VerilogModuleInstanceParsedDocuments
+        {
+            get
+            {
+                return pdocs;
+            }
+        }
+        public void RegisterParsedDocument(string ID,codeEditor.CodeEditor.ParsedDocument parsedDocument)
+        {
+            if (pdocs.ContainsKey(ID))
+            {
+                pdocs.Remove(ID);
+            }
+            pdocs.Add(ID, parsedDocument);
+        }
+
+        public void RemoveRegisteredParsedDocument(string ID,codeEditor.CodeEditor.ParsedDocument parsedDocument)
+        {
+            if (pdocs.ContainsKey(ID))
+            {
+                pdocs.Remove(ID);
+            }
+            else
+            {
+                System.Diagnostics.Debugger.Break();
+            }
+        }
+
+        public bool IsRegisteredParsedDocument(string ID)
+        {
+            if (pdocs.ContainsKey(ID))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public codeEditor.CodeEditor.ParsedDocument GetParsedDocument(string id)
+        {
+            if (id == null) System.Diagnostics.Debugger.Break();
+
+            if (pdocs.ContainsKey(id))
+            {
+                return pdocs[id];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+
         // module reference table
         private Dictionary<string, string> relativeFilePathWithModuleName = new Dictionary<string, string>();
 

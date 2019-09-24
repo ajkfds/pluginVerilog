@@ -13,12 +13,13 @@ namespace pluginVerilog.Verilog.ModuleItems
         public string ModuleName{ get; protected set; }
 
         private List<Verilog.Variables.Port> ports = new List<Variables.Port>();
+
+        public Dictionary<string, Expressions.Expression> ParameterOverrides = new Dictionary<string, Expressions.Expression>();
         public IReadOnlyList<Verilog.Variables.Port> Ports { get { return ports; } }
         public int BeginIndex;
         public int LastIndex;
         public static void Parse(WordScanner word, IModuleOrGeneratedBlock module)
         {
-
             WordScanner moduleIdentifier = word.Clone();
             string moduleName = word.Text;
             int beginIndex = word.RootIndex;
@@ -31,6 +32,15 @@ namespace pluginVerilog.Verilog.ModuleItems
                 return;
             }
             moduleIdentifier.Color(CodeDrawStyle.ColorType.Keyword);
+            ModuleInstantiation moduleInstantiation = new ModuleInstantiation();
+            moduleInstantiation.ModuleName = moduleName;
+            moduleInstantiation.BeginIndex = beginIndex;
+            moduleInstantiation.Project = word.RootParsedDocument.Project;
+            Module instancedModule = word.RootParsedDocument.ProjectProperty.GetModule(moduleName);
+            if(instancedModule == null)
+            {
+                word.AddError("not defined");
+            }
 
             if (word.Text == "#") // parameter
             {
@@ -48,9 +58,16 @@ namespace pluginVerilog.Verilog.ModuleItems
                 { // named parameter assignment
                     while (!word.Eof && word.Text == ".")
                     {
+                        bool error = false;
                         word.MoveNext();
                         word.Color(CodeDrawStyle.ColorType.Paramater);
+                        string paramName = word.Text;
+                        if (instancedModule != null && !instancedModule.PortParameterNameList.Contains(paramName)){
+                            word.AddError("illegal parameter name");
+                            error = true;
+                        }
                         word.MoveNext();
+
                         if (word.Text != "(")
                         {
                             word.AddError("( expected");
@@ -60,6 +77,27 @@ namespace pluginVerilog.Verilog.ModuleItems
                             word.MoveNext();
                         }
                         Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
+                        if(expression == null)
+                        {
+                            error = true;
+                        }else if (!expression.Constant)
+                        {
+                            word.AddError("port parameter should be constant");
+                            error = true;
+                        }
+
+                        if (!error & word.Prototype)
+                        {
+                            if (moduleInstantiation.ParameterOverrides.ContainsKey(paramName))
+                            {
+                                word.AddError("duplicated");
+                            }
+                            else
+                            {
+                                moduleInstantiation.ParameterOverrides.Add(paramName, expression);
+                            }
+                        }
+
                         if (word.Text != ")")
                         {
                             word.AddError(") expected");
@@ -80,9 +118,34 @@ namespace pluginVerilog.Verilog.ModuleItems
                 }
                 else
                 { // ordered paramater assignment
+                    int i = 0;
                     while (!word.Eof && word.Text != ")")
                     {
                         Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
+                        if(instancedModule != null)
+                        {
+                            if (i >= instancedModule.PortParameterNameList.Count)
+                            {
+                                word.AddError("too many parameters");
+                            }
+                            else
+                            {
+                                string paramName = instancedModule.PortParameterNameList[i];
+                                if (word.Prototype && expression != null)
+                                {
+                                    if (moduleInstantiation.ParameterOverrides.ContainsKey(paramName))
+                                    {
+                                        word.AddError("duplicated");
+                                    }
+                                    else
+                                    {
+                                        moduleInstantiation.ParameterOverrides.Add(paramName, expression);
+                                    }
+                                }
+                            }
+
+                        }
+                        i++;
                         if (word.Text != ",")
                         {
                             break;
@@ -105,11 +168,6 @@ namespace pluginVerilog.Verilog.ModuleItems
 
             while (!word.Eof)
             {
-                ModuleInstantiation moduleInstantiation = new ModuleInstantiation();
-                moduleInstantiation.ModuleName = moduleName;
-                moduleInstantiation.BeginIndex = beginIndex;
-
-                Module instancedModule = word.RootParsedDocument.ProjectProperty.GetModule(moduleName);
 
                 word.Color(CodeDrawStyle.ColorType.Identifier);
                 if (General.IsIdentifier(word.Text))
@@ -252,6 +310,57 @@ namespace pluginVerilog.Verilog.ModuleItems
                 return;
             }
             word.MoveNext();
+        }
+
+
+        public new string ToString()
+        {
+            return ToString("\t");
+
+        }
+        public string ToString(string indent)
+        {
+            Module instancedModule = ProjectProperty.GetModule(ModuleName);
+            if (instancedModule == null) return null;
+
+            StringBuilder sb = new StringBuilder();
+            bool first;
+
+            sb.Append(ModuleName);
+            sb.Append(" ");
+
+            if(instancedModule.PortParameterNameList.Count == 0)
+            {
+                sb.Append("#(\r\n");
+
+                first = true;
+                foreach(var paramName in instancedModule.PortParameterNameList)
+                {
+                    if (!first) sb.Append(",\r\n");
+                    sb.Append(indent);
+                    sb.Append(".");
+                    sb.Append(paramName);
+                    sb.Append("\t(");
+                    sb.Append(")");
+                }
+                sb.Append("\r\n)");
+            }
+
+            first = true;
+            foreach (var port in instancedModule.Ports.Values)
+            {
+                if (!first) sb.Append(",\r\n");
+                sb.Append(indent);
+                sb.Append(".");
+                sb.Append(port.Name);
+                sb.Append("\t");
+                sb.Append("(");
+                sb.Append(")");
+            }
+            sb.Append("\r\n);");
+
+
+            return sb.ToString();
         }
 
         /*

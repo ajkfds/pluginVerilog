@@ -13,6 +13,13 @@ namespace pluginVerilog.NavigatePanel
         {
 
         }
+        public override codeEditor.Data.File FileItem
+        {
+            get {
+                Data.VerilogModuleInstance instance = Project.GetRegisterdItem(ID) as Data.VerilogModuleInstance;
+                return Project.GetRegisterdItem(Data.VerilogFile.GetID(instance.RelativePath, Project)) as Data.VerilogFile;
+            }
+        }
 
         public codeEditor.Data.ITextFile ITextFile
         {
@@ -21,12 +28,18 @@ namespace pluginVerilog.NavigatePanel
 
         public virtual Data.VerilogFile VerilogFile
         {
-            get { return Project.GetRegisterdItem(ID) as Data.VerilogFile; }
+            get {
+                Data.VerilogModuleInstance instance = Project.GetRegisterdItem(ID) as Data.VerilogModuleInstance;
+                return Project.GetRegisterdItem(Data.VerilogFile.GetID(instance.RelativePath, Project)) as Data.VerilogFile;
+            }
         }
 
         public override string Text
         {
-            get { return FileItem.Name; }
+            get {
+                Data.VerilogModuleInstance instance = Project.GetRegisterdItem(ID) as Data.VerilogModuleInstance;
+                return instance.Name + " - " + instance.ModuleName;
+            }
         }
 
         public override void DrawNode(Graphics graphics, int x, int y, Font font, Color color, Color backgroundColor, Color selectedColor, int lineHeight, bool selected)
@@ -52,7 +65,11 @@ namespace pluginVerilog.NavigatePanel
 
         public override void Selected()
         {
-            codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip().Items["icarusVerilogSimulationTsmi"].Visible = true;
+            var menu = codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip();
+            if (menu.Items.ContainsKey("icarusVerilogSimulationTsmi"))
+            {
+                menu.Items["icarusVerilogSimulationTsmi"].Visible = true;
+            }
             codeEditor.Global.Controller.CodeEditor.SetTextFile(ITextFile);
         }
 

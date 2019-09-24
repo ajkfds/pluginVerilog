@@ -39,7 +39,6 @@ namespace pluginVerilog.Verilog.Variables
             }
             else
             {
-
                 System.Diagnostics.Debugger.Break();
             }
             word.Color(CodeDrawStyle.ColorType.Keyword);
@@ -134,6 +133,8 @@ namespace pluginVerilog.Verilog.Variables
                                 param.Name = identifier;
                                 param.Expression = expression;
                                 module.Parameters.Add(param.Name, param);
+
+                                module.PortParameterNameList.Add(identifier);
                             }
                         }
                         else

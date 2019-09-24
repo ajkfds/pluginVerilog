@@ -127,6 +127,7 @@
     <Compile Include="Verilog\Popup\VariablePopup.cs" />
     <Compile Include="Verilog\IPortNameSpace.cs" />
     <Compile Include="Verilog\Snippets\AlwaysFFSnippet.cs" />
+    <Compile Include="Verilog\Snippets\AutoCorrectSnippet.cs" />
     <Compile Include="Verilog\Snippets\BeginAutoCompleteItem.cs" />
     <Compile Include="Verilog\Snippets\FunctionAutocompleteItem.cs" />
     <Compile Include="Verilog\Snippets\GenerateAutoCompleteItem.cs" />

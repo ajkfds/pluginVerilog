@@ -8,7 +8,7 @@ using codeEditor.Data;
 
 namespace pluginVerilog.Data
 {
-    public class VerilogFile : codeEditor.Data.File, codeEditor.Data.ITextFile
+    public class VerilogFile : codeEditor.Data.File, codeEditor.Data.ITextFile, IVerilogRelatedFile
     {
         public new static VerilogFile Create(string relativePath, codeEditor.Data.Project project)
         {
@@ -110,8 +110,6 @@ namespace pluginVerilog.Data
             return new NavigatePanel.VerilogFileNode(ID, Project);
         }
 
-
-
         public override void Update()
         {
             if(VerilogParsedDocument == null)
@@ -132,7 +130,13 @@ namespace pluginVerilog.Data
                 {
                     string relativeFile = ProjectProperty.GetRelativeFilePathOfModule(moduleInstantiation.ModuleName);
                     if (relativeFile == null) continue;
-                    ids.Add(Data.VerilogFile.GetID(relativeFile, Project));
+                    string id = Data.VerilogModuleInstance.GetID(relativeFile,moduleInstantiation.Name, moduleInstantiation.ParameterOverrides, Project);
+                    if (!Project.IsRegistered(id))
+                    {
+                        Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
+                    }
+                    ids.Add(id);
+                    //                    ids.Add(Data.VerilogFile.GetID(relativeFile, Project));
                 }
             }
 
@@ -147,6 +151,7 @@ namespace pluginVerilog.Data
             foreach (codeEditor.Data.Item item in removeItems)
             {
                 items.Remove(item.ID);
+                item.DisposeItem();
             }
 
             // add new items
@@ -207,6 +212,7 @@ namespace pluginVerilog.Data
         {
             List<codeEditor.CodeEditor.ToolItem> toolItems = new List<codeEditor.CodeEditor.ToolItem>();
             toolItems.Add(new Verilog.Snippets.AlwaysFFSnippet());
+            toolItems.Add(new Verilog.Snippets.AutoCorrectSnippet());
             return toolItems;
         }
 

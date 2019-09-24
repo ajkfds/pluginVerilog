@@ -624,7 +624,7 @@ namespace pluginVerilog.Verilog
 
             // search in same folder with original verilog file
             string fileID = wordPointer.ParsedDocument.ItemID;
-            codeEditor.Data.File file = wordPointer.ParsedDocument.Project.GetRegisterdItem(fileID) as codeEditor.Data.File;
+            var file = wordPointer.ParsedDocument.Project.GetRegisterdItem(fileID) as Data.IVerilogRelatedFile;
 
             if(file == null)
             {

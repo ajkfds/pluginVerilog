@@ -3,15 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using codeEditor.CodeEditor;
+using codeEditor.Data;
 
 namespace pluginVerilog.Data
 {
-    public class VerilogModuleInstance : codeEditor.Data.File, codeEditor.Data.ITextFile
+    public class VerilogModuleInstance : codeEditor.Data.Item, codeEditor.Data.ITextFile, IVerilogRelatedFile
     {
-        public new static VerilogModuleInstance Create( string relativePath, codeEditor.Data.Project project)
+        public static VerilogModuleInstance Create( Verilog.ModuleItems.ModuleInstantiation moduleInstantiation, codeEditor.Data.Project project)
         {
+            ProjectProperty projectPropery = project.GetProjectProperty(Plugin.StaticID) as ProjectProperty;
+            string relativePath = projectPropery.GetRelativeFilePathOfModule(moduleInstantiation.ModuleName);
 
-            string id = GetID(relativePath, project);
+            string id = GetID(relativePath,moduleInstantiation.Name,moduleInstantiation.ParameterOverrides,project);
             if (project.IsRegistered(id))
             {
                 VerilogModuleInstance item = project.GetRegisterdItem(id) as VerilogModuleInstance;
@@ -20,22 +24,67 @@ namespace pluginVerilog.Data
             }
 
             VerilogModuleInstance fileItem = new VerilogModuleInstance();
+            fileItem.ParameterOverrides = moduleInstantiation.ParameterOverrides;
             fileItem.Project = project;
             fileItem.ID = id;
             fileItem.RelativePath = relativePath;
-            if (relativePath.Contains('\\'))
-            {
-                fileItem.Name = relativePath.Substring(relativePath.LastIndexOf('\\') + 1);
-            }
-            else
-            {
-                fileItem.Name = relativePath;
-            }
+            fileItem.Name = moduleInstantiation.Name;
+            fileItem.ModuleName = moduleInstantiation.ModuleName;
+            //if (relativePath.Contains('\\'))
+            //{
+            //    fileItem.Name = relativePath.Substring(relativePath.LastIndexOf('\\') + 1);
+            //}
+            //else
+            //{
+            //    fileItem.Name = relativePath;
+            //}
             fileItem.ParseRequested = true;
 
             project.RegisterProjectItem(fileItem);
             return fileItem;
         }
+
+        public string ModuleName { set; get; }
+
+        public static string GetID(string relativePath,string instanceName,Dictionary<string,Verilog.Expressions.Expression> parameterOverrides ,codeEditor.Data.Project project)
+        {
+            if(parameterOverrides.Count == 0) return project.ID + ":ModuleInstance:"+instanceName+":"+ relativePath;
+            StringBuilder sb = new StringBuilder();
+            sb.Append(project.ID);
+            sb.Append(":ModuleInstance:");
+            sb.Append(instanceName);
+            sb.Append(":");
+            sb.Append(relativePath);
+            sb.Append(":");
+            foreach (var kvp in parameterOverrides)
+            {
+                sb.Append(kvp.Key);
+                sb.Append("=");
+                sb.Append(kvp.Value.ToString());
+                sb.Append(",");
+            }
+            return sb.ToString();
+        }
+
+        public static string GetParsedDocumentID(string relativePath, Dictionary<string, Verilog.Expressions.Expression> parameterOverrides, codeEditor.Data.Project project)
+        {
+            if (parameterOverrides.Count == 0) return project.ID + ":ModuleInstance:" + relativePath;
+            StringBuilder sb = new StringBuilder();
+            sb.Append(project.ID);
+            sb.Append(":ModuleInstance:");
+            sb.Append(relativePath);
+            sb.Append(":");
+            foreach (var kvp in parameterOverrides)
+            {
+                sb.Append(kvp.Key);
+                sb.Append("=");
+                sb.Append(kvp.Value.ToString());
+                sb.Append(",");
+            }
+            return sb.ToString();
+        }
+
+        public Dictionary<string, Verilog.Expressions.Expression> ParameterOverrides;
 
         private volatile bool parseRequested = false;
         public bool ParseRequested { get { return parseRequested; } set { parseRequested = value; } }
@@ -44,9 +93,57 @@ namespace pluginVerilog.Data
         public bool ReloadRequested { get { return reloadRequested; } set { reloadRequested = value; } }
         public void Reload()
         {
-            CodeDocument = null;
+            Item item;
+            if (Project.Items.TryGetValue(Data.VerilogFile.GetID(RelativePath, Project), out item))
+            {
+                (item as VerilogFile).Reload();
+            }
         }
-        public codeEditor.CodeEditor.ParsedDocument ParsedDocument { get; set; }
+            
+        public codeEditor.CodeEditor.ParsedDocument ParsedDocument {
+            get
+            {
+                string id;
+                if(ParameterOverrides.Count == 0)
+                {
+                    id = Data.VerilogFile.GetID(RelativePath, Project);
+                    return (Project.GetRegisterdItem(id) as VerilogFile).ParsedDocument;
+                }
+                else
+                {
+                    id = GetParsedDocumentID(RelativePath, ParameterOverrides, Project);
+                    if (ProjectProperty.IsRegisteredParsedDocument(id))
+                    {
+                        return (Project.GetRegisterdItem(id) as VerilogFile).ParsedDocument;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+            set
+            {
+                string id;
+                if (ParameterOverrides.Count == 0)
+                {
+                    id = Data.VerilogFile.GetID(RelativePath, Project);
+                    (Project.GetRegisterdItem(id) as VerilogFile).ParsedDocument = value;
+                }
+                else
+                {
+                    id = GetParsedDocumentID(RelativePath, ParameterOverrides, Project);
+                    if (ProjectProperty.IsRegisteredParsedDocument(id))
+                    {
+                        (Project.GetRegisterdItem(id) as VerilogFile).ParsedDocument = value;
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+           }
+        }
 
         public Verilog.ParsedDocument VerilogParsedDocument
         {
@@ -64,34 +161,20 @@ namespace pluginVerilog.Data
             }
         }
 
-        private codeEditor.CodeEditor.CodeDocument document = null;
         public codeEditor.CodeEditor.CodeDocument CodeDocument
         {
             get
             {
-                if (document == null)
+                string id = Data.VerilogFile.GetID(RelativePath, Project);
+                Item item = Project.GetRegisterdItem(id);
+                if(item is VerilogFile)
                 {
-                    try
-                    {
-                        using (System.IO.StreamReader sr = new System.IO.StreamReader(Project.GetAbsolutePath(RelativePath)))
-                        {
-                            document = new CodeEditor.CodeDocument();
-                            string text = sr.ReadToEnd();
-                            document.Replace(0, 0, 0, text);
-                            document.ParentID = ID;
-                            document.ClearHistory();
-                        }
-                    }
-                    catch
-                    {
-                        document = null;
-                    }
+                    return (item as VerilogFile).CodeDocument;
                 }
-                return document;
-            }
-            protected set
-            {
-                document = value;
+                else
+                {
+                    return null;
+                }
             }
         }
 
@@ -105,12 +188,22 @@ namespace pluginVerilog.Data
 
         public override codeEditor.NavigatePanel.NavigatePanelNode CreateNode()
         {
-            return new NavigatePanel.VerilogFileNode(ID, Project);
+            return new NavigatePanel.VerilogModuleInstanceNode(ID, Project);
         }
 
         public virtual codeEditor.CodeEditor.DocumentParser CreateDocumentParser(codeEditor.CodeEditor.CodeDocument document, string id, codeEditor.Data.Project project,codeEditor.CodeEditor.DocumentParser.ParseModeEnum parseMode)
         {
-            return new Parser.VerilogParser(document, id, project,parseMode);
+            if(ParameterOverrides.Count == 0)
+            {
+                return new Parser.VerilogParser(document, id, project, parseMode);
+            }
+            else
+            {
+                return new Parser.VerilogParser(document,
+                    ModuleName,
+                    ParameterOverrides,
+                    id, project, parseMode);
+            }
         }
 
 
@@ -334,5 +427,5 @@ namespace pluginVerilog.Data
                 return true;
             }
 
-        }
     }
+}

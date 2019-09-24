@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using codeEditor.CodeEditor;
+using codeEditor.Data;
+using pluginVerilog.Verilog;
 
 namespace pluginVerilog.Data
 {
 
-    public class VerilogHeaderFile : codeEditor.Data.File, codeEditor.Data.ITextFile
+    public class VerilogHeaderFile : codeEditor.Data.File, codeEditor.Data.ITextFile, IVerilogRelatedFile
     {
         public new static VerilogHeaderFile Create(string relativePath, codeEditor.Data.Project project)
         {
@@ -46,6 +49,15 @@ namespace pluginVerilog.Data
         {
             CodeDocument = null;
         }
+
+        public ProjectProperty ProjectProperty
+        {
+            get
+            {
+                return Project.GetProjectProperty(Plugin.StaticID) as ProjectProperty;
+            }
+        }
+
         public static VerilogHeaderFile CreateInstance(string relativePath, string ID, codeEditor.Data.Project project)
         {
             if (project.IsRegistered(ID))
@@ -113,6 +125,14 @@ namespace pluginVerilog.Data
             }
         }
 
+        public Verilog.ParsedDocument VerilogParsedDocument
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public override codeEditor.NavigatePanel.NavigatePanelNode CreateNode()
         {
             return new NavigatePanel.VerilogHeaderNode(ID, Project);
@@ -123,36 +143,39 @@ namespace pluginVerilog.Data
             return null;
         }
 
-        public virtual void AfterKeyPressed(System.Windows.Forms.KeyPressEventArgs e)
+        public void AfterKeyPressed(KeyPressEventArgs e)
         {
-
-        }
-        public virtual void AfterKeyDown(System.Windows.Forms.KeyEventArgs e)
-        {
-
-        }
-        public virtual void BeforeKeyPressed(System.Windows.Forms.KeyPressEventArgs e)
-        {
+            throw new NotImplementedException();
         }
 
-        public virtual void BeforeKeyDown(System.Windows.Forms.KeyEventArgs e)
+        public void AfterKeyDown(KeyEventArgs e)
         {
+            throw new NotImplementedException();
         }
 
-        public List<codeEditor.CodeEditor.PopupItem> GetPopupItems(int EditId, int index)
+        public void BeforeKeyPressed(KeyPressEventArgs e)
         {
-            return null;
+            throw new NotImplementedException();
         }
 
-        public List<AutocompleteItem> GetAutoCompleteItems(int index,out string cantidateWord)
+        public void BeforeKeyDown(KeyEventArgs e)
         {
-            cantidateWord = null;
-            return null;
-        }
-        public List<codeEditor.CodeEditor.ToolItem> GetToolItems(int index)
-        {
-            return null;
+            throw new NotImplementedException();
         }
 
+        public List<PopupItem> GetPopupItems(int EditId, int index)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<AutocompleteItem> GetAutoCompleteItems(int index, out string cantidateText)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<ToolItem> GetToolItems(int index)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

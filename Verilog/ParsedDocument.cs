@@ -21,8 +21,8 @@ namespace pluginVerilog.Verilog
         {
             get
             {
-                Data.VerilogFile verilogFile = Project.GetRegisterdItem(ItemID) as Data.VerilogFile;
-                return verilogFile.ProjectProperty;
+                Data.IVerilogRelatedFile file = Project.GetRegisterdItem(ItemID) as Data.IVerilogRelatedFile;
+                return file.ProjectProperty;
             }
         }
 
@@ -30,23 +30,52 @@ namespace pluginVerilog.Verilog
         {
             base.Accept();
 
-            Data.VerilogFile verilogFile = Project.GetRegisterdItem(ItemID) as Data.VerilogFile;
-            foreach(Verilog.Module module in Modules.Values)
+            codeEditor.Data.Item item = Project.GetRegisterdItem(ItemID);
+            if(item is Data.VerilogFile)
             {
-                bool suceed = verilogFile.ProjectProperty.RegisterModule(verilogFile.RelativePath,module.Name);
-                if (!suceed)
+                Data.VerilogFile verilogFile = item as Data.VerilogFile;
+                foreach (Verilog.Module module in Modules.Values)
                 {
-                    // add module name error
+                    bool suceed = verilogFile.ProjectProperty.RegisterModule(verilogFile.RelativePath, module.Name);
+                    if (!suceed)
+                    {
+                        // add module name error
+                    }
                 }
             }
+            else if(item is Data.VerilogModuleInstance)
+            {
+                Data.VerilogModuleInstance verilogModuleInstance = item as Data.VerilogModuleInstance;
+                foreach (Verilog.Module module in Modules.Values)
+                {
+                    bool suceed = verilogModuleInstance.ProjectProperty.RegisterModule(verilogModuleInstance.RelativePath, module.Name);
+                    if (!suceed)
+                    {
+                        // add module name error
+                    }
+                }
+            }
+
         }
 
         public override void Dispose()
         {
-            Data.VerilogFile verilogFile = Project.GetRegisterdItem(ItemID) as Data.VerilogFile;
-            foreach (Verilog.Module module in Modules.Values)
+            codeEditor.Data.Item item = Project.GetRegisterdItem(ItemID);
+            if (item is Data.VerilogFile)
             {
-                verilogFile.ProjectProperty.RemoveModule(verilogFile.RelativePath, module.Name);
+                Data.VerilogFile verilogFile = item as Data.VerilogFile;
+                foreach (Verilog.Module module in Modules.Values)
+                {
+                    verilogFile.ProjectProperty.RemoveModule(verilogFile.RelativePath, module.Name);
+                }
+            }
+            else if (item is Data.VerilogModuleInstance)
+            {
+                Data.VerilogModuleInstance verilogModuleInstance = item as Data.VerilogModuleInstance;
+                foreach (Verilog.Module module in Modules.Values)
+                {
+                    verilogModuleInstance.ProjectProperty.RemoveModule(verilogModuleInstance.RelativePath, module.Name);
+                }
             }
             base.Dispose();
         }
@@ -105,6 +134,17 @@ namespace pluginVerilog.Verilog
                 ret.Add(new Popup.TaskPopup(space.Module.Tasks[text]));
             }
             return ret;
+        }
+
+        public Module GetModule(int index)
+        {
+            foreach (Module module in Modules.Values)
+            {
+                if (index < module.BeginIndex) continue;
+                if (index > module.LastIndex) continue;
+                return module;
+            }
+            return null;
         }
 
 

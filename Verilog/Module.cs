@@ -18,6 +18,9 @@ namespace pluginVerilog.Verilog
         private List<Variables.Port> portsList = new List<Variables.Port>();
         public List<Variables.Port> PortsList { get { return portsList; } }
 
+        private List<string> portParameterNameList = new List<string>();
+        public List<string> PortParameterNameList {  get { return portParameterNameList;  } }
+
         private Dictionary<string, Function> functions = new Dictionary<string, Function>();
         private Dictionary<string, Task> tasks = new Dictionary<string, Task>();
         private Dictionary<string, Class> classes = new Dictionary<string, Class>();
@@ -33,7 +36,16 @@ namespace pluginVerilog.Verilog
             get { return cellDefine; }
         }
 
-        public static Module Create(WordScanner word,Attribute attribute,string fileId, bool protoType)
+        public static Module Create(WordScanner word, Attribute attribute, string fileId, bool protoType)
+        {
+            return Create(word, null, null, attribute, fileId, protoType);
+        }
+        public static Module Create(
+            WordScanner word,
+            string parameterOverrideModueName,
+            Dictionary<string, Verilog.Expressions.Expression> parameterOverrides,
+            Attribute attribute, string fileId, bool protoType
+            )
         {
             /*
             module_declaration  ::= { attribute_instance } module_keyword module_identifier [ module_parameter_port_list ]
@@ -74,19 +86,19 @@ namespace pluginVerilog.Verilog
                 // protptype parse
                 WordScanner prototypeWord = word.Clone();
                 prototypeWord.Prototype = true;
-                parseModuleItems(prototypeWord, null, module);
+                parseModuleItems(prototypeWord, parameterOverrideModueName, parameterOverrides, null, module);
                 prototypeWord.Dispose();
                 prototypeWord = null;
 
                 // parse
                 word.RootParsedDocument.Macros = macroKeep;
-                parseModuleItems(word, null, module);
+                parseModuleItems(word, parameterOverrideModueName, parameterOverrides, null, module);
             }
             else
             {
                 // parse prototype only
                 word.Prototype = true;
-                parseModuleItems(word, null, module);
+                parseModuleItems(word, parameterOverrideModueName, parameterOverrides, null, module);
                 word.Prototype = false;
             }
 
@@ -109,7 +121,11 @@ namespace pluginVerilog.Verilog
             return module;
         }
 
-        protected static void parseModuleItems(WordScanner word, Attribute attribute, Module module)
+        protected static void parseModuleItems(
+            WordScanner word,
+            string parameterOverrideModueName,
+            Dictionary<string, Verilog.Expressions.Expression> parameterOverrides,
+            Attribute attribute, Module module)
         {
             /*
             module_declaration  ::= { attribute_instance } module_keyword module_identifier [ module_parameter_port_list ]
@@ -162,6 +178,25 @@ namespace pluginVerilog.Verilog
                         }
                         word.MoveNext();
                     } while (false);
+                }
+
+                if(module.Name == parameterOverrideModueName)
+                {
+                    foreach(var vkp in parameterOverrides)
+                    {
+                        if(module.Parameters.ContainsKey(vkp.Key))
+                        {
+                            module.Parameters.Remove(vkp.Key);
+                            Verilog.Variables.Parameter param = new Variables.Parameter();
+                            param.Name = vkp.Key;
+                            param.Expression = vkp.Value;
+                            module.Parameters.Add(param.Name, param);
+                        }
+                        else
+                        {
+                            System.Diagnostics.Debugger.Break();
+                        }
+                    }
                 }
 
                 if (word.Eof || word.Text == "endmodule") break;
