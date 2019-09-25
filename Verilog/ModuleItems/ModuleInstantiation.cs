@@ -243,7 +243,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                                 word.AddError("illegal port name");
                             }
                         }
-                        if (moduleInstantiation.PortConnection.ContainsKey(pinName))
+                        if (word.Prototype && moduleInstantiation.PortConnection.ContainsKey(pinName))
                         {
                             word.AddError("duplicated");
                         }
@@ -259,12 +259,12 @@ namespace pluginVerilog.Verilog.ModuleItems
                         if (outPort)
                         {
                             Expressions.Expression expression = Expressions.Expression.ParseCreateVariableLValue(word, module as NameSpace);
-                            if (expression != null && !moduleInstantiation.PortConnection.ContainsKey(pinName)) moduleInstantiation.PortConnection.Add(pinName, expression);
+                            if ( word.Prototype && expression != null && !moduleInstantiation.PortConnection.ContainsKey(pinName)) moduleInstantiation.PortConnection.Add(pinName, expression);
                         }
                         else
                         {
                             Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
-                            if (expression != null && !moduleInstantiation.PortConnection.ContainsKey(pinName)) moduleInstantiation.PortConnection.Add(pinName, expression);
+                            if (word.Prototype && expression != null && !moduleInstantiation.PortConnection.ContainsKey(pinName)) moduleInstantiation.PortConnection.Add(pinName, expression);
                         }
                         if (word.Text != ")")
                         {
@@ -290,11 +290,11 @@ namespace pluginVerilog.Verilog.ModuleItems
                     while (!word.Eof && word.Text != ")")
                     {
                         string pinName = "";
-                        if(instancedModule.PortsList.Count >= i)
+                        if(instancedModule != null && instancedModule.PortsList.Count >= i)
                         {
                             pinName = instancedModule.PortsList[i].Name;
                             Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
-                            if (expression != null && !moduleInstantiation.PortConnection.ContainsKey(pinName)) moduleInstantiation.PortConnection.Add(pinName, expression);
+                            if (word.Prototype && expression != null && !moduleInstantiation.PortConnection.ContainsKey(pinName)) moduleInstantiation.PortConnection.Add(pinName, expression);
                         }
                         else
                         {
