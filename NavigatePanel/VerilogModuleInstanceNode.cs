@@ -7,7 +7,7 @@ using System.Drawing;
 
 namespace pluginVerilog.NavigatePanel
 {
-    public class VerilogModuleInstanceNode : codeEditor.NavigatePanel.FileNode
+    public class VerilogModuleInstanceNode : codeEditor.NavigatePanel.FileNode, IVerilogNavigateNode
     {
         public VerilogModuleInstanceNode(string ID, codeEditor.Data.Project project) : base(ID, project)
         {
@@ -21,6 +21,10 @@ namespace pluginVerilog.NavigatePanel
             }
         }
 
+        public Data.IVerilogRelatedFile VerilogRelatedFile
+        {
+            get { return Project.GetRegisterdItem(ID) as Data.IVerilogRelatedFile; }
+        }
         public codeEditor.Data.ITextFile ITextFile
         {
             get { return Project.GetRegisterdItem(ID) as codeEditor.Data.ITextFile; }
@@ -75,6 +79,7 @@ namespace pluginVerilog.NavigatePanel
 
         public override void Update()
         {
+            if (VerilogFile == null) return;
             VerilogFile.Update();
 
             List<string> currentDataIds = new List<string>();

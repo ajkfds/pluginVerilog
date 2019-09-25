@@ -7,13 +7,17 @@ using System.Drawing;
 
 namespace pluginVerilog.NavigatePanel
 {
-    public class VerilogHeaderInstanceNode : codeEditor.NavigatePanel.FileNode
+    public class VerilogHeaderInstanceNode : codeEditor.NavigatePanel.FileNode, IVerilogNavigateNode
     {
         public VerilogHeaderInstanceNode(string ID, codeEditor.Data.Project project) : base(ID, project)
         {
 
         }
 
+        public Data.IVerilogRelatedFile VerilogRelatedFile
+        {
+            get { return Project.GetRegisterdItem(ID) as Data.IVerilogRelatedFile; }
+        }
         public codeEditor.Data.ITextFile ITextFile
         {
             get { return Project.GetRegisterdItem(ID) as codeEditor.Data.ITextFile; }

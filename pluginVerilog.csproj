@@ -50,6 +50,7 @@
     <Compile Include="Data\SystemVerilogFile.cs" />
     <Compile Include="Data\VerilogModuleInstance.cs" />
     <Compile Include="FileTypes\SystemVerilogFile.cs" />
+    <Compile Include="NavigatePanel\IVerilogNavigateNode.cs" />
     <Compile Include="NavigatePanel\SystemVerilogFileNode.cs" />
     <Compile Include="NavigatePanel\SystemVerilogHeaderNode.cs" />
     <Compile Include="NavigatePanel\VerilogModuleInstanceNode.cs" />
@@ -127,7 +128,7 @@
     <Compile Include="Verilog\Popup\VariablePopup.cs" />
     <Compile Include="Verilog\IPortNameSpace.cs" />
     <Compile Include="Verilog\Snippets\AlwaysFFSnippet.cs" />
-    <Compile Include="Verilog\Snippets\AutoCorrectSnippet.cs" />
+    <Compile Include="Verilog\Snippets\AutoFormatSnippet.cs" />
     <Compile Include="Verilog\Snippets\BeginAutoCompleteItem.cs" />
     <Compile Include="Verilog\Snippets\FunctionAutocompleteItem.cs" />
     <Compile Include="Verilog\Snippets\GenerateAutoCompleteItem.cs" />

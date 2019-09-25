@@ -116,7 +116,6 @@ namespace pluginVerilog.Verilog
             {
                 word.AddError("endmodule expected");
             }
-  //          word.Dispose();
 
             return module;
         }

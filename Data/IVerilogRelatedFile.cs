@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Data
 {
-    interface IVerilogRelatedFile : codeEditor.Data.ITextFile
+    public interface IVerilogRelatedFile : codeEditor.Data.ITextFile
     {
 
         Verilog.ParsedDocument VerilogParsedDocument { get; }

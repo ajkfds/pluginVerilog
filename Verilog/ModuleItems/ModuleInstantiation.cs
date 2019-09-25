@@ -12,10 +12,12 @@ namespace pluginVerilog.Verilog.ModuleItems
 
         public string ModuleName{ get; protected set; }
 
-        private List<Verilog.Variables.Port> ports = new List<Variables.Port>();
+//        private List<Verilog.Variables.Port> ports = new List<Variables.Port>();
 
         public Dictionary<string, Expressions.Expression> ParameterOverrides = new Dictionary<string, Expressions.Expression>();
-        public IReadOnlyList<Verilog.Variables.Port> Ports { get { return ports; } }
+        //        public IReadOnlyList<Verilog.Variables.Port> Ports { get { return ports; } }
+        public Dictionary<string, Expressions.Expression> PortConnection = new Dictionary<string, Expressions.Expression>();
+
         public int BeginIndex;
         public int LastIndex;
         public static void Parse(WordScanner word, IModuleOrGeneratedBlock module)
@@ -241,6 +243,10 @@ namespace pluginVerilog.Verilog.ModuleItems
                                 word.AddError("illegal port name");
                             }
                         }
+                        if (moduleInstantiation.PortConnection.ContainsKey(pinName))
+                        {
+                            word.AddError("duplicated");
+                        }
                         word.MoveNext();
                         if (word.Text != "(")
                         {
@@ -253,10 +259,12 @@ namespace pluginVerilog.Verilog.ModuleItems
                         if (outPort)
                         {
                             Expressions.Expression expression = Expressions.Expression.ParseCreateVariableLValue(word, module as NameSpace);
+                            if (expression != null && !moduleInstantiation.PortConnection.ContainsKey(pinName)) moduleInstantiation.PortConnection.Add(pinName, expression);
                         }
                         else
                         {
                             Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
+                            if (expression != null && !moduleInstantiation.PortConnection.ContainsKey(pinName)) moduleInstantiation.PortConnection.Add(pinName, expression);
                         }
                         if (word.Text != ")")
                         {
@@ -278,9 +286,21 @@ namespace pluginVerilog.Verilog.ModuleItems
                 }
                 else
                 { // ordered paramater assignment
+                    int i = 0;
                     while (!word.Eof && word.Text != ")")
                     {
-                        Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
+                        string pinName = "";
+                        if(instancedModule.PortsList.Count >= i)
+                        {
+                            pinName = instancedModule.PortsList[i].Name;
+                            Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
+                            if (expression != null && !moduleInstantiation.PortConnection.ContainsKey(pinName)) moduleInstantiation.PortConnection.Add(pinName, expression);
+                        }
+                        else
+                        {
+                            word.AddError("illegal port connection");
+                            Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
+                        }
                         if (word.Text != ",")
                         {
                             break;
@@ -329,7 +349,7 @@ namespace pluginVerilog.Verilog.ModuleItems
             sb.Append(ModuleName);
             sb.Append(" ");
 
-            if(instancedModule.PortParameterNameList.Count == 0)
+            if(instancedModule.PortParameterNameList.Count != 0)
             {
                 sb.Append("#(\r\n");
 
@@ -342,9 +362,13 @@ namespace pluginVerilog.Verilog.ModuleItems
                     sb.Append(paramName);
                     sb.Append("\t(");
                     sb.Append(")");
+                    first = false;
                 }
                 sb.Append("\r\n)");
             }
+
+            sb.Append(instancedModule.Name);
+            sb.Append(" (\r\n");
 
             first = true;
             foreach (var port in instancedModule.Ports.Values)
@@ -356,6 +380,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                 sb.Append("\t");
                 sb.Append("(");
                 sb.Append(")");
+                first = false;
             }
             sb.Append("\r\n);");
 

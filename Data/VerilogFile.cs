@@ -131,12 +131,8 @@ namespace pluginVerilog.Data
                     string relativeFile = ProjectProperty.GetRelativeFilePathOfModule(moduleInstantiation.ModuleName);
                     if (relativeFile == null) continue;
                     string id = Data.VerilogModuleInstance.GetID(relativeFile,moduleInstantiation.Name, moduleInstantiation.ParameterOverrides, Project);
-                    if (!Project.IsRegistered(id))
-                    {
-                        Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
-                    }
+                    Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
                     ids.Add(id);
-                    //                    ids.Add(Data.VerilogFile.GetID(relativeFile, Project));
                 }
             }
 
@@ -212,7 +208,7 @@ namespace pluginVerilog.Data
         {
             List<codeEditor.CodeEditor.ToolItem> toolItems = new List<codeEditor.CodeEditor.ToolItem>();
             toolItems.Add(new Verilog.Snippets.AlwaysFFSnippet());
-            toolItems.Add(new Verilog.Snippets.AutoCorrectSnippet());
+            toolItems.Add(new Verilog.Snippets.AutoFormatSnippet());
             return toolItems;
         }
 

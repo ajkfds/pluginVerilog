@@ -7,9 +7,9 @@ using codeEditor.CodeEditor;
 
 namespace pluginVerilog.Verilog.Snippets
 {
-    public class AutoCorrectSnippet : codeEditor.CodeEditor.ToolItem
+    public class AutoFormatSnippet : codeEditor.CodeEditor.ToolItem
     {
-        public AutoCorrectSnippet() : base("autoCorrect")
+        public AutoFormatSnippet() : base("autoFormat")
         {
         }
 
@@ -29,7 +29,8 @@ namespace pluginVerilog.Verilog.Snippets
             {
                 if(inst.BeginIndex<index && index < inst.LastIndex)
                 {
-
+                    writeModuleInstance(codeDocument, index, inst);
+                    return;
                 }
             }
 
@@ -46,7 +47,7 @@ namespace pluginVerilog.Verilog.Snippets
             codeDocument.CaretIndex = moduleInstantiation.BeginIndex;
             codeDocument.Replace(
                 moduleInstantiation.BeginIndex,
-                moduleInstantiation.LastIndex - moduleInstantiation.BeginIndex,
+                moduleInstantiation.LastIndex - moduleInstantiation.BeginIndex + 1,
                 0,
                 moduleInstantiation.ToString("\t")
                 );

@@ -807,6 +807,7 @@ namespace pluginVerilog.Verilog
             if (wordPointer.ParsedDocument.Project.IsRegistered(id))
             {
                 item = wordPointer.ParsedDocument.Project.GetRegisterdItem(id);
+                wordPointer.ParsedDocument.Project.RegisterProjectItem(item);
             }
             else
             {
