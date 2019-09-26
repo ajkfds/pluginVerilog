@@ -268,7 +268,7 @@ namespace pluginVerilog.Verilog
         {
             get
             {
-                if (nextIndex == Document.Length)
+                if (nextIndex >= Document.Length)
                 {
                     return true;
                 }
@@ -320,12 +320,28 @@ namespace pluginVerilog.Verilog
             int docLength = document.Length;
             char ch;
 
-            while(docLength > index)
+            while (docLength > index)
             {
                 ch = document.GetCharAt(index);
                 if ((ch & 0xff80) == 0 && charClass[ch] == 0) { index++; continue; }
                 break;
             }
+
+            //unsafe
+            //{
+            //    while (docLength > index)
+            //    {
+            //        ch = document.GetCharAt(index);
+            //        if(ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r')
+            //        {
+            //            index++;
+            //            continue;
+            //        }
+            //        if((ch & 0xff80) != 0) break;
+            //        if (!charClass0[ch]) break;
+            //    }
+
+            //}
 
             length = 0;
             nextIndex = index;

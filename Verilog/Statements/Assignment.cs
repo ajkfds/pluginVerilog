@@ -49,6 +49,7 @@ namespace pluginVerilog.Verilog.Statements
             Expressions.Expression expression = Expressions.Expression.ParseCreate(word, nameSpace);
             if(expression == null)
             {
+                word.SkipToKeyword(";");
                 word.AddError("illegal non blocking assignment");
                 return null;
             }
@@ -108,6 +109,7 @@ namespace pluginVerilog.Verilog.Statements
             Expressions.Expression expression = Expressions.Expression.ParseCreate(word, nameSpace);
             if (expression == null)
             {
+                word.SkipToKeyword(";");
                 word.AddError("illegal non blocking assignment");
                 return null;
             }

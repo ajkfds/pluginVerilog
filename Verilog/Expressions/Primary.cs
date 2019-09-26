@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace pluginVerilog.Verilog.Expressions
 {
@@ -215,14 +213,38 @@ namespace pluginVerilog.Verilog.Expressions
                                 return primary;
                             }
                         }
-
-                        if (nameSpace is Module && nameSpace.Module.Tasks.ContainsKey(word.Text))
+                        else
                         {
-                            Primary primary = new TaskReference(nameSpace.Module.Tasks[word.Text], nameSpace.Module);
-                            word.Color(CodeDrawStyle.ColorType.Identifier);
-                            word.MoveNext();
-                            return primary;
+                            if (nameSpace.Module.ModuleInstantiations.ContainsKey(word.Text))
+                            { // module instance
+                                word.Color(CodeDrawStyle.ColorType.Identifier);
+                                string moduleName = nameSpace.Module.ModuleInstantiations[word.Text].ModuleName;
+                                Module module = word.RootParsedDocument.ProjectProperty.GetModule(moduleName);
+                                if (module == null) return null;
+                                word.MoveNext();
+
+                                Primary primary = subParseCreate(word, module, lValue);
+                                if (primary == null) word.AddError("illegal variable");
+                                return new NameSpaceReference(module);
+
+                            }else if(nameSpace is Module && nameSpace.Module.Tasks.ContainsKey(word.Text))
+                            {
+                                Primary primary = new TaskReference(nameSpace.Module.Tasks[word.Text], nameSpace.Module);
+                                word.Color(CodeDrawStyle.ColorType.Identifier);
+                                word.MoveNext();
+                                return primary;
+                            }
+                            else if (nameSpace.NameSpaces.ContainsKey(word.Text))
+                            {
+                                word.Color(CodeDrawStyle.ColorType.Identifier);
+                                NameSpace space = nameSpace.NameSpaces[word.Text];
+                                if (space == null) return null;
+                                word.MoveNext();
+                                return new NameSpaceReference(space);
+
+                            }
                         }
+
                         if (word.Eof || General.ListOfKeywords.Contains(word.Text))
                         {
                             return new NameSpaceReference(nameSpace);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ajkControls;
 
 namespace pluginVerilog
 {
@@ -28,6 +29,50 @@ namespace pluginVerilog
         }
 
         // VerilogModuleParsedData
+        public override void LoadSetup(JsonReader jsonReader)
+        {
+            Macros.Clear();
+            using(var reader = jsonReader.GetNextObjectReader())
+            {
+                while (true)
+                {
+                    string key = reader.GetNextKey();
+                    if (key == null) break;
+
+                    switch (key)
+                    {
+                        case "Macros":
+                            loadMacros(reader);
+                            break;
+                        default:
+                            reader.SkipValue();
+                            break;
+                    }
+                }
+            }
+        }
+
+        public void loadMacros(ajkControls.JsonReader jsonReader)
+        {
+            using(var reader = jsonReader.GetNextObjectReader())
+            {
+                while (true)
+                {
+                    string macroIdentifier = reader.GetNextKey();
+                    if (macroIdentifier == null) break;
+                    if (Macros.ContainsKey(macroIdentifier))
+                    {
+                        reader.SkipValue();
+                    }
+                    else
+                    {
+                        string macroText = reader.GetNextStringValue();
+                        Macros.Add(macroIdentifier, Verilog.Macro.Create(macroIdentifier, macroText));
+                    }
+                }
+            }
+
+        }
 
         private Dictionary<string, codeEditor.CodeEditor.ParsedDocument> pdocs = new Dictionary<string, codeEditor.CodeEditor.ParsedDocument>();
         public IReadOnlyDictionary<string, codeEditor.CodeEditor.ParsedDocument> VerilogModuleInstanceParsedDocuments

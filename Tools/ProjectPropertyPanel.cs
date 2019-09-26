@@ -36,8 +36,11 @@ namespace pluginVerilog.Tools
             {
                 sb.Append("`define ");
                 sb.Append(macro.Key);
-                sb.Append(" ");
-                sb.Append(macro.Value);
+                if(macro.Value != "")
+                {
+                    sb.Append(" ");
+                    sb.Append(macro.Value);
+                }
                 sb.Append("\r\n");
             }
             macroTxt.Text = sb.ToString();

@@ -30,8 +30,19 @@ namespace pluginVerilog.Verilog.Statements
             word.MoveNext();
 
             ret.LValue = Expressions.Expression.ParseCreateVariableLValue(word, nameSpace);
+            if(ret.LValue == null)
+            {
+                word.SkipToKeyword(";");
+                if (word.Text == ";") word.MoveNext();
+                return null;
+            }
 
-            if (word.Text != "=") return null;
+            if (word.Text != "=")
+            {
+                word.SkipToKeyword(";");
+                if (word.Text == ";") word.MoveNext();
+                return null;
+            }
             word.MoveNext();
 
             ret.Value = Expressions.Expression.ParseCreate(word, nameSpace);
@@ -39,6 +50,8 @@ namespace pluginVerilog.Verilog.Statements
             if (word.Text != ";")
             {
                 word.AddError("; required");
+                word.SkipToKeyword(";");
+                if (word.Text == ";") word.MoveNext();
             }
             else
             {
