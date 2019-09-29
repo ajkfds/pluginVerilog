@@ -60,7 +60,7 @@ namespace pluginVerilog.Data
             {
                 sb.Append(kvp.Key);
                 sb.Append("=");
-                sb.Append(kvp.Value.ToString());
+                sb.Append(kvp.Value.ConstantValueString());
                 sb.Append(",");
             }
             return sb.ToString();
@@ -78,7 +78,7 @@ namespace pluginVerilog.Data
             {
                 sb.Append(kvp.Key);
                 sb.Append("=");
-                sb.Append(kvp.Value.ToString());
+                sb.Append(kvp.Value.ConstantValueString());
                 sb.Append(",");
             }
             return sb.ToString();

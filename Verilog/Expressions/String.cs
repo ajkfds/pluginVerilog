@@ -24,7 +24,10 @@ namespace pluginVerilog.Verilog.Expressions
         {
             get { return text; }
         }
-
+        public override string ToString()
+        {
+            return Text;
+        }
         public override ajkControls.ColorLabel GetLabel()
         {
             ajkControls.ColorLabel label = new ajkControls.ColorLabel();

@@ -360,26 +360,43 @@ namespace pluginVerilog.Verilog.ModuleItems
                     sb.Append(indent);
                     sb.Append(".");
                     sb.Append(paramName);
-                    sb.Append("\t(");
-                    sb.Append(")");
+                    sb.Append("\t( ");
+                    if (ParameterOverrides.ContainsKey(paramName))
+                    {
+                        sb.Append(ParameterOverrides[paramName].ToString());
+                    }
+                    sb.Append(" )");
                     first = false;
                 }
-                sb.Append("\r\n)");
+                sb.Append("\r\n) ");
             }
 
-            sb.Append(instancedModule.Name);
+            sb.Append(Name);
             sb.Append(" (\r\n");
 
             first = true;
+            string sectionName = null;
             foreach (var port in instancedModule.Ports.Values)
             {
                 if (!first) sb.Append(",\r\n");
+
+                if(port.SectionName != sectionName)
+                {
+                    sectionName = port.SectionName;
+                    sb.Append("// ");
+                    sb.Append(sectionName);
+                    sb.Append("\r\n");
+                }
                 sb.Append(indent);
                 sb.Append(".");
                 sb.Append(port.Name);
                 sb.Append("\t");
-                sb.Append("(");
-                sb.Append(")");
+                sb.Append("( ");
+                if (PortConnection.ContainsKey(port.Name))
+                {
+                    sb.Append(PortConnection[port.Name].ToString());
+                }
+                sb.Append(" )");
                 first = false;
             }
             sb.Append("\r\n);");

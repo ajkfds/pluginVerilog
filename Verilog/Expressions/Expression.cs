@@ -21,11 +21,22 @@ namespace pluginVerilog.Verilog.Expressions
 
         public override string ToString()
         {
+            StringBuilder sb = new StringBuilder();
+
+            foreach(ExpressionItem item in RpnExpressionItems)
+            {
+                sb.Append(item.ToString());
+            }
+            return sb.ToString();
+        }
+
+        public string ConstantValueString()
+        {
             if (Constant)
             {
                 if (Value == null)
                 {
-                    return "?";
+                    return "";
                 }
                 else
                 {
@@ -34,7 +45,7 @@ namespace pluginVerilog.Verilog.Expressions
             }
             else
             {
-                return "x";
+                return "";
             }
         }
 
@@ -251,9 +262,9 @@ namespace pluginVerilog.Verilog.Expressions
             }
             // parse rpn
             List<Primary> primaryStock = new List<Primary>();
-            while (expression.RpnExpressionItems.Count > 0)
+            for (int i = 0; i < expression.RpnExpressionItems.Count; i++)
             {
-                ExpressionItem item = expression.RpnExpressionItems[0];
+                ExpressionItem item = expression.RpnExpressionItems[i];
                 if (item is Primary)
                 {
                     primaryStock.Add(item as Primary);
@@ -288,7 +299,6 @@ namespace pluginVerilog.Verilog.Expressions
                 {
                     return null;
                 }
-                expression.RpnExpressionItems.RemoveAt(0);
             }
             if (primaryStock.Count == 1)
             {

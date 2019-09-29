@@ -411,6 +411,10 @@ namespace pluginVerilog.Verilog.Expressions
             return label;
         }
 
+        public override string ToString()
+        {
+            return GetLabel().ToString();
+        }
 
         private static Variables.Variable getVariable(WordScanner word, string identifier, NameSpace nameSpace)
         {

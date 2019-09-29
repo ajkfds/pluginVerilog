@@ -78,6 +78,11 @@ namespace pluginVerilog.Verilog.Expressions
             return label;
         }
 
+        public override string ToString()
+        {
+            return Text;
+        }
+
         public static Number ParseCreate(WordScanner word)
         {
             word.Color(CodeDrawStyle.ColorType.Number);

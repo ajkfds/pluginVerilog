@@ -12,6 +12,7 @@ namespace pluginVerilog.Verilog.Variables
         public Range Range = null;
         public Variable Variable = null;
         public string Comment = "";
+        public string SectionName = "";
 
         public enum DirectionEnum
         {
@@ -270,6 +271,7 @@ namespace pluginVerilog.Verilog.Variables
                 string comment = word.GetFollowedComment();
                 port.Comment = comment;
                 port.Variable.Comment = comment;
+                port.SectionName = word.SectionName;
             }
 
         }
@@ -361,6 +363,7 @@ namespace pluginVerilog.Verilog.Variables
                 string comment = word.GetFollowedComment();
                 port.Comment = comment;
                 port.Variable.Comment = comment;
+                port.SectionName = word.SectionName;
             }
         }
 
@@ -521,6 +524,7 @@ namespace pluginVerilog.Verilog.Variables
                 string comment = word.GetFollowedComment();
                 port.Comment = comment;
                 port.Variable.Comment = comment;
+                port.SectionName = word.SectionName;
             }
         }
 
@@ -743,6 +747,7 @@ namespace pluginVerilog.Verilog.Variables
                 string comment = word.GetFollowedComment();
                 port.Comment = comment;
                 port.Variable.Comment = comment;
+                port.SectionName = word.SectionName;
             }
         }
 
@@ -915,6 +920,7 @@ namespace pluginVerilog.Verilog.Variables
                 string comment = word.GetFollowedComment();
                 port.Comment = comment;
                 port.Variable.Comment = comment;
+                port.SectionName = word.SectionName;
             }
         }
 
@@ -1087,6 +1093,7 @@ namespace pluginVerilog.Verilog.Variables
                 string comment = word.GetFollowedComment();
                 port.Comment = comment;
                 port.Variable.Comment = comment;
+                port.SectionName = word.SectionName;
             }
 
         }

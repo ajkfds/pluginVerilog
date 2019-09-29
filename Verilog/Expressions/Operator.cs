@@ -23,6 +23,11 @@ namespace pluginVerilog.Verilog.Expressions
             label.AppendText(Text);
             return label;
         }
+
+        public override string ToString()
+        {
+            return Text;
+        }
     }
     /*
     Table 12—Precedence rules for operators
