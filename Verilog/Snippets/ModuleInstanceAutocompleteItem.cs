@@ -39,7 +39,25 @@ namespace pluginVerilog.Verilog.Snippets
             Verilog.Module module = parsedDocument.Modules[Text];
             if (module == null) return;
 
+            int carletOffset = Text.Length;
             StringBuilder sb = new StringBuilder();
+            sb.Append(" ");
+            if (module.PortParameterNameList.Count > 0)
+            {
+                sb.Append("#(\r\n");
+                bool first = true;
+                foreach(string portName in module.PortParameterNameList)
+                {
+                    if (!first) sb.Append(",\r\n");
+                    sb.Append("\t");
+                    sb.Append(".");
+                    sb.Append(portName);
+                    sb.Append("\t(  )");
+                    first = false;
+                }
+                sb.Append("\r\n) ");
+            }
+            carletOffset = Text.Length + sb.Length;
 
             sb.Append(" (\r\n");
             int i = 0;
@@ -55,9 +73,9 @@ namespace pluginVerilog.Verilog.Snippets
             sb.Append(");");
 
             codeDocument.Replace(headIndex, length, ColorIndex, Text + sb.ToString());
-            codeDocument.CaretIndex = headIndex + Text.Length;
-            codeDocument.SelectionStart = headIndex + Text.Length;
-            codeDocument.SelectionLast = headIndex + Text.Length;
+            codeDocument.CaretIndex = headIndex + carletOffset;
+            codeDocument.SelectionStart = codeDocument.CaretIndex;
+            codeDocument.SelectionLast = codeDocument.CaretIndex;
         }
     }
 }
