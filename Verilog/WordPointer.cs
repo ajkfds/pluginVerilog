@@ -317,15 +317,40 @@ namespace pluginVerilog.Verilog
         {
             // skip blanks before word
 
-            int docLength = document.Length;
             char ch;
-
-            while (docLength > index)
+            int docLength = document.Length;
+            unsafe
             {
-                ch = document.GetCharAt(index);
-                if ((ch & 0xff80) == 0 && charClass[ch] == 0) { index++; continue; }
-                break;
+
+                // skip blanks before word
+                while(docLength > index)
+                {
+                    ch = document.GetCharAt(index);
+                    if(ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r')
+                    {
+                        index++;
+                        continue;
+                    }
+                    if ((ch & 0xff80) != 0) break;
+                    if (!charClass0[ch]) break;
+                    index++;
+                }
+                if(index == docLength)
+                {
+                    length = 0;
+                    nextIndex = index;
+                    wordType = WordTypeEnum.Eof;
+                    return;
+                }
             }
+
+
+            //while (docLength > index)
+            //{
+            //    ch = document.GetCharAt(index);
+            //    if ((ch & 0xff80) == 0 && charClass[ch] == 0) { index++; continue; }
+            //    break;
+            //}
 
             //unsafe
             //{
@@ -726,6 +751,27 @@ namespace pluginVerilog.Verilog
                     6,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
             // 7*   p q r s t u v w x y z { | } ~ 
                     2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,0
+        };
+
+        private static bool[] charClass0 = new bool[128]
+        {
+            //      0,1,2,3,4,5,6,7,8,9,a,b,c,e,d,f
+            // 0*
+                    true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,
+            // 1*
+                    true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,
+            // 2*     ! " # $ % & ' ( ) * + , - . /
+                    true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+            // 3*   0 1 2 3 4 5 6 7 8 9 : ; < = > ?
+                    false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+            // 4*   @ A B C D E F G H I J K L M N O
+                    false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+            // 5*   P Q R S T U V W X Y Z [ \ ] ^ _
+                    false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+            // 6*   ` a b c d e f g h i j k l m n o
+                    false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,
+            // 7*   p q r s t u v w x y z { | } ~ 
+                    false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true
         };
 
         private static bool[] charClass1246 = new bool[128]
