@@ -402,7 +402,7 @@ namespace pluginVerilog.Verilog
                         break;
                     case 3: // operators
                         wordType = WordTypeEnum.Symbol;
-                        fetchNextAtOperator(document, ref nextIndex, ref wordType);
+                        fetchNextAtOperator(document, ref nextIndex, ref wordType,ref sectionName);
                         break;
                     case 4: // double quote
                         wordType = WordTypeEnum.String;
@@ -583,7 +583,12 @@ namespace pluginVerilog.Verilog
             }
         }
 
-        private static void fetchNextAtOperator(ajkControls.Document document, ref int nextIndex, ref WordTypeEnum wordType)
+        private static void fetchNextAtOperator(
+            ajkControls.Document document,
+            ref int nextIndex,
+            ref WordTypeEnum wordType,
+            ref string sectionName
+        )
         {
             int docLength = document.Length;
 
@@ -617,7 +622,7 @@ namespace pluginVerilog.Verilog
                 {
                     if(document.GetCharAt(nextIndex) == '@')
                     {
-                        ParseInLineComments(document, ref nextIndex, ref wordType);
+                        ParseInLineComments(document, ref nextIndex, ref wordType,ref sectionName);
                         continue;
                     }
                     document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Comment));
@@ -687,7 +692,8 @@ namespace pluginVerilog.Verilog
         private static void ParseInLineComments(
             ajkControls.Document document, 
             ref int nextIndex, 
-            ref WordTypeEnum wordType
+            ref WordTypeEnum wordType,
+            ref string sectionName
             )
         {
             int docLength = document.Length;
@@ -727,6 +733,7 @@ namespace pluginVerilog.Verilog
                         sb.Append(ch);
                         nextIndex++;
                     }
+                    sectionName = sb.ToString(); 
                     break;
                 }
             }
