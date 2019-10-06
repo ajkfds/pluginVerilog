@@ -16,6 +16,13 @@ namespace pluginVerilog.Verilog
         public Dictionary<string, Data.VerilogHeaderFile> IncludeFiles = new Dictionary<string, Data.VerilogHeaderFile>();
         public Dictionary<string, Macro> Macros = new Dictionary<string, Macro>();
 
+        public void ReloadIncludeFiles()
+        {
+            foreach(var includeFile in IncludeFiles.Values)
+            {
+                includeFile.Reload();
+            }
+        }
 
         public ProjectProperty ProjectProperty
         {
@@ -76,6 +83,10 @@ namespace pluginVerilog.Verilog
                 {
                     verilogModuleInstance.ProjectProperty.RemoveModule(verilogModuleInstance.RelativePath, module.Name);
                 }
+            }
+            foreach (var includeFile in IncludeFiles.Values)
+            {
+                includeFile.Reload();
             }
             base.Dispose();
         }

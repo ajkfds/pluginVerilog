@@ -40,6 +40,17 @@ namespace pluginVerilog.Data
             return fileItem;
         }
 
+        public override void DisposeItem()
+        {
+            if (ParsedDocument != null) ParsedDocument.Dispose();
+            base.DisposeItem();
+        }
+        public bool IsCodeDocumentCashed
+        {
+            get { if (document == null) return false; else return true; }
+        }
+
+
         private volatile bool parseRequested = false;
         public bool ParseRequested { get { return parseRequested; } set { parseRequested = value; } }
 
@@ -48,6 +59,7 @@ namespace pluginVerilog.Data
         public void Reload()
         {
             CodeDocument = null;
+            if (VerilogParsedDocument != null) VerilogParsedDocument.ReloadIncludeFiles();
         }
 
         public ProjectProperty ProjectProperty
@@ -129,7 +141,7 @@ namespace pluginVerilog.Data
         {
             get
             {
-                throw new NotImplementedException();
+                return null;
             }
         }
 

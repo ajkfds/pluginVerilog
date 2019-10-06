@@ -35,6 +35,15 @@ namespace pluginVerilog.Data
             project.RegisterProjectItem(fileItem);
             return fileItem;
         }
+        public override void DisposeItem()
+        {
+            if (ParsedDocument != null) ParsedDocument.Dispose();
+            base.DisposeItem();
+        }
+        public bool IsCodeDocumentCashed
+        {
+            get { if (document == null) return false; else return true; }
+        }
 
         public codeEditor.CodeEditor.ParsedDocument ParsedDocument { get; set; }
         public Verilog.ParsedDocument VerilogParsedDocument

@@ -43,6 +43,23 @@ namespace pluginVerilog.Data
             project.RegisterProjectItem(fileItem);
             return fileItem;
         }
+        public override void DisposeItem()
+        {
+            if (ParsedDocument != null)
+            {
+                foreach (var incFile in VerilogParsedDocument.IncludeFiles.Values)
+                {
+                    incFile.DisposeItem();
+                }
+            }
+            CodeDocument = null;
+            if (ParsedDocument != null) ParsedDocument.Dispose();
+            base.DisposeItem();
+        }
+        public bool IsCodeDocumentCashed
+        {
+            get { if (document == null) return false; else return true; }
+        }
 
         public string ModuleName { set; get; }
 
@@ -93,11 +110,8 @@ namespace pluginVerilog.Data
         public bool ReloadRequested { get { return reloadRequested; } set { reloadRequested = value; } }
         public void Reload()
         {
-            Item item;
-            if (Project.Items.TryGetValue(Data.VerilogFile.GetID(RelativePath, Project), out item))
-            {
-                (item as VerilogFile).Reload();
-            }
+            if (VerilogParsedDocument != null) VerilogParsedDocument.ReloadIncludeFiles();
+            CodeDocument = null;
         }
             
         public codeEditor.CodeEditor.ParsedDocument ParsedDocument {
@@ -161,6 +175,7 @@ namespace pluginVerilog.Data
             }
         }
 
+        /*
         public codeEditor.CodeEditor.CodeDocument CodeDocument
         {
             get
@@ -177,6 +192,39 @@ namespace pluginVerilog.Data
                 }
             }
         }
+        */
+        private codeEditor.CodeEditor.CodeDocument document = null;
+        public codeEditor.CodeEditor.CodeDocument CodeDocument
+        {
+            get
+            {
+                if (document == null)
+                {
+                    try
+                    {
+                        using (System.IO.StreamReader sr = new System.IO.StreamReader(Project.GetAbsolutePath(RelativePath)))
+                        {
+                            document = new CodeEditor.CodeDocument();
+                            string text = sr.ReadToEnd();
+                            document.Replace(0, 0, 0, text);
+                            document.ParentID = ID;
+                            document.ClearHistory();
+                        }
+                    }
+                    catch
+                    {
+                        document = null;
+                    }
+                }
+                return document;
+            }
+            protected set
+            {
+                document = value;
+            }
+        }
+
+
 
         public ajkControls.CodeDrawStyle DrawStyle
         {
