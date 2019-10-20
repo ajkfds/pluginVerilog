@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.IcarusVerilog
 {
-    public class SimulationTab : codeEditor.Controller.MainTabPage
+    public class SimulationTab : codeEditor.Tabs.MainTabPage
     {
         public SimulationTab(pluginVerilog.Data.VerilogFile topFile) : base(new SimulationPanel(topFile), topFile.Name)
         {

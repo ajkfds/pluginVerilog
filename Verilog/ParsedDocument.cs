@@ -73,7 +73,7 @@ namespace pluginVerilog.Verilog
                 Data.VerilogFile verilogFile = item as Data.VerilogFile;
                 foreach (Verilog.Module module in Modules.Values)
                 {
-                    verilogFile.ProjectProperty.RemoveModule(verilogFile.RelativePath, module.Name);
+//                    verilogFile.ProjectProperty.RemoveModule(verilogFile.RelativePath, module.Name);
                 }
             }
             else if (item is Data.VerilogModuleInstance)
@@ -81,7 +81,7 @@ namespace pluginVerilog.Verilog
                 Data.VerilogModuleInstance verilogModuleInstance = item as Data.VerilogModuleInstance;
                 foreach (Verilog.Module module in Modules.Values)
                 {
-                    verilogModuleInstance.ProjectProperty.RemoveModule(verilogModuleInstance.RelativePath, module.Name);
+//                    verilogModuleInstance.ProjectProperty.RemoveModule(verilogModuleInstance.RelativePath, module.Name);
                 }
             }
             foreach (var includeFile in IncludeFiles.Values)

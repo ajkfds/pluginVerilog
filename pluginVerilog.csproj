@@ -135,6 +135,7 @@
     <Compile Include="Verilog\Snippets\GenerateAutoCompleteItem.cs" />
     <Compile Include="Verilog\Snippets\ModuleAutocompleteItem.cs" />
     <Compile Include="Verilog\Snippets\ModuleInstanceAutocompleteItem.cs" />
+    <Compile Include="Verilog\Snippets\ModuleInstanceSnippet.cs" />
     <Compile Include="Verilog\Snippets\NonBlockingAssignmentAutocompleteItem.cs" />
     <Compile Include="Verilog\Snippets\Setup.cs" />
     <Compile Include="Verilog\Snippets\TaskAutocompleteItem.cs" />

@@ -134,54 +134,123 @@ namespace pluginVerilog.Data
         {
             if(VerilogParsedDocument == null)
             {
+                foreach(Item item in items.Values)
+                {
+                    item.DisposeItem();
+                }
                 items.Clear();
                 return;
             }
-
-            List<string> ids = new List<string>();
-
-            foreach(string id in VerilogParsedDocument.IncludeFiles.Keys){
-                ids.Add(id);
+            if( ID == "TestRTL:File:SCOPE.v")
+            {
+                string a = "";
             }
 
-            foreach(Verilog.Module module in VerilogParsedDocument.Modules.Values)
+            List<string> currentIds = new List<string>();
+            foreach (string id in VerilogParsedDocument.IncludeFiles.Keys)
             {
-                foreach(Verilog.ModuleItems.ModuleInstantiation moduleInstantiation in module.ModuleInstantiations.Values)
+                currentIds.Add(id);
+            }
+
+            Dictionary<string, Item> newItems = new Dictionary<string, Item>();
+
+            // add new item
+            foreach (Verilog.Module module in VerilogParsedDocument.Modules.Values)
+            {
+                foreach (Verilog.ModuleItems.ModuleInstantiation moduleInstantiation in module.ModuleInstantiations.Values)
                 {
                     string relativeFile = ProjectProperty.GetRelativeFilePathOfModule(moduleInstantiation.ModuleName);
                     if (relativeFile == null) continue;
-                    string id = Data.VerilogModuleInstance.GetID(relativeFile,moduleInstantiation.Name, moduleInstantiation.ParameterOverrides, Project);
-                    Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
-                    ids.Add(id);
+                    string id = Data.VerilogModuleInstance.GetID(relativeFile, moduleInstantiation.Name, moduleInstantiation.ParameterOverrides, Project);
+                    if (!items.Keys.Contains(id) && !newItems.ContainsKey(id)) // new item
+                    {
+                        // create & increment project counter
+                        Item item = Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
+                        newItems.Add(item.ID,item);
+                    }
+                    currentIds.Add(id);
                 }
             }
 
-            // update
-
-            // remove unused items
-            List<codeEditor.Data.Item> removeItems = new List<codeEditor.Data.Item>();
-            foreach(codeEditor.Data.Item item in items.Values)
+            List<string> removeIds = new List<string>();
+            foreach (codeEditor.Data.Item item in items.Values)
             {
-                if (!ids.Contains(item.ID)) removeItems.Add(item);
-            }
-            foreach (codeEditor.Data.Item item in removeItems)
-            {
-                items.Remove(item.ID);
-                item.DisposeItem();
+                if (!currentIds.Contains(item.ID)) removeIds.Add(item.ID);
             }
 
-            // add new items
-            foreach (string id in ids)
+            foreach (string id in removeIds)
             {
-                if (items.ContainsKey(id)) continue;
-                if (!Project.IsRegistered(id))
+                if (Project.IsRegistered(id))
+                {
+                    Item item = Project.GetRegisterdItem(id);
+                    items.Remove(item.ID);
+                    item.DisposeItem();
+                }
+                else
                 {
                     System.Diagnostics.Debugger.Break();
-                    return;
                 }
-                codeEditor.Data.Item item = Project.GetRegisterdItem(id);
+            }
+
+            foreach (Item item in newItems.Values)
+            {
                 items.Add(item.ID, item);
             }
+
+
+
+            /*
+                        List<string> ids = new List<string>();
+
+                        foreach(string id in VerilogParsedDocument.IncludeFiles.Keys){
+                            ids.Add(id);
+                        }
+
+                        // listup new item
+
+                        foreach(Verilog.Module module in VerilogParsedDocument.Modules.Values)
+                        {
+                            foreach(Verilog.ModuleItems.ModuleInstantiation moduleInstantiation in module.ModuleInstantiations.Values)
+                            {
+                                string relativeFile = ProjectProperty.GetRelativeFilePathOfModule(moduleInstantiation.ModuleName);
+                                if (relativeFile == null) continue;
+                                string id = Data.VerilogModuleInstance.GetID(relativeFile,moduleInstantiation.Name, moduleInstantiation.ParameterOverrides, Project);
+                                if (!Project.IsRegistered(id))
+                                {
+                                    Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
+                                }
+                                ids.Add(id);
+                            }
+                        }
+
+                        // update
+
+                        // remove unused items
+                        List<codeEditor.Data.Item> removeItems = new List<codeEditor.Data.Item>();
+                        foreach(codeEditor.Data.Item item in items.Values)
+                        {
+                            if (!ids.Contains(item.ID)) removeItems.Add(item);
+                        }
+
+                        foreach (codeEditor.Data.Item item in removeItems)
+                        {
+                            items.Remove(item.ID);
+                            item.DisposeItem();
+                        }
+
+                        // add new items
+                        foreach (string id in ids)
+                        {
+                            if (items.ContainsKey(id)) continue;
+                            if (!Project.IsRegistered(id))
+                            {
+                                System.Diagnostics.Debugger.Break();
+                                return;
+                            }
+                            codeEditor.Data.Item item = Project.GetRegisterdItem(id);
+                            items.Add(item.ID, item);
+                        }
+            */
         }
 
         public virtual void AfterKeyDown(System.Windows.Forms.KeyEventArgs e)

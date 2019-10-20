@@ -18,6 +18,8 @@ namespace pluginVerilog.Verilog.ModuleItems
         //        public IReadOnlyList<Verilog.Variables.Port> Ports { get { return ports; } }
         public Dictionary<string, Expressions.Expression> PortConnection = new Dictionary<string, Expressions.Expression>();
 
+        public bool Prototype = false;
+
         public int BeginIndex;
         public int LastIndex;
         public static void Parse(WordScanner word, IModuleOrGeneratedBlock module)
@@ -183,13 +185,15 @@ namespace pluginVerilog.Verilog.ModuleItems
 
                 if (word.Prototype)
                 {
+                    moduleInstantiation.Prototype = true;
+
                     if (moduleInstantiation.Name == null)
                     {
                         // 
                     }
                     else if (module.Module.ModuleInstantiations.ContainsKey(moduleInstantiation.Name))
                     {   // duplicated
-                        word.AddError("instance name duplicated");
+                        word.AddPrototypeError("instance name duplicated");
                     }
                     else
                     {
@@ -204,7 +208,14 @@ namespace pluginVerilog.Verilog.ModuleItems
                     }
                     else if (module.Module.ModuleInstantiations.ContainsKey(moduleInstantiation.Name))
                     {   // duplicated
-                        moduleInstantiation = module.Module.ModuleInstantiations[moduleInstantiation.Name];
+                        if (module.Module.ModuleInstantiations[moduleInstantiation.Name].Prototype)
+                        {
+                            moduleInstantiation = module.Module.ModuleInstantiations[moduleInstantiation.Name];
+                            moduleInstantiation.Prototype = false;
+                        }
+                        else
+                        {
+                        }
                     }
                     else
                     {

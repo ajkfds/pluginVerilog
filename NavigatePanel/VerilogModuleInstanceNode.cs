@@ -69,12 +69,12 @@ namespace pluginVerilog.NavigatePanel
 
         public override void Selected()
         {
-            var menu = codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip();
+            var menu = codeEditor.Controller.NavigatePanel.GetContextMenuStrip();
             if (menu.Items.ContainsKey("icarusVerilogSimulationTsmi"))
             {
                 menu.Items["icarusVerilogSimulationTsmi"].Visible = true;
             }
-            codeEditor.Global.Controller.CodeEditor.SetTextFile(ITextFile);
+            codeEditor.Controller.CodeEditor.SetTextFile(ITextFile);
         }
 
         public override void Update()

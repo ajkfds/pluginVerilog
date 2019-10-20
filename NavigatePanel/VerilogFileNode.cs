@@ -63,8 +63,8 @@ namespace pluginVerilog.NavigatePanel
 
         public override void Selected()
         {
-            codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip().Items["IcarusVerilogTsmi"].Visible = true;
-            codeEditor.Global.Controller.CodeEditor.SetTextFile(ITextFile);
+            codeEditor.Controller.NavigatePanel.GetContextMenuStrip().Items["IcarusVerilogTsmi"].Visible = true;
+            codeEditor.Controller.CodeEditor.SetTextFile(ITextFile);
 
             if (NodeSelected != null) NodeSelected();
         }

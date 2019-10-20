@@ -25,7 +25,7 @@ namespace pluginVerilog
             }
 
             // append navigate context menu items
-            System.Windows.Forms.ContextMenuStrip menu = codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip();
+            System.Windows.Forms.ContextMenuStrip menu = codeEditor.Controller.NavigatePanel.GetContextMenuStrip();
             menu.Items.Insert(0,Global.SetupForm.IcarusVerilogTsmi);
 
             foreach(var menuItem in menu.Items)
@@ -52,7 +52,7 @@ namespace pluginVerilog
             // add test rtl project
             string absolutePath = System.IO.Path.GetFullPath(@"..\\..\\..\\..\\pluginVerilog\\TestRTL");
             codeEditor.Data.Project project = codeEditor.Data.Project.Create(absolutePath);
-            codeEditor.Global.Controller.AddProject(project);
+            codeEditor.Controller.AddProject(project);
 
             // register project property form tab
             codeEditor.Tools.ProjectPropertyForm.FormCreated += Tools.ProjectPropertyTab.ProjectPropertyFromCreated;

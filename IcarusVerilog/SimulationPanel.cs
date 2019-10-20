@@ -94,7 +94,7 @@ namespace pluginVerilog.IcarusVerilog
         {
             string projectName;
             string topId;
-            codeEditor.Global.Controller.NavigatePanel.GetSelectedNode(out projectName, out topId);
+            codeEditor.Controller.NavigatePanel.GetSelectedNode(out projectName, out topId);
             if (projectName == "" || topId == "") return;
             if (!codeEditor.Global.Projects.ContainsKey(projectName)) return;
             codeEditor.Data.Project project = codeEditor.Global.Projects[projectName];

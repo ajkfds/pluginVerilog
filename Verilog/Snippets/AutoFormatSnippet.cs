@@ -15,7 +15,7 @@ namespace pluginVerilog.Verilog.Snippets
 
         public override void Apply(CodeDocument codeDocument)
         {
-            codeEditor.Data.ITextFile itext = codeEditor.Global.Controller.CodeEditor.GetTextFile();
+            codeEditor.Data.ITextFile itext = codeEditor.Controller.CodeEditor.GetTextFile();
 
             if (!(itext is Data.IVerilogRelatedFile)) return;
             var vfile = itext as Data.IVerilogRelatedFile;
@@ -36,8 +36,8 @@ namespace pluginVerilog.Verilog.Snippets
 
 //            NameSpace nameSpace = module.GetHierNameSpace(index);
 
-//            var data = codeEditor.Global.Controller.CodeEditor.
-//            codeEditor.Global.Controller.
+//            var data = codeEditor.Controller.CodeEditor.
+//            codeEditor.Controller.
         }
 
         private void writeModuleInstance(CodeDocument codeDocument,int index,ModuleItems.ModuleInstantiation moduleInstantiation)

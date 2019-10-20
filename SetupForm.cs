@@ -17,13 +17,13 @@ namespace pluginVerilog
             InitializeComponent();
 
             IcarusVerilogTsmi.Image = Global.Icons.IcarusVerilog.GetImage(
-                codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip().ImageScalingSize.Height,
+                codeEditor.Controller.NavigatePanel.GetContextMenuStrip().ImageScalingSize.Height,
                 ajkControls.IconImage.ColorStyle.Original );
             iVerilogRunTsmi.Image = codeEditor.Global.IconImages.Play.GetImage(
-                codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip().ImageScalingSize.Height,
+                codeEditor.Controller.NavigatePanel.GetContextMenuStrip().ImageScalingSize.Height,
                 ajkControls.IconImage.ColorStyle.Blue);
             gtkWaveTsmi.Image = codeEditor.Global.IconImages.Wave0.GetImage(
-                codeEditor.Global.Controller.NavigatePanel.GetContextMenuStrip().ImageScalingSize.Height,
+                codeEditor.Controller.NavigatePanel.GetContextMenuStrip().ImageScalingSize.Height,
                 ajkControls.IconImage.ColorStyle.Blue);
 
         }
@@ -31,14 +31,14 @@ namespace pluginVerilog
         private void IVerilogRunTsmi_Click(object sender, EventArgs e)
         {
             string projectName, id;
-            codeEditor.Global.Controller.NavigatePanel.GetSelectedNode(out projectName, out id);
+            codeEditor.Controller.NavigatePanel.GetSelectedNode(out projectName, out id);
 
             codeEditor.Data.Project project = codeEditor.Global.Projects[projectName];
             Data.VerilogFile topFile = project.GetRegisterdItem(id) as Data.VerilogFile;
             if (topFile == null) return;
 
             IcarusVerilog.SimulationTab tabPage = new IcarusVerilog.SimulationTab(topFile);
-            codeEditor.Global.Controller.Tabs.AddPage(tabPage);
+            codeEditor.Controller.Tabs.AddPage(tabPage);
         }
 
         private void GtkWaveTsmi_Click(object sender, EventArgs e)
@@ -50,7 +50,7 @@ namespace pluginVerilog
         {
             string projectName;
             string id;
-            codeEditor.Global.Controller.NavigatePanel.GetSelectedNode(out projectName, out id);
+            codeEditor.Controller.NavigatePanel.GetSelectedNode(out projectName, out id);
 
             codeEditor.Data.Project project = codeEditor.Global.Projects[projectName];
             var item = project.GetRegisterdItem(id);
@@ -77,7 +77,7 @@ namespace pluginVerilog
             saveFileDialog.FileName = "new.v";
             saveFileDialog.InitialDirectory = path;
             saveFileDialog.Filter = "verilog file (*.v)|*.v";
-            if( codeEditor.Global.Controller.ShowDialogForm(saveFileDialog) == DialogResult.OK)
+            if( codeEditor.Controller.ShowDialogForm(saveFileDialog) == DialogResult.OK)
             {
                 System.IO.Stream stream = saveFileDialog.OpenFile();
                 using (System.IO.StreamWriter sw = new System.IO.StreamWriter(stream))
@@ -93,7 +93,7 @@ namespace pluginVerilog
             {
                 item.Update();
             }
-            codeEditor.Global.Controller.NavigatePanel.UpdateVisibleNode();
+            codeEditor.Controller.NavigatePanel.UpdateVisibleNode();
         }
     }
 }

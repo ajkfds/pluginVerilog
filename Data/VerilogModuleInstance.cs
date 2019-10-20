@@ -41,10 +41,13 @@ namespace pluginVerilog.Data
             fileItem.ParseRequested = true;
 
             project.RegisterProjectItem(fileItem);
+
+//            System.Diagnostics.Debug.Print("create " + id);
             return fileItem;
         }
         public override void DisposeItem()
         {
+//            System.Diagnostics.Debug.Print("dispose " + ID);
             if (ParsedDocument != null)
             {
                 foreach (var incFile in VerilogParsedDocument.IncludeFiles.Values)
@@ -259,10 +262,70 @@ namespace pluginVerilog.Data
         {
             if (VerilogParsedDocument == null)
             {
+                foreach (Item item in items.Values)
+                {
+                    item.DisposeItem();
+                }
                 items.Clear();
                 return;
             }
+            if (ID == "TestRTL:File:SCOPE.v")
+            {
+                string a = "";
+            }
 
+            List<string> currentIds = new List<string>();
+            foreach (string id in VerilogParsedDocument.IncludeFiles.Keys)
+            {
+                currentIds.Add(id);
+            }
+
+            Dictionary<string, Item> newItems = new Dictionary<string, Item>();
+
+            // add new item
+            foreach (Verilog.Module module in VerilogParsedDocument.Modules.Values)
+            {
+                foreach (Verilog.ModuleItems.ModuleInstantiation moduleInstantiation in module.ModuleInstantiations.Values)
+                {
+                    string relativeFile = ProjectProperty.GetRelativeFilePathOfModule(moduleInstantiation.ModuleName);
+                    if (relativeFile == null) continue;
+                    string id = Data.VerilogModuleInstance.GetID(relativeFile, moduleInstantiation.Name, moduleInstantiation.ParameterOverrides, Project);
+                    if (!items.Keys.Contains(id) && !newItems.ContainsKey(id)) // new item
+                    {
+                        // create & increment project counter
+                        Item item = Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
+                        newItems.Add(item.ID, item);
+                    }
+                    currentIds.Add(id);
+                }
+            }
+
+            List<string> removeIds = new List<string>();
+            foreach (codeEditor.Data.Item item in items.Values)
+            {
+                if (!currentIds.Contains(item.ID)) removeIds.Add(item.ID);
+            }
+
+            foreach (string id in removeIds)
+            {
+                if (Project.IsRegistered(id))
+                {
+                    Item item = Project.GetRegisterdItem(id);
+                    items.Remove(item.ID);
+                    item.DisposeItem();
+                }
+                else
+                {
+                    System.Diagnostics.Debugger.Break();
+                }
+            }
+
+            foreach (Item item in newItems.Values)
+            {
+                items.Add(item.ID, item);
+            }
+
+            /*
             List<string> ids = new List<string>();
 
             foreach (string id in VerilogParsedDocument.IncludeFiles.Keys)
@@ -307,9 +370,10 @@ namespace pluginVerilog.Data
                 codeEditor.Data.Item item = Project.GetRegisterdItem(id);
                 items.Add(item.ID, item);
             }
+            */
         }
 
-            public virtual void AfterKeyDown(System.Windows.Forms.KeyEventArgs e)
+        public virtual void AfterKeyDown(System.Windows.Forms.KeyEventArgs e)
             {
                 if (VerilogParsedDocument == null) return;
                 switch (e.KeyCode)
