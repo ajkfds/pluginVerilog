@@ -33,11 +33,6 @@ namespace pluginVerilog.Verilog.Snippets
                     return;
                 }
             }
-
-//            NameSpace nameSpace = module.GetHierNameSpace(index);
-
-//            var data = codeEditor.Controller.CodeEditor.
-//            codeEditor.Controller.
         }
 
         private void writeModuleInstance(CodeDocument codeDocument,int index,ModuleItems.ModuleInstantiation moduleInstantiation)

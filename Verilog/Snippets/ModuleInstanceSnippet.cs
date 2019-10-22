@@ -27,14 +27,31 @@ namespace pluginVerilog.Verilog.Snippets
             string relativePath = projectProperty.GetRelativeFilePathOfModule(Text);
             if (relativePath == "") return;
 
-            Data.VerilogFile file = project.GetRegisterdItem(Data.VerilogFile.GetID(relativePath, project)) as Data.VerilogFile;
-            Verilog.ParsedDocument parsedDocument = file.ParsedDocument as Verilog.ParsedDocument;
-            if (parsedDocument == null) return;
 
-            Verilog.Module module = parsedDocument.Modules[Text];
-            if (module == null) return;
+            string instanceName = Text + "_";
+            {
+                Data.IVerilogRelatedFile vfile = codeEditor.Controller.CodeEditor.GetTextFile() as Data.IVerilogRelatedFile;
+                if (vfile == null) return;
 
-            string replaceText = getReplaceText(module);
+                ParsedDocument parenetParsedDocument = vfile.VerilogParsedDocument;
+                Module module = parenetParsedDocument.GetModule(vfile.CodeDocument.CaretIndex);
+
+                int instanceCount = 0;
+                while (module.ModuleInstantiations.ContainsKey(Text + "_" + instanceCount.ToString()))
+                {
+                    instanceCount++;
+                }
+                instanceName = Text + "_" + instanceCount.ToString();
+            }
+
+            Data.VerilogFile targetFile = project.GetRegisterdItem(Data.VerilogFile.GetID(relativePath, project)) as Data.VerilogFile;
+            Verilog.ParsedDocument targetParsedDocument = targetFile.ParsedDocument as Verilog.ParsedDocument;
+            if (targetParsedDocument == null) return;
+
+            Verilog.Module targetModule = targetParsedDocument.Modules[Text];
+            if (targetModule == null) return;
+
+            string replaceText = getReplaceText(targetModule,instanceName);
 
 
             int index = codeDocument.CaretIndex;
@@ -69,9 +86,10 @@ namespace pluginVerilog.Verilog.Snippets
 
             codeEditor.Controller.CodeEditor.RequestReparse();
             base.Apply(codeDocument);
+            
         }
 
-        private string getReplaceText(Module module)
+        private string getReplaceText(Module module,string instanceName)
         {
             int i = 0;
             StringBuilder sb = new StringBuilder();
@@ -89,7 +107,19 @@ namespace pluginVerilog.Verilog.Snippets
                     sb.Append("\t( {");
                     sb.Append(i.ToString());
                     i++;
-                    initials.Add(module.Parameters[portName].Expression.Value.ToString());
+
+                    if (
+                        module.Parameters.ContainsKey(portName) &&
+                        module.Parameters[portName].Expression != null
+                        )
+                    {
+                        initials.Add(module.Parameters[portName].Expression.ToString());
+                    }
+                    else
+                    {
+                        initials.Add("");
+                    }
+
                     sb.Append("} )");
                     first = false;
                 }
@@ -99,7 +129,7 @@ namespace pluginVerilog.Verilog.Snippets
             sb.Append("{");
             sb.Append(i.ToString());
             i++;
-            initials.Add(module.Name+"_");
+            initials.Add(instanceName);
             sb.Append("}");
 
             sb.Append(" (\r\n");
@@ -151,8 +181,15 @@ namespace pluginVerilog.Verilog.Snippets
         {
 
         }
+
+        bool skipFirstHandle = true;
         public override void AfterAutoCompleteHandled(object sender, KeyEventArgs e, codeEditor.CodeEditor.AutoCompleteForm autoCompleteForm)
         {
+            if (skipFirstHandle)
+            {
+                skipFirstHandle = false;
+                return;
+            }
             if (e.Handled) // closed
             {
                 int i = codeEditor.Controller.CodeEditor.GetHighlightIndex(document.CaretIndex);

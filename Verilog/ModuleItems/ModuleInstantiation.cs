@@ -376,6 +376,16 @@ namespace pluginVerilog.Verilog.ModuleItems
                     {
                         sb.Append(ParameterOverrides[paramName].ToString());
                     }
+                    else
+                    {
+                        if(
+                            instancedModule.Parameters.ContainsKey(paramName) && 
+                            instancedModule.Parameters[paramName].Expression != null
+                            )
+                        {
+                            sb.Append(instancedModule.Parameters[paramName].Expression.ToString());
+                        }
+                    }
                     sb.Append(" )");
                     first = false;
                 }

@@ -17,7 +17,7 @@ namespace pluginVerilog.Verilog.Snippets
         {
         }
 
-        public override void Apply(codeEditor.CodeEditor.CodeDocument codeDocument, System.Windows.Forms.Keys keyCode)
+        public override void Apply(codeEditor.CodeEditor.CodeDocument codeDocument, System.Windows.Forms.KeyEventArgs e)
         {
             int prevIndex = codeDocument.CaretIndex;
             if (codeDocument.GetLineStartIndex(codeDocument.GetLineAt(prevIndex)) != prevIndex && prevIndex != 0)

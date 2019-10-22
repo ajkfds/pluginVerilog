@@ -119,26 +119,6 @@ namespace pluginVerilog.Verilog.Snippets
                 }
             }
         }
-        //public override void AfterAutoCompleteHandled(object sender, KeyEventArgs e, codeEditor.CodeEditor.AutoCompleteForm autoCompleteForm)
-        //{
-        //    if (e.Handled) // closed
-        //    {
-        //        bool moved;
-        //        moved = false;
-        //        int i = codeEditor.Controller.CodeEditor.GetHighlightIndex(document.CaretIndex);
-        //        if (i == -1) return;
-        //        i++;
-        //        if (i >= initials.Count) return;
-
-        //        codeEditor.Controller.CodeEditor.SelectHighlight(i);
-        //        moved = true;
-
-        //        if (!moved)
-        //        {
-        //            codeEditor.Controller.CodeEditor.AbortInteractiveSnippet();
-        //        }
-        //    }
-        //}
 
         private void moveToNextHighlight(out bool moved)
         {
