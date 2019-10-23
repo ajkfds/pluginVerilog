@@ -116,51 +116,52 @@ namespace pluginVerilog.Data
             if (VerilogParsedDocument != null) VerilogParsedDocument.ReloadIncludeFiles();
             CodeDocument = null;
         }
-            
-        public codeEditor.CodeEditor.ParsedDocument ParsedDocument {
-            get
-            {
-                string id;
-                if(ParameterOverrides.Count == 0)
-                {
-                    id = Data.VerilogFile.GetID(RelativePath, Project);
-                    return (Project.GetRegisterdItem(id) as VerilogFile).ParsedDocument;
-                }
-                else
-                {
-                    id = GetParsedDocumentID(RelativePath, ParameterOverrides, Project);
-                    if (ProjectProperty.IsRegisteredParsedDocument(id))
-                    {
-                        return (Project.GetRegisterdItem(id) as VerilogFile).ParsedDocument;
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-            }
-            set
-            {
-                string id;
-                if (ParameterOverrides.Count == 0)
-                {
-                    id = Data.VerilogFile.GetID(RelativePath, Project);
-                    (Project.GetRegisterdItem(id) as VerilogFile).ParsedDocument = value;
-                }
-                else
-                {
-                    id = GetParsedDocumentID(RelativePath, ParameterOverrides, Project);
-                    if (ProjectProperty.IsRegisteredParsedDocument(id))
-                    {
-                        (Project.GetRegisterdItem(id) as VerilogFile).ParsedDocument = value;
-                    }
-                    else
-                    {
-                        return;
-                    }
-                }
-           }
-        }
+
+        public codeEditor.CodeEditor.ParsedDocument ParsedDocument { get; set; }
+        //public codeEditor.CodeEditor.ParsedDocument ParsedDocument {
+        //    get
+        //    {
+        //        string id;
+        //        if(ParameterOverrides.Count == 0)
+        //        {
+        //            id = Data.VerilogFile.GetID(RelativePath, Project);
+        //            return (Project.GetRegisterdItem(id) as VerilogFile).ParsedDocument;
+        //        }
+        //        else
+        //        {
+        //            id = GetParsedDocumentID(RelativePath, ParameterOverrides, Project);
+        //            if (ProjectProperty.IsRegisteredParsedDocument(id))
+        //            {
+        //                return (Project.GetRegisterdItem(id) as VerilogFile).ParsedDocument;
+        //            }
+        //            else
+        //            {
+        //                return null;
+        //            }
+        //        }
+        //    }
+        //    set
+        //    {
+        //        string id;
+        //        if (ParameterOverrides.Count == 0)
+        //        {
+        //            id = Data.VerilogFile.GetID(RelativePath, Project);
+        //            (Project.GetRegisterdItem(id) as VerilogFile).ParsedDocument = value;
+        //        }
+        //        else
+        //        {
+        //            id = GetParsedDocumentID(RelativePath, ParameterOverrides, Project);
+        //            if (ProjectProperty.IsRegisteredParsedDocument(id))
+        //            {
+        //                (Project.GetRegisterdItem(id) as VerilogFile).ParsedDocument = value;
+        //            }
+        //            else
+        //            {
+        //                return;
+        //            }
+        //        }
+        //   }
+        //}
 
         public Verilog.ParsedDocument VerilogParsedDocument
         {
