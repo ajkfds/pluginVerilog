@@ -74,7 +74,14 @@ namespace pluginVerilog.IcarusVerilog
 
         private void receiveLineString(string lineString)
         {
-            logView.AppendLogLine(lineString);
+            if (lineString == "icarusVerilogShell>")
+            {
+                logView.AppendLogLine(lineString,System.Drawing.Color.ForestGreen);
+            }
+            else
+            {
+                logView.AppendLogLine(lineString);
+            }
             moveTabIcon(ajkControls.IconImage.ColorStyle.White);
         }
 
