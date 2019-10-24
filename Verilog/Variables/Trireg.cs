@@ -117,7 +117,7 @@ namespace pluginVerilog.Verilog.Variables
                             word.MoveNext();
                             chargeStrength = ChargeStrengthEnum.medium;
                             break;
-                        case "learge":
+                        case "large":
                             word.MoveNext();
                             word.Color(CodeDrawStyle.ColorType.Keyword);
                             word.MoveNext();

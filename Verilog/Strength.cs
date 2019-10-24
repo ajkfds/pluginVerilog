@@ -26,6 +26,47 @@ namespace pluginVerilog.Verilog
         small,medium,large
     }
 
+    //public class ChargeStrength
+    //{
+    //    protected ChargeStrength() { }
+
+    //    public Strengths Strength;
+    //    public static ChargeStrength ParseCreate(WordScanner word, NameSpace nameSpace)
+    //    {
+    //        string nextText = word.NextText;
+
+    //        if (word.Text != "(") return null;
+    //        Strengths? strength = null;
+    //        switch (nextText)
+    //        {
+    //            case "small":
+    //                strength = Strengths.small;
+    //                break;
+    //            case "medium":
+    //                strength = Strengths.medium;
+    //                break;
+    //            case "large":
+    //                strength = Strengths.large;
+    //                break;
+    //            default:
+    //                return null;
+    //        }
+
+    //        word.MoveNext(); // (
+    //        ChargeStrength ret = new ChargeStrength();
+    //        ret.Strength = (Strengths)strength;
+            
+    //        if (word.Text != ")")
+    //        {
+    //            word.AddError(") required");
+    //            return null;
+    //        }
+
+    //        word.MoveNext();
+    //        return ret;
+    //    }
+    //}
+
     public class DriveStrength
     {
         protected DriveStrength() { }

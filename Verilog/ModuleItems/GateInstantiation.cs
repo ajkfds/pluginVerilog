@@ -56,6 +56,16 @@ namespace pluginVerilog.Verilog.ModuleItems
                 // cmos_switchtype
                 case "cmos":
                 case "rcmos":
+                    CmosSwitchInstiation cmos_switch = CmosSwitchInstiation.ParseCreate(word, module);
+                    if (word.Text == ";")
+                    {
+                        word.MoveNext();
+                    }
+                    else
+                    {
+                        word.AddError("; expected");
+                    }
+                    return cmos_switch;
                     break;
                 // enable_gatetype
                 case "bufif0":
@@ -77,7 +87,8 @@ namespace pluginVerilog.Verilog.ModuleItems
                 case "pmos":
                 case "rnmos":
                 case "rpmos":
-                    break;
+                    MosSwitchInstiation.Parse(word, module);
+                    return null;
                 // n_input_gatetype
                 case "and":
                 case "nand":
@@ -183,8 +194,8 @@ namespace pluginVerilog.Verilog.ModuleItems
 
         Delay3 delay3;
 
-        // gate_instantiation::=    cmos_switchtype                             [delay3]    cmos_switch_instance        { , cmos_switch_instance }; 
-        public static new GateInstantiation ParseCreate(WordScanner word, IModuleOrGeneratedBlock module)
+        // gate_instantiation::=    cmos_switchtype  [delay3] cmos_switch_instance        { , cmos_switch_instance }; 
+        public static new CmosSwitchInstiation ParseCreate(WordScanner word, IModuleOrGeneratedBlock module)
         {
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
@@ -193,13 +204,107 @@ namespace pluginVerilog.Verilog.ModuleItems
             if (word.Text == "(")
             {
                 ret.delay3 = Delay3.ParseCreate(word, module as NameSpace);
-                if (ret.delay3 == null) return null;
             }
-            // cmos_switch_instance             ::= [name_of_gate_instance] (output_terminal, input_terminal, ncontrol_terminal, pcontrol_terminal) 
+            if(word.Text != "(" && General.IsIdentifier(word.Text))
+            {
+                ret.Name = word.Text;
+                word.Color(CodeDrawStyle.ColorType.Identifier);
+                word.MoveNext();
+            }
+            while (!word.Eof)
+            {
+                if (word.Text == "(")
+                {
+                    word.MoveNext();
 
-            return null;
+                }
+            }
+            // cmos_switch_instance ::= [name_of_gate_instance] (output_terminal, input_terminal, ncontrol_terminal, pcontrol_terminal) 
+            return ret;
         }
     }
+    public class MosSwitchInstiation : GateInstantiation
+    {
+        protected MosSwitchInstiation() { }
+
+        Delay3 delay3;
+        Expressions.Expression OutputTerminal;
+        Expressions.Expression InputTerminal;
+        Expressions.Expression EnableTerminal;
+
+        // gate_instantiation::= mos_switchtype  [delay3]    mos_switch_instance         { , mos_switch_instance }; 
+        public static void Parse(WordScanner word, IModuleOrGeneratedBlock module)
+        {
+            string type = word.Text;
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext();
+
+            if (word.Text == "(")
+            {
+                Delay3 delay3 = Delay3.ParseCreate(word, module as NameSpace);
+            }
+            // mos_switch_instance              ::= [name_of_gate_instance] (output_terminal, input_terminal, enable_terminal) 
+            while(!word.Eof && word.Text != ";")
+            {
+                MosSwitchInstiation ret = new MosSwitchInstiation();
+
+                if(word.Text != "(" && General.IsIdentifier(word.Text))
+                {
+                    ret.Name = word.Text;
+                    word.Color(CodeDrawStyle.ColorType.Identifier);
+                    word.MoveNext();
+                }
+                if(word.Text != "(")
+                {
+                    word.AddError("( required");
+                    word.SkipToKeyword(";");
+                }
+                else
+                {
+                    word.MoveNext();
+
+                    Expressions.Expression output_terminal = Expressions.Expression.ParseCreateVariableLValue(word, module as NameSpace);
+                    if(word.Text != ",")
+                    {
+                        word.AddError(", required");
+                        word.SkipToKeyword(";");
+                        break;
+                    }
+                    word.MoveNext();
+                    Expressions.Expression input_terminal = Expressions.Expression.ParseCreate(word, module as NameSpace);
+                    if (word.Text != ",")
+                    {
+                        word.AddError(", required");
+                        word.SkipToKeyword(";");
+                        break;
+                    }
+                    word.MoveNext();
+                    Expressions.Expression enable_terminal = Expressions.Expression.ParseCreate(word, module as NameSpace);
+                    if (word.Text != ")")
+                    {
+                        word.AddError(") required");
+                        word.SkipToKeyword(";");
+                        break;
+                    }
+                    word.MoveNext();
+
+                    if (word.Text != ",") break;
+                    word.MoveNext();
+                }
+            }
+
+            if(word.Text == ";")
+            {
+                word.MoveNext();
+            }
+            else
+            {
+                word.AddError("; required");
+            }
+
+        }
+    }
+
     public class EnableGate : GateInstantiation
     {
         protected EnableGate() { }

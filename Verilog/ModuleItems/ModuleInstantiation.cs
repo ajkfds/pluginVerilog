@@ -301,7 +301,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                     while (!word.Eof && word.Text != ")")
                     {
                         string pinName = "";
-                        if(instancedModule != null && instancedModule.PortsList.Count >= i)
+                        if(instancedModule != null && i < instancedModule.PortsList.Count)
                         {
                             pinName = instancedModule.PortsList[i].Name;
                             Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);

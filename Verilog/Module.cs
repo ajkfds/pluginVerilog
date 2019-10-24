@@ -331,6 +331,7 @@ namespace pluginVerilog.Verilog
                         else
                         {
                             module.Ports.Add(port.Name, port);
+                            module.PortsList.Add(port);
                         }
                     }
                     else

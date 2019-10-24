@@ -314,7 +314,6 @@ namespace pluginVerilog.Data
         }
 
 
-
         private void applyAutoInput()
         {
             int index = CodeDocument.CaretIndex;

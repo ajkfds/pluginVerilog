@@ -138,7 +138,6 @@
     <Compile Include="Verilog\Snippets\ModuleInstanceSnippet.cs" />
     <Compile Include="Verilog\Snippets\NonBlockingAssignmentAutocompleteItem.cs" />
     <Compile Include="Verilog\Snippets\Setup.cs" />
-    <Compile Include="Verilog\Snippets\Snippets.cs" />
     <Compile Include="Verilog\Snippets\TaskAutocompleteItem.cs" />
     <Compile Include="Verilog\Statements\Assignment.cs" />
     <Compile Include="Verilog\Attribute.cs" />
