@@ -226,6 +226,20 @@ namespace pluginVerilog.Verilog
 
             return;
         }
+        private codeEditor.CodeEditor.AutocompleteItem newItem(string text, CodeDrawStyle.ColorType colorType)
+        {
+            return new codeEditor.CodeEditor.AutocompleteItem(text, CodeDrawStyle.ColorIndex(colorType), CodeDrawStyle.Color(colorType));
+        }
+        public override void AppendAutoCompleteItem(List<codeEditor.CodeEditor.AutocompleteItem> items)
+        {
+            base.AppendAutoCompleteItem(items);
+
+            foreach (ModuleItems.ModuleInstantiation mi in Module.ModuleInstantiations.Values)
+            {
+                if (mi.Name == null) System.Diagnostics.Debugger.Break();
+                items.Add(newItem(mi.Name, CodeDrawStyle.ColorType.Identifier));
+            }
+        }
 
         protected static void checkVariablesUseAndDriven(WordScanner word, NameSpace nameSpace)
         {

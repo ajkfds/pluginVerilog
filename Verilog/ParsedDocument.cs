@@ -325,15 +325,12 @@ namespace pluginVerilog.Verilog
                     items = verilogKeywords.ToList();
                 }
 
-                if (space is Module)
+                List<string> moduleNames = ProjectProperty.GetModuleNameList();
+                foreach (string moduleName in moduleNames)
                 {
-                    List<string> moduleNames = ProjectProperty.GetModuleNameList();
-                    foreach (string moduleName in moduleNames)
-                    {
-                        items.Add(
-                            new Snippets.ModuleInstanceAutocompleteItem(moduleName, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword), Project)
-                        );
-                    }
+                    items.Add(
+                        new Snippets.ModuleInstanceAutocompleteItem(moduleName, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword), Project)
+                    );
                 }
             }
             else
@@ -344,68 +341,11 @@ namespace pluginVerilog.Verilog
             }
 
             NameSpace target = getSearchNameSpace(space, words, endWithDot);
-            if(target != null) appendAutoCompleteItems(items, target);
+            if(target != null) target.AppendAutoCompleteItem(items);
 
             return items;
         }
 
-        private void appendAutoCompleteItems(List<codeEditor.CodeEditor.AutocompleteItem> items, NameSpace nameSpace)
-        {
-            foreach (Variables.Variable variable in nameSpace.Variables.Values)
-            {
-                if (variable is Variables.Net)
-                {
-                    items.Add(newItem(variable.Name, CodeDrawStyle.ColorType.Net));
-                }
-                else if (variable is Variables.Reg)
-                {
-                    items.Add(newItem(variable.Name, CodeDrawStyle.ColorType.Register));
-                }
-                else if (variable is Variables.Integer)
-                {
-                    items.Add(newItem(variable.Name, CodeDrawStyle.ColorType.Variable));
-                }
-                else if (variable is Variables.Time || variable is Variables.Real || variable is Variables.RealTime || variable is Variables.Integer || variable is Variables.Genvar)
-                {
-                    items.Add(newItem(variable.Name, CodeDrawStyle.ColorType.Variable));
-                }
-            }
-
-            foreach (Variables.Parameter parameter in nameSpace.Module.Parameters.Values)
-            {
-                items.Add(newItem(parameter.Name, CodeDrawStyle.ColorType.Paramater));
-            }
-
-            foreach (Variables.Parameter parameter in nameSpace.Module.LocalParameters.Values)
-            {
-                items.Add(newItem(parameter.Name, CodeDrawStyle.ColorType.Paramater));
-            }
-
-            foreach (Function function in nameSpace.Module.Functions.Values)
-            {
-                items.Add(newItem(function.Name, CodeDrawStyle.ColorType.Identifier));
-            }
-
-            foreach (Task task in nameSpace.Module.Tasks.Values)
-            {
-                items.Add(newItem(task.Name, CodeDrawStyle.ColorType.Identifier));
-            }
-
-            foreach (NameSpace space in nameSpace.NameSpaces.Values)
-            {
-                if (space.Name == null) System.Diagnostics.Debugger.Break();
-                items.Add(newItem(space.Name, CodeDrawStyle.ColorType.Identifier));
-            }
-
-            if (nameSpace is Module)
-            {
-                foreach (ModuleItems.ModuleInstantiation mi in nameSpace.Module.ModuleInstantiations.Values)
-                {
-                    if (mi.Name == null) System.Diagnostics.Debugger.Break();
-                    items.Add(newItem(mi.Name, CodeDrawStyle.ColorType.Identifier));
-                }
-            }
-        }
 
         private codeEditor.CodeEditor.AutocompleteItem newItem(string text, CodeDrawStyle.ColorType colorType)
         {
