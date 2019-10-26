@@ -29,10 +29,19 @@ namespace pluginVerilog.Verilog.Variables
                 word.AddError("= expected.");
                 return null;
             }
+            WordScanner equalPointer = word.Clone();
             word.MoveNext();
 
             variableAssign.Expression = Expressions.Expression.ParseCreate(word, nameSpace);
             if (variableAssign.Expression == null) return null;
+
+            if (variableAssign.NetLValue != null && variableAssign.NetLValue.BitWidth != null && variableAssign.Expression.BitWidth != null)
+            {
+                if (variableAssign.NetLValue.BitWidth != variableAssign.Expression.BitWidth)
+                {
+                    equalPointer.AddWarning("bitwidth mismatch " + variableAssign.NetLValue.BitWidth + " vs " + variableAssign.Expression.BitWidth);
+                }
+            }
 
             return variableAssign;
         }
