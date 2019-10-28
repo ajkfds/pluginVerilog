@@ -223,6 +223,7 @@ namespace pluginVerilog.Verilog.Variables
                 {
                     word.MoveNext();
                     Expressions.Expression initalValue = Expressions.Expression.ParseCreate(word, nameSpace);
+                    trireg.AssignedReferences.Add(trireg.DefinedReference);
                 }
                 else if (word.Text == "[")
                 {

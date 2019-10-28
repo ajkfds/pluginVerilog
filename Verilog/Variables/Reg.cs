@@ -148,6 +148,7 @@ namespace pluginVerilog.Verilog.Variables
                 {
                     word.MoveNext();
                     Expressions.Expression initalValue = Expressions.Expression.ParseCreate(word, nameSpace);
+                    reg.AssignedReferences.Add(reg.DefinedReference);
                 }
                 else if (word.Text == "[")
                 {
