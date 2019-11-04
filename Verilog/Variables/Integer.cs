@@ -25,7 +25,7 @@ namespace pluginVerilog.Verilog.Variables
 
             while (!word.Eof)
             {
-                if (!General.IsSimpleIdentifier(word.Text))
+                if (!General.IsIdentifier(word.Text))
                 {
                     word.AddError("illegal integer identifier");
                     return;

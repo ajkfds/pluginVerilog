@@ -240,7 +240,7 @@ namespace pluginVerilog.Verilog.Variables
 
                     if (portNameSpace.Ports.ContainsKey(port.Name))
                     {
-                        word.AddError("port name duplicated");
+                        word.AddPrototypeError("port name duplicated");
                     }
                     else
                     {
@@ -331,7 +331,7 @@ namespace pluginVerilog.Verilog.Variables
 
                     if (portNameSpace.Ports.ContainsKey(port.Name))
                     {
-                        word.AddError("port name duplicated");
+                        word.AddPrototypeError("port name duplicated");
                     }
                     else
                     {
@@ -487,7 +487,7 @@ namespace pluginVerilog.Verilog.Variables
 
                     if (portNameSpace.Ports.ContainsKey(port.Name))
                     {
-                        word.AddError("port name duplicated");
+                        word.AddPrototypeError("port name duplicated");
                     }
                     else
                     {

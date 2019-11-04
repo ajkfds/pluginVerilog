@@ -95,7 +95,7 @@ namespace pluginVerilog.Verilog.Variables
             List<Reg> regs = new List<Reg>();
             while (!word.Eof)
             {
-                if (!General.IsSimpleIdentifier(word.Text))
+                if (!General.IsIdentifier(word.Text))
                 {
                     word.AddError("illegal reg identifier");
                     return;

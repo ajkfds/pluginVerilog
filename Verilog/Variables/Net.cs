@@ -193,7 +193,7 @@ namespace pluginVerilog.Verilog.Variables
                     return;
                 }
             }
-            if (!General.IsSimpleIdentifier(word.Text))
+            if (!General.IsIdentifier(word.Text))
             {
                 word.AddError("illegal net identifier");
                 return;
