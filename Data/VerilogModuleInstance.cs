@@ -375,172 +375,174 @@ namespace pluginVerilog.Data
         }
 
         public virtual void AfterKeyDown(System.Windows.Forms.KeyEventArgs e)
+        {
+            if (VerilogParsedDocument == null) return;
+            switch (e.KeyCode)
             {
-                if (VerilogParsedDocument == null) return;
-                switch (e.KeyCode)
+                case System.Windows.Forms.Keys.Return:
+                    applyAutoInput();
+                    break;
+                case System.Windows.Forms.Keys.Space:
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public virtual void AfterKeyPressed(System.Windows.Forms.KeyPressEventArgs e)
+        {
+            if (VerilogParsedDocument == null) return;
+        }
+
+        public virtual void BeforeKeyPressed(System.Windows.Forms.KeyPressEventArgs e)
+        {
+        }
+
+        public virtual void BeforeKeyDown(System.Windows.Forms.KeyEventArgs e)
+        {
+        }
+
+        public List<codeEditor.CodeEditor.PopupItem> GetPopupItems(int editId, int index)
+        {
+            if (VerilogParsedDocument == null) return null;
+            if (VerilogParsedDocument.EditID != editId) return null;
+
+            int headIndex, length;
+            CodeDocument.GetWord(index, out headIndex, out length);
+            string text = CodeDocument.CreateString(headIndex, length);
+            return VerilogParsedDocument.GetPopupItems(index, text);
+        }
+
+
+        public List<codeEditor.CodeEditor.ToolItem> GetToolItems(int index)
+        {
+            List<codeEditor.CodeEditor.ToolItem> toolItems = new List<codeEditor.CodeEditor.ToolItem>();
+            toolItems.Add(new Verilog.Snippets.AlwaysFFSnippet());
+            toolItems.Add(new Verilog.Snippets.ConnectionCheckSnippet());
+            toolItems.Add(new Verilog.Snippets.AutoFormatSnippet());
+            return toolItems;
+        }
+
+        public List<codeEditor.CodeEditor.AutocompleteItem> GetAutoCompleteItems(int index, out string cantidateWord)
+        {
+            cantidateWord = null;
+
+            if (VerilogParsedDocument == null) return null;
+            int line = CodeDocument.GetLineAt(index);
+            int lineStartIndex = CodeDocument.GetLineStartIndex(line);
+
+            List<codeEditor.CodeEditor.AutocompleteItem> items = VerilogParsedDocument.GetAutoCompleteItems(index, lineStartIndex, line, (CodeEditor.CodeDocument)CodeDocument, out cantidateWord);
+            return items;
+        }
+
+
+
+        private void applyAutoInput()
+        {
+            int index = CodeDocument.CaretIndex;
+            int line = CodeDocument.GetLineAt(index);
+            if (line == 0) return;
+            int prevLine = line - 1;
+
+            int lineHeadIndex = CodeDocument.GetLineStartIndex(line);
+            int prevLineHeadIndex = CodeDocument.GetLineStartIndex(prevLine);
+
+            int prevTabs = 0;
+            for (int i = prevLineHeadIndex; i < lineHeadIndex; i++)
+            {
+                char ch = CodeDocument.GetCharAt(i);
+                if (ch == '\t')
                 {
-                    case System.Windows.Forms.Keys.Return:
-                        applyAutoInput();
-                        break;
-                    case System.Windows.Forms.Keys.Space:
-                        break;
-                    default:
-                        break;
+                    prevTabs++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            int indentLength = 0;
+            for (int i = lineHeadIndex; i < CodeDocument.Length; i++)
+            {
+                char ch = CodeDocument.GetCharAt(i);
+                if (ch == '\t')
+                {
+                    indentLength++;
+                }
+                else if (ch == ' ')
+                {
+                    indentLength++;
+                }
+                else
+                {
+                    break;
                 }
             }
 
-            public virtual void AfterKeyPressed(System.Windows.Forms.KeyPressEventArgs e)
+
+            bool prevBegin = isPrevBegin(lineHeadIndex);
+            bool nextEnd = isNextEnd(lineHeadIndex);
+
+            if (prevBegin)
             {
-                if (VerilogParsedDocument == null) return;
-            }
-
-            public virtual void BeforeKeyPressed(System.Windows.Forms.KeyPressEventArgs e)
-            {
-            }
-
-            public virtual void BeforeKeyDown(System.Windows.Forms.KeyEventArgs e)
-            {
-            }
-
-            public List<codeEditor.CodeEditor.PopupItem> GetPopupItems(int editId, int index)
-            {
-                if (VerilogParsedDocument == null) return null;
-                if (VerilogParsedDocument.EditID != editId) return null;
-
-                int headIndex, length;
-                CodeDocument.GetWord(index, out headIndex, out length);
-                string text = CodeDocument.CreateString(headIndex, length);
-                return VerilogParsedDocument.GetPopupItems(index, text);
-            }
-
-
-            public List<codeEditor.CodeEditor.ToolItem> GetToolItems(int index)
-            {
-                List<codeEditor.CodeEditor.ToolItem> toolItems = new List<codeEditor.CodeEditor.ToolItem>();
-                toolItems.Add(new Verilog.Snippets.AlwaysFFSnippet());
-                return toolItems;
-            }
-
-            public List<codeEditor.CodeEditor.AutocompleteItem> GetAutoCompleteItems(int index, out string cantidateWord)
-            {
-                cantidateWord = null;
-
-                if (VerilogParsedDocument == null) return null;
-                int line = CodeDocument.GetLineAt(index);
-                int lineStartIndex = CodeDocument.GetLineStartIndex(line);
-
-                List<codeEditor.CodeEditor.AutocompleteItem> items = VerilogParsedDocument.GetAutoCompleteItems(index, lineStartIndex, line, (CodeEditor.CodeDocument)CodeDocument, out cantidateWord);
-                return items;
-            }
-
-
-
-            private void applyAutoInput()
-            {
-                int index = CodeDocument.CaretIndex;
-                int line = CodeDocument.GetLineAt(index);
-                if (line == 0) return;
-                int prevLine = line - 1;
-
-                int lineHeadIndex = CodeDocument.GetLineStartIndex(line);
-                int prevLineHeadIndex = CodeDocument.GetLineStartIndex(prevLine);
-
-                int prevTabs = 0;
-                for (int i = prevLineHeadIndex; i < lineHeadIndex; i++)
+                if (nextEnd) // caret is sandwiched beteen begin and end
                 {
-                    char ch = CodeDocument.GetCharAt(i);
-                    if (ch == '\t')
-                    {
-                        prevTabs++;
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    // BEFORE
+                    // begin[enter] end
+
+                    // AFTER
+                    // begin
+                    //     [caret]
+                    // end
+                    CodeDocument.Replace(lineHeadIndex, indentLength, 0, new String('\t', prevTabs + 1) + "\r\n" + new String('\t', prevTabs));
+                    CodeDocument.CaretIndex = CodeDocument.CaretIndex + prevTabs + 1 + 1 - indentLength;
+                    return;
                 }
-                int indentLength = 0;
-                for (int i = lineHeadIndex; i < CodeDocument.Length; i++)
-                {
-                    char ch = CodeDocument.GetCharAt(i);
-                    if (ch == '\t')
-                    {
-                        indentLength++;
-                    }
-                    else if (ch == ' ')
-                    {
-                        indentLength++;
-                    }
-                    else
-                    {
-                        break;
-                    }
+                else
+                {   // add indent
+                    prevTabs++;
                 }
-
-
-                bool prevBegin = isPrevBegin(lineHeadIndex);
-                bool nextEnd = isNextEnd(lineHeadIndex);
-
-                if (prevBegin)
-                {
-                    if (nextEnd) // caret is sandwiched beteen begin and end
-                    {
-                        // BEFORE
-                        // begin[enter] end
-
-                        // AFTER
-                        // begin
-                        //     [caret]
-                        // end
-                        CodeDocument.Replace(lineHeadIndex, indentLength, 0, new String('\t', prevTabs + 1) + "\r\n" + new String('\t', prevTabs));
-                        CodeDocument.CaretIndex = CodeDocument.CaretIndex + prevTabs + 1 + 1 - indentLength;
-                        return;
-                    }
-                    else
-                    {   // add indent
-                        prevTabs++;
-                    }
-                }
-
-                CodeDocument.Replace(lineHeadIndex, indentLength, 0, new String('\t', prevTabs));
-                CodeDocument.CaretIndex = CodeDocument.CaretIndex + prevTabs - indentLength;
             }
 
-            private bool isPrevBegin(int index)
-            {
-                int prevInex = index;
-                if (prevInex > 0) prevInex--;
+            CodeDocument.Replace(lineHeadIndex, indentLength, 0, new String('\t', prevTabs));
+            CodeDocument.CaretIndex = CodeDocument.CaretIndex + prevTabs - indentLength;
+        }
 
-                if (prevInex > 0 && CodeDocument.GetCharAt(prevInex) == '\n') prevInex--;
-                if (prevInex > 0 && CodeDocument.GetCharAt(prevInex) == '\r') prevInex--;
+        private bool isPrevBegin(int index)
+        {
+            int prevInex = index;
+            if (prevInex > 0) prevInex--;
 
-                if (prevInex == 0 || CodeDocument.GetCharAt(prevInex) != 'n') return false;
-                prevInex--;
-                if (prevInex == 0 || CodeDocument.GetCharAt(prevInex) != 'i') return false;
-                prevInex--;
-                if (prevInex == 0 || CodeDocument.GetCharAt(prevInex) != 'g') return false;
-                prevInex--;
-                if (prevInex == 0 || CodeDocument.GetCharAt(prevInex) != 'e') return false;
-                prevInex--;
-                if (CodeDocument.GetCharAt(prevInex) != 'b') return false;
-                return true;
-            }
+            if (prevInex > 0 && CodeDocument.GetCharAt(prevInex) == '\n') prevInex--;
+            if (prevInex > 0 && CodeDocument.GetCharAt(prevInex) == '\r') prevInex--;
 
-            private bool isNextEnd(int index)
-            {
-                int prevInex = index;
-                if (prevInex < CodeDocument.Length &&
-                    (
-                        CodeDocument.GetCharAt(prevInex) == ' ' || CodeDocument.GetCharAt(prevInex) == '\t'
-                    )
-                ) prevInex++;
+            if (prevInex == 0 || CodeDocument.GetCharAt(prevInex) != 'n') return false;
+            prevInex--;
+            if (prevInex == 0 || CodeDocument.GetCharAt(prevInex) != 'i') return false;
+            prevInex--;
+            if (prevInex == 0 || CodeDocument.GetCharAt(prevInex) != 'g') return false;
+            prevInex--;
+            if (prevInex == 0 || CodeDocument.GetCharAt(prevInex) != 'e') return false;
+            prevInex--;
+            if (CodeDocument.GetCharAt(prevInex) != 'b') return false;
+            return true;
+        }
 
-                if (prevInex >= CodeDocument.Length || CodeDocument.GetCharAt(prevInex) != 'e') return false;
-                prevInex++;
-                if (prevInex >= CodeDocument.Length || CodeDocument.GetCharAt(prevInex) != 'n') return false;
-                prevInex++;
-                if (CodeDocument.GetCharAt(prevInex) != 'd') return false;
-                return true;
-            }
+        private bool isNextEnd(int index)
+        {
+            int prevInex = index;
+            if (prevInex < CodeDocument.Length &&
+                (
+                    CodeDocument.GetCharAt(prevInex) == ' ' || CodeDocument.GetCharAt(prevInex) == '\t'
+                )
+            ) prevInex++;
+
+            if (prevInex >= CodeDocument.Length || CodeDocument.GetCharAt(prevInex) != 'e') return false;
+            prevInex++;
+            if (prevInex >= CodeDocument.Length || CodeDocument.GetCharAt(prevInex) != 'n') return false;
+            prevInex++;
+            if (CodeDocument.GetCharAt(prevInex) != 'd') return false;
+            return true;
+        }
 
     }
 }
