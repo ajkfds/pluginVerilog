@@ -166,7 +166,17 @@ namespace pluginVerilog.Verilog
                         while (!word.Eof)
                         {
                             if (word.Text == "parameter") Verilog.Variables.Parameter.ParseCreateDeclarationForPort(word, module, null);
-                            if (word.Text != ",") break;
+                            if (word.Text != ",")
+                            {
+                                if (word.Text == ")") break;
+                                if (word.Text == ",") continue;
+
+                                if(word.Prototype) word.AddPrototypeError("illegal separator");
+                                // illegal
+                                word.SkipToKeyword(",");
+                                if (word.Text == "parameter") continue;
+                                break;
+                            }
                             word.MoveNext();
                         }
 
