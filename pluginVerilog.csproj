@@ -131,6 +131,7 @@
     <Compile Include="Verilog\Snippets\AlwaysFFSnippet.cs" />
     <Compile Include="Verilog\Snippets\AutoFormatSnippet.cs" />
     <Compile Include="Verilog\Snippets\BeginAutoCompleteItem.cs" />
+    <Compile Include="Verilog\Snippets\ConnectionCheckSnippet.cs" />
     <Compile Include="Verilog\Snippets\FunctionAutocompleteItem.cs" />
     <Compile Include="Verilog\Snippets\GenerateAutoCompleteItem.cs" />
     <Compile Include="Verilog\Snippets\ModuleAutocompleteItem.cs" />
