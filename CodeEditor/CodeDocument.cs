@@ -8,6 +8,12 @@ namespace pluginVerilog.CodeEditor
 {
     public class CodeDocument : codeEditor.CodeEditor.CodeDocument
     {
+        public CodeDocument() { }
+        public CodeDocument(string text) : base(text)
+        {
+
+        }
+
         // get word boundery for editor word selection
 
         public override void GetWord(int index, out int headIndex, out int length)

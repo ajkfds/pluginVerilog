@@ -97,11 +97,15 @@ namespace pluginVerilog.Data
                     {
                         using (System.IO.StreamReader sr = new System.IO.StreamReader(Project.GetAbsolutePath(RelativePath)))
                         {
-                            document = new CodeEditor.CodeDocument();
+                            //                            document = new CodeEditor.CodeDocument();
+                            //                            string text = sr.ReadToEnd();
+                            //                            document.Replace(0, 0, 0, text);
+                            //                            document.ParentID = ID;
+                            //                            document.ClearHistory();
+
                             string text = sr.ReadToEnd();
-                            document.Replace(0, 0, 0, text);
+                            document = new CodeEditor.CodeDocument(text);
                             document.ParentID = ID;
-                            document.ClearHistory();
                         }
                     }
                     catch

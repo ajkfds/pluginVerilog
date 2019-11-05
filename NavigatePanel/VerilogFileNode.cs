@@ -59,6 +59,11 @@ namespace pluginVerilog.NavigatePanel
             {
                 graphics.DrawImage(Global.Icons.Exclamation.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Red), new Point(x, y));
             }
+
+            if (VerilogFile != null && VerilogFile.ParsedDocument != null && VerilogFile.VerilogParsedDocument.EditID != 0)
+            {
+                graphics.DrawImage(Global.Icons.Play.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Orange), new Point(x, y));
+            }
         }
 
         public override void Selected()
