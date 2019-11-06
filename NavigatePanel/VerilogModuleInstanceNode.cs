@@ -38,6 +38,14 @@ namespace pluginVerilog.NavigatePanel
             }
         }
 
+        public Data.VerilogModuleInstance VerilogModuleInstance
+        {
+            get
+            {
+                return Project.GetRegisterdItem(ID) as Data.VerilogModuleInstance;
+            }
+        }
+
         public override string Text
         {
             get {
@@ -65,6 +73,11 @@ namespace pluginVerilog.NavigatePanel
             {
                 graphics.DrawImage(Global.Icons.Exclamation.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Red), new Point(x, y));
             }
+
+            if (VerilogFile != null && VerilogFile.ParsedDocument != null && VerilogFile.VerilogParsedDocument.EditID != 0)
+            {
+                graphics.DrawImage(Global.Icons.Exclamation.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Orange), new Point(x, y));
+            }
         }
 
         public override void Selected()
@@ -79,15 +92,16 @@ namespace pluginVerilog.NavigatePanel
 
         public override void Update()
         {
-            if (VerilogFile == null) return;
-            VerilogFile.Update();
+            if (VerilogModuleInstance == null) return;
+            VerilogModuleInstance.Update();
 
             List<string> currentDataIds = new List<string>();
-            foreach (string key in VerilogFile.Items.Keys)
+            foreach (string key in VerilogModuleInstance.Items.Keys)
             {
                 currentDataIds.Add(key);
             }
 
+            
             List<codeEditor.NavigatePanel.NavigatePanelNode> removeNodes = new List<codeEditor.NavigatePanel.NavigatePanelNode>();
             foreach (codeEditor.NavigatePanel.NavigatePanelNode node in TreeNodes)
             {

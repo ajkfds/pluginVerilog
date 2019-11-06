@@ -30,24 +30,14 @@ namespace pluginVerilog.Data
             fileItem.RelativePath = relativePath;
             fileItem.Name = moduleInstantiation.Name;
             fileItem.ModuleName = moduleInstantiation.ModuleName;
-            //if (relativePath.Contains('\\'))
-            //{
-            //    fileItem.Name = relativePath.Substring(relativePath.LastIndexOf('\\') + 1);
-            //}
-            //else
-            //{
-            //    fileItem.Name = relativePath;
-            //}
             fileItem.ParseRequested = true;
 
             project.RegisterProjectItem(fileItem);
 
-//            System.Diagnostics.Debug.Print("create " + id);
             return fileItem;
         }
         public override void DisposeItem()
         {
-//            System.Diagnostics.Debug.Print("dispose " + ID);
             if (ParsedDocument != null)
             {
                 foreach (var incFile in VerilogParsedDocument.IncludeFiles.Values)
@@ -55,7 +45,7 @@ namespace pluginVerilog.Data
                     incFile.DisposeItem();
                 }
             }
-            CodeDocument = null;
+//            CodeDocument = null;
             if (ParsedDocument != null) ParsedDocument.Dispose();
             base.DisposeItem();
         }
@@ -106,14 +96,21 @@ namespace pluginVerilog.Data
 
         public Dictionary<string, Verilog.Expressions.Expression> ParameterOverrides;
 
+        private Data.VerilogFile SourceVerilogFile
+        {
+            get
+            {
+                string id = Data.VerilogFile.GetID(RelativePath, Project);
+                return (Project.GetRegisterdItem(id) as VerilogFile);
+            }
+        }
+
         private volatile bool parseRequested = false;
         public bool ParseRequested { 
             get {
-                string id;
                 if (ParameterOverrides.Count == 0)
                 {
-                    id = Data.VerilogFile.GetID(RelativePath, Project);
-                    return (Project.GetRegisterdItem(id) as VerilogFile).ParseRequested;
+                    return SourceVerilogFile.ParseRequested;
                 }
                 else
                 {
@@ -121,11 +118,9 @@ namespace pluginVerilog.Data
                 }
             }
             set {
-                string id;
                 if (ParameterOverrides.Count == 0)
                 {
-                    id = Data.VerilogFile.GetID(RelativePath, Project);
-                    (Project.GetRegisterdItem(id) as VerilogFile).ParseRequested = value;
+                    SourceVerilogFile.ParseRequested = value;
                 }
                 else
                 {
@@ -137,11 +132,9 @@ namespace pluginVerilog.Data
         private volatile bool reloadRequested = false;
         public bool ReloadRequested { 
             get {
-                string id;
                 if (ParameterOverrides.Count == 0)
                 {
-                    id = Data.VerilogFile.GetID(RelativePath, Project);
-                    return (Project.GetRegisterdItem(id) as VerilogFile).ReloadRequested;
+                    return SourceVerilogFile.ReloadRequested;
                 }
                 else
                 {
@@ -150,11 +143,9 @@ namespace pluginVerilog.Data
             } 
             set 
             {
-                string id;
                 if (ParameterOverrides.Count == 0)
                 {
-                    id = Data.VerilogFile.GetID(RelativePath, Project);
-                    (Project.GetRegisterdItem(id) as VerilogFile).ReloadRequested = value;
+                    SourceVerilogFile.ReloadRequested = value;
                 }
                 else
                 {
@@ -167,9 +158,8 @@ namespace pluginVerilog.Data
         public void Reload()
         {
             if (VerilogParsedDocument != null) VerilogParsedDocument.ReloadIncludeFiles();
-            CodeDocument = null;
+            SourceVerilogFile.Reload();
         }
-
 
         //        public codeEditor.CodeEditor.ParsedDocument ParsedDocument { get; set; }
         private codeEditor.CodeEditor.ParsedDocument parsedDocument = null;
@@ -219,55 +209,15 @@ namespace pluginVerilog.Data
             }
         }
 
-        /*
-        public codeEditor.CodeEditor.CodeDocument CodeDocument
-        {
-            get
-            {
-                string id = Data.VerilogFile.GetID(RelativePath, Project);
-                Item item = Project.GetRegisterdItem(id);
-                if(item is VerilogFile)
-                {
-                    return (item as VerilogFile).CodeDocument;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
-        */
         private codeEditor.CodeEditor.CodeDocument document = null;
+
         public codeEditor.CodeEditor.CodeDocument CodeDocument
         {
             get
             {
-                if (document == null)
-                {
-                    try
-                    {
-                        using (System.IO.StreamReader sr = new System.IO.StreamReader(Project.GetAbsolutePath(RelativePath)))
-                        {
-                            document = new CodeEditor.CodeDocument();
-                            string text = sr.ReadToEnd();
-                            document.Replace(0, 0, 0, text);
-                            document.ParentID = ID;
-                            document.ClearHistory();
-                        }
-                    }
-                    catch
-                    {
-                        document = null;
-                    }
-                }
-                return document;
-            }
-            protected set
-            {
-                document = value;
+                return SourceVerilogFile.CodeDocument;
             }
         }
-
 
 
         public ajkControls.CodeDrawStyle DrawStyle
