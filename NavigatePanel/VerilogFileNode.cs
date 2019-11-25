@@ -9,7 +9,7 @@ namespace pluginVerilog.NavigatePanel
 {
     public class VerilogFileNode : codeEditor.NavigatePanel.FileNode, IVerilogNavigateNode
     {
-        public VerilogFileNode(string ID, codeEditor.Data.Project project) : base(ID, project)
+        public VerilogFileNode(Data.VerilogFile verilogFile) : base(verilogFile)
         {
             if (NodeCreated != null) NodeCreated(this);
         }
@@ -19,17 +19,17 @@ namespace pluginVerilog.NavigatePanel
 
         public Data.IVerilogRelatedFile VerilogRelatedFile
         {
-            get { return Project.GetRegisterdItem(ID) as Data.IVerilogRelatedFile; }
+            get { return Item as Data.IVerilogRelatedFile; }
         }
 
-        public codeEditor.Data.ITextFile ITextFile
+        public codeEditor.Data.TextFile TextFile
         {
-            get { return Project.GetRegisterdItem(ID) as codeEditor.Data.ITextFile; }
+            get { return Item as codeEditor.Data.TextFile; }
         }
 
         public virtual Data.VerilogFile VerilogFile
         {
-            get { return Project.GetRegisterdItem(ID) as Data.VerilogFile; }
+            get { return Item as Data.VerilogFile; }
         }
 
         public override string Text
@@ -55,12 +55,12 @@ namespace pluginVerilog.NavigatePanel
                 System.Windows.Forms.TextFormatFlags.NoPadding
                 );
 
-            if(VerilogFile != null && VerilogFile.ParsedDocument != null && VerilogFile.VerilogParsedDocument.ErrorCount != 0)
+            if(VerilogFile != null && VerilogFile.Dirty)
             {
                 graphics.DrawImage(Global.Icons.Exclamation.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Red), new Point(x, y));
             }
 
-            if (VerilogFile != null && VerilogFile.ParsedDocument != null && VerilogFile.VerilogParsedDocument.EditID != 0)
+            if (VerilogFile != null && VerilogFile.Dirty)
             {
                 graphics.DrawImage(Global.Icons.Exclamation.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Orange), new Point(x, y));
             }
@@ -69,7 +69,7 @@ namespace pluginVerilog.NavigatePanel
         public override void Selected()
         {
             codeEditor.Controller.NavigatePanel.GetContextMenuStrip().Items["IcarusVerilogTsmi"].Visible = true;
-            codeEditor.Controller.CodeEditor.SetTextFile(ITextFile);
+            codeEditor.Controller.CodeEditor.SetTextFile(TextFile);
 
             if (NodeSelected != null) NodeSelected();
         }
@@ -82,18 +82,18 @@ namespace pluginVerilog.NavigatePanel
             }
             VerilogFile.Update();
 
-            List<string> currentDataIds = new List<string>();
-            foreach (string key in VerilogFile.Items.Keys)
+            List<codeEditor.Data.Item> currentDataItems = new List<codeEditor.Data.Item>();
+            foreach (codeEditor.Data.Item item in VerilogFile.Items.Values)
             {
-                currentDataIds.Add(key);
+                currentDataItems.Add(item);
             }
 
             List<codeEditor.NavigatePanel.NavigatePanelNode> removeNodes = new List<codeEditor.NavigatePanel.NavigatePanelNode>();
             foreach (codeEditor.NavigatePanel.NavigatePanelNode node in TreeNodes)
             {
-                if (currentDataIds.Contains(node.ID))
+                if (currentDataItems.Contains(node.Item))
                 {
-                    currentDataIds.Remove(node.ID);
+                    currentDataItems.Remove(node.Item);
                 }
                 else
                 {
@@ -101,14 +101,14 @@ namespace pluginVerilog.NavigatePanel
                 }
             }
 
-            foreach (codeEditor.NavigatePanel.NavigatePanelNode nodes in removeNodes)
+            foreach (codeEditor.NavigatePanel.NavigatePanelNode node in removeNodes)
             {
-                TreeNodes.Remove(nodes);
+                TreeNodes.Remove(node);
+                node.Dispose();
             }
 
-            foreach (string id in currentDataIds)
+            foreach (codeEditor.Data.Item item in currentDataItems)
             {
-                codeEditor.Data.Item item = Project.GetRegisterdItem(id);
                 if (item == null) continue;
                 TreeNodes.Add(item.CreateNode());
             }

@@ -18,6 +18,23 @@ namespace pluginVerilog.Verilog.ModuleItems
         //        public IReadOnlyList<Verilog.Variables.Port> Ports { get { return ports; } }
         public Dictionary<string, Expressions.Expression> PortConnection = new Dictionary<string, Expressions.Expression>();
 
+        public string OverrideParameterID
+        {
+            get
+            {
+                if (ParameterOverrides.Count == 0) return "";
+                StringBuilder sb = new StringBuilder();
+                foreach (var kvp in ParameterOverrides)
+                {
+                    sb.Append(kvp.Key);
+                    sb.Append("=");
+                    sb.Append(kvp.Value.ConstantValueString());
+                    sb.Append(",");
+                }
+                return sb.ToString();
+            }
+        }
+
         public bool Prototype = false;
 
         public int BeginIndex;
@@ -94,7 +111,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                         {
                             if (moduleInstantiation.ParameterOverrides.ContainsKey(paramName))
                             {
-                                word.AddError("duplicated");
+                                word.AddPrototypeError("duplicated");
                             }
                             else
                             {

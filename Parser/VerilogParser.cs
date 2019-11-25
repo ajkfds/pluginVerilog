@@ -3,43 +3,78 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using codeEditor.CodeEditor;
 
 namespace pluginVerilog.Parser
 {
     public class VerilogParser : codeEditor.CodeEditor.DocumentParser
     {
         public VerilogParser(
-            codeEditor.CodeEditor.CodeDocument document, 
-            string id, codeEditor.Data.Project project,
+            Data.IVerilogRelatedFile verilogFile,
             codeEditor.CodeEditor.DocumentParser.ParseModeEnum parseMode
-            ) : base(document, id, project,parseMode)
+            )
         {
-            parsedDocument = new Verilog.ParsedDocument(project, id, document.EditID);
-            word = new Verilog.WordScanner(this.document, parsedDocument,false);
+            this.EditId = verilogFile.CodeDocument.EditID;
+            this.document = new CodeEditor.CodeDocument(verilogFile); // use verilog codedocument
+            this.document.CopyCharsFrom(verilogFile.CodeDocument);
+            this.document.CopyLineIndexFrom(verilogFile.CodeDocument);
+            this.ParseMode = parseMode;
+            this.TextFile = verilogFile as codeEditor.Data.TextFile;
+
+            File = verilogFile;
+            parsedDocument = new Verilog.ParsedDocument(verilogFile);
+            word = new Verilog.WordScanner(VerilogDocument, parsedDocument,false);
         }
 
         public VerilogParser(
-            codeEditor.CodeEditor.CodeDocument document,
-            string moduleName,
+            Data.IVerilogRelatedFile verilogFile,
             Dictionary<string, Verilog.Expressions.Expression> parameterOverrides,
-            string id, codeEditor.Data.Project project,
             codeEditor.CodeEditor.DocumentParser.ParseModeEnum parseMode
-            ) : base(document, id, project, parseMode)
+            ) : base(verilogFile as codeEditor.Data.TextFile, parseMode)
         {
-            this.moduleName = moduleName;
+            this.EditId = verilogFile.CodeDocument.EditID;
+            this.document = new CodeEditor.CodeDocument(verilogFile); // use verilog codedocument
+            this.document.CopyCharsFrom(verilogFile.CodeDocument);
+            this.document.CopyLineIndexFrom(verilogFile.CodeDocument);
+            this.ParseMode = parseMode;
+            this.TextFile = verilogFile as codeEditor.Data.TextFile;
+
             this.parameterOverrides = parameterOverrides;
-            parsedDocument = new Verilog.ParsedDocument(project, id, document.EditID);
-            word = new Verilog.WordScanner(this.document, parsedDocument, false);
+            File = verilogFile;
+            parsedDocument = new Verilog.ParsedDocument(verilogFile);
+            word = new Verilog.WordScanner(VerilogDocument, parsedDocument, false);
         }
 
         public Verilog.WordScanner word;
+
+        public CodeEditor.CodeDocument VerilogDocument
+        {
+            get
+            {
+                return Document as CodeEditor.CodeDocument;
+            }
+        }
+
         private Verilog.ParsedDocument parsedDocument = null;
+        public override codeEditor.CodeEditor.ParsedDocument ParsedDocument { get { return parsedDocument as codeEditor.CodeEditor.ParsedDocument; } }
+        public virtual Verilog.ParsedDocument VerilogParsedDocument { get { return parsedDocument; } }
 
-        public override ParsedDocument ParsedDocument { get { return parsedDocument as codeEditor.CodeEditor.ParsedDocument; } }
-
-        private string moduleName;
         private Dictionary<string, Verilog.Expressions.Expression> parameterOverrides;
+
+        private System.WeakReference<Data.IVerilogRelatedFile> fileRef;
+        public Data.IVerilogRelatedFile File
+        {
+            get
+            {
+                Data.IVerilogRelatedFile ret;
+                if (!fileRef.TryGetTarget(out ret)) return null;
+                return ret;
+            }
+            protected set
+            {
+                fileRef = new WeakReference<Data.IVerilogRelatedFile>(value);
+            }
+        }
+
 
         /*
         source_text ::= { description }
@@ -53,14 +88,10 @@ namespace pluginVerilog.Parser
                                     endmodule
         module_keyword ::= module | macromodule  
         */
-//        public static System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+        //        public static System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
 
         public override void Parse()
         {
-            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-            sw.Reset();
-            sw.Start();
-
             word.GetFirst();
             while (!word.Eof)
             {
@@ -69,33 +100,36 @@ namespace pluginVerilog.Parser
                     Verilog.Module module;
                     if (ParseMode == ParseModeEnum.LoadParse)
                     {
-                        if(moduleName == null)
+                        if (parameterOverrides != null)
                         {
-                            module = Verilog.Module.Create(word, null, parsedDocument.ItemID, true);
+                            module = Verilog.Module.Create(word, null, File, true);
                         }
                         else
                         {
-                            module = Verilog.Module.Create(word, moduleName,parameterOverrides, null, parsedDocument.ItemID, true);
+                            module = Verilog.Module.Create(word, parameterOverrides, null, File, true);
                         }
                     }
                     else
                     {
-                        if (moduleName == null)
+                        if (parameterOverrides != null)
                         {
-                            module = Verilog.Module.Create(word, null, parsedDocument.ItemID, false);
+                            module = Verilog.Module.Create(word, null, File, false);
                         }
                         else
                         {
-                            module = Verilog.Module.Create(word, moduleName, parameterOverrides, null, parsedDocument.ItemID, false);
+                            module = Verilog.Module.Create(word, parameterOverrides, null, File, false);
                         }
                     }
-                    if (!parsedDocument.Modules.ContainsKey(module.Name))
+                    if(parameterOverrides == null) // root file
                     {
-                        parsedDocument.Modules.Add(module.Name, module);
-                    }
-                    else
-                    {
-                        word.AddError("duplicated module name");
+                        if (!parsedDocument.Modules.ContainsKey(module.Name))
+                        {
+                            parsedDocument.Modules.Add(module.Name, module);
+                        }
+                        else
+                        {
+                            word.AddError("duplicated module name");
+                        }
                     }
                 }
                 else
@@ -105,12 +139,6 @@ namespace pluginVerilog.Parser
             }
             word.Dispose();
             word = null;
-
-            if (sw.ElapsedMilliseconds > 100)
-            {
-                System.Diagnostics.Debug.Print("parse0 " + sw.ElapsedMilliseconds.ToString() + "ms : "+ parsedDocument.ItemID );
-            }
-            sw.Stop();
         }
     }
 }

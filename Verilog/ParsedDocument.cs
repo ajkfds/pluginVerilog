@@ -8,10 +8,22 @@ namespace pluginVerilog.Verilog
 {
     public class ParsedDocument : codeEditor.CodeEditor.ParsedDocument
     {
-        public ParsedDocument(codeEditor.Data.Project project,string itemID,int editID): base(project,itemID,editID)
+        public ParsedDocument(Data.IVerilogRelatedFile file): base(file as codeEditor.Data.TextFile,file.CodeDocument.EditID)
         {
-
+            fileRef = new WeakReference<Data.IVerilogRelatedFile>(file);
         }
+
+        private System.WeakReference<Data.IVerilogRelatedFile> fileRef;
+        public Data.IVerilogRelatedFile File
+        {
+            get
+            {
+                Data.IVerilogRelatedFile ret;
+                if (!fileRef.TryGetTarget(out ret)) return null;
+                return ret;
+            }
+        }
+
         public Dictionary<string, Module> Modules = new Dictionary<string, Module>();
         public Dictionary<string, Data.VerilogHeaderFile> IncludeFiles = new Dictionary<string, Data.VerilogHeaderFile>();
         public Dictionary<string, Macro> Macros = new Dictionary<string, Macro>();
@@ -20,7 +32,7 @@ namespace pluginVerilog.Verilog
         {
             foreach(var includeFile in IncludeFiles.Values)
             {
-                includeFile.Reload();
+                includeFile.Close();
             }
         }
 
@@ -28,70 +40,35 @@ namespace pluginVerilog.Verilog
         {
             get
             {
-                Data.IVerilogRelatedFile file = Project.GetRegisterdItem(ItemID) as Data.IVerilogRelatedFile;
+                Data.IVerilogRelatedFile file = File;
+                if (file == null) return null;
                 return file.ProjectProperty;
             }
         }
 
-        public override void Accept()
-        {
-            base.Accept();
-
-            codeEditor.Data.Item item = Project.GetRegisterdItem(ItemID);
-            if(item is Data.VerilogFile)
-            {
-                Data.VerilogFile verilogFile = item as Data.VerilogFile;
-                foreach (Verilog.Module module in Modules.Values)
-                {
-                    bool suceed = verilogFile.ProjectProperty.RegisterModule(verilogFile.RelativePath, module.Name);
-                    if (!suceed)
-                    {
-                        // add module name error
-                    }
-                }
-            }
-            else if(item is Data.VerilogModuleInstance)
-            {
-                Data.VerilogModuleInstance verilogModuleInstance = item as Data.VerilogModuleInstance;
-                foreach (Verilog.Module module in Modules.Values)
-                {
-                    bool suceed = verilogModuleInstance.ProjectProperty.RegisterModule(verilogModuleInstance.RelativePath, module.Name);
-                    if (!suceed)
-                    {
-                        // add module name error
-                    }
-                }
-            }
-
-        }
-
         public override void Dispose()
         {
-            codeEditor.Data.Item item = Project.GetRegisterdItem(ItemID);
+            Data.IVerilogRelatedFile file = File;
 
-            if (item is Data.VerilogFile)
+            if (file is Data.VerilogFile)
             {
-                Data.VerilogFile verilogFile = item as Data.VerilogFile;
+                Data.VerilogFile verilogFile = file as Data.VerilogFile;
                 foreach (Verilog.Module module in Modules.Values)
                 {
-                    verilogFile.ProjectProperty.RemoveModule(verilogFile.RelativePath, module.Name);
+                    verilogFile.ProjectProperty.RemoveModule(module.Name,verilogFile);
                 }
             }
-            else if (item is Data.VerilogModuleInstance)
-            {
-                Data.VerilogModuleInstance verilogModuleInstance = item as Data.VerilogModuleInstance;
-                foreach (Verilog.Module module in Modules.Values)
-                {
-                    verilogModuleInstance.ProjectProperty.RemoveModule(verilogModuleInstance.RelativePath, module.Name);
-                }
-            }
+            //else if (file is Data.VerilogModuleInstance)
+            //{
+            //    Data.VerilogModuleInstance verilogModuleInstance = file as Data.VerilogModuleInstance;
+            //    foreach (Verilog.Module module in Modules.Values)
+            //    {
+            //        verilogModuleInstance.ProjectProperty.RemoveModule(verilogModuleInstance.RelativePath, module.Name);
+            //    }
+            //}
             foreach (var includeFile in IncludeFiles.Values)
             {
-                includeFile.Reload();
-            }
-            foreach (IDisposable obj in ShouldDisposeObjects)
-            {
-                obj.Dispose();
+                includeFile.Close();
             }
             base.Dispose();
         }
@@ -103,6 +80,8 @@ namespace pluginVerilog.Verilog
         public List<codeEditor.CodeEditor.PopupItem> GetPopupItems(int index,string text)
         {
             List<codeEditor.CodeEditor.PopupItem> ret = new List<codeEditor.CodeEditor.PopupItem>();
+
+            // add messages
             foreach (Message message in Messages)
             {
                 if (index < message.Index) continue;
@@ -133,6 +112,29 @@ namespace pluginVerilog.Verilog
                 break;
             }
             if (space == null) return ret;
+            if(text.StartsWith(".") && space is IModuleOrGeneratedBlock)
+            {
+                IModuleOrGeneratedBlock block = space as IModuleOrGeneratedBlock;
+                ModuleItems.ModuleInstantiation inst = null;
+                foreach (ModuleItems.ModuleInstantiation i in block.ModuleInstantiations.Values)
+                {
+                    if (index < i.BeginIndex) continue;
+                    if (index > i.LastIndex) continue;
+                    inst = i;
+                    break;
+                }
+                if(inst != null)
+                {
+                    string portName = text.Substring(1);
+                    Module originalModule = ProjectProperty.GetModule(inst.ModuleName);
+                    if (originalModule == null) return ret;
+                    Data.IVerilogRelatedFile file = File;
+                    if (file == null) return ret;
+                    string relativePath = file.RelativePath;
+                }
+            }
+
+
             if (space.Variables.ContainsKey(text))          ret.Add(new Popup.VariablePopup(space.Variables[text]));
             if (space.LocalParameters.ContainsKey(text))    ret.Add(new Popup.ParameterPopup(space.LocalParameters[text]));
             if (space.Parameters.ContainsKey(text))         ret.Add(new Popup.ParameterPopup(space.Parameters[text]));
@@ -360,16 +362,28 @@ namespace pluginVerilog.Verilog
 
         public new class Message : codeEditor.CodeEditor.ParsedDocument.Message
         {
-            public Message(string text, MessageType type, int index, int lineNo,int length,string itemID,codeEditor.Data.Project project)
+            public Message(Data.IVerilogRelatedFile file,string text, MessageType type, int index, int lineNo,int length,codeEditor.Data.Project project)
             {
+                this.fileRef = new WeakReference<Data.IVerilogRelatedFile>(file);
                 this.Text = text;
                 this.Length = length;
                 this.Index = index;
                 this.LineNo = lineNo;
                 this.Type = type;
-                this.ItemID = itemID;
                 this.Project = project;
             }
+
+            private System.WeakReference<Data.IVerilogRelatedFile> fileRef;
+            public Data.IVerilogRelatedFile File
+            {
+                get
+                {
+                    Data.IVerilogRelatedFile file;
+                    if (!fileRef.TryGetTarget(out file)) return null;
+                    return file;
+                }
+            }
+
             public int LineNo { get; protected set; }
 
             public enum MessageType
@@ -383,8 +397,7 @@ namespace pluginVerilog.Verilog
 
             public override codeEditor.MessageView.MessageNode CreateMessageNode()
             {
-                MessageView.MessageNode node = new MessageView.MessageNode(this);
-
+                MessageView.MessageNode node = new MessageView.MessageNode(File,this);
                 return node;
             }
 

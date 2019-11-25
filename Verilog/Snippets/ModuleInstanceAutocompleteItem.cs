@@ -33,10 +33,9 @@ namespace pluginVerilog.Verilog.Snippets
             if (currentChar != '\r' && currentChar != '\n') return;
 
             ProjectProperty projectProperty = project.GetProjectProperty(Plugin.StaticID) as ProjectProperty;
-            string relativePath = projectProperty.GetRelativeFilePathOfModule(Text);
-            if (relativePath == "") return;
 
-            Data.VerilogFile file = project.GetRegisterdItem(Data.VerilogFile.GetID(relativePath, project)) as Data.VerilogFile;
+            Data.VerilogFile file = projectProperty.GetFileOfModule(Text) as Data.VerilogFile;
+            if (file == null) return;
             Verilog.ParsedDocument parsedDocument = file.ParsedDocument as Verilog.ParsedDocument;
             if (parsedDocument == null) return;
 

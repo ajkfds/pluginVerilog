@@ -131,59 +131,81 @@ namespace pluginVerilog
 
 
         // module reference table
-        private Dictionary<string, string> relativeFilePathWithModuleName = new Dictionary<string, string>();
+        private Dictionary<string, System.WeakReference<Data.IVerilogRelatedFile>> moduleFileRefs = new Dictionary<string, WeakReference<Data.IVerilogRelatedFile>>();
 
-        public bool RegisterModule(string relativeFilePath, string moduleName)
+        public bool RegisterModule(string moduleName,Data.IVerilogRelatedFile file)
         {
-            if (relativeFilePathWithModuleName.ContainsKey(moduleName))
+            if (moduleFileRefs.ContainsKey(moduleName))
             {
-                if (relativeFilePathWithModuleName[moduleName] == relativeFilePath)
+                Data.IVerilogRelatedFile prevFile;
+                if(!moduleFileRefs[moduleName].TryGetTarget(out prevFile))
                 {
-                    return true;    // same item registered
-                }
-                else
-                {
-                    return false; // duplicated module name
-                }
-            }
-            else
-            {
-                relativeFilePathWithModuleName.Add(moduleName, relativeFilePath);
-                return true;
-            }
-        }
-
-        public bool RemoveModule(string relativeFilePath, string moduleName)
-        {
-            if (relativeFilePathWithModuleName.ContainsKey(moduleName))
-            {
-                if (relativeFilePathWithModuleName[moduleName] == relativeFilePath)
-                {
-                    relativeFilePathWithModuleName.Remove(moduleName);
+                    moduleFileRefs[moduleName] = new WeakReference<Data.IVerilogRelatedFile>(file);
                     return true;
                 }
                 else
                 {
+                    if(prevFile == file)
+                    {
+                        System.Diagnostics.Debugger.Break(); // duplicated register
+                        return true;
+                    }
+                    // other taeget registered
                     return false;
                 }
             }
             else
             {
+                moduleFileRefs.Add(moduleName, new WeakReference<Data.IVerilogRelatedFile>(file));
+                return true;
+            }
+        }
+
+        public bool RemoveModule(string moduleName, Data.IVerilogRelatedFile file)
+        {
+            if (moduleFileRefs.ContainsKey(moduleName))
+            {
+                Data.IVerilogRelatedFile prevFile;
+                if (!moduleFileRefs[moduleName].TryGetTarget(out prevFile))
+                {
+                    System.Diagnostics.Debugger.Break(); // already disposed
+                    moduleFileRefs.Remove(moduleName);
+                    return true;
+                }
+                else
+                {
+                    if (prevFile == file)
+                    {
+                        moduleFileRefs.Remove(moduleName);
+                        return true;
+                    }
+                    // unmatch target file
+                    return false;
+                }
+            }
+            else
+            {
+                // no target file
                 return false;
             }
         }
 
-        public bool IsRegisterableModule(string relativeFilePath, string moduleName)
+        public bool IsRegisterableModule(string moduleName, Data.IVerilogRelatedFile file)
         {
-            if (relativeFilePathWithModuleName.ContainsKey(moduleName))
+            if (moduleFileRefs.ContainsKey(moduleName))
             {
-                if (relativeFilePathWithModuleName[moduleName] == relativeFilePath)
+                Data.IVerilogRelatedFile prevFile;
+                if (!moduleFileRefs[moduleName].TryGetTarget(out prevFile))
                 {
-                    return true;    // same item registered
+                    return true;
                 }
                 else
                 {
-                    return false; // duplicated module name
+                    if (prevFile == file)
+                    {
+                        return false;
+                    }
+                    return false;
                 }
             }
             else
@@ -192,33 +214,36 @@ namespace pluginVerilog
             }
         }
 
-        public string GetRelativeFilePathOfModule(string moduleName)
+        public Data.IVerilogRelatedFile GetFileOfModule(string moduleName)
         {
-            if (!relativeFilePathWithModuleName.ContainsKey(moduleName))
+            if (moduleFileRefs.ContainsKey(moduleName))
             {
-                return null;
+                Data.IVerilogRelatedFile file;
+                if (!moduleFileRefs[moduleName].TryGetTarget(out file))
+                {
+                    return null;
+                }
+                else
+                {
+                    return file;
+                }
             }
             else
             {
-                return relativeFilePathWithModuleName[moduleName];
+                return null;
             }
         }
 
         public List<string> GetModuleNameList()
         {
-            List<string> list = new List<string>();
-            foreach (string name in relativeFilePathWithModuleName.Keys)
-            {
-                list.Add(name);
-            }
-            return list;
+            return moduleFileRefs.Keys.ToList<string>();
         }
 
         public Verilog.Module GetModule(string moduleName)
         {
-            string fileRelativePath = GetRelativeFilePathOfModule(moduleName);
-            if (fileRelativePath == null) return null;
-            Data.VerilogFile file = project.GetRegisterdItem(codeEditor.Data.File.GetID(fileRelativePath, project)) as Data.VerilogFile;
+            Data.IVerilogRelatedFile file = GetFileOfModule(moduleName);
+            if (file == null) return null;
+
             if (file == null || file.VerilogParsedDocument == null) return null;
             if (!file.VerilogParsedDocument.Modules.ContainsKey(moduleName)) return null;
             return file.VerilogParsedDocument.Modules[moduleName];

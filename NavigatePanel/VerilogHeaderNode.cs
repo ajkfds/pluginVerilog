@@ -9,18 +9,18 @@ namespace pluginVerilog.NavigatePanel
 {
     public class VerilogHeaderNode : codeEditor.NavigatePanel.FileNode, IVerilogNavigateNode
     {
-        public VerilogHeaderNode(string ID, codeEditor.Data.Project project) : base(ID, project)
+        public VerilogHeaderNode(Data.VerilogHeaderFile headerFile) : base(headerFile)
         {
 
         }
 
         public Data.IVerilogRelatedFile VerilogRelatedFile
         {
-            get { return Project.GetRegisterdItem(ID) as Data.IVerilogRelatedFile; }
+            get { return Item as Data.IVerilogRelatedFile; }
         }
-        public codeEditor.Data.ITextFile ITextFile
+        public codeEditor.Data.TextFile TextFile
         {
-            get { return Project.GetRegisterdItem(ID) as codeEditor.Data.ITextFile; }
+            get { return Item as codeEditor.Data.TextFile; }
         }
 
         public override string Text
@@ -46,7 +46,7 @@ namespace pluginVerilog.NavigatePanel
 
         public override void Selected()
         {
-            codeEditor.Controller.CodeEditor.SetTextFile(ITextFile);
+            codeEditor.Controller.CodeEditor.SetTextFile(TextFile);
         }
     }
 }

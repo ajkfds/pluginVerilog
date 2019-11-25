@@ -1,5 +1,5 @@
 
-`celldefine
+//`celldefine
 module MOD2(a,b,c);
 input a;
 output b;
@@ -44,6 +44,6 @@ buf (a,b);
 
 endmodule
 
-`endcelldefine
+//`endcelldefine
 
 

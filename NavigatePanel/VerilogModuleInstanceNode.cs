@@ -9,32 +9,48 @@ namespace pluginVerilog.NavigatePanel
 {
     public class VerilogModuleInstanceNode : codeEditor.NavigatePanel.FileNode, IVerilogNavigateNode
     {
-        public VerilogModuleInstanceNode(string ID, codeEditor.Data.Project project) : base(ID, project)
+        public VerilogModuleInstanceNode(Data.VerilogModuleInstance verilogModuleInstance) : base(verilogModuleInstance)
         {
-
+            moduleInstanceRef = new WeakReference<Data.VerilogModuleInstance>(verilogModuleInstance);
         }
+
+        private System.WeakReference<Data.VerilogModuleInstance> moduleInstanceRef;
+        public Data.VerilogModuleInstance ModuleInstance
+        {
+            get
+            {
+                Data.VerilogModuleInstance ret;
+                if (!moduleInstanceRef.TryGetTarget(out ret)) return null;
+                return ret;
+            }
+        }
+
         public override codeEditor.Data.File FileItem
         {
-            get {
-                Data.VerilogModuleInstance instance = Project.GetRegisterdItem(ID) as Data.VerilogModuleInstance;
-                return Project.GetRegisterdItem(Data.VerilogFile.GetID(instance.RelativePath, Project)) as Data.VerilogFile;
+            get
+            {
+                Data.VerilogModuleInstance instance = ModuleInstance;
+                return instance;
             }
         }
 
         public Data.IVerilogRelatedFile VerilogRelatedFile
         {
-            get { return Project.GetRegisterdItem(ID) as Data.IVerilogRelatedFile; }
+            get { return Item as Data.IVerilogRelatedFile; }
         }
         public codeEditor.Data.ITextFile ITextFile
         {
-            get { return Project.GetRegisterdItem(ID) as codeEditor.Data.ITextFile; }
+            get { return Item as codeEditor.Data.ITextFile; }
         }
 
         public virtual Data.VerilogFile VerilogFile
         {
-            get {
-                Data.VerilogModuleInstance instance = Project.GetRegisterdItem(ID) as Data.VerilogModuleInstance;
-                return Project.GetRegisterdItem(Data.VerilogFile.GetID(instance.RelativePath, Project)) as Data.VerilogFile;
+            get
+            {
+                return ModuleInstance.SourceTextFile as Data.VerilogFile;
+                //                Data.VerilogModuleInstance instance = Project.GetRegisterdItem(ID) as Data.VerilogModuleInstance;
+                //                return Project.GetRegisterdItem(Data.VerilogFile.GetID(instance.RelativePath, Project)) as Data.VerilogFile;
+//                return null;
             }
         }
 
@@ -42,14 +58,15 @@ namespace pluginVerilog.NavigatePanel
         {
             get
             {
-                return Project.GetRegisterdItem(ID) as Data.VerilogModuleInstance;
+                return Item as Data.VerilogModuleInstance;
             }
         }
 
         public override string Text
         {
-            get {
-                Data.VerilogModuleInstance instance = Project.GetRegisterdItem(ID) as Data.VerilogModuleInstance;
+            get
+            {
+                Data.VerilogModuleInstance instance = Item as Data.VerilogModuleInstance;
                 return instance.Name + " - " + instance.ModuleName;
             }
         }
@@ -87,7 +104,7 @@ namespace pluginVerilog.NavigatePanel
             {
                 menu.Items["icarusVerilogSimulationTsmi"].Visible = true;
             }
-            codeEditor.Controller.CodeEditor.SetTextFile(ITextFile);
+            codeEditor.Controller.CodeEditor.SetTextFile(ModuleInstance);
         }
 
         public override void Update()
@@ -95,19 +112,18 @@ namespace pluginVerilog.NavigatePanel
             if (VerilogModuleInstance == null) return;
             VerilogModuleInstance.Update();
 
-            List<string> currentDataIds = new List<string>();
-            foreach (string key in VerilogModuleInstance.Items.Keys)
+            List<codeEditor.Data.Item> currentDataItems = new List<codeEditor.Data.Item>();
+            foreach (codeEditor.Data.Item item in VerilogModuleInstance.Items.Values)
             {
-                currentDataIds.Add(key);
+                currentDataItems.Add(item);
             }
 
-            
             List<codeEditor.NavigatePanel.NavigatePanelNode> removeNodes = new List<codeEditor.NavigatePanel.NavigatePanelNode>();
             foreach (codeEditor.NavigatePanel.NavigatePanelNode node in TreeNodes)
             {
-                if (currentDataIds.Contains(node.ID))
+                if (currentDataItems.Contains(node.Item))
                 {
-                    currentDataIds.Remove(node.ID);
+                    currentDataItems.Remove(node.Item);
                 }
                 else
                 {
@@ -115,14 +131,14 @@ namespace pluginVerilog.NavigatePanel
                 }
             }
 
-            foreach (codeEditor.NavigatePanel.NavigatePanelNode nodes in removeNodes)
+            foreach (codeEditor.NavigatePanel.NavigatePanelNode node in removeNodes)
             {
-                TreeNodes.Remove(nodes);
+                TreeNodes.Remove(node);
+                node.Dispose();
             }
 
-            foreach (string id in currentDataIds)
+            foreach (codeEditor.Data.Item item in currentDataItems)
             {
-                codeEditor.Data.Item item = Project.GetRegisterdItem(id);
                 if (item == null) continue;
                 TreeNodes.Add(item.CreateNode());
             }

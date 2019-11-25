@@ -9,30 +9,41 @@ namespace pluginVerilog.MessageView
 {
     public class MessageNode : codeEditor.MessageView.MessageNode
     {
-        public MessageNode(Verilog.ParsedDocument.Message message)
+        public MessageNode(Data.IVerilogRelatedFile file,Verilog.ParsedDocument.Message message)
         {
+            fileRef = new WeakReference<Data.IVerilogRelatedFile>(file);
             Text = "["+message.LineNo.ToString()+"]"+ message.Text;
             this.messageType = message.Type;
             this.index = message.Index;
             this.length = message.Length;
-            this.itemID = message.ItemID;
             this.project = message.Project;
             this.lineNo = message.LineNo;
         }
+
+
+        private System.WeakReference<Data.IVerilogRelatedFile> fileRef;
+        public Data.IVerilogRelatedFile File
+        {
+            get
+            {
+                Data.IVerilogRelatedFile file;
+                if (!fileRef.TryGetTarget(out file)) return null;
+                return file;
+            }
+        }
+
+        
         Verilog.ParsedDocument.Message.MessageType messageType;
         int index;
         int length;
-        string itemID;
         int lineNo;
         codeEditor.Data.Project project;
 
         public override void Selected()
         {
-            codeEditor.Data.ITextFile textFile = project.GetRegisterdItem(itemID) as codeEditor.Data.ITextFile;
-            if (textFile == null) return;
-            textFile.CodeDocument.SelectionStart = index;
-            textFile.CodeDocument.SelectionLast = index + length;
-            textFile.CodeDocument.CaretIndex = index;
+            File.CodeDocument.SelectionStart = index;
+            File.CodeDocument.SelectionLast = index + length;
+            File.CodeDocument.CaretIndex = index;
             codeEditor.Controller.CodeEditor.ScrollToCaret();
             codeEditor.Controller.CodeEditor.Refresh();
         }

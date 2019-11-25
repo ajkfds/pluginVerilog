@@ -8,106 +8,111 @@ using codeEditor.Data;
 
 namespace pluginVerilog.Data
 {
-    public class VerilogModuleInstance : codeEditor.Data.Item, codeEditor.Data.ITextFile, IVerilogRelatedFile
+    public class VerilogModuleInstance : InstanceTextFile , IVerilogRelatedFile
     {
-        public static VerilogModuleInstance Create( Verilog.ModuleItems.ModuleInstantiation moduleInstantiation, codeEditor.Data.Project project)
+        protected VerilogModuleInstance(codeEditor.Data.TextFile sourceTextFile): base(sourceTextFile)
+        {
+
+        }
+        public static VerilogModuleInstance Create(
+            Verilog.ModuleItems.ModuleInstantiation moduleInstantiation,
+            codeEditor.Data.Project project
+            )
         {
             ProjectProperty projectPropery = project.GetProjectProperty(Plugin.StaticID) as ProjectProperty;
-            string relativePath = projectPropery.GetRelativeFilePathOfModule(moduleInstantiation.ModuleName);
+            Data.IVerilogRelatedFile file = projectPropery.GetFileOfModule(moduleInstantiation.ModuleName);
+            if (file == null) return null;
 
-            string id = GetID(relativePath,moduleInstantiation.Name,moduleInstantiation.ParameterOverrides,project);
-            if (project.IsRegistered(id))
-            {
-                VerilogModuleInstance item = project.GetRegisterdItem(id) as VerilogModuleInstance;
-                project.RegisterProjectItem(item);
-                return item;
-            }
-
-            VerilogModuleInstance fileItem = new VerilogModuleInstance();
+            VerilogModuleInstance fileItem = new VerilogModuleInstance(file as codeEditor.Data.TextFile);
             fileItem.ParameterOverrides = moduleInstantiation.ParameterOverrides;
             fileItem.Project = project;
-            fileItem.ID = id;
-            fileItem.RelativePath = relativePath;
+            fileItem.RelativePath = file.RelativePath;
             fileItem.Name = moduleInstantiation.Name;
             fileItem.ModuleName = moduleInstantiation.ModuleName;
             fileItem.ParseRequested = true;
+            fileItem.ParameterId = moduleInstantiation.OverrideParameterID;
 
-            project.RegisterProjectItem(fileItem);
+            if(file is Data.VerilogFile)
+            {
+                Data.VerilogFile vfile = file as Data.VerilogFile;
+                vfile.RegisterModuleInstance(fileItem);
+            }
 
             return fileItem;
         }
-        public override void DisposeItem()
+
+
+        public override codeEditor.CodeEditor.CodeDocument CodeDocument
+        {
+            get
+            {
+                return SourceVerilogFile.CodeDocument;
+            }
+        }
+        //public override codeEditor.CodeEditor.CodeDocument CodeDocument
+        //{
+        //    get
+        //    {
+        //        if (base.CodeDocument == null)
+        //        {
+        //            try
+        //            {
+        //                using (System.IO.StreamReader sr = new System.IO.StreamReader(Project.GetAbsolutePath(RelativePath)))
+        //                {
+        //                    base.CodeDocument = new CodeEditor.CodeDocument(this);
+        //                    string text = sr.ReadToEnd();
+        //                    base.CodeDocument.Replace(0, 0, 0, text);
+        //                    base.CodeDocument.ClearHistory();
+        //                }
+        //            }
+        //            catch
+        //            {
+        //                base.CodeDocument = null;
+        //            }
+        //        }
+        //        return base.CodeDocument;
+        //    }
+        //    protected set
+        //    {
+        //        if (value != null && value as CodeEditor.CodeDocument == null) System.Diagnostics.Debugger.Break();
+        //        base.CodeDocument = value;
+        //    }
+        //}
+        public override void Dispose()
         {
             if (ParsedDocument != null)
             {
                 foreach (var incFile in VerilogParsedDocument.IncludeFiles.Values)
                 {
-                    incFile.DisposeItem();
+                    incFile.Dispose();
                 }
             }
-//            CodeDocument = null;
+            //            CodeDocument = null;
             if (ParsedDocument != null) ParsedDocument.Dispose();
-            base.DisposeItem();
-        }
-        public bool IsCodeDocumentCashed
-        {
-            get { if (document == null) return false; else return true; }
+            SourceVerilogFile.RemoveModuleInstance(this);
+
+            base.Dispose();
         }
 
         public string ModuleName { set; get; }
 
-        public static string GetID(string relativePath,string instanceName,Dictionary<string,Verilog.Expressions.Expression> parameterOverrides ,codeEditor.Data.Project project)
-        {
-            if(parameterOverrides.Count == 0) return project.ID + ":ModuleInstance:"+instanceName+":"+ relativePath;
-            StringBuilder sb = new StringBuilder();
-            sb.Append(project.ID);
-            sb.Append(":ModuleInstance:");
-            sb.Append(instanceName);
-            sb.Append(":");
-            sb.Append(relativePath);
-            sb.Append(":");
-            foreach (var kvp in parameterOverrides)
-            {
-                sb.Append(kvp.Key);
-                sb.Append("=");
-                sb.Append(kvp.Value.ConstantValueString());
-                sb.Append(",");
-            }
-            return sb.ToString();
-        }
-
-        public static string GetParsedDocumentID(string relativePath, Dictionary<string, Verilog.Expressions.Expression> parameterOverrides, codeEditor.Data.Project project)
-        {
-            if (parameterOverrides.Count == 0) return project.ID + ":ModuleInstance:" + relativePath;
-            StringBuilder sb = new StringBuilder();
-            sb.Append(project.ID);
-            sb.Append(":ModuleInstance:");
-            sb.Append(relativePath);
-            sb.Append(":");
-            foreach (var kvp in parameterOverrides)
-            {
-                sb.Append(kvp.Key);
-                sb.Append("=");
-                sb.Append(kvp.Value.ConstantValueString());
-                sb.Append(",");
-            }
-            return sb.ToString();
-        }
 
         public Dictionary<string, Verilog.Expressions.Expression> ParameterOverrides;
+        public string ParameterId { get; protected set; }
 
         private Data.VerilogFile SourceVerilogFile
         {
             get
             {
-                string id = Data.VerilogFile.GetID(RelativePath, Project);
-                return (Project.GetRegisterdItem(id) as VerilogFile);
+                return SourceTextFile as VerilogFile;
             }
         }
 
         private volatile bool parseRequested = false;
-        public bool ParseRequested { 
-            get {
+        public override bool ParseRequested
+        {
+            get
+            {
                 if (ParameterOverrides.Count == 0)
                 {
                     return SourceVerilogFile.ParseRequested;
@@ -117,7 +122,8 @@ namespace pluginVerilog.Data
                     return parseRequested;
                 }
             }
-            set {
+            set
+            {
                 if (ParameterOverrides.Count == 0)
                 {
                     SourceVerilogFile.ParseRequested = value;
@@ -130,48 +136,50 @@ namespace pluginVerilog.Data
         }
 
         private volatile bool reloadRequested = false;
-        public bool ReloadRequested { 
-            get {
+        public override bool CloseRequested
+        {
+            get
+            {
                 if (ParameterOverrides.Count == 0)
                 {
-                    return SourceVerilogFile.ReloadRequested;
+                    return SourceVerilogFile.CloseRequested;
                 }
                 else
                 {
                     return reloadRequested;
                 }
-            } 
-            set 
+            }
+            set
             {
                 if (ParameterOverrides.Count == 0)
                 {
-                    SourceVerilogFile.ReloadRequested = value;
+                    SourceVerilogFile.CloseRequested = value;
                 }
                 else
                 {
                     reloadRequested = value;
                 }
-            } 
+            }
         }
-        
-        
-        public void Reload()
+
+
+        public override void Close()
         {
             if (VerilogParsedDocument != null) VerilogParsedDocument.ReloadIncludeFiles();
-            SourceVerilogFile.Reload();
+            SourceVerilogFile.Close();
         }
 
         //        public codeEditor.CodeEditor.ParsedDocument ParsedDocument { get; set; }
         private codeEditor.CodeEditor.ParsedDocument parsedDocument = null;
-        public codeEditor.CodeEditor.ParsedDocument ParsedDocument
+        public override codeEditor.CodeEditor.ParsedDocument ParsedDocument
         {
             get
             {
-                string id;
                 if (ParameterOverrides.Count == 0)
                 {
-                    id = Data.VerilogFile.GetID(RelativePath, Project);
-                    return (Project.GetRegisterdItem(id) as VerilogFile).ParsedDocument;
+                    Data.VerilogFile file = SourceVerilogFile;
+                    if (file == null) return null;
+                    return file.ParsedDocument;
                 }
                 else
                 {
@@ -180,11 +188,11 @@ namespace pluginVerilog.Data
             }
             set
             {
-                string id;
                 if (ParameterOverrides.Count == 0)
                 {
-                    id = Data.VerilogFile.GetID(RelativePath, Project);
-                    (Project.GetRegisterdItem(id) as VerilogFile).ParsedDocument = value;
+                    Data.VerilogFile file = SourceVerilogFile;
+                    if (file == null) return;
+                    file.ParsedDocument = value;
                 }
                 else
                 {
@@ -209,18 +217,10 @@ namespace pluginVerilog.Data
             }
         }
 
-        private codeEditor.CodeEditor.CodeDocument document = null;
-
-        public codeEditor.CodeEditor.CodeDocument CodeDocument
-        {
-            get
-            {
-                return SourceVerilogFile.CodeDocument;
-            }
-        }
 
 
-        public ajkControls.CodeDrawStyle DrawStyle
+
+        public override ajkControls.CodeDrawStyle DrawStyle
         {
             get
             {
@@ -230,141 +230,102 @@ namespace pluginVerilog.Data
 
         public override codeEditor.NavigatePanel.NavigatePanelNode CreateNode()
         {
-            return new NavigatePanel.VerilogModuleInstanceNode(ID, Project);
+            return new NavigatePanel.VerilogModuleInstanceNode(this);
         }
 
-        public virtual codeEditor.CodeEditor.DocumentParser CreateDocumentParser(codeEditor.CodeEditor.CodeDocument document, string id, codeEditor.Data.Project project,codeEditor.CodeEditor.DocumentParser.ParseModeEnum parseMode)
+        public override codeEditor.CodeEditor.DocumentParser CreateDocumentParser(codeEditor.CodeEditor.DocumentParser.ParseModeEnum parseMode)
         {
             if(ParameterOverrides.Count == 0)
             {
-                return new Parser.VerilogParser(document, id, project, parseMode);
+                return new Parser.VerilogParser(this, parseMode);
             }
             else
             {
-                return new Parser.VerilogParser(document,
-                    ModuleName,
-                    ParameterOverrides,
-                    id, project, parseMode);
+                return new Parser.VerilogParser(this, ParameterOverrides, parseMode);
             }
         }
 
+        public override void AcceptParsedDocument(ParsedDocument newParsedDocument)
+        {
+            ParsedDocument oldParsedDocument = ParsedDocument;
+            ParsedDocument = null;
+            if (oldParsedDocument != null) oldParsedDocument.Dispose();
+
+            ParsedDocument = newParsedDocument;
+
+            foreach (Verilog.Module module in VerilogParsedDocument.Modules.Values)
+            {
+                if (!ProjectProperty.IsRegisterableModule(module.Name, this))
+                {
+                    if (module.NameReference != null) module.NameReference.AddError(CodeDocument, "duplicated module name");
+                    continue;
+                }
+
+                bool suceed = ProjectProperty.RegisterModule(module.Name, this);
+                if (!suceed)
+                {
+                    System.Diagnostics.Debugger.Break();
+                    // add module name error
+                }
+            }
+
+            ParseRequested = false;
+            Update();
+        }
 
         public override void Update()
         {
             if (VerilogParsedDocument == null)
             {
-                foreach (Item item in items.Values)
-                {
-                    item.DisposeItem();
-                }
+                // dispose all
+                foreach (Item item in items.Values) item.Dispose();
                 items.Clear();
                 return;
             }
-            if (ID == "TestRTL:File:SCOPE.v")
-            {
-                string a = "";
-            }
 
-            List<string> currentIds = new List<string>();
-            foreach (string id in VerilogParsedDocument.IncludeFiles.Keys)
-            {
-                currentIds.Add(id);
-            }
-
+            List<Item> currentItems = new List<Item>();
             Dictionary<string, Item> newItems = new Dictionary<string, Item>();
 
-            // add new item
+            foreach (Item item in VerilogParsedDocument.IncludeFiles.Values)
+            {
+                currentItems.Add(item);
+            }
+
             foreach (Verilog.Module module in VerilogParsedDocument.Modules.Values)
             {
                 foreach (Verilog.ModuleItems.ModuleInstantiation moduleInstantiation in module.ModuleInstantiations.Values)
                 {
-                    string relativeFile = ProjectProperty.GetRelativeFilePathOfModule(moduleInstantiation.ModuleName);
-                    if (relativeFile == null) continue;
-                    string id = Data.VerilogModuleInstance.GetID(relativeFile, moduleInstantiation.Name, moduleInstantiation.ParameterOverrides, Project);
-                    if (!items.Keys.Contains(id) && !newItems.ContainsKey(id)) // new item
+                    if (items.Keys.Contains(moduleInstantiation.Name))
                     {
-                        // create & increment project counter
-                        Item item = Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
-                        newItems.Add(item.ID, item);
+                        currentItems.Add(items[moduleInstantiation.Name]);
                     }
-                    currentIds.Add(id);
+                    else
+                    {
+                        Item item = Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
+                        if (item != null & !newItems.ContainsKey(moduleInstantiation.Name)) newItems.Add(moduleInstantiation.Name, item);
+                    }
                 }
             }
 
-            List<string> removeIds = new List<string>();
+            List<Item> removeItems = new List<Item>();
             foreach (codeEditor.Data.Item item in items.Values)
             {
-                if (!currentIds.Contains(item.ID)) removeIds.Add(item.ID);
+                if (!currentItems.Contains(item)) removeItems.Add(item);
             }
 
-            foreach (string id in removeIds)
+            foreach (Item item in removeItems)
             {
-                if (Project.IsRegistered(id))
-                {
-                    Item item = Project.GetRegisterdItem(id);
-                    items.Remove(item.ID);
-                    item.DisposeItem();
-                }
-                else
-                {
-                    System.Diagnostics.Debugger.Break();
-                }
+                items.Remove(item.Name);
+                item.Dispose();
             }
 
             foreach (Item item in newItems.Values)
             {
-                items.Add(item.ID, item);
+                items.Add(item.Name, item);
             }
-
-            /*
-            List<string> ids = new List<string>();
-
-            foreach (string id in VerilogParsedDocument.IncludeFiles.Keys)
-            {
-                ids.Add(id);
-            }
-
-            foreach (Verilog.Module module in VerilogParsedDocument.Modules.Values)
-            {
-                foreach (Verilog.ModuleItems.ModuleInstantiation moduleInstantiation in module.ModuleInstantiations.Values)
-                {
-                    string relativeFile = ProjectProperty.GetRelativeFilePathOfModule(moduleInstantiation.ModuleName);
-                    if (relativeFile == null) continue;
-                    string id = Data.VerilogModuleInstance.GetID(relativeFile, moduleInstantiation.Name, moduleInstantiation.ParameterOverrides, Project);
-                    Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
-                    ids.Add(id);
-                }
-            }
-
-            // update
-
-            // remove unused items
-            List<codeEditor.Data.Item> removeItems = new List<codeEditor.Data.Item>();
-            foreach (codeEditor.Data.Item item in items.Values)
-            {
-                if (!ids.Contains(item.ID)) removeItems.Add(item);
-            }
-            foreach (codeEditor.Data.Item item in removeItems)
-            {
-                items.Remove(item.ID);
-            }
-
-            // add new items
-            foreach (string id in ids)
-            {
-                if (items.ContainsKey(id)) continue;
-                if (!Project.IsRegistered(id))
-                {
-                    System.Diagnostics.Debugger.Break();
-                    return;
-                }
-                codeEditor.Data.Item item = Project.GetRegisterdItem(id);
-                items.Add(item.ID, item);
-            }
-            */
         }
 
-        public virtual void AfterKeyDown(System.Windows.Forms.KeyEventArgs e)
+        public override void AfterKeyDown(System.Windows.Forms.KeyEventArgs e)
         {
             if (VerilogParsedDocument == null) return;
             switch (e.KeyCode)
@@ -379,20 +340,20 @@ namespace pluginVerilog.Data
             }
         }
 
-        public virtual void AfterKeyPressed(System.Windows.Forms.KeyPressEventArgs e)
+        public override void AfterKeyPressed(System.Windows.Forms.KeyPressEventArgs e)
         {
             if (VerilogParsedDocument == null) return;
         }
 
-        public virtual void BeforeKeyPressed(System.Windows.Forms.KeyPressEventArgs e)
+        public override void BeforeKeyPressed(System.Windows.Forms.KeyPressEventArgs e)
         {
         }
 
-        public virtual void BeforeKeyDown(System.Windows.Forms.KeyEventArgs e)
+        public override void BeforeKeyDown(System.Windows.Forms.KeyEventArgs e)
         {
         }
 
-        public List<codeEditor.CodeEditor.PopupItem> GetPopupItems(int editId, int index)
+        public override List<codeEditor.CodeEditor.PopupItem> GetPopupItems(int editId, int index)
         {
             if (VerilogParsedDocument == null) return null;
             if (VerilogParsedDocument.EditID != editId) return null;
@@ -404,7 +365,7 @@ namespace pluginVerilog.Data
         }
 
 
-        public List<codeEditor.CodeEditor.ToolItem> GetToolItems(int index)
+        public override List<codeEditor.CodeEditor.ToolItem> GetToolItems(int index)
         {
             List<codeEditor.CodeEditor.ToolItem> toolItems = new List<codeEditor.CodeEditor.ToolItem>();
             toolItems.Add(new Verilog.Snippets.AlwaysFFSnippet());
@@ -413,7 +374,7 @@ namespace pluginVerilog.Data
             return toolItems;
         }
 
-        public List<codeEditor.CodeEditor.AutocompleteItem> GetAutoCompleteItems(int index, out string cantidateWord)
+        public override List<codeEditor.CodeEditor.AutocompleteItem> GetAutoCompleteItems(int index, out string cantidateWord)
         {
             cantidateWord = null;
 

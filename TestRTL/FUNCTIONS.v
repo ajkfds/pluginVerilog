@@ -1,6 +1,6 @@
 `timescale 1n/1p
 
-module EXPRESSIONS;
+module FUNCTIONS;
 /*
 localparam	P_DELAY = 1;
 localparam [7:0]	P_TEMP = 8'h00;

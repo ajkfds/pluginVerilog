@@ -1,13 +1,30 @@
 `timescale 1ns/1ps
 
-module TOP(
+module TOP#(
+	parameter	WIDTH = 10
+)(
+// @section data
 input [7:0]			DATA_I,		// @sync CLK_I
 output reg [7:0]	DATA_O,		// @sync CLK_I
+// @section	clock & reset
 input	CLK_I,					// @sync clock
 input	RST_X					// @sync reset for CLK_I
 );
 
+// @section aa
+
+
 `include "TEST.vh"
+
+
+MOD #(
+	.P_SELECT(1)
+) MOD1 (
+	.DATA_O	(  ),
+	.CLK_I	(  ),
+	.aaa	(  ),
+	.RST_X	(  )
+);
 
 localparam P_DELAY = 1; // @delay
 

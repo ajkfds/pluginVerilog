@@ -25,7 +25,8 @@ namespace pluginVerilog.Verilog.Snippets
             int index = codeDocument.CaretIndex;
             Module module = parsedDocument.GetModule(index);
 
-            foreach(var inst in module.ModuleInstantiations.Values)
+            foreach(var inst in 
+                module.ModuleInstantiations.Values)
             {
                 if(inst.BeginIndex<index && index < inst.LastIndex)
                 {

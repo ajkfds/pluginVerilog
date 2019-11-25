@@ -7,6 +7,8 @@ module TEST_TOP;
 
 localparam P_DELAY = 1; // @delay
 
+wire \aaa[1] ;
+
 wire	aaa = 0;	// comment
 
 reg [7:0]	data_i;
@@ -14,37 +16,32 @@ wire [7:0]	data_o;
 reg		clk_i;
 reg		rst_x;
 
+TOP #(
+	.WIDTH	(  )
+)  RTT (
+	.DATA_I	(  ),
+	.DATA_O	(  ),
+	.CLK_I	(  ),
+	.RST_X	(  )
+);
 
 
-
-TOP TOP_0 (
+TOP #(
+	.WIDTH	( 8 )
+) TOP_0 (
+// data
 	.DATA_I	( data_i ),
+// clock & reset
 	.DATA_O	( data_o ),
 	.CLK_I	( clk_i ),
 	.RST_X	( rst_x )
 );
 
-
-TOP TOP_1 (
-	.DATA_I	(  ),
-	.DATA_O	(  ),
-	.CLK_I	(  ),
-	.RST_X	(  )
-);
-
-
-TOP TOP_2 (
-	.DATA_I	(  ),
-	.DATA_O	(  ),
-	.CLK_I	(  ),
-	.RST_X	(  )
-);
-
-
 always begin
 	clk_i	<= #P_DELAY 1'b1;
 	#100;
 	clk_i	<= #P_DELAY 1'b0;
+	data_i	<= #P_DELAY 8'h00;
 	#100;
 end
 
@@ -57,15 +54,11 @@ initial begin
 
 
 
-
-
-
-
-
-
-
-
-
+task test;
+begin
+	aaa = 1;
+end
+endtask
 
 
 

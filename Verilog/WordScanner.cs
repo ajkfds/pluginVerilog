@@ -8,7 +8,7 @@ namespace pluginVerilog.Verilog
 {
     public class WordScanner : IDisposable
     {
-        public WordScanner( codeEditor.CodeEditor.CodeDocument document, Verilog.ParsedDocument parsedDocument,bool systemVerilog)
+        public WordScanner( CodeEditor.CodeDocument document, Verilog.ParsedDocument parsedDocument,bool systemVerilog)
         {
             RootParsedDocument = parsedDocument;
             wordPointer = new WordPointer(document, parsedDocument);
@@ -623,10 +623,9 @@ namespace pluginVerilog.Verilog
             filePath = filePath.Substring(1, filePath.Length - 2);
 
             // search in same folder with original verilog file
-            string fileID = wordPointer.ParsedDocument.ItemID;
-            var file = wordPointer.ParsedDocument.Project.GetRegisterdItem(fileID) as Data.IVerilogRelatedFile;
+            Data.IVerilogRelatedFile file = wordPointer.VerilogFile;
 
-            if(file == null)
+            if (file == null)
             {
                 System.Diagnostics.Debugger.Break();
             }
@@ -634,10 +633,27 @@ namespace pluginVerilog.Verilog
             if (sameFolderPath.Contains('\\'))
             {
                 sameFolderPath = sameFolderPath.Substring(0, sameFolderPath.LastIndexOf('\\'));
-                sameFolderPath = sameFolderPath +'\\'+ filePath;
+                sameFolderPath = sameFolderPath + '\\' + filePath;
 
-                string id = codeEditor.Data.File.GetID(sameFolderPath, wordPointer.ParsedDocument.Project);
-                if (wordPointer.ParsedDocument.Project.IsRegistered(id)){
+                List<codeEditor.Data.Item> items = wordPointer.ParsedDocument.Project.FindItems(
+                    (item) =>
+                    {
+                        if(item is codeEditor.Data.TextFile)
+                        {
+                            if((item as codeEditor.Data.TextFile).RelativePath == sameFolderPath)
+                            {
+                                return true;
+                            }
+                        }
+                        return false;
+                    },
+                    (item) =>
+                    {
+                        return false;
+                    }
+                );
+                if (items.Count > 0)
+                {
                     wordPointer.MoveNext();
                     diveIntoIncludeFile(sameFolderPath);
                     return;
@@ -645,29 +661,29 @@ namespace pluginVerilog.Verilog
             }
 
             // search same filename in full project
-            {
-                List<string> ids = wordPointer.ParsedDocument.Project.GetRegisteredIdList();
-                string id = ids.FirstOrDefault((x) =>
-                {
-                    return x.EndsWith(filePath);
-                });
+            //{
+            //    List<string> ids = wordPointer.ParsedDocument.Project.GetRegisteredIdList();
+            //    string id = ids.FirstOrDefault((x) =>
+            //    {
+            //        return x.EndsWith(filePath);
+            //    });
 
-                if (id == null)
-                {
-                    wordPointer.AddError("file not found");
-                    wordPointer.MoveNext();
-                    return;
-                }
+            //    if (id == null)
+            //    {
+            //        wordPointer.AddError("file not found");
+            //        wordPointer.MoveNext();
+            //        return;
+            //    }
 
-                codeEditor.Data.Item item = wordPointer.ParsedDocument.Project.GetRegisterdItem(id);
-                codeEditor.Data.File ffile = item as codeEditor.Data.File;
-                if (ffile != null)
-                {
-                    wordPointer.MoveNext();
-                    diveIntoIncludeFile(ffile.RelativePath);
-                    return;
-                }
-            }
+            //    codeEditor.Data.Item item = wordPointer.ParsedDocument.Project.GetRegisterdItem(id);
+            //    codeEditor.Data.File ffile = item as codeEditor.Data.File;
+            //    if (ffile != null)
+            //    {
+            //        wordPointer.MoveNext();
+            //        diveIntoIncludeFile(ffile.RelativePath);
+            //        return;
+            //    }
+            //}
             wordPointer.AddError("file not found");
             wordPointer.MoveNext();
             recheckWord();
@@ -773,7 +789,7 @@ namespace pluginVerilog.Verilog
                 return;
             }
 
-            codeEditor.CodeEditor.CodeDocument codeDocument = new codeEditor.CodeEditor.CodeDocument();
+            CodeEditor.CodeDocument codeDocument = new CodeEditor.CodeDocument(wordPointer.Document.VerilogFile);
             codeDocument.Replace(0, 0, 0, macroText);
 
             WordPointer newPointer = new WordPointer(codeDocument, wordPointer.ParsedDocument);
@@ -802,17 +818,16 @@ namespace pluginVerilog.Verilog
 
         private void diveIntoIncludeFile(string relativeFilePath)
         {
-            string id = wordPointer.ParsedDocument.ItemID+":include:"+relativeFilePath;
             codeEditor.Data.Item item;
-            if (wordPointer.ParsedDocument.Project.IsRegistered(id))
-            {
-                item = wordPointer.ParsedDocument.Project.GetRegisterdItem(id);
-                wordPointer.ParsedDocument.Project.RegisterProjectItem(item);
-            }
-            else
-            {
-                item = Data.VerilogHeaderFile.CreateInstance(relativeFilePath, id, wordPointer.ParsedDocument.Project);
-            }
+            //if (wordPointer.ParsedDocument.Project.IsRegistered(id))
+            //{
+            //    item = wordPointer.ParsedDocument.Project.GetRegisterdItem(id);
+            //    wordPointer.ParsedDocument.Project.RegisterProjectItem(item);
+            //}
+            //else
+            //{
+                item = Data.VerilogHeaderFile.CreateInstance(relativeFilePath, wordPointer.ParsedDocument.Project);
+            //}
             codeEditor.Data.ITextFile textFile = item as codeEditor.Data.ITextFile;
             if(textFile == null ||! (textFile is Data.VerilogHeaderFile))
             {
@@ -821,15 +836,14 @@ namespace pluginVerilog.Verilog
             }
 
             Data.VerilogHeaderFile vhFile = textFile as Data.VerilogHeaderFile;
-            if(!RootParsedDocument.IncludeFiles.ContainsKey(vhFile.ID))
+            if(!RootParsedDocument.IncludeFiles.ContainsKey(vhFile.Name))
             {
-                RootParsedDocument.IncludeFiles.Add(vhFile.ID,vhFile);
+                RootParsedDocument.IncludeFiles.Add(vhFile.Name,vhFile);
             }
-            vhFile.ParsedDocument = new codeEditor.CodeEditor.ParsedDocument(RootParsedDocument.Project, id, -1);
+            vhFile.ParsedDocument = new Verilog.ParsedDocument(vhFile);// editid =, -1);
 
-            wordPointer.ParsedDocument.ShouldDisposeObjects.Add(vhFile.ParsedDocument);
 
-            WordPointer newPointer = new WordPointer(vhFile.CodeDocument, vhFile.ParsedDocument);
+            WordPointer newPointer = new WordPointer(vhFile.CodeDocument as CodeEditor.CodeDocument, vhFile.ParsedDocument as Verilog.ParsedDocument);
             stock.Add(wordPointer);
 
             wordPointer = newPointer;

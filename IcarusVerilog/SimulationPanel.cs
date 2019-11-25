@@ -99,14 +99,14 @@ namespace pluginVerilog.IcarusVerilog
 
         private void run()
         {
-            string projectName;
-            string topId;
-            codeEditor.Controller.NavigatePanel.GetSelectedNode(out projectName, out topId);
-            if (projectName == "" || topId == "") return;
-            if (!codeEditor.Global.Projects.ContainsKey(projectName)) return;
-            codeEditor.Data.Project project = codeEditor.Global.Projects[projectName];
+            codeEditor.NavigatePanel.NavigatePanelNode node;
+            codeEditor.Controller.NavigatePanel.GetSelectedNode(out node);
+            NavigatePanel.VerilogFileNode verilogFileNode = node as NavigatePanel.VerilogFileNode;
+            if (node == null) return;
 
-            Data.VerilogFile topFile = project.GetRegisterdItem(topId) as Data.VerilogFile;
+            Data.VerilogFile topFile = verilogFileNode.VerilogFile;
+            codeEditor.Data.Project project = topFile.Project;
+
             if (topFile == null) return;
             Verilog.ParsedDocument topParsedDocument = topFile.ParsedDocument as Verilog.ParsedDocument;
             if (topParsedDocument == null) return;
@@ -180,7 +180,7 @@ namespace pluginVerilog.IcarusVerilog
         private void appendFiles(List<string> filePathList, List<string> includePathList, Verilog.Module module, codeEditor.Data.Project project)
         {
             string fileId = module.FileId;
-            Data.VerilogFile file = project.GetRegisterdItem(fileId) as Data.VerilogFile;
+            Data.VerilogFile file = null;
             if (file == null) return;
             string absolutePath = project.GetAbsolutePath(file.RelativePath);
             if (!filePathList.Contains(absolutePath)) filePathList.Add(absolutePath);

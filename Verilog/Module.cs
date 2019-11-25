@@ -17,6 +17,7 @@ namespace pluginVerilog.Verilog
         public Dictionary<string, Variables.Port> Ports { get { return ports; } }
         private List<Variables.Port> portsList = new List<Variables.Port>();
         public List<Variables.Port> PortsList { get { return portsList; } }
+        public WordReference NameReference;
 
         private List<string> portParameterNameList = new List<string>();
         public List<string> PortParameterNameList {  get { return portParameterNameList;  } }
@@ -29,6 +30,22 @@ namespace pluginVerilog.Verilog
         public Dictionary<string, Task> Tasks { get { return tasks; } }
         public Dictionary<string, Class> Classes { get { return classes;  } }
         public Dictionary<string, ModuleItems.ModuleInstantiation> ModuleInstantiations { get { return moduleInstantiations; } }
+
+        private System.WeakReference<Data.IVerilogRelatedFile> fileRef;
+        public Data.IVerilogRelatedFile File
+        {
+            get
+            {
+                Data.IVerilogRelatedFile ret;
+                if (!fileRef.TryGetTarget(out ret)) return null;
+                return ret;
+            }
+            protected set
+            {
+                fileRef = new WeakReference<Data.IVerilogRelatedFile>(value);
+            }
+        }
+
         public string FileId { get; protected set; }
         private bool cellDefine = false;
         public bool CellDefine
@@ -36,15 +53,16 @@ namespace pluginVerilog.Verilog
             get { return cellDefine; }
         }
 
-        public static Module Create(WordScanner word, Attribute attribute, string fileId, bool protoType)
+        public static Module Create(WordScanner word, Attribute attribute, Data.IVerilogRelatedFile file, bool protoType)
         {
-            return Create(word, null, null, attribute, fileId, protoType);
+            return Create(word, null, attribute,file, protoType);
         }
         public static Module Create(
             WordScanner word,
-            string parameterOverrideModueName,
             Dictionary<string, Verilog.Expressions.Expression> parameterOverrides,
-            Attribute attribute, string fileId, bool protoType
+            Attribute attribute,
+            Data.IVerilogRelatedFile file,
+            bool protoType
             )
         {
             /*
@@ -67,7 +85,7 @@ namespace pluginVerilog.Verilog
             Module module = new Module();
 
             module.Module = module;
-            module.FileId = fileId;
+            module.File = file;
             module.BeginIndex = word.RootIndex;
             if (word.CellDefine) module.cellDefine = true;
             word.MoveNext();
@@ -86,19 +104,19 @@ namespace pluginVerilog.Verilog
                 // protptype parse
                 WordScanner prototypeWord = word.Clone();
                 prototypeWord.Prototype = true;
-                parseModuleItems(prototypeWord, parameterOverrideModueName, parameterOverrides, null, module);
+                parseModuleItems(prototypeWord, parameterOverrides, null, module);
                 prototypeWord.Dispose();
                 prototypeWord = null;
 
                 // parse
                 word.RootParsedDocument.Macros = macroKeep;
-                parseModuleItems(word, parameterOverrideModueName, parameterOverrides, null, module);
+                parseModuleItems(word, parameterOverrides, null, module);
             }
             else
             {
                 // parse prototype only
                 word.Prototype = true;
-                parseModuleItems(word, parameterOverrideModueName, parameterOverrides, null, module);
+                parseModuleItems(word, parameterOverrides, null, module);
                 word.Prototype = false;
             }
 
@@ -122,7 +140,7 @@ namespace pluginVerilog.Verilog
 
         protected static void parseModuleItems(
             WordScanner word,
-            string parameterOverrideModueName,
+//            string parameterOverrideModueName,
             Dictionary<string, Verilog.Expressions.Expression> parameterOverrides,
             Attribute attribute, Module module)
         {
@@ -143,7 +161,14 @@ namespace pluginVerilog.Verilog
             // module_identifier
             module.Name = word.Text;
             word.Color(CodeDrawStyle.ColorType.Identifier);
-            if (!General.IsIdentifier(word.Text)) word.AddError("illegal module name");
+            if (!General.IsIdentifier(word.Text))
+            {
+                word.AddError("illegal module name");
+            }
+            else
+            {
+                module.NameReference = word.GetReference();
+            }
             word.MoveNext();
 
             while (true)
@@ -189,7 +214,7 @@ namespace pluginVerilog.Verilog
                     } while (false);
                 }
 
-                if(module.Name == parameterOverrideModueName)
+                if(parameterOverrides != null)
                 {
                     foreach(var vkp in parameterOverrides)
                     {

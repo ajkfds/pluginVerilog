@@ -30,15 +30,15 @@ namespace pluginVerilog
 
         private void IVerilogRunTsmi_Click(object sender, EventArgs e)
         {
-            string projectName, id;
-            codeEditor.Controller.NavigatePanel.GetSelectedNode(out projectName, out id);
+            //string projectName, id;
+            //codeEditor.Controller.NavigatePanel.GetSelectedNode(out projectName, out id);
 
-            codeEditor.Data.Project project = codeEditor.Global.Projects[projectName];
-            Data.VerilogFile topFile = project.GetRegisterdItem(id) as Data.VerilogFile;
-            if (topFile == null) return;
+            //codeEditor.Data.Project project = codeEditor.Global.Projects[projectName];
+            //Data.VerilogFile topFile = project.GetRegisterdItem(id) as Data.VerilogFile;
+            //if (topFile == null) return;
 
-            IcarusVerilog.SimulationTab tabPage = new IcarusVerilog.SimulationTab(topFile);
-            codeEditor.Controller.Tabs.AddPage(tabPage);
+            //IcarusVerilog.SimulationTab tabPage = new IcarusVerilog.SimulationTab(topFile);
+            //codeEditor.Controller.Tabs.AddPage(tabPage);
         }
 
         private void GtkWaveTsmi_Click(object sender, EventArgs e)
@@ -48,12 +48,10 @@ namespace pluginVerilog
 
         private void CreateVerilogFileTsmi_Click(object sender, EventArgs e)
         {
-            string projectName;
-            string id;
-            codeEditor.Controller.NavigatePanel.GetSelectedNode(out projectName, out id);
-
-            codeEditor.Data.Project project = codeEditor.Global.Projects[projectName];
-            var item = project.GetRegisterdItem(id);
+            codeEditor.NavigatePanel.NavigatePanelNode node;
+            codeEditor.Controller.NavigatePanel.GetSelectedNode(out node);
+            var item = node.Item;
+            codeEditor.Data.Project project = item.Project;
 
             string path;
             if(item == null)

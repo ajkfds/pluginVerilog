@@ -24,9 +24,8 @@ namespace pluginVerilog.Verilog.Snippets
             document = codeDocument;
 
             ProjectProperty projectProperty = project.GetProjectProperty(Plugin.StaticID) as ProjectProperty;
-            string relativePath = projectProperty.GetRelativeFilePathOfModule(Text);
-            if (relativePath == "") return;
-
+            Data.VerilogFile targetFile = projectProperty.GetFileOfModule(Text) as Data.VerilogFile;
+            if (targetFile == null) return;
 
             string instanceName = Text + "_";
             {
@@ -44,7 +43,6 @@ namespace pluginVerilog.Verilog.Snippets
                 instanceName = Text + "_" + instanceCount.ToString();
             }
 
-            Data.VerilogFile targetFile = project.GetRegisterdItem(Data.VerilogFile.GetID(relativePath, project)) as Data.VerilogFile;
             Verilog.ParsedDocument targetParsedDocument = targetFile.ParsedDocument as Verilog.ParsedDocument;
             if (targetParsedDocument == null) return;
 

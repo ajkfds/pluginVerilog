@@ -19,10 +19,10 @@ namespace pluginVerilog
                 FileTypes.VerilogHeaderFile fileType = new FileTypes.VerilogHeaderFile();
                 codeEditor.Global.FileTypes.Add(fileType.ID, fileType);
             }
-            {
-                FileTypes.SystemVerilogFile fileType = new FileTypes.SystemVerilogFile();
-                codeEditor.Global.FileTypes.Add(fileType.ID, fileType);
-            }
+            //{
+            //    FileTypes.SystemVerilogFile fileType = new FileTypes.SystemVerilogFile();
+            //    codeEditor.Global.FileTypes.Add(fileType.ID, fileType);
+            //}
 
             // append navigate context menu items
             System.Windows.Forms.ContextMenuStrip menu = codeEditor.Controller.NavigatePanel.GetContextMenuStrip();

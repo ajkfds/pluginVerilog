@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="CodeDrawStyle.cs" />
     <Compile Include="CodeEditor\CodeDocument.cs" />
+    <Compile Include="Data\InstanceTextFile.cs" />
     <Compile Include="Data\IVerilogRelatedFile.cs" />
     <Compile Include="Data\SystemVerilogFile.cs" />
     <Compile Include="Data\VerilogModuleInstance.cs" />

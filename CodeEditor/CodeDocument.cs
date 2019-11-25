@@ -8,10 +8,15 @@ namespace pluginVerilog.CodeEditor
 {
     public class CodeDocument : codeEditor.CodeEditor.CodeDocument
     {
-        public CodeDocument() { }
-        public CodeDocument(string text) : base(text)
+        public CodeDocument(Data.IVerilogRelatedFile file) :base(file as codeEditor.Data.TextFile) { }
+        public CodeDocument(string text) : base(null,text)
         {
 
+        }
+
+        public Data.IVerilogRelatedFile VerilogFile
+        {
+            get { return TextFile as Data.IVerilogRelatedFile; }
         }
 
         // get word boundery for editor word selection
