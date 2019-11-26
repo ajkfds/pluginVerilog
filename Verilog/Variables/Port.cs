@@ -240,11 +240,19 @@ namespace pluginVerilog.Verilog.Variables
 
                     if (portNameSpace.Ports.ContainsKey(port.Name))
                     {
-                        word.AddPrototypeError("port name duplicated");
+                        if(portNameSpace.Ports[port.Name].Direction == DirectionEnum.Undefined) // only port name defined
+                        {
+                            portNameSpace.Ports[port.Name] = port;
+                        }
+                        else
+                        {
+                            word.AddPrototypeError("port name duplicated");
+                        }
                     }
                     else
                     {
                         portNameSpace.Ports.Add(port.Name, port);
+                        portNameSpace.PortsList.Add(port);
                     }
                 }
                 else
@@ -331,7 +339,14 @@ namespace pluginVerilog.Verilog.Variables
 
                     if (portNameSpace.Ports.ContainsKey(port.Name))
                     {
-                        word.AddPrototypeError("port name duplicated");
+                        if (portNameSpace.Ports[port.Name].Direction == DirectionEnum.Undefined) // only port name defined
+                        {
+                            portNameSpace.Ports[port.Name] = port;
+                        }
+                        else
+                        {
+                            word.AddPrototypeError("port name duplicated");
+                        }
                     }
                     else
                     {
@@ -487,7 +502,14 @@ namespace pluginVerilog.Verilog.Variables
 
                     if (portNameSpace.Ports.ContainsKey(port.Name))
                     {
-                        word.AddPrototypeError("port name duplicated");
+                        if (portNameSpace.Ports[port.Name].Direction == DirectionEnum.Undefined) // only port name defined
+                        {
+                            portNameSpace.Ports[port.Name] = port;
+                        }
+                        else
+                        {
+                            word.AddPrototypeError("port name duplicated");
+                        }
                     }
                     else
                     {
