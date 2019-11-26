@@ -661,29 +661,20 @@ namespace pluginVerilog.Verilog
             }
 
             // search same filename in full project
-            //{
-            //    List<string> ids = wordPointer.ParsedDocument.Project.GetRegisteredIdList();
-            //    string id = ids.FirstOrDefault((x) =>
-            //    {
-            //        return x.EndsWith(filePath);
-            //    });
+            {
 
-            //    if (id == null)
-            //    {
-            //        wordPointer.AddError("file not found");
-            //        wordPointer.MoveNext();
-            //        return;
-            //    }
-
-            //    codeEditor.Data.Item item = wordPointer.ParsedDocument.Project.GetRegisterdItem(id);
-            //    codeEditor.Data.File ffile = item as codeEditor.Data.File;
-            //    if (ffile != null)
-            //    {
-            //        wordPointer.MoveNext();
-            //        diveIntoIncludeFile(ffile.RelativePath);
-            //        return;
-            //    }
-            //}
+                codeEditor.Data.File ffile = wordPointer.ParsedDocument.Project.SearchFile(
+                    (f)=> {
+                    if (f.Name == filePath) return true;
+                    return false;
+                    });
+                  if (ffile != null)
+                {
+                    wordPointer.MoveNext();
+                    diveIntoIncludeFile(ffile.RelativePath);
+                    return;
+                }
+            }
             wordPointer.AddError("file not found");
             wordPointer.MoveNext();
             recheckWord();

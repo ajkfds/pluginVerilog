@@ -49,35 +49,6 @@ namespace pluginVerilog.Data
                 return SourceVerilogFile.CodeDocument;
             }
         }
-        //public override codeEditor.CodeEditor.CodeDocument CodeDocument
-        //{
-        //    get
-        //    {
-        //        if (base.CodeDocument == null)
-        //        {
-        //            try
-        //            {
-        //                using (System.IO.StreamReader sr = new System.IO.StreamReader(Project.GetAbsolutePath(RelativePath)))
-        //                {
-        //                    base.CodeDocument = new CodeEditor.CodeDocument(this);
-        //                    string text = sr.ReadToEnd();
-        //                    base.CodeDocument.Replace(0, 0, 0, text);
-        //                    base.CodeDocument.ClearHistory();
-        //                }
-        //            }
-        //            catch
-        //            {
-        //                base.CodeDocument = null;
-        //            }
-        //        }
-        //        return base.CodeDocument;
-        //    }
-        //    protected set
-        //    {
-        //        if (value != null && value as CodeEditor.CodeDocument == null) System.Diagnostics.Debugger.Break();
-        //        base.CodeDocument = value;
-        //    }
-        //}
         public override void Dispose()
         {
             if (ParsedDocument != null)
