@@ -120,17 +120,18 @@ namespace pluginVerilog.Parser
                             module = Verilog.Module.Create(word, parameterOverrides, null, File, false);
                         }
                     }
-                    if(parameterOverrides == null) // root file
+
+                    //if (parameterOverrides == null) // root file
+                    //{
+                    if (!parsedDocument.Modules.ContainsKey(module.Name))
                     {
-                        if (!parsedDocument.Modules.ContainsKey(module.Name))
-                        {
-                            parsedDocument.Modules.Add(module.Name, module);
-                        }
-                        else
-                        {
-                            word.AddError("duplicated module name");
-                        }
+                        parsedDocument.Modules.Add(module.Name, module);
                     }
+                    else
+                    {
+                        word.AddError("duplicated module name");
+                    }
+                    //}
                 }
                 else
                 {

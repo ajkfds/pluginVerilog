@@ -224,21 +224,21 @@ namespace pluginVerilog.Data
 
             ParsedDocument = newParsedDocument;
 
-            foreach (Verilog.Module module in VerilogParsedDocument.Modules.Values)
-            {
-                if (!ProjectProperty.IsRegisterableModule(module.Name, this))
-                {
-                    if (module.NameReference != null) module.NameReference.AddError(CodeDocument, "duplicated module name");
-                    continue;
-                }
+            //foreach (Verilog.Module module in VerilogParsedDocument.Modules.Values)
+            //{
+            //    if (!ProjectProperty.IsRegisterableModule(module.Name, this))
+            //    {
+            //        if (module.NameReference != null) module.NameReference.AddError(CodeDocument, "duplicated module name");
+            //        continue;
+            //    }
 
-                bool suceed = ProjectProperty.RegisterModule(module.Name, this);
-                if (!suceed)
-                {
-                    System.Diagnostics.Debugger.Break();
-                    // add module name error
-                }
-            }
+            //    bool suceed = ProjectProperty.RegisterModule(module.Name, this);
+            //    if (!suceed)
+            //    {
+            //        System.Diagnostics.Debugger.Break();
+            //        // add module name error
+            //    }
+            //}
 
             ParseRequested = false;
             Update();

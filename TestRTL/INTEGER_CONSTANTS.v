@@ -17,9 +17,9 @@ integer int8	= 16'hz; // is a 16-bit high-impedance number
 
 // Example 3-Using sign with constant numbers 
 integer int9	= 8'd-6;  // this is illegal syntax
-integer int10	= -8 'd 6;  // this defines the two’s complement of 6, held in 8 bits—equivalent to -(8’d 6)
-integer int11	= 4 'shf;  // this denotes the 4-bit number ‘1111’, to be interpreted as a 2’s complement number, or ‘-1’. This is equivalent to -4’h 1
-integer int12	= -4 'sd15;  // this is equivalent to -(-4’d 1), or ‘0001’.
+integer int10	= -8 'd 6;  // this defines the two's complement of 6, held in 8 bits—equivalent to -(8’d 6)
+integer int11	= 4 'shf;  // this denotes the 4-bit number ‘1111’, to be interpreted as a 2's complement number, or ‘-1’. This is equivalent to -4’h 1
+integer int12	= -4 'sd15;  // this is equivalent to -(-4'd 1), or '0001'.
 
 // Example 4-Automatic left padding  
 reg [11:0] a, b, c, d;

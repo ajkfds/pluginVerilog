@@ -1,6 +1,6 @@
 
 
-module test;
+module test___;
 parameter aaa = 1;
 
 
