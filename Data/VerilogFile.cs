@@ -88,13 +88,23 @@ namespace pluginVerilog.Data
             Update();
         }
 
-        private Dictionary<string, ParsedDocument> instancedParsedDocuments = new Dictionary<string, ParsedDocument>();
+        private Dictionary<string, System.WeakReference<ParsedDocument>> instancedParsedDocumentRefs = new Dictionary<string, WeakReference<ParsedDocument>>();
 
-        public ParsedDocument GetParsedDocument(string parameterId)
+        public ParsedDocument GetInstancedParsedDocument(string parameterId)
         {
-            if (instancedParsedDocuments.ContainsKey(parameterId))
+            cleanWeakRef();
+
+            ParsedDocument ret;
+            if (instancedParsedDocumentRefs.ContainsKey(parameterId))
             {
-                return instancedParsedDocuments[parameterId];
+                if (instancedParsedDocumentRefs[parameterId].TryGetTarget(out ret))
+                {
+                    return ret;
+                }
+                else
+                {
+                    return null;
+                }
             }
             else
             {
@@ -102,14 +112,36 @@ namespace pluginVerilog.Data
             }
         }
 
-        public void RegisterParsedDocument(string parameterId, ParsedDocument parsedDocument)
+        public void RegisterInstanceParsedDocument(string parameterId, ParsedDocument parsedDocument)
         {
-            if (!instancedParsedDocuments.ContainsKey(parameterId))
+            cleanWeakRef();
+            ParsedDocument ret;
+            if (instancedParsedDocumentRefs.ContainsKey(parameterId))
             {
-                instancedParsedDocuments.Add(parameterId, parsedDocument);
+                instancedParsedDocumentRefs[parameterId] = new WeakReference<ParsedDocument>(parsedDocument);
+            }
+            else
+            {
+                instancedParsedDocumentRefs.Add(parameterId,new WeakReference<ParsedDocument>(parsedDocument));
             }
         }
 
+        private void cleanWeakRef()
+        {
+            List<string> removeKeys = new List<string>();
+            ParsedDocument ret;
+            lock (instancedParsedDocumentRefs)
+            {
+                foreach(var r in instancedParsedDocumentRefs)
+                {
+                    if (!r.Value.TryGetTarget(out ret)) removeKeys.Add(r.Key);
+                }
+                foreach(string key in removeKeys)
+                {
+                    instancedParsedDocumentRefs.Remove(key);
+                }
+            }
+        }
 
         private List<System.WeakReference<Data.VerilogModuleInstance>> moduleInstanceRefs
             = new List<WeakReference<VerilogModuleInstance>>();

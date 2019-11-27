@@ -121,8 +121,6 @@ namespace pluginVerilog.Parser
                         }
                     }
 
-                    //if (parameterOverrides == null) // root file
-                    //{
                     if (!parsedDocument.Modules.ContainsKey(module.Name))
                     {
                         parsedDocument.Modules.Add(module.Name, module);
@@ -131,7 +129,6 @@ namespace pluginVerilog.Parser
                     {
                         word.AddError("duplicated module name");
                     }
-                    //}
                 }
                 else
                 {

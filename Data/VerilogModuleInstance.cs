@@ -30,7 +30,6 @@ namespace pluginVerilog.Data
             fileItem.Name = moduleInstantiation.Name;
             fileItem.ModuleName = moduleInstantiation.ModuleName;
             fileItem.ParseRequested = true;
-            fileItem.ParameterId = moduleInstantiation.OverrideParameterID;
 
             if(file is Data.VerilogFile)
             {
@@ -59,7 +58,8 @@ namespace pluginVerilog.Data
                 }
             }
             //            CodeDocument = null;
-            if (ParsedDocument != null) ParsedDocument.Dispose();
+            parsedDocument = null;
+//            if (ParsedDocument != null) ParsedDocument.Dispose();
             SourceVerilogFile.RemoveModuleInstance(this);
 
             base.Dispose();
@@ -69,7 +69,20 @@ namespace pluginVerilog.Data
 
 
         public Dictionary<string, Verilog.Expressions.Expression> ParameterOverrides;
-        public string ParameterId { get; protected set; }
+        public string ParameterId { 
+            get
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach(var kvp in ParameterOverrides)
+                {
+                    sb.Append(kvp.Key);
+                    sb.Append("=");
+                    sb.Append(kvp.Value.ToString());
+                    sb.Append(",");
+                }
+                return sb.ToString();
+            }
+        }
 
         private Data.VerilogFile SourceVerilogFile
         {
@@ -140,35 +153,55 @@ namespace pluginVerilog.Data
             SourceVerilogFile.Close();
         }
 
-        //        public codeEditor.CodeEditor.ParsedDocument ParsedDocument { get; set; }
         private codeEditor.CodeEditor.ParsedDocument parsedDocument = null;
+
         public override codeEditor.CodeEditor.ParsedDocument ParsedDocument
         {
             get
             {
-                if (ParameterOverrides.Count == 0)
+                if(parsedDocument == null)
                 {
-                    Data.VerilogFile file = SourceVerilogFile;
-                    if (file == null) return null;
-                    return file.ParsedDocument;
+                    if (ParameterOverrides.Count == 0)
+                    {
+                        Data.VerilogFile file = SourceVerilogFile;
+                        if (file == null) return null;
+                        parsedDocument = file.ParsedDocument;
+                    }
+                    else
+                    {
+                        Data.VerilogFile source = SourceVerilogFile;
+                        parsedDocument = source.GetInstancedParsedDocument(ParameterId);
+                    }
                 }
-                else
-                {
-                    return parsedDocument;
-                }
+
+                return parsedDocument;
+                //if (ParameterOverrides.Count == 0)
+                //{
+                //    Data.VerilogFile file = SourceVerilogFile;
+                //    if (file == null) return null;
+                //    return file.ParsedDocument;
+                //}
+                //else
+                //{
+                //    Data.VerilogFile source = SourceVerilogFile;
+                //    return source.GetInstancedParsedDocument(ParameterId);
+                //}
             }
             set
             {
-                if (ParameterOverrides.Count == 0)
-                {
-                    Data.VerilogFile file = SourceVerilogFile;
-                    if (file == null) return;
-                    file.ParsedDocument = value;
-                }
-                else
-                {
-                    parsedDocument = value;
-                }
+                parsedDocument = value;
+                //if (ParameterOverrides.Count == 0)
+                //{
+                //    Data.VerilogFile file = SourceVerilogFile;
+                //    if (file == null) return;
+                //    file.ParsedDocument = value;
+                //}
+                //else
+                //{
+                //    Data.VerilogFile source = SourceVerilogFile;
+                //    source.RegisterInstanceParsedDocument(ParameterId, value);
+                //    System.Diagnostics.Debug.Print("reg " + Name + ":" + ParameterId);
+                //}
             }
         }
 
@@ -179,6 +212,25 @@ namespace pluginVerilog.Data
                 return ParsedDocument as Verilog.ParsedDocument;
             }
         }
+
+        public override void AcceptParsedDocument(ParsedDocument newParsedDocument)
+        {
+            //            ParsedDocument oldParsedDocument = ParsedDocument;
+            //            if (oldParsedDocument != null) oldParsedDocument.Dispose();
+            parsedDocument = newParsedDocument as Verilog.ParsedDocument;
+
+            {
+                Data.VerilogFile source = SourceVerilogFile;
+                if (source == null) return;
+                source.RegisterInstanceParsedDocument(ParameterId, newParsedDocument);
+                System.Diagnostics.Debug.Print("reg " + Name + ":" + ParameterId);
+            }
+
+            ParseRequested = false;
+            Update();
+        }
+
+
 
         public ProjectProperty ProjectProperty
         {
@@ -216,33 +268,7 @@ namespace pluginVerilog.Data
             }
         }
 
-        public override void AcceptParsedDocument(ParsedDocument newParsedDocument)
-        {
-            ParsedDocument oldParsedDocument = ParsedDocument;
-            ParsedDocument = null;
-            if (oldParsedDocument != null) oldParsedDocument.Dispose();
 
-            ParsedDocument = newParsedDocument;
-
-            //foreach (Verilog.Module module in VerilogParsedDocument.Modules.Values)
-            //{
-            //    if (!ProjectProperty.IsRegisterableModule(module.Name, this))
-            //    {
-            //        if (module.NameReference != null) module.NameReference.AddError(CodeDocument, "duplicated module name");
-            //        continue;
-            //    }
-
-            //    bool suceed = ProjectProperty.RegisterModule(module.Name, this);
-            //    if (!suceed)
-            //    {
-            //        System.Diagnostics.Debugger.Break();
-            //        // add module name error
-            //    }
-            //}
-
-            ParseRequested = false;
-            Update();
-        }
 
         public override void Update()
         {
