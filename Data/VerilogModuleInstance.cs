@@ -175,33 +175,10 @@ namespace pluginVerilog.Data
                 }
 
                 return parsedDocument;
-                //if (ParameterOverrides.Count == 0)
-                //{
-                //    Data.VerilogFile file = SourceVerilogFile;
-                //    if (file == null) return null;
-                //    return file.ParsedDocument;
-                //}
-                //else
-                //{
-                //    Data.VerilogFile source = SourceVerilogFile;
-                //    return source.GetInstancedParsedDocument(ParameterId);
-                //}
             }
             set
             {
                 parsedDocument = value;
-                //if (ParameterOverrides.Count == 0)
-                //{
-                //    Data.VerilogFile file = SourceVerilogFile;
-                //    if (file == null) return;
-                //    file.ParsedDocument = value;
-                //}
-                //else
-                //{
-                //    Data.VerilogFile source = SourceVerilogFile;
-                //    source.RegisterInstanceParsedDocument(ParameterId, value);
-                //    System.Diagnostics.Debug.Print("reg " + Name + ":" + ParameterId);
-                //}
             }
         }
 
@@ -215,15 +192,12 @@ namespace pluginVerilog.Data
 
         public override void AcceptParsedDocument(ParsedDocument newParsedDocument)
         {
-            //            ParsedDocument oldParsedDocument = ParsedDocument;
-            //            if (oldParsedDocument != null) oldParsedDocument.Dispose();
             parsedDocument = newParsedDocument as Verilog.ParsedDocument;
 
             {
                 Data.VerilogFile source = SourceVerilogFile;
                 if (source == null) return;
                 source.RegisterInstanceParsedDocument(ParameterId, newParsedDocument);
-                System.Diagnostics.Debug.Print("reg " + Name + ":" + ParameterId);
             }
 
             ParseRequested = false;
@@ -253,7 +227,9 @@ namespace pluginVerilog.Data
 
         public override codeEditor.NavigatePanel.NavigatePanelNode CreateNode()
         {
-            return new NavigatePanel.VerilogModuleInstanceNode(this);
+            NavigatePanel.VerilogModuleInstanceNode node = new NavigatePanel.VerilogModuleInstanceNode(this);
+            nodeRef = new WeakReference<codeEditor.NavigatePanel.NavigatePanelNode>(node);
+            return node;
         }
 
         public override codeEditor.CodeEditor.DocumentParser CreateDocumentParser(codeEditor.CodeEditor.DocumentParser.ParseModeEnum parseMode)
@@ -319,6 +295,7 @@ namespace pluginVerilog.Data
             foreach (Item item in newItems.Values)
             {
                 items.Add(item.Name, item);
+//                Project.AddReparseTarget(item);
             }
         }
 

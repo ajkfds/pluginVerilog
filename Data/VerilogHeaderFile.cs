@@ -15,7 +15,7 @@ namespace pluginVerilog.Data
     {
         public new static VerilogHeaderFile Create(string relativePath, codeEditor.Data.Project project)
         {
-            string id = GetID(relativePath, project);
+            //string id = GetID(relativePath, project);
 
             VerilogHeaderFile fileItem = new VerilogHeaderFile();
             fileItem.Project = project;

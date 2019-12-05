@@ -22,6 +22,8 @@ namespace pluginVerilog
             public static ajkControls.IconImage SystemVerilog = new ajkControls.IconImage(Properties.Resources.systemVerilog);
             public static ajkControls.IconImage SystemVerilogHeader = new ajkControls.IconImage(Properties.Resources.systemVerilogHeader);
             public static ajkControls.IconImage IcarusVerilog = new ajkControls.IconImage(Properties.Resources.icarusVerilog);
+            public static ajkControls.IconImage NewBadge = new ajkControls.IconImage(Properties.Resources.newBadge);
+            public static ajkControls.IconImage MedalBadge = new ajkControls.IconImage(Properties.Resources.medalBadge);
         }
     }
 }

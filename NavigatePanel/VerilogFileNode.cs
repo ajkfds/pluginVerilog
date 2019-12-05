@@ -55,14 +55,14 @@ namespace pluginVerilog.NavigatePanel
                 System.Windows.Forms.TextFormatFlags.NoPadding
                 );
 
-            if(VerilogFile != null && VerilogFile.Dirty)
+            if (VerilogFile != null && VerilogFile.ParsedDocument != null && VerilogFile.VerilogParsedDocument.ErrorCount != 0)
             {
                 graphics.DrawImage(Global.Icons.Exclamation.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Red), new Point(x, y));
             }
 
             if (VerilogFile != null && VerilogFile.Dirty)
             {
-                graphics.DrawImage(Global.Icons.Exclamation.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Orange), new Point(x, y));
+                graphics.DrawImage(Global.Icons.NewBadge.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Orange), new Point(x, y));
             }
         }
 

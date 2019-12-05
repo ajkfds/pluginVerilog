@@ -251,6 +251,12 @@
   <ItemGroup>
     <None Include="Resources\icarusVerilog.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\medalBadge.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\newBadge.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /I /D /Y "$(ProjectDir)\bin\$(Configuration)\$(ProjectName).dll" "$(SolutionDir)codeEditor\codeEditor\bin\$(Configuration)\dlls" 

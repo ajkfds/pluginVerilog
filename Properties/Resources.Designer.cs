@@ -93,9 +93,29 @@ namespace pluginVerilog.Properties {
         /// <summary>
         ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
         /// </summary>
+        internal static System.Drawing.Bitmap medalBadge {
+            get {
+                object obj = ResourceManager.GetObject("medalBadge", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
         internal static System.Drawing.Bitmap netBox {
             get {
                 object obj = ResourceManager.GetObject("netBox", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   型 System.Drawing.Bitmap のローカライズされたリソースを検索します。
+        /// </summary>
+        internal static System.Drawing.Bitmap newBadge {
+            get {
+                object obj = ResourceManager.GetObject("newBadge", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

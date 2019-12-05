@@ -9,33 +9,36 @@ namespace pluginVerilog
 {
     public class CodeDrawStyle : ajkControls.CodeDrawStyle
     {
-        public override System.Drawing.Color[] ColorPallet
+        public CodeDrawStyle()
         {
-            get
+            colors = new Color[16]
             {
-                return colorPallet;
+                    System.Drawing.Color.DimGray,                   // default
+                    System.Drawing.Color.LightGray,                 // inactivated
+                    System.Drawing.Color.DarkGray,                  // 2
+                    System.Drawing.Color.Crimson,                   // variable-heavy
+                    System.Drawing.Color.MediumBlue,                // keyword
+                    System.Drawing.Color.ForestGreen,               // comment
+                    System.Drawing.Color.CadetBlue,                 // identifier
+                    System.Drawing.Color.Orchid,                    // variable-fixed
+                    System.Drawing.Color.SandyBrown,                // number
+                    System.Drawing.Color.Salmon,                    // variable-light
+                    System.Drawing.Color.FromArgb(0,30,0),          // highlighted comment
+                    System.Drawing.Color.Pink,                     // 11
+                    System.Drawing.Color.Black,                     // 12
+                    System.Drawing.Color.Black,                     // 13
+                    System.Drawing.Color.Black,                     // 14
+                    System.Drawing.Color.Black                      // 15
+            };
+            intColors = new int[colors.Length];
+            for (int i = 0; i < colors.Length; i++)
+            {
+                intColors[i] = (colors[i].B << 16) + (colors[i].G << 8) + colors[i].R;
             }
+            CodeDrawStyle.colors = colors;
         }
 
-        private static System.Drawing.Color[] colorPallet = new Color[16]
-        {
-                System.Drawing.Color.DimGray,                   // default
-                System.Drawing.Color.LightGray,                 // inactivated
-                System.Drawing.Color.DarkGray,                  // 2
-                System.Drawing.Color.Crimson,                   // variable-heavy
-                System.Drawing.Color.MediumBlue,                // keyword
-                System.Drawing.Color.ForestGreen,               // comment
-                System.Drawing.Color.CadetBlue,                 // identifier
-                System.Drawing.Color.Orchid,                    // variable-fixed
-                System.Drawing.Color.SandyBrown,                // number
-                System.Drawing.Color.Salmon,                    // variable-light
-                System.Drawing.Color.FromArgb(0,30,0),          // highlighted comment
-                System.Drawing.Color.Pink,                     // 11
-                System.Drawing.Color.Black,                     // 12
-                System.Drawing.Color.Black,                     // 13
-                System.Drawing.Color.Black,                     // 14
-                System.Drawing.Color.Black                      // 15
-        };
+        private static System.Drawing.Color[] colors;
 
         public static byte ColorIndex(ColorType colorType)
         {
@@ -44,7 +47,7 @@ namespace pluginVerilog
 
         public static System.Drawing.Color Color(ColorType colorType)
         {
-            return colorPallet[ColorIndex(colorType)];
+            return colors[ColorIndex(colorType)];
         }
 
         public enum ColorType : byte
