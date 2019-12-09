@@ -249,13 +249,13 @@
     <None Include="Resources\systemVerilogHeader.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\icarusVerilog.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\medalBadge.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\newBadge.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icarusVerilog.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
