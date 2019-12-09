@@ -100,7 +100,7 @@ namespace pluginVerilog.Parser
                     Verilog.Module module;
                     if (ParseMode == ParseModeEnum.LoadParse)
                     {
-                        if (parameterOverrides != null)
+                        if (parameterOverrides == null)
                         {
                             module = Verilog.Module.Create(word, null, File, true);
                         }
@@ -111,7 +111,7 @@ namespace pluginVerilog.Parser
                     }
                     else
                     {
-                        if (parameterOverrides != null)
+                        if (parameterOverrides == null)
                         {
                             module = Verilog.Module.Create(word, null, File, false);
                         }

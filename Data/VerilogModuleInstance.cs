@@ -197,7 +197,7 @@ namespace pluginVerilog.Data
             {
                 Data.VerilogFile source = SourceVerilogFile;
                 if (source == null) return;
-                source.RegisterInstanceParsedDocument(ParameterId, newParsedDocument);
+                source.RegisterInstanceParsedDocument(ParameterId, newParsedDocument,this);
             }
 
             ParseRequested = false;
@@ -240,6 +240,10 @@ namespace pluginVerilog.Data
             }
             else
             {
+                if (Name == "TOP_0")
+                {
+                    string a = "";
+                }
                 return new Parser.VerilogParser(this, ParameterOverrides, parseMode);
             }
         }

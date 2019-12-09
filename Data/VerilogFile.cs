@@ -89,32 +89,6 @@ namespace pluginVerilog.Data
         }
 
         private Dictionary<string, System.WeakReference<ParsedDocument>> instancedParsedDocumentRefs = new Dictionary<string, WeakReference<ParsedDocument>>();
-//        private List<System.WeakReference<Data.VerilogModuleInstance>> verilogModuleInstanceRefs = new List<WeakReference<VerilogModuleInstance>>();
-
-
-        //public void RegisterModuleInstance(Data.VerilogModuleInstance verilogModuleInstance)
-        //{
-        //    // clean weak reference
-
-        //    List<System.WeakReference<Data.VerilogModuleInstance>> removes = new List<System.WeakReference<Data.VerilogModuleInstance>>();
-        //    Data.VerilogModuleInstance ret;
-        //    lock (verilogModuleInstanceRefs)
-        //    {
-        //        foreach (System.WeakReference<Data.VerilogModuleInstance> r in verilogModuleInstanceRefs)
-        //        {
-        //            if (!r.TryGetTarget(out ret)) removes.Add(r);
-        //        }
-        //        foreach (System.WeakReference<Data.VerilogModuleInstance> key in removes)
-        //        {
-        //            verilogModuleInstanceRefs.Remove(key);
-        //        }
-        //    }
-
-        //    // 
-
-
-
-        //}
 
         public ParsedDocument GetInstancedParsedDocument(string parameterId)
         {
@@ -138,7 +112,7 @@ namespace pluginVerilog.Data
             }
         }
 
-        public void RegisterInstanceParsedDocument(string parameterId, ParsedDocument parsedDocument)
+        public void RegisterInstanceParsedDocument(string parameterId, ParsedDocument parsedDocument,VerilogModuleInstance moduleInstance)
         {
             cleanWeakRef();
             if (instancedParsedDocumentRefs.ContainsKey(parameterId))
@@ -148,6 +122,7 @@ namespace pluginVerilog.Data
             else
             {
                 instancedParsedDocumentRefs.Add(parameterId,new WeakReference<ParsedDocument>(parsedDocument));
+                Project.AddReparseTarget(moduleInstance);
             }
         }
 
@@ -234,6 +209,10 @@ namespace pluginVerilog.Data
 
         public override void Update()
         {
+            if(Name == "TEST_TOP.v")
+            {
+                string a = "";
+            }
             if(VerilogParsedDocument == null)
             {
                 // dispose all
@@ -265,6 +244,10 @@ namespace pluginVerilog.Data
                         {
                             item.Parent = this;
                             newItems.Add(moduleInstantiation.Name, item);
+                            if(moduleInstantiation.ParameterOverrides.Count != 0)
+                            {
+                                Project.AddReparseTarget(item);
+                            }
                         }
                     }
                 }
