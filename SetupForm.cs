@@ -30,15 +30,17 @@ namespace pluginVerilog
 
         private void IVerilogRunTsmi_Click(object sender, EventArgs e)
         {
-            //string projectName, id;
-            //codeEditor.Controller.NavigatePanel.GetSelectedNode(out projectName, out id);
+            codeEditor.NavigatePanel.NavigatePanelNode node;
+            codeEditor.Controller.NavigatePanel.GetSelectedNode(out node);
 
-            //codeEditor.Data.Project project = codeEditor.Global.Projects[projectName];
-            //Data.VerilogFile topFile = project.GetRegisterdItem(id) as Data.VerilogFile;
-            //if (topFile == null) return;
+            NavigatePanel.VerilogFileNode vnode = node as NavigatePanel.VerilogFileNode;
+            if (vnode == null) return;
 
-            //IcarusVerilog.SimulationTab tabPage = new IcarusVerilog.SimulationTab(topFile);
-            //codeEditor.Controller.Tabs.AddPage(tabPage);
+            Data.VerilogFile topFile = vnode.VerilogFile;
+            if (topFile == null) return;
+
+            IcarusVerilog.SimulationTab tabPage = new IcarusVerilog.SimulationTab(topFile);
+            codeEditor.Controller.Tabs.AddPage(tabPage);
         }
 
         private void GtkWaveTsmi_Click(object sender, EventArgs e)
