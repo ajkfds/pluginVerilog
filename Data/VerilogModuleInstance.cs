@@ -279,7 +279,26 @@ namespace pluginVerilog.Data
                     else
                     {
                         Item item = Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
-                        if (item != null & !newItems.ContainsKey(moduleInstantiation.Name)) newItems.Add(moduleInstantiation.Name, item);
+                        if (item != null & !newItems.ContainsKey(moduleInstantiation.Name))
+                        {
+                            item.Parent = this;
+                            newItems.Add(moduleInstantiation.Name, item);
+                            if (moduleInstantiation.ParameterOverrides.Count != 0)
+                            {
+                                if ((item as Data.VerilogModuleInstance).ParsedDocument == null)
+                                {
+                                    Project.AddReparseTarget(item);
+                                }
+                                else
+                                {
+                                    string a = "";
+                                }
+                            }
+                        }
+
+
+                        //Item item = Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
+                        //if (item != null & !newItems.ContainsKey(moduleInstantiation.Name)) newItems.Add(moduleInstantiation.Name, item);
                     }
                 }
             }

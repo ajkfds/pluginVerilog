@@ -249,6 +249,9 @@ namespace pluginVerilog
             return file.VerilogParsedDocument.Modules[moduleName];
         }
 
+        // inline comment
+        public Dictionary<string, Action<Verilog.ParsedDocument>> InLineCommentCommands = new Dictionary<string, Action<Verilog.ParsedDocument>>();
+
         // macros
         public Dictionary<string, Verilog.Macro> Macros = new Dictionary<string, Verilog.Macro>();
 

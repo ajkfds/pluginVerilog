@@ -716,37 +716,36 @@ namespace pluginVerilog.Verilog
             while (docLength > nextIndex)
             {
                 ch = document.GetCharAt(nextIndex);
-                if (ch == '\n') break;
-                if (ch != target[i]) break;
+                if (ch == '\n') return;
+                if (ch != target[i]) return;
                 document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Comment));
                 nextIndex++;
                 i++;
 
-                if(i>= target.Length)
-                {
-                    for(int j = nextIndex-i ; j< nextIndex;j++)
-                    {
-                        document.SetColorAt(j, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.HighLightedComment));
-                    }
-                    while (docLength > nextIndex)
-                    {
-                        ch = document.GetCharAt(nextIndex);
-                        if (ch != ' '&& ch != '\t') break;
-                        nextIndex++;
-                    }
-                    StringBuilder sb = new StringBuilder();
-                    while (docLength > nextIndex)
-                    {
-                        ch = document.GetCharAt(nextIndex);
-                        if (ch == '\n' || ch == '\r') break;
-                        document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.HighLightedComment));
-                        sb.Append(ch);
-                        nextIndex++;
-                    }
-                    sectionName = sb.ToString(); 
-                    break;
-                }
+                if (i >= target.Length) break;
             }
+
+            for (int j = nextIndex - i; j < nextIndex; j++)
+            {
+                document.SetColorAt(j, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.HighLightedComment));
+            }
+            while (docLength > nextIndex)
+            {
+                ch = document.GetCharAt(nextIndex);
+                if (ch != ' ' && ch != '\t') break;
+                nextIndex++;
+            }
+            StringBuilder sb = new StringBuilder();
+            while (docLength > nextIndex)
+            {
+                ch = document.GetCharAt(nextIndex);
+                if (ch == '\n' || ch == '\r') break;
+                document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.HighLightedComment));
+                sb.Append(ch);
+                nextIndex++;
+            }
+            sectionName = sb.ToString();
+
         }
 
         private static byte[] charClass = new byte[128]

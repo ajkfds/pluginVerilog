@@ -246,7 +246,14 @@ namespace pluginVerilog.Data
                             newItems.Add(moduleInstantiation.Name, item);
                             if(moduleInstantiation.ParameterOverrides.Count != 0)
                             {
-                                Project.AddReparseTarget(item);
+                                if((item as Data.VerilogModuleInstance).ParsedDocument == null)
+                                {
+                                    Project.AddReparseTarget(item);
+                                }
+                                else
+                                {
+                                    string a = "";
+                                }
                             }
                         }
                     }

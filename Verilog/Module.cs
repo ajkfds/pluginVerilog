@@ -228,7 +228,8 @@ namespace pluginVerilog.Verilog
                         }
                         else
                         {
-                            System.Diagnostics.Debugger.Break();
+                            System.Diagnostics.Debug.Print("undefed params "+module.File.Name +":" + vkp.Key );
+//                            System.Diagnostics.Debugger.Break();
                         }
                     }
                 }
