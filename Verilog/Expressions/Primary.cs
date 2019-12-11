@@ -78,7 +78,7 @@ namespace pluginVerilog.Verilog.Expressions
                 case WordPointer.WordTypeEnum.Symbol:
                     if (word.GetCharAt(0) == '{')
                     {
-                        return Concatenation.ParseCreateConcatenationOrMultipleConcatenation(word, nameSpace);
+                        return Concatenation.ParseCreateConcatenationOrMultipleConcatenation(word, nameSpace, lValue);
                     }else if(word.GetCharAt(0) == '(')
                     {
                         return Bracket.ParseCreateBracketOrMinTypMax(word, nameSpace);
@@ -784,12 +784,24 @@ namespace pluginVerilog.Verilog.Expressions
         protected Concatenation() { }
         public List<Expression> Expressions = new List<Expression>();
 
+        public static Primary ParseCreateConcatenationOrMultipleConcatenation(WordScanner word, NameSpace nameSpace)
+        {
+            return ParseCreateConcatenationOrMultipleConcatenation(word, nameSpace, false);
+        }
 
-        public static Primary ParseCreateConcatenationOrMultipleConcatenation(WordScanner word,NameSpace nameSpace)
+        public static Primary ParseCreateConcatenationOrMultipleConcatenation(WordScanner word,NameSpace nameSpace,bool lValue)
         {
             word.MoveNext(); // {
 
-            Expression exp1 = Expression.ParseCreate(word, nameSpace);
+            Expression exp1;
+            if (lValue)
+            {
+                exp1 = Expression.ParseCreateVariableLValue(word, nameSpace);
+            }
+            else
+            {
+                exp1 = Expression.ParseCreate(word, nameSpace);
+            }
             if(exp1 == null)
             {
                 word.AddError("illegal concatenation");
@@ -817,7 +829,14 @@ namespace pluginVerilog.Verilog.Expressions
                     word.AddError("illegal concatenation");
                     return null;
                 }
-                exp1 = Expression.ParseCreate(word, nameSpace);
+                if (lValue)
+                {
+                    exp1 = Expression.ParseCreateVariableLValue(word, nameSpace);
+                }
+                else
+                {
+                    exp1 = Expression.ParseCreate(word, nameSpace);
+                }
                 if (exp1 != null)
                 {
                     concatenation.Constant = concatenation.Constant & exp1.Constant;
