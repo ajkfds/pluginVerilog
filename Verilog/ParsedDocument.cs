@@ -24,6 +24,7 @@ namespace pluginVerilog.Verilog
             }
         }
 
+        public bool Instance = false;
         public Dictionary<string, Module> Modules = new Dictionary<string, Module>();
         public Dictionary<string, Data.VerilogHeaderFile> IncludeFiles = new Dictionary<string, Data.VerilogHeaderFile>();
         public Dictionary<string, Macro> Macros = new Dictionary<string, Macro>();
@@ -50,25 +51,20 @@ namespace pluginVerilog.Verilog
         {
             Data.IVerilogRelatedFile file = File;
 
-            if (file is Data.VerilogFile)
+            if (!Instance)
             {
-                Data.VerilogFile verilogFile = file as Data.VerilogFile;
-                foreach (Verilog.Module module in Modules.Values)
+                if (file is Data.VerilogFile)
                 {
-                    verilogFile.ProjectProperty.RemoveModule(module.Name,verilogFile);
+                    Data.VerilogFile verilogFile = file as Data.VerilogFile;
+                    foreach (Verilog.Module module in Modules.Values)
+                    {
+                        verilogFile.ProjectProperty.RemoveModule(module.Name, verilogFile);
+                    }
                 }
-            }
-            //else if (file is Data.VerilogModuleInstance)
-            //{
-            //    Data.VerilogModuleInstance verilogModuleInstance = file as Data.VerilogModuleInstance;
-            //    foreach (Verilog.Module module in Modules.Values)
-            //    {
-            //        verilogModuleInstance.ProjectProperty.RemoveModule(verilogModuleInstance.RelativePath, module.Name);
-            //    }
-            //}
-            foreach (var includeFile in IncludeFiles.Values)
-            {
-                includeFile.Close();
+                foreach (var includeFile in IncludeFiles.Values)
+                {
+                    includeFile.Close();
+                }
             }
             base.Dispose();
         }

@@ -41,6 +41,7 @@ namespace pluginVerilog.Parser
             this.parameterOverrides = parameterOverrides;
             File = verilogFile;
             parsedDocument = new Verilog.ParsedDocument(verilogFile);
+            parsedDocument.Instance = true;
             word = new Verilog.WordScanner(VerilogDocument, parsedDocument, false);
         }
 

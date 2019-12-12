@@ -50,8 +50,8 @@ namespace pluginVerilog.Data
         }
         public override void Dispose()
         {
-            if (ParsedDocument != null)
-            {
+            if (ParsedDocument != null && ParameterOverrides.Count != 0)
+            { 
                 foreach (var incFile in VerilogParsedDocument.IncludeFiles.Values)
                 {
                     incFile.Dispose();
@@ -62,7 +62,7 @@ namespace pluginVerilog.Data
 //            if (ParsedDocument != null) ParsedDocument.Dispose();
             SourceVerilogFile.RemoveModuleInstance(this);
 
-            base.Dispose();
+            // base.Dispose(); do not call
         }
 
         public string ModuleName { set; get; }
