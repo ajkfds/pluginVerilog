@@ -318,23 +318,29 @@ namespace pluginVerilog.Verilog
 
                 //                WordPointer temp = wordPointer.Clone();
 
-                while (wordPointer.Eof && stock.Count != 0)
+                if (wordPointer.Eof)
                 {
-                    bool error = false;
-                    if (wordPointer.ParsedDocument.Messages.Count != 0) error = true;
-
-                    if (wordPointer.ParsedDocument == stock.Last().ParsedDocument)
+                    while (wordPointer.Eof && stock.Count != 0)
                     {
-                        error = false;
-                    }
+                        bool error = false;
+                        if (wordPointer.ParsedDocument.Messages.Count != 0) error = true;
 
-                    wordPointer.Dispose();
-                    wordPointer = stock.Last();
-                    stock.Remove(stock.Last());
-                    if (error) wordPointer.AddError("include errors");
+                        if (wordPointer.ParsedDocument == stock.Last().ParsedDocument)
+                        {
+                            error = false;
+                        }
+
+                        wordPointer.Dispose();
+                        wordPointer = stock.Last();
+                        stock.Remove(stock.Last());
+                        if (error) wordPointer.AddError("include errors");
+                    }
+                }
+                else
+                {
+                    wordPointer.MoveNext();
                 }
 
-                wordPointer.MoveNext();
                 recheckWord();
                 string text = wordPointer.Text;
 

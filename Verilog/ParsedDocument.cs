@@ -343,6 +343,24 @@ namespace pluginVerilog.Verilog
                 if(words.Count>2) words.RemoveAt(words.Count - 1);
             }
 
+            for(int i = 0; i < words.Count;i++)
+            {
+                if (!words[i].StartsWith("`")) continue;
+                
+                string macroText = words[i].Substring(1);
+                if (!Macros.ContainsKey(macroText)) continue;
+                Macro macro = Macros[macroText];
+                if (macro.MacroText.Contains(' ')) continue;
+                if (macro.MacroText.Contains('\t')) continue;
+
+                string[] swapTexts = macro.MacroText.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+                words.RemoveAt(i);
+                for(int j = swapTexts.Length - 1; j >= 0; j--)
+                {
+                    words.Insert(i, swapTexts[j]);
+                }
+            }
+
             NameSpace target = getSearchNameSpace(space, words, endWithDot);
             if(target != null) target.AppendAutoCompleteItem(items);
 
