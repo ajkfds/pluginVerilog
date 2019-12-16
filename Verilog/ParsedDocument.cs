@@ -119,14 +119,14 @@ namespace pluginVerilog.Verilog
                     inst = i;
                     break;
                 }
-                if(inst != null)
+                if (inst != null)
                 {
                     string portName = text.Substring(1);
                     Module originalModule = ProjectProperty.GetModule(inst.ModuleName);
                     if (originalModule == null) return ret;
-                    Data.IVerilogRelatedFile file = File;
-                    if (file == null) return ret;
-                    string relativePath = file.RelativePath;
+                    if (!originalModule.Ports.ContainsKey(portName)) return ret;
+                    Verilog.Variables.Port port = originalModule.Ports[portName];
+                    ret.Add(new Popup.PortPopup(port));
                 }
             }
 

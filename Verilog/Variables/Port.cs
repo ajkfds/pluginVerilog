@@ -9,7 +9,24 @@ namespace pluginVerilog.Verilog.Variables
     public class Port : Item
     {
         public DirectionEnum Direction = DirectionEnum.Undefined;
-        public Range Range = null;
+        public Range Range
+        {
+            get
+            {
+                if (Variable == null) return null;
+                if(Variable is Net)
+                {
+                    return (Variable as Net).Range;
+                }else if(Variable is Reg)
+                {
+                    return (Variable as Reg).Range;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
         public Variable Variable = null;
         public string Comment = "";
         public string SectionName = "";
@@ -49,10 +66,17 @@ namespace pluginVerilog.Verilog.Variables
                 default:
                     break;
             }
+            
+            if(Variable is Reg)
+            {
+                label.AppendText("reg ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+            }
+
 
             if (Range != null)
             {
                 label.AppendLabel(Range.GetLabel());
+                label.AppendText(" ");
             }
 
             if (Variable != null)
