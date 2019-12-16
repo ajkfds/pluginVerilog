@@ -16,29 +16,30 @@ namespace pluginVerilog.Verilog.Popup
             label.AppendText("\r\n");
             foreach(Variables.Port port in function.Ports.Values)
             {
-                switch (port.Direction)
-                {
-                    case Variables.Port.DirectionEnum.Input:
-                        label.AppendText(" input ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
-                        label.AppendText(port.Name);
-                        label.AppendText("\r\n");
-                        break;
-                    case Variables.Port.DirectionEnum.Output:
-                        label.AppendText(" output ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
-                        label.AppendText(port.Name);
-                        label.AppendText("\r\n");
-                        break;
-                    case Variables.Port.DirectionEnum.Inout:
-                        label.AppendText(" inout ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
-                        label.AppendText(port.Name);
-                        label.AppendText("\r\n");
-                        break;
-                    default:
-                        label.AppendText(" ");
-                        label.AppendText(port.Name);
-                        label.AppendText("\r\n");
-                        break;
-                }
+                label.AppendLabel(port.GetLabel());
+                //switch (port.Direction)
+                //{
+                //    case Variables.Port.DirectionEnum.Input:
+                //        label.AppendText(" input ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                //        label.AppendText(port.Name);
+                //        label.AppendText("\r\n");
+                //        break;
+                //    case Variables.Port.DirectionEnum.Output:
+                //        label.AppendText(" output ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                //        label.AppendText(port.Name);
+                //        label.AppendText("\r\n");
+                //        break;
+                //    case Variables.Port.DirectionEnum.Inout:
+                //        label.AppendText(" inout ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                //        label.AppendText(port.Name);
+                //        label.AppendText("\r\n");
+                //        break;
+                //    default:
+                //        label.AppendText(" ");
+                //        label.AppendText(port.Name);
+                //        label.AppendText("\r\n");
+                //        break;
+                //}
             }
         }
 
