@@ -77,6 +77,7 @@ namespace pluginVerilog.Verilog
         {
             List<codeEditor.CodeEditor.PopupItem> ret = new List<codeEditor.CodeEditor.PopupItem>();
 
+//            System.Diagnostics.Debug.Print("text" + text);
             // add messages
             foreach (Message message in Messages)
             {

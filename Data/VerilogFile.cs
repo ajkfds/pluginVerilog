@@ -44,6 +44,7 @@ namespace pluginVerilog.Data
                             string text = sr.ReadToEnd();
                             document.Replace(0, 0, 0, text);
                             document.ClearHistory();
+                            document.Clean();
                         }
                     }
                     catch
