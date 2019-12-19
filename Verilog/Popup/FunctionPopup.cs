@@ -14,9 +14,12 @@ namespace pluginVerilog.Verilog.Popup
             label.AppendText("function ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
             label.AppendText(function.Name, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Identifier));
             label.AppendText("\r\n");
+            bool first = true;
             foreach(Variables.Port port in function.Ports.Values)
             {
+                if(!first) label.AppendText("\r\n");
                 label.AppendLabel(port.GetLabel());
+                first = false;
             }
         }
 
