@@ -285,7 +285,9 @@ namespace pluginVerilog.Data
                             newItems.Add(moduleInstantiation.Name, item);
                             if (moduleInstantiation.ParameterOverrides.Count != 0)
                             {
-                                if ((item as Data.VerilogModuleInstance).ParsedDocument == null)
+                                Data.VerilogModuleInstance moduleInstance = item as Data.VerilogModuleInstance;
+
+                                if (moduleInstance.ParsedDocument == null)
                                 {
                                     Project.AddReparseTarget(item);
                                 }
