@@ -180,7 +180,7 @@ namespace pluginVerilog.IcarusVerilog
         private void appendFiles(List<string> filePathList, List<string> includePathList, Verilog.Module module, codeEditor.Data.Project project)
         {
             string fileId = module.FileId;
-            Data.VerilogFile file = null;
+            Data.VerilogFile file = module.File as Data.VerilogFile;
             if (file == null) return;
             string absolutePath = project.GetAbsolutePath(file.RelativePath);
             if (!filePathList.Contains(absolutePath)) filePathList.Add(absolutePath);
