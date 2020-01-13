@@ -35,7 +35,7 @@ namespace pluginVerilog
             {
                 intColors[i] = (colors[i].B << 16) + (colors[i].G << 8) + colors[i].R;
             }
-            CodeDrawStyle.colors = colors;
+//            CodeDrawStyle.colors = colors;
         }
 
         private static System.Drawing.Color[] colors;

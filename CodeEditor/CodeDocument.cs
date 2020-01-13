@@ -23,22 +23,24 @@ namespace pluginVerilog.CodeEditor
 
         public override void GetWord(int index, out int headIndex, out int length)
         {
-            headIndex = index;
-            length = 0;
-            char ch = GetCharAt(index);
-            if (ch == ' ' || ch == '\r' || ch == '\n' || ch == '\t') return;
+            int line = GetLineAt(index);
+            headIndex = GetLineStartIndex(line);
+//            headIndex = index;
+            //length = 0;
+            //char ch = GetCharAt(index);
+            //if (ch == ' ' || ch == '\r' || ch == '\n' || ch == '\t') return;
 
-            while (headIndex >= 0)
-            {
-                ch = GetCharAt(headIndex);
-                if (ch == ' ' || ch == '\r' || ch == '\n' || ch == '\t')
-                {
-                    break;
-                }
-                headIndex--;
-            }
-            headIndex++;
-            if (index < headIndex) headIndex = index;
+            //while (headIndex >= 0)
+            //{
+            //    ch = GetCharAt(headIndex);
+            //    if (ch == ' ' || ch == '\r' || ch == '\n' || ch == '\t')
+            //    {
+            //        break;
+            //    }
+            //    headIndex--;
+            //}
+            //headIndex++;
+            //if (index < headIndex) headIndex = index;
 
             int nextIndex;
             Verilog.WordPointer.WordTypeEnum wordType;
