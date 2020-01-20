@@ -100,8 +100,11 @@ namespace pluginVerilog.Verilog
             }
             return ret;
         }
-
-        public WordReference GetReference()
+        public CommentScanner GetCommentScanner()
+        {
+            return wordPointer.GetCommentScanner();
+        }
+            public WordReference GetReference()
         {
             if (stock.Count == 0)
             {

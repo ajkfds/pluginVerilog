@@ -384,7 +384,12 @@ namespace pluginVerilog
             // Command line input
             {"$test$plusargs",null },
             {"$value$plusargs",null },
+        };
 
-    };
+        public Dictionary<string, Action<Verilog.WordScanner>> InCommentTags = new Dictionary<string, Action<Verilog.WordScanner>>
+        {
+            { "@section",null }
+        };
+
     }
 }

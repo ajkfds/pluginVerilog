@@ -14,6 +14,7 @@ namespace pluginVerilog.Verilog
 
         public codeEditor.Data.Project Project { get; protected set; }
 
+        public Dictionary<string, string> Properties = new Dictionary<string, string>();
         public ProjectProperty ProjectProperty
         {
             get

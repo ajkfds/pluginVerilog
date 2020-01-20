@@ -41,7 +41,8 @@ namespace pluginVerilog.IcarusVerilog
         }
 
         private int iconCount = 0;
-        private void moveTabIcon(ajkControls.IconImage.ColorStyle color)
+        ajkControls.IconImage.ColorStyle iconColor = ajkControls.IconImage.ColorStyle.White;
+        private void moveTabIcon()
         {
             iconCount++;
             if (iconCount > 5) iconCount = 0;
@@ -51,22 +52,22 @@ namespace pluginVerilog.IcarusVerilog
                 switch (iconCount)
                 {
                     case 0:
-                        RequestTabIconChange(codeEditor.Global.IconImages.Wave0, color);
+                        RequestTabIconChange(codeEditor.Global.IconImages.Wave0, iconColor);
                         break;
                     case 1:
-                        RequestTabIconChange(codeEditor.Global.IconImages.Wave1, color);
+                        RequestTabIconChange(codeEditor.Global.IconImages.Wave1, iconColor);
                         break;
                     case 2:
-                        RequestTabIconChange(codeEditor.Global.IconImages.Wave2, color);
+                        RequestTabIconChange(codeEditor.Global.IconImages.Wave2, iconColor);
                         break;
                     case 3:
-                        RequestTabIconChange(codeEditor.Global.IconImages.Wave3, color);
+                        RequestTabIconChange(codeEditor.Global.IconImages.Wave3, iconColor);
                         break;
                     case 4:
-                        RequestTabIconChange(codeEditor.Global.IconImages.Wave4, color);
+                        RequestTabIconChange(codeEditor.Global.IconImages.Wave4, iconColor);
                         break;
                     case 5:
-                        RequestTabIconChange(codeEditor.Global.IconImages.Wave5, color);
+                        RequestTabIconChange(codeEditor.Global.IconImages.Wave5, iconColor);
                         break;
                 }
             }
@@ -76,13 +77,15 @@ namespace pluginVerilog.IcarusVerilog
         {
             if (lineString == "icarusVerilogShell>")
             {
+                iconColor = ajkControls.IconImage.ColorStyle.Green;
                 logView.AppendLogLine(lineString,System.Drawing.Color.ForestGreen);
             }
             else
             {
+                iconColor = ajkControls.IconImage.ColorStyle.White;
                 logView.AppendLogLine(lineString);
             }
-            moveTabIcon(ajkControls.IconImage.ColorStyle.White);
+            moveTabIcon();
         }
 
         volatile bool abort = false;

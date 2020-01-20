@@ -86,6 +86,8 @@
     </Compile>
     <Compile Include="Verilog\Class.cs" />
     <Compile Include="Verilog\Comment.cs" />
+    <Compile Include="Verilog\CommentAnnotated.cs" />
+    <Compile Include="Verilog\CommentScanner.cs" />
     <Compile Include="Verilog\Delay.cs" />
     <Compile Include="Verilog\Expressions\ExpressionItem.cs" />
     <Compile Include="Verilog\Expressions\String.cs" />

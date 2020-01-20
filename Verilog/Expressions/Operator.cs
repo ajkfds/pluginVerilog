@@ -71,6 +71,8 @@ namespace pluginVerilog.Verilog.Expressions
         {
             int maxWidth = bitWidth1;
             if (bitWidth2 > bitWidth1) maxWidth = bitWidth2;
+
+
             return bitWidth1;
         }
 

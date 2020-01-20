@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Verilog.Variables
 {
-    public class Port : Item
+    public class Port : Item, CommentAnnotated
     {
         public DirectionEnum Direction = DirectionEnum.Undefined;
         public Range Range
@@ -14,10 +14,10 @@ namespace pluginVerilog.Verilog.Variables
             get
             {
                 if (Variable == null) return null;
-                if(Variable is Net)
+                if (Variable is Net)
                 {
                     return (Variable as Net).Range;
-                }else if(Variable is Reg)
+                } else if (Variable is Reg)
                 {
                     return (Variable as Reg).Range;
                 }
@@ -30,6 +30,35 @@ namespace pluginVerilog.Verilog.Variables
         public Variable Variable = null;
         public string Comment = "";
         public string SectionName = "";
+
+
+        private Dictionary<string, string> commentAnnotations = new Dictionary<string, string>();
+        public Dictionary<string, string> CommentAnnotations { get { return commentAnnotations; } }
+        public void AppendAnnotation(string key, string value)
+        {
+            if (commentAnnotations.ContainsKey(key))
+            {
+                string oldValue = commentAnnotations[key];
+                string newValue = oldValue + "," + value;
+                commentAnnotations[key] = newValue;
+            }
+            else
+            {
+                commentAnnotations.Add(key, value);
+            }
+        }
+        public List<string> GetAnnotations(string key)
+        {
+            if (commentAnnotations.ContainsKey(key))
+            {
+                string values = commentAnnotations[key];
+                return values.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList<string>();
+            }
+            else
+            {
+                return null;
+            }
+        }
 
         public enum DirectionEnum
         {
@@ -55,7 +84,7 @@ namespace pluginVerilog.Verilog.Variables
             switch (Direction)
             {
                 case DirectionEnum.Input:
-                    label.AppendText("input ",CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    label.AppendText("input ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
                     break;
                 case DirectionEnum.Output:
                     label.AppendText("output ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
@@ -66,8 +95,8 @@ namespace pluginVerilog.Verilog.Variables
                 default:
                     break;
             }
-            
-            if(Variable is Reg)
+
+            if (Variable is Reg)
             {
                 label.AppendText("reg ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
             }
@@ -81,11 +110,11 @@ namespace pluginVerilog.Verilog.Variables
 
             if (Variable != null)
             {
-                if(Variable is Net)
+                if (Variable is Net)
                 {
                     label.AppendText(Name, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net));
                 }
-                else if(Variable is Reg)
+                else if (Variable is Reg)
                 {
                     label.AppendText(Name, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Register));
                 }
@@ -98,6 +127,37 @@ namespace pluginVerilog.Verilog.Variables
             return label;
         }
 
+        public static void SyncParser(
+            ajkControls.Document document,
+            ref int nextIndex,
+            ref WordPointer.WordTypeEnum wordType,
+            ref string sectionName
+            )
+        {
+            int docLength = document.Length;
+            char ch;
+            for (int j = nextIndex - "@section".Length; j < nextIndex; j++)
+            {
+                document.SetColorAt(j, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.HighLightedComment));
+            }
+            while (docLength > nextIndex)
+            {
+                ch = document.GetCharAt(nextIndex);
+                if (ch != ' ' && ch != '\t') break;
+                nextIndex++;
+            }
+            StringBuilder sb = new StringBuilder();
+            while (docLength > nextIndex)
+            {
+                ch = document.GetCharAt(nextIndex);
+                if (ch == '\n' || ch == '\r') break;
+                document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.HighLightedComment));
+                sb.Append(ch);
+                nextIndex++;
+            }
+            sectionName = sb.ToString();
+
+        }
 
         public static void ParsePortDeclaration(WordScanner word, Module module, Attribute attribute)
         {
@@ -294,6 +354,7 @@ namespace pluginVerilog.Verilog.Variables
                     break;
                 }
                 word.MoveNext();
+
                 if (word.Text == "input") break;
                 if (word.Text == "output") break;
                 if (word.Text == "inout") break;
@@ -304,8 +365,27 @@ namespace pluginVerilog.Verilog.Variables
                 port.Comment = comment;
                 port.Variable.Comment = comment;
                 port.SectionName = word.SectionName;
+                if (comment.Contains('@')) commentParser(port, word.GetCommentScanner());
             }
 
+        }
+
+        public static Dictionary<string, Action<Port, CommentScanner>> CommentAnnotationParsers = new Dictionary<string, Action<Port, CommentScanner>>();
+
+        private static void commentParser(Port port, CommentScanner scanner)
+        {
+            scanner.SkipToChar('@');
+            while (!scanner.EOC)
+            {
+                if (CommentAnnotationParsers.ContainsKey(scanner.Text))
+                {
+                    CommentAnnotationParsers[scanner.Text](port, scanner);
+                }
+                else
+                {
+                    scanner.MoveNext();
+                }
+            }
         }
 
         private static void parseInoutDeclaration(WordScanner word, Module module, IPortNameSpace portNameSpace, Attribute attribute)
@@ -403,6 +483,7 @@ namespace pluginVerilog.Verilog.Variables
                 port.Comment = comment;
                 port.Variable.Comment = comment;
                 port.SectionName = word.SectionName;
+                if (comment.Contains('@')) commentParser(port, word.GetCommentScanner());
             }
         }
 
@@ -571,6 +652,7 @@ namespace pluginVerilog.Verilog.Variables
                 port.Comment = comment;
                 port.Variable.Comment = comment;
                 port.SectionName = word.SectionName;
+                if (comment.Contains('@')) commentParser(port, word.GetCommentScanner());
             }
         }
 
@@ -794,6 +876,7 @@ namespace pluginVerilog.Verilog.Variables
                 port.Comment = comment;
                 port.Variable.Comment = comment;
                 port.SectionName = word.SectionName;
+                if (comment.Contains('@')) commentParser(port, word.GetCommentScanner());
             }
         }
 
@@ -967,6 +1050,7 @@ namespace pluginVerilog.Verilog.Variables
                 port.Comment = comment;
                 port.Variable.Comment = comment;
                 port.SectionName = word.SectionName;
+                if (comment.Contains('@')) commentParser(port, word.GetCommentScanner());
             }
         }
 
@@ -1140,6 +1224,7 @@ namespace pluginVerilog.Verilog.Variables
                 port.Comment = comment;
                 port.Variable.Comment = comment;
                 port.SectionName = word.SectionName;
+                if (comment.Contains('@')) commentParser(port, word.GetCommentScanner());
             }
 
         }
