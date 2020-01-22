@@ -12,7 +12,7 @@ namespace pluginVerilog.Verilog.Variables
     //           +-> real
     //           +-> integer
 
-    public class Variable
+    public class Variable : CommentAnnotated
     {
         public string Name;
         protected List<Dimension> dimensions = new List<Dimension>();
@@ -29,6 +29,37 @@ namespace pluginVerilog.Verilog.Variables
             label.AppendText(Name);
             return label;
         }
+
+        // comment annotation
+
+        private Dictionary<string, string> commentAnnotations = new Dictionary<string, string>();
+        public Dictionary<string, string> CommentAnnotations { get { return commentAnnotations; } }
+        public void AppendAnnotation(string key, string value)
+        {
+            if (commentAnnotations.ContainsKey(key))
+            {
+                string oldValue = commentAnnotations[key];
+                string newValue = oldValue + "," + value;
+                commentAnnotations[key] = newValue;
+            }
+            else
+            {
+                commentAnnotations.Add(key, value);
+            }
+        }
+        public List<string> GetAnnotations(string key)
+        {
+            if (commentAnnotations.ContainsKey(key))
+            {
+                string values = commentAnnotations[key];
+                return values.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList<string>();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
     }
 
     /*
