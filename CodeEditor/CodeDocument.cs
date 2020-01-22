@@ -99,11 +99,11 @@ namespace pluginVerilog.CodeEditor
                 ret.RemoveAt(i);
                 i--;
 
-                if (i == 0) break;
+//                if (i == 0) break;
                 i--;
             }
 
-            for(int j = 0; j < i; j++) // remove before heir description
+            for(int j = 0; j <= i; j++) // remove before heir description
             {
                 ret.RemoveAt(0);
             }
