@@ -27,6 +27,8 @@ namespace pluginVerilog.Verilog.Statements
                                                 | release variable_lvalue
                                                 | release net_lvalue
          */
+        public delegate void NonBlockingAssignedAction(WordScanner word, NameSpace nameSpace, NonBlockingAssignment blockingAssignment);
+        public static NonBlockingAssignedAction Assigned;
         public static NonBlockingAssignment ParseCreate(WordScanner word,NameSpace nameSpace,Expressions.Expression lExpression)
         {
             if(word.Text != "<=")
@@ -64,6 +66,7 @@ namespace pluginVerilog.Verilog.Statements
             NonBlockingAssignment assignment = new NonBlockingAssignment();
             assignment.LValue = lExpression;
             assignment.Expression = expression;
+            if (Assigned != null) Assigned(word, nameSpace, assignment);
             return assignment;
         }
     }
@@ -86,6 +89,9 @@ namespace pluginVerilog.Verilog.Statements
                                                 | release variable_lvalue
                                                 | release net_lvalue
          */
+
+        public delegate void BlockingAssignedAction(WordScanner word, NameSpace nameSpace, BlockingAssignment blockingAssignment);
+        public static BlockingAssignedAction Assigned;
         public static BlockingAssignment ParseCreate(WordScanner word, NameSpace nameSpace, Expressions.Expression lExpression)
         {
             if (word.Text != "=")
@@ -124,6 +130,7 @@ namespace pluginVerilog.Verilog.Statements
             BlockingAssignment assignment = new BlockingAssignment();
             assignment.LValue = lExpression;
             assignment.Expression = expression;
+            if (Assigned != null) Assigned(word, nameSpace, assignment);
             return assignment;
         }
     }

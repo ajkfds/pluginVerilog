@@ -54,6 +54,10 @@ namespace pluginVerilog.Verilog.Expressions
         {
             return new TenaryOperator("?",0);
         }
+
+        public delegate void OperatedAction(Primary result, Primary condition, Primary primary1, Primary primary2);
+        public static OperatedAction Operated;
+
         public Primary Operate(Primary condition, Primary primary1, Primary primary2)
         {
             bool constant = false;
@@ -64,7 +68,9 @@ namespace pluginVerilog.Verilog.Expressions
             if (condition.Value != null && primary1.Value != null && primary2.Value != null) value = getValue((double)condition.Value, (double)primary1.Value, (double)primary2.Value);
             if (primary1.BitWidth != null && primary2.BitWidth != null) bitWidth = getBitWidth(Text, (int)primary1.BitWidth, (int)primary2.BitWidth);
 
-            return Primary.Create(constant, value, bitWidth);
+            Primary ret = Primary.Create(constant, value, bitWidth);
+            if(Operated!=null) Operated(ret, condition, primary1, primary2);
+            return ret;
         }
 
         private int? getBitWidth(string operatorText, int bitWidth1, int bitWidth2)
@@ -140,6 +146,9 @@ namespace pluginVerilog.Verilog.Expressions
             }
         }
 
+        public delegate void OperatedAction(Primary result, Primary primary);
+        public static OperatedAction Operated;
+
         public Primary Operate(Primary primary)
         {
             bool constant = false;
@@ -150,8 +159,9 @@ namespace pluginVerilog.Verilog.Expressions
             if (primary.Value != null) value = getValue(Text, (double)primary.Value);
             if (primary.BitWidth != null) bitWidth = getBitWidth(Text, (int)primary.BitWidth);
 
-            return Primary.Create(constant, value, bitWidth);
-
+            Primary ret = Primary.Create(constant, value, bitWidth);
+            if (Operated != null) Operated(ret, primary);
+            return ret;
         }
 
         private double? getValue(string text,double value)
@@ -316,8 +326,13 @@ namespace pluginVerilog.Verilog.Expressions
             if (primary1.Value != null && primary2.Value != null) value = getValue(Text, (double)primary1.Value, (double)primary2.Value);
             if (primary1.BitWidth != null && primary2.BitWidth != null) bitWidth = getBitWidth(Text, (int)primary1.BitWidth, (int)primary2.BitWidth);
 
-            return Primary.Create(constant, value, bitWidth);
+            Primary ret = Primary.Create(constant, value, bitWidth);
+            if (Operated != null) Operated(ret, primary1, primary2);
+            return ret;
         }
+
+        public delegate void OperatedAction(Primary result, Primary primary1, Primary primary2);
+        public static OperatedAction Operated;
 
         private int? getBitWidth(string operatorText,int bitWidth1,int bitWidth2)
         {
