@@ -139,8 +139,17 @@ namespace pluginVerilog.Verilog.Expressions
                                 return primary;
                             }
                         }
+                        else if (nameSpace.NameSpaces.ContainsKey(word.Text))
+                        {
+                            word.Color(CodeDrawStyle.ColorType.Identifier);
+                            NameSpace space = nameSpace.NameSpaces[word.Text];
+                            if (space == null) return null;
+                            word.MoveNext();
+                            return new NameSpaceReference(space);
+                        }
 
-                        if(word.Eof) return null;
+
+                        if (word.Eof) return null;
                         if (General.ListOfKeywords.Contains(word.Text)) return null;
                         if(General.IsIdentifier(word.Text) && !nameSpace.Variables.ContainsKey(word.Text) && !word.Prototype)
                         {   // undefined net
