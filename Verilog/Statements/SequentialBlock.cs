@@ -159,7 +159,10 @@ namespace pluginVerilog.Verilog.Statements
                 while (!word.Eof && word.Text != "end")
                 {
                     IStatement statement = Verilog.Statements.Statements.ParseCreateStatement(word, nameSpace);
-                    if (statement == null) break;
+                    if (statement == null)
+                    {
+                        continue;
+                    }
                     sequentialBlock.Statements.Add(statement);
                 }
                 if (word.Text != "end")

@@ -71,16 +71,19 @@ namespace pluginVerilog.Verilog.Expressions
             Octal,
             Hex
         }
-        public override ajkControls.ColorLabel GetLabel()
-        {
-            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
-            label.AppendText(Text, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Number));
-            return label;
-        }
 
         public override string ToString()
         {
             return Text;
+        }
+        public override void AppendLabel(ajkControls.ColorLabel label)
+        {
+            label.AppendText(Text, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Number));
+        }
+
+        public override void AppendString(StringBuilder stringBuilder)
+        {
+            stringBuilder.Append(Text);
         }
 
         public static Number ParseCreate(WordScanner word)

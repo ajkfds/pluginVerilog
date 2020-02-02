@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Verilog.Expressions
 {
-    public class Operator : ExpressionItem
+    public class Operator : Primary
     {
         protected Operator(string text,byte precedence)
         {
@@ -17,7 +17,7 @@ namespace pluginVerilog.Verilog.Expressions
         public readonly string Text = "";
         public readonly byte Precedence;
 
-        public ajkControls.ColorLabel GetLabel()
+        public override ajkControls.ColorLabel GetLabel()
         {
             ajkControls.ColorLabel label = new ajkControls.ColorLabel();
             label.AppendText(Text);
@@ -55,11 +55,36 @@ namespace pluginVerilog.Verilog.Expressions
             return new TenaryOperator("?",0);
         }
 
+        public override void AppendLabel(ajkControls.ColorLabel label)
+        {
+            Condition.AppendLabel(label);
+            label.AppendText("?");
+            Primary1.AppendLabel(label);
+            label.AppendText(":");
+            Primary2.AppendLabel(label);
+        }
+
+        public override void AppendString(StringBuilder stringBuilder)
+        {
+            Condition.AppendString(stringBuilder);
+            stringBuilder.Append("?");
+            Primary1.AppendString(stringBuilder);
+            stringBuilder.Append(":");
+            Primary2.AppendString(stringBuilder);
+        }
+
         public delegate void OperatedAction(Primary result, Primary condition, Primary primary1, Primary primary2);
         public static OperatedAction Operated;
 
+        public Primary Condition;
+        public Primary Primary1;
+        public Primary Primary2;
         public Primary Operate(Primary condition, Primary primary1, Primary primary2)
         {
+            Condition = condition;
+            Primary1 = primary1;
+            Primary2 = primary2;
+
             bool constant = false;
             double? value = null;
             int? bitWidth = null;
@@ -111,6 +136,18 @@ namespace pluginVerilog.Verilog.Expressions
                             | ~| 
                             | ^~
         */
+        public override void AppendLabel(ajkControls.ColorLabel label)
+        {
+            label.AppendText(Text);
+            Primary.AppendLabel(label);
+        }
+
+        public override void AppendString(StringBuilder stringBuilder)
+        {
+            stringBuilder.Append(Text);
+            Primary.AppendString(stringBuilder);
+        }
+
         public static UnaryOperator ParseCreate(WordScanner word)
         {
             switch (word.Length)
@@ -149,8 +186,10 @@ namespace pluginVerilog.Verilog.Expressions
         public delegate void OperatedAction(Primary result, Primary primary);
         public static OperatedAction Operated;
 
+        Primary Primary;
         public Primary Operate(Primary primary)
         {
+            Primary = primary;
             bool constant = false;
             double? value = null;
             int? bitWidth = null;
@@ -316,8 +355,29 @@ namespace pluginVerilog.Verilog.Expressions
             }
         }
 
+        public override void AppendLabel(ajkControls.ColorLabel label)
+        {
+            Primary1.AppendLabel(label);
+            label.AppendText(Text);
+            Primary2.AppendLabel(label);
+        }
+
+        public override void AppendString(StringBuilder stringBuilder)
+        {
+            Primary1.AppendString(stringBuilder);
+            stringBuilder.Append(Text);
+            Primary2.AppendString(stringBuilder);
+        }
+
+
+        Primary Primary1;
+        Primary Primary2;
+
         public Primary Operate(Primary primary1, Primary primary2)
         {
+            Primary1 = primary1;
+            Primary2 = primary2;
+
             bool constant = false;
             double? value = null;
             int? bitWidth = null;

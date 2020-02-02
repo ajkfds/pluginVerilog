@@ -28,12 +28,16 @@ namespace pluginVerilog.Verilog.Expressions
         {
             return Text;
         }
-        public override ajkControls.ColorLabel GetLabel()
+        public override void AppendLabel(ajkControls.ColorLabel label)
         {
-            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
-            label.AppendText(Text);
-            return label;
+            label.AppendText(Text, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Variable));
         }
+
+        public override void AppendString(StringBuilder stringBuilder)
+        {
+            stringBuilder.Append(Text);
+        }
+
 
     }
 }

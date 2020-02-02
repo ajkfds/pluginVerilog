@@ -89,8 +89,13 @@
     <Compile Include="Verilog\CommentAnnotated.cs" />
     <Compile Include="Verilog\CommentScanner.cs" />
     <Compile Include="Verilog\Delay.cs" />
-    <Compile Include="Verilog\Expressions\ExpressionItem.cs" />
+    <Compile Include="Verilog\Expressions\Bracket.cs" />
+    <Compile Include="Verilog\Expressions\Concatenation.cs" />
+    <Compile Include="Verilog\Expressions\MinTypMax.cs" />
+    <Compile Include="Verilog\Expressions\RangeExpression.cs" />
+    <Compile Include="Verilog\Expressions\References.cs" />
     <Compile Include="Verilog\Expressions\String.cs" />
+    <Compile Include="Verilog\Expressions\VariableReference.cs" />
     <Compile Include="Verilog\Generate.cs" />
     <Compile Include="Verilog\Macro.cs" />
     <Compile Include="Verilog\ModuleItems\ContinuousAssign.cs" />
