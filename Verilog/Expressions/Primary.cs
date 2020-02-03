@@ -161,6 +161,14 @@ namespace pluginVerilog.Verilog.Expressions
                             word.MoveNext();
                             return new NameSpaceReference(space);
                         }
+                        else if (nameSpace.Module.ModuleInstantiations.ContainsKey(word.Text))
+                        {
+                            word.Color(CodeDrawStyle.ColorType.Identifier);
+                            ModuleItems.ModuleInstantiation minst = nameSpace.Module.ModuleInstantiations[word.Text];
+                            ModuleInstanceReference moduleInstanceReference = new ModuleInstanceReference(minst);
+                            word.MoveNext();
+                            return moduleInstanceReference;
+                        }
 
 
                         if (word.Eof) return null;

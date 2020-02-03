@@ -27,6 +27,15 @@ namespace pluginVerilog.Verilog.Expressions
         }
     }
 
+    public class ModuleInstanceReference : Primary
+    {
+        ModuleItems.ModuleInstantiation moduleInstantiation;
+        public ModuleInstanceReference(ModuleItems.ModuleInstantiation moduleInstantiation)
+        {
+            this.moduleInstantiation = moduleInstantiation;
+        }
+    }
+
 
     public class ParameterReference : Primary
     {
