@@ -13,18 +13,18 @@ namespace pluginVerilog
         {
             colors = new Color[16]
             {
-                    System.Drawing.Color.DimGray,                   // default
+                    System.Drawing.Color.FromArgb(212,212,212),     // Normal
                     System.Drawing.Color.LightGray,                 // inactivated
                     System.Drawing.Color.DarkGray,                  // 2
-                    System.Drawing.Color.Crimson,                   // variable-heavy
-                    System.Drawing.Color.MediumBlue,                // keyword
-                    System.Drawing.Color.ForestGreen,               // comment
-                    System.Drawing.Color.CadetBlue,                 // identifier
-                    System.Drawing.Color.Orchid,                    // variable-fixed
-                    System.Drawing.Color.SandyBrown,                // number
-                    System.Drawing.Color.Salmon,                    // variable-light
-                    System.Drawing.Color.FromArgb(0,30,0),          // highlighted comment
-                    System.Drawing.Color.Pink,                     // 11
+                    System.Drawing.Color.FromArgb(212,0,0),         // Resister
+                    System.Drawing.Color.FromArgb(86,156,214),      // keyword
+                    System.Drawing.Color.FromArgb(106,153,85),      // Comment
+                    System.Drawing.Color.FromArgb(78,201,176),      // identifier
+                    System.Drawing.Color.FromArgb(255,94,194),      // Parameter
+                    System.Drawing.Color.FromArgb(206,145,120),     // number
+                    System.Drawing.Color.FromArgb(255,132,132),     // Net
+                    System.Drawing.Color.FromArgb(53,76,42),          // highlighted comment
+                    System.Drawing.Color.Pink,                      // Variable
                     System.Drawing.Color.Black,                     // 12
                     System.Drawing.Color.Black,                     // 13
                     System.Drawing.Color.Black,                     // 14
@@ -71,10 +71,10 @@ namespace pluginVerilog
             {
                 return new System.Drawing.Color[8]
                     {
-                        System.Drawing.Color.FromArgb(128,System.Drawing.Color.Red),    // 0 error
-                        System.Drawing.Color.FromArgb(128,System.Drawing.Color.Orange), // 1 warning
+                        System.Drawing.Color.Red,    // 0 error
+                        System.Drawing.Color.Orange, // 1 warning
                         System.Drawing.Color.Blue, // 2 notice
-                        System.Drawing.Color.Green, // 3 hint
+                        System.Drawing.Color.ForestGreen, // 3 hint
                         System.Drawing.Color.Red, // 4
                         System.Drawing.Color.Red, // 5
                         System.Drawing.Color.Red, // 6
