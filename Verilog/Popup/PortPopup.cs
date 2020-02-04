@@ -23,7 +23,7 @@ namespace pluginVerilog.Verilog.Popup
 
         public override void Draw(Graphics graphics, int x, int y, Font font, Color backgroundColor)
         {
-            label.Draw(graphics, x, y, font, Color.FromArgb(20, 20, 20), backgroundColor);
+            label.Draw(graphics, x, y, font, Color.FromArgb(210, 210, 210), backgroundColor);
         }
 
     }

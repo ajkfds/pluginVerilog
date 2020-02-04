@@ -14,7 +14,7 @@ namespace pluginVerilog
             colors = new Color[16]
             {
                     System.Drawing.Color.FromArgb(212,212,212),     // Normal
-                    System.Drawing.Color.LightGray,                 // inactivated
+                    System.Drawing.Color.FromArgb(150,150,150),                // inactivated
                     System.Drawing.Color.DarkGray,                  // 2
                     System.Drawing.Color.FromArgb(212,0,0),         // Resister
                     System.Drawing.Color.FromArgb(86,156,214),      // keyword
@@ -22,7 +22,7 @@ namespace pluginVerilog
                     System.Drawing.Color.FromArgb(78,201,176),      // identifier
                     System.Drawing.Color.FromArgb(255,94,194),      // Parameter
                     System.Drawing.Color.FromArgb(206,145,120),     // number
-                    System.Drawing.Color.FromArgb(255,132,132),     // Net
+                    System.Drawing.Color.FromArgb(255,80,80),     // Net
                     System.Drawing.Color.FromArgb(53,76,42),          // highlighted comment
                     System.Drawing.Color.Pink,                      // Variable
                     System.Drawing.Color.Black,                     // 12
