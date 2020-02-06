@@ -172,6 +172,7 @@ namespace pluginVerilog.Verilog.ModuleItems
             if(word.Text != "(")
             {
                 word.AddError("( expected");
+                word.SkipToKeyword(";");
                 return null;
             }
             word.MoveNext();
@@ -179,6 +180,7 @@ namespace pluginVerilog.Verilog.ModuleItems
             if (word.Text != ")")
             {
                 word.AddError(") expected");
+                word.SkipToKeyword(";");
                 return null;
             }
             word.MoveNext();
@@ -331,7 +333,11 @@ namespace pluginVerilog.Verilog.ModuleItems
                     word.Color(CodeDrawStyle.ColorType.Identifier);
                     word.MoveNext();
                 }
-                if (word.Text != "(") return null;
+                if (word.Text != "(")
+                {
+                    word.SkipToKeyword(";");
+                    return null;
+                }
                 word.MoveNext();
 
                 while (!word.Eof)
@@ -343,7 +349,11 @@ namespace pluginVerilog.Verilog.ModuleItems
                     }
                     word.MoveNext();
                 }
-                if (word.Text != ")") return null;
+                if (word.Text != ")")
+                {
+                    word.SkipToKeyword(";");
+                    return null;
+                }
                 word.MoveNext();
             }
 
@@ -376,7 +386,11 @@ namespace pluginVerilog.Verilog.ModuleItems
                     word.Color(CodeDrawStyle.ColorType.Identifier);
                     word.MoveNext();
                 }
-                if (word.Text != "(") return null;
+                if (word.Text != "(")
+                {
+                    word.SkipToKeyword(";");
+                    return null;
+                }
                 word.MoveNext();
 
                 while (!word.Eof)
@@ -388,7 +402,11 @@ namespace pluginVerilog.Verilog.ModuleItems
                     }
                     word.MoveNext();
                 }
-                if (word.Text != ")") return null;
+                if (word.Text != ")")
+                {
+                    word.SkipToKeyword(";");
+                    return null;
+                }
                 word.MoveNext();
             }
 
@@ -424,7 +442,11 @@ namespace pluginVerilog.Verilog.ModuleItems
                     word.Color(CodeDrawStyle.ColorType.Identifier);
                     word.MoveNext();
                 }
-                if (word.Text != "(") return null;
+                if (word.Text != "(")
+                {
+                    word.SkipToKeyword(";");
+                    return null;
+                }
                 word.MoveNext();
 
                 while (!word.Eof)
@@ -436,7 +458,11 @@ namespace pluginVerilog.Verilog.ModuleItems
                     }
                     word.MoveNext();
                 }
-                if (word.Text != ")") return null;
+                if (word.Text != ")")
+                {
+                    word.SkipToKeyword(";");
+                    return null;
+                }
                 word.MoveNext();
             }
 
