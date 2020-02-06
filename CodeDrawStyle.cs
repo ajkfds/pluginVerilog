@@ -14,7 +14,7 @@ namespace pluginVerilog
             colors = new Color[16]
             {
                     System.Drawing.Color.FromArgb(212,212,212),     // Normal
-                    System.Drawing.Color.FromArgb(150,150,150),                // inactivated
+                    System.Drawing.Color.FromArgb(150,150,150),     // inactivated
                     System.Drawing.Color.DarkGray,                  // 2
                     System.Drawing.Color.FromArgb(212,0,0),         // Resister
                     System.Drawing.Color.FromArgb(86,156,214),      // keyword
@@ -22,8 +22,8 @@ namespace pluginVerilog
                     System.Drawing.Color.FromArgb(78,201,176),      // identifier
                     System.Drawing.Color.FromArgb(255,94,194),      // Parameter
                     System.Drawing.Color.FromArgb(206,145,120),     // number
-                    System.Drawing.Color.FromArgb(255,80,80),     // Net
-                    System.Drawing.Color.FromArgb(53,76,42),          // highlighted comment
+                    System.Drawing.Color.FromArgb(255,80,80),       // Net
+                    System.Drawing.Color.FromArgb(63,86,52),        // highlighted comment
                     System.Drawing.Color.Pink,                      // Variable
                     System.Drawing.Color.Black,                     // 12
                     System.Drawing.Color.Black,                     // 13
@@ -73,8 +73,8 @@ namespace pluginVerilog
                     {
                         System.Drawing.Color.Red,    // 0 error
                         System.Drawing.Color.Orange, // 1 warning
-                        System.Drawing.Color.Blue, // 2 notice
-                        System.Drawing.Color.ForestGreen, // 3 hint
+                        System.Drawing.Color.FromArgb(106,153,85), // 2 notice
+                        System.Drawing.Color.FromArgb(86,156,214), // 3 hint
                         System.Drawing.Color.Red, // 4
                         System.Drawing.Color.Red, // 5
                         System.Drawing.Color.Red, // 6
