@@ -20,7 +20,7 @@ namespace pluginVerilog.Verilog.Expressions
         public override ajkControls.ColorLabel GetLabel()
         {
             ajkControls.ColorLabel label = new ajkControls.ColorLabel();
-            label.AppendText(Text);
+            AppendLabel(label);
             return label;
         }
 
@@ -93,7 +93,11 @@ namespace pluginVerilog.Verilog.Expressions
             if (condition.Value != null && primary1.Value != null && primary2.Value != null) value = getValue((double)condition.Value, (double)primary1.Value, (double)primary2.Value);
             if (primary1.BitWidth != null && primary2.BitWidth != null) bitWidth = getBitWidth(Text, (int)primary1.BitWidth, (int)primary2.BitWidth);
 
-            Primary ret = Primary.Create(constant, value, bitWidth);
+            this.Constant = constant;
+            this.Value = value;
+            this.BitWidth = BitWidth;
+            Primary ret = this;
+//            Primary ret = Primary.Create(constant, value, bitWidth);
             if(Operated!=null) Operated(ret, condition, primary1, primary2);
             return ret;
         }
@@ -198,7 +202,11 @@ namespace pluginVerilog.Verilog.Expressions
             if (primary.Value != null) value = getValue(Text, (double)primary.Value);
             if (primary.BitWidth != null) bitWidth = getBitWidth(Text, (int)primary.BitWidth);
 
-            Primary ret = Primary.Create(constant, value, bitWidth);
+            this.Constant = constant;
+            this.Value = value;
+            this.BitWidth = BitWidth;
+            Primary ret = this;
+//            Primary ret = Primary.Create(constant, value, bitWidth);
             if (Operated != null) Operated(ret, primary);
             return ret;
         }
@@ -386,7 +394,11 @@ namespace pluginVerilog.Verilog.Expressions
             if (primary1.Value != null && primary2.Value != null) value = getValue(Text, (double)primary1.Value, (double)primary2.Value);
             if (primary1.BitWidth != null && primary2.BitWidth != null) bitWidth = getBitWidth(Text, (int)primary1.BitWidth, (int)primary2.BitWidth);
 
-            Primary ret = Primary.Create(constant, value, bitWidth);
+            this.Constant = constant;
+            this.Value = value;
+            this.BitWidth = BitWidth;
+            Primary ret = this;
+//            Primary ret = Primary.Create(constant, value, bitWidth);
             if (Operated != null) Operated(ret, primary1, primary2);
             return ret;
         }

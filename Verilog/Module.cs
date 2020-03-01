@@ -345,11 +345,17 @@ namespace pluginVerilog.Verilog
                     {
                         break;
                     }
+
+                    if (word.Text == ";")
+                    {
+                        word.AddError(", expected");
+                        word.MoveNext();
+                    }
                 }
                 if (word.Text == ")")
                 {
                     word.MoveNext();
-                }
+                } 
                 else
                 {
                     word.AddError(") expected");

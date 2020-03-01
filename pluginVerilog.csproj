@@ -92,6 +92,7 @@
     <Compile Include="Verilog\Expressions\Bracket.cs" />
     <Compile Include="Verilog\Expressions\Concatenation.cs" />
     <Compile Include="Verilog\Expressions\MinTypMax.cs" />
+    <Compile Include="Verilog\Expressions\ParameterReference.cs" />
     <Compile Include="Verilog\Expressions\RangeExpression.cs" />
     <Compile Include="Verilog\Expressions\References.cs" />
     <Compile Include="Verilog\Expressions\String.cs" />
@@ -164,7 +165,6 @@
     <Compile Include="Verilog\NameSpace.cs" />
     <Compile Include="Verilog\Expressions\Number.cs" />
     <Compile Include="Verilog\Expressions\Operator.cs" />
-    <Compile Include="Style.cs" />
     <Compile Include="Verilog\Statements\ParallelBlock.cs" />
     <Compile Include="Verilog\Statements\ProceduralContinuousAssignment.cs" />
     <Compile Include="Verilog\Statements\ProceduralTimingControlStatement.cs" />
