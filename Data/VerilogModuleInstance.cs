@@ -392,24 +392,28 @@ namespace pluginVerilog.Data
             int index = CodeDocument.CaretIndex;
             int line = CodeDocument.GetLineAt(index);
             if (line == 0) return;
-            int prevLine = line - 1;
 
             int lineHeadIndex = CodeDocument.GetLineStartIndex(line);
-            int prevLineHeadIndex = CodeDocument.GetLineStartIndex(prevLine);
 
             int prevTabs = 0;
-            for (int i = prevLineHeadIndex; i < lineHeadIndex; i++)
+            if(line != 1)
             {
-                char ch = CodeDocument.GetCharAt(i);
-                if (ch == '\t')
+                int prevLine = line - 1;
+                int prevLineHeadIndex = CodeDocument.GetLineStartIndex(prevLine);
+                for (int i = prevLineHeadIndex; i < lineHeadIndex; i++)
                 {
-                    prevTabs++;
-                }
-                else
-                {
-                    break;
+                    char ch = CodeDocument.GetCharAt(i);
+                    if (ch == '\t')
+                    {
+                        prevTabs++;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
             }
+
             int indentLength = 0;
             for (int i = lineHeadIndex; i < CodeDocument.Length; i++)
             {
