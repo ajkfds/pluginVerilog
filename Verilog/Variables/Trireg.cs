@@ -28,12 +28,12 @@ namespace pluginVerilog.Verilog.Variables
         public override ajkControls.ColorLabel GetLabel()
         {
             ajkControls.ColorLabel label = new ajkControls.ColorLabel();
-            label.AppendText("trireg", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+            label.AppendText("trireg", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
 
             label.AppendText(" ");
             if (Signed)
             {
-                label.AppendText("signed ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                label.AppendText("signed ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
             }
 
             if (Range != null)
@@ -42,7 +42,7 @@ namespace pluginVerilog.Verilog.Variables
                 label.AppendText(" ");
             }
 
-            label.AppendText(Name, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net));
+            label.AppendText(Name, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net));
 
             foreach (Dimension dimension in Dimensions)
             {
@@ -53,7 +53,7 @@ namespace pluginVerilog.Verilog.Variables
             if (Comment != "")
             {
                 label.AppendText(" ");
-                label.AppendText(Comment.Trim(new char[] { '\r', '\n', '\t', ' ' }), CodeDrawStyle.Color(CodeDrawStyle.ColorType.Comment));
+                label.AppendText(Comment.Trim(new char[] { '\r', '\n', '\t', ' ' }), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Comment));
             }
 
             label.AppendText("\r\n");

@@ -11,8 +11,8 @@ namespace pluginVerilog.Verilog.Popup
     {
         public MacroPopup(string macroName,string text)
         {
-            label.AppendText("define ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
-            label.AppendText(macroName, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Identifier));
+            label.AppendText("define ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+            label.AppendText(macroName, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Identifier));
             label.AppendText(" " + text);
         }
 

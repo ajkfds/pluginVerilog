@@ -30,7 +30,7 @@ namespace pluginVerilog.Verilog.Expressions
         }
         public override void AppendLabel(ajkControls.ColorLabel label)
         {
-            label.AppendText(Text, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Variable));
+            label.AppendText(Text, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Variable));
         }
 
         public override void AppendString(StringBuilder stringBuilder)

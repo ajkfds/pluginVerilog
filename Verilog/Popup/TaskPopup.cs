@@ -11,8 +11,8 @@ namespace pluginVerilog.Verilog.Popup
     {
         public TaskPopup(Task task)
         {
-            label.AppendText("task ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
-            label.AppendText(task.Name, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Identifier));
+            label.AppendText("task ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+            label.AppendText(task.Name, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Identifier));
             label.AppendText("\r\n");
             bool first = true;
             foreach (Variables.Port port in task.Ports.Values)

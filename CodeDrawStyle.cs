@@ -30,24 +30,16 @@ namespace pluginVerilog
                     System.Drawing.Color.Black,                     // 14
                     System.Drawing.Color.Black                      // 15
             };
-            intColors = new int[colors.Length];
-            for (int i = 0; i < colors.Length; i++)
-            {
-                intColors[i] = (colors[i].B << 16) + (colors[i].G << 8) + colors[i].R;
-            }
-//            CodeDrawStyle.colors = colors;
         }
-
-        private static System.Drawing.Color[] colors;
 
         public static byte ColorIndex(ColorType colorType)
         {
             return (byte)colorType;
         }
 
-        public static System.Drawing.Color Color(ColorType colorType)
+        public Color Color(ColorType index)
         {
-            return colors[ColorIndex(colorType)];
+            return colors[(int)index];
         }
 
         public enum ColorType : byte

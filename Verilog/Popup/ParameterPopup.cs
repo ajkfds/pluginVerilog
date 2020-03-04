@@ -11,8 +11,8 @@ namespace pluginVerilog.Verilog.Popup
     {
         public ParameterPopup(Variables.Parameter parameter)
         {
-            label.AppendText("parameter ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
-            label.AppendText(parameter.Name, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Paramater));
+            label.AppendText("parameter ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+            label.AppendText(parameter.Name, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Paramater));
             if(parameter.Expression != null)
             {
                 label.AppendText(" = ");

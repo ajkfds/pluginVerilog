@@ -22,11 +22,11 @@ namespace pluginVerilog.Verilog.Expressions
         {
             if (Variable is Variables.Reg)
             {
-                label.AppendText(VariableName, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Register));
+                label.AppendText(VariableName, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Register));
             }
             else if (Variable is Variables.Net)
             {
-                label.AppendText(VariableName, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net));
+                label.AppendText(VariableName, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net));
             }
             else
             {

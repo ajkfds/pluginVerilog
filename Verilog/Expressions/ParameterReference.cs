@@ -19,7 +19,7 @@ namespace pluginVerilog.Verilog.Expressions
         }
         public override void AppendLabel(ajkControls.ColorLabel label)
         {
-            label.AppendText(ParameterName, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Paramater));
+            label.AppendText(ParameterName, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Paramater));
         }
 
         public new static ParameterReference ParseCreate(WordScanner word, NameSpace nameSpace)

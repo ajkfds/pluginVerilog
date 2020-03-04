@@ -34,41 +34,41 @@ namespace pluginVerilog.Verilog.Variables
             switch (NetType)
             {
                 case NetTypeEnum.Supply0:
-                    label.AppendText("Supply0", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    label.AppendText("Supply0", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
                     break;
                 case NetTypeEnum.Supply1:
-                    label.AppendText("Supply1", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    label.AppendText("Supply1", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
                     break;
                 case NetTypeEnum.Tri:
-                    label.AppendText("Tri", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    label.AppendText("Tri", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
                     break;
                 case NetTypeEnum.Triand:
-                    label.AppendText("Triand", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    label.AppendText("Triand", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
                     break;
                 case NetTypeEnum.Trior:
-                    label.AppendText("Trior", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    label.AppendText("Trior", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
                     break;
                 case NetTypeEnum.Tri0:
-                    label.AppendText("Tri0", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    label.AppendText("Tri0", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
                     break;
                 case NetTypeEnum.Tri1:
-                    label.AppendText("Tri1", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    label.AppendText("Tri1", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
                     break;
                 case NetTypeEnum.Wire:
-                    label.AppendText("Wire", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    label.AppendText("Wire", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
                     break;
                 case NetTypeEnum.Wand:
-                    label.AppendText("Wand", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    label.AppendText("Wand", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
                     break;
                 case NetTypeEnum.Wor:
-                    label.AppendText("Wor", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    label.AppendText("Wor", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
                     break;
             }
 
             label.AppendText(" ");
             if (Signed)
             {
-                label.AppendText("signed ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                label.AppendText("signed ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
             }
 
             if (Range != null)
@@ -77,7 +77,7 @@ namespace pluginVerilog.Verilog.Variables
                 label.AppendText(" ");
             }
 
-            label.AppendText(Name, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net));
+            label.AppendText(Name, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net));
 
             foreach (Dimension dimension in Dimensions)
             {
@@ -88,7 +88,7 @@ namespace pluginVerilog.Verilog.Variables
             if (Comment != "")
             {
                 label.AppendText(" ");
-                label.AppendText(Comment.Trim(new char[] {'\r','\n','\t',' '}),CodeDrawStyle.Color(CodeDrawStyle.ColorType.Comment));
+                label.AppendText(Comment.Trim(new char[] {'\r','\n','\t',' '}), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Comment));
             }
 
             label.AppendText("\r\n");

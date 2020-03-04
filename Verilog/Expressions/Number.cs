@@ -78,7 +78,7 @@ namespace pluginVerilog.Verilog.Expressions
         }
         public override void AppendLabel(ajkControls.ColorLabel label)
         {
-            label.AppendText(Text, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Number));
+            label.AppendText(Text, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Number));
         }
 
         public override void AppendString(StringBuilder stringBuilder)

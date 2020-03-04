@@ -84,13 +84,13 @@ namespace pluginVerilog.Verilog.Variables
             switch (Direction)
             {
                 case DirectionEnum.Input:
-                    label.AppendText("input ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    label.AppendText("input ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
                     break;
                 case DirectionEnum.Output:
-                    label.AppendText("output ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    label.AppendText("output ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
                     break;
                 case DirectionEnum.Inout:
-                    label.AppendText("inout ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                    label.AppendText("inout ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
                     break;
                 default:
                     break;
@@ -98,7 +98,7 @@ namespace pluginVerilog.Verilog.Variables
 
             if (Variable is Reg)
             {
-                label.AppendText("reg ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+                label.AppendText("reg ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
             }
 
 
@@ -112,11 +112,11 @@ namespace pluginVerilog.Verilog.Variables
             {
                 if (Variable is Net)
                 {
-                    label.AppendText(Name, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net));
+                    label.AppendText(Name, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net));
                 }
                 else if (Variable is Reg)
                 {
-                    label.AppendText(Name, CodeDrawStyle.Color(CodeDrawStyle.ColorType.Register));
+                    label.AppendText(Name, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Register));
                 }
                 else
                 {
