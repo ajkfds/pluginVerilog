@@ -40,11 +40,28 @@ namespace pluginVerilog.Verilog.Statements
                 }
                 else
                 {
-                    if(word.Active && nameSpace.NameSpaces.ContainsKey(word.Text))
-                    {
-                        word.AddError("duplicated name");
+                    if (word.Prototype)
+                    { // protptype
+                        if (nameSpace.NameSpaces.ContainsKey(word.Text))
+                        {
+                            word.AddError("duplicated name");
+                            namedBlock.Name = word.Text;
+                        }
+                        else
+                        {
+                            namedBlock.Name = word.Text;
+                            nameSpace.NameSpaces.Add(namedBlock.Name, namedBlock);
+                        }
                     }
-                    namedBlock.Name = word.Text;
+                    else
+                    { // implementation
+                        if (nameSpace.NameSpaces.ContainsKey(word.Text) && nameSpace.NameSpaces[word.Text] is NamedParallelBlock)
+                        {
+                            word.Color(CodeDrawStyle.ColorType.Identifier);
+                            namedBlock = nameSpace.NameSpaces[word.Text] as NamedParallelBlock;
+
+                        }
+                    }
                     word.MoveNext();
                 }
                 while (!word.Eof && word.Text != "join")

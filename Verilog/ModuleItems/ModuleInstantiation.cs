@@ -50,6 +50,7 @@ namespace pluginVerilog.Verilog.ModuleItems
             if(word.Text != "#" && next != "(" && next != ";" && General.IsIdentifier(word.Text))
             {
                 moduleIdentifier.AddError("illegal module item");
+                word.SkipToKeyword(";");
                 return;
             }
             moduleIdentifier.Color(CodeDrawStyle.ColorType.Keyword);
@@ -71,6 +72,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                 if (word.Text != "(")
                 {
                     word.AddError("( expected");
+                    word.SkipToKeyword(";");
                     return;
                 }
                 word.MoveNext();
@@ -245,6 +247,8 @@ namespace pluginVerilog.Verilog.ModuleItems
                 if (word.Text != "(")
                 {
                     word.AddError("( expected");
+                    word.SkipToKeyword(";");
+                    if (word.Text == ";") word.MoveNext();
                     return;
                 }
                 word.MoveNext();
