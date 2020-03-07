@@ -23,11 +23,14 @@ namespace pluginVerilog.Verilog.Variables
         public List<WordReference> AssignedReferences = new List<WordReference>();
         public int DisposedIndex = -1;
 
-        public virtual ajkControls.ColorLabel GetLabel()
+        public virtual void AppendLabel(ajkControls.ColorLabel label)
         {
-            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
             label.AppendText(Name);
-            return label;
+        }
+
+        public virtual void AppendTypeLabel(ajkControls.ColorLabel label)
+        {
+
         }
 
         // comment annotation

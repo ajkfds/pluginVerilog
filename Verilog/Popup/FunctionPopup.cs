@@ -12,7 +12,13 @@ namespace pluginVerilog.Verilog.Popup
         public FunctionPopup(Function function)
         {
             label.AppendText("function ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+            if (function.Variables.ContainsKey(function.Name))
+            {
+                Variables.Variable retVal = function.Variables[function.Name];
+                retVal.AppendTypeLabel(label);
+            }
             label.AppendText(function.Name, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Identifier));
+
             label.AppendText("\r\n");
             bool first = true;
             foreach(Variables.Port port in function.Ports.Values)

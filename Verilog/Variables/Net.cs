@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ajkControls;
 
 namespace pluginVerilog.Verilog.Variables
 {
@@ -28,9 +29,8 @@ namespace pluginVerilog.Verilog.Variables
             Wor
         }
 
-        public override ajkControls.ColorLabel GetLabel()
+        public override void AppendTypeLabel(ColorLabel label)
         {
-            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
             switch (NetType)
             {
                 case NetTypeEnum.Supply0:
@@ -76,7 +76,11 @@ namespace pluginVerilog.Verilog.Variables
                 label.AppendLabel(Range.GetLabel());
                 label.AppendText(" ");
             }
+        }
 
+        public override void AppendLabel(ColorLabel label)
+        {
+            AppendTypeLabel(label);
             label.AppendText(Name, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net));
 
             foreach (Dimension dimension in Dimensions)
@@ -88,11 +92,10 @@ namespace pluginVerilog.Verilog.Variables
             if (Comment != "")
             {
                 label.AppendText(" ");
-                label.AppendText(Comment.Trim(new char[] {'\r','\n','\t',' '}), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Comment));
+                label.AppendText(Comment.Trim(new char[] { '\r', '\n', '\t', ' ' }), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Comment));
             }
 
             label.AppendText("\r\n");
-            return label;
         }
 
         public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
@@ -155,6 +158,7 @@ namespace pluginVerilog.Verilog.Variables
             word.MoveNext();
 
             // [drive_strength]
+            DriveStrength driveStrength = DriveStrength.ParseCreate(word, nameSpace);
 
             // [vectored | scalared]
 

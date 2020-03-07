@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ajkControls;
 
 namespace pluginVerilog.Verilog.Variables
 {
@@ -21,23 +22,9 @@ namespace pluginVerilog.Verilog.Variables
             this.Signed = signed;
         }
 
-        public override ajkControls.ColorLabel GetLabel()
+        public override void AppendLabel(ColorLabel label)
         {
-            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
-            label.AppendText("reg ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
-            label.AppendText(" ");
-            if (Signed)
-            {
-                label.AppendText("signed ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
-            }
-
-            if (Range != null)
-            {
-                label.AppendLabel(Range.GetLabel());
-                label.AppendText(" ");
-            }
-
-
+            AppendTypeLabel(label);
             label.AppendText(Name, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Register));
 
             foreach (Dimension dimension in Dimensions)
@@ -53,7 +40,22 @@ namespace pluginVerilog.Verilog.Variables
             }
 
             label.AppendText("\r\n");
-            return label;
+        }
+
+        public override void AppendTypeLabel(ColorLabel label)
+        {
+            label.AppendText("reg ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+            label.AppendText(" ");
+            if (Signed)
+            {
+                label.AppendText("signed ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+            }
+
+            if (Range != null)
+            {
+                label.AppendLabel(Range.GetLabel());
+                label.AppendText(" ");
+            }
         }
 
         public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)

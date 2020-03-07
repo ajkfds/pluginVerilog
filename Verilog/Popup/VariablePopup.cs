@@ -12,7 +12,7 @@ namespace pluginVerilog.Verilog.Popup
     {
         public VariablePopup(Variables.Variable variable)
         {
-            label.AppendLabel(variable.GetLabel());
+            variable.AppendLabel(label);
         }
 
         ajkControls.ColorLabel label = new ajkControls.ColorLabel();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ajkControls;
 
 namespace pluginVerilog.Verilog.Variables
 {
@@ -25,9 +26,8 @@ namespace pluginVerilog.Verilog.Variables
             learge
         }
 
-        public override ajkControls.ColorLabel GetLabel()
+        public override void AppendTypeLabel(ColorLabel label)
         {
-            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
             label.AppendText("trireg", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
 
             label.AppendText(" ");
@@ -41,7 +41,9 @@ namespace pluginVerilog.Verilog.Variables
                 label.AppendLabel(Range.GetLabel());
                 label.AppendText(" ");
             }
-
+        }
+        public override void AppendLabel(ColorLabel label)
+        {
             label.AppendText(Name, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net));
 
             foreach (Dimension dimension in Dimensions)
@@ -57,7 +59,6 @@ namespace pluginVerilog.Verilog.Variables
             }
 
             label.AppendText("\r\n");
-            return label;
         }
 
         public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
