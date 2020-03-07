@@ -286,18 +286,18 @@ namespace pluginVerilog.Verilog
                 {
                     if (variable.UsedReferences.Count == 0)
                     {
-                        word.AddHint(variable.DefinedReference, "undriven & unused");
+                        word.AddNotice(variable.DefinedReference, "undriven & unused");
                     }
                     else
                     {
-                        word.AddHint(variable.DefinedReference, "undriven");
+                        word.AddNotice(variable.DefinedReference, "undriven");
                     }
                 }
                 else
                 {
                     if (variable.UsedReferences.Count == 0)
                     {
-                        word.AddHint(variable.DefinedReference, "unused");
+                        word.AddNotice(variable.DefinedReference, "unused");
                     }
                 }
             }

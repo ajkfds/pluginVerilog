@@ -17,10 +17,6 @@ namespace pluginVerilog.Verilog.Snippets
 
         public override void Apply(codeEditor.CodeEditor.CodeDocument codeDocument, System.Windows.Forms.KeyEventArgs e)
         {
-            //ModuleInstanceSnippet snippet = new ModuleInstanceSnippet(Text, project);
-            //snippet.Apply(codeDocument);
-            //e.Handled = true;
-
             int prevIndex = codeDocument.CaretIndex;
             if (codeDocument.GetLineStartIndex(codeDocument.GetLineAt(prevIndex)) != prevIndex && prevIndex != 0)
             {
@@ -34,22 +30,43 @@ namespace pluginVerilog.Verilog.Snippets
 
             ProjectProperty projectProperty = project.GetProjectProperty(Plugin.StaticID) as ProjectProperty;
 
-            Data.VerilogFile file = projectProperty.GetFileOfModule(Text) as Data.VerilogFile;
-            if (file == null) return;
-            Verilog.ParsedDocument parsedDocument = file.ParsedDocument as Verilog.ParsedDocument;
-            if (parsedDocument == null) return;
+            codeEditor.Data.ITextFile itext = codeEditor.Controller.CodeEditor.GetTextFile();
 
-            Verilog.Module module = parsedDocument.Modules[Text];
+            if (!(itext is Data.IVerilogRelatedFile)) return;
+            var vfile = itext as Data.IVerilogRelatedFile;
+            ParsedDocument parsedDocument = vfile.VerilogParsedDocument;
+            if (parsedDocument == null) return;
+            Module module = parsedDocument.GetModule(vfile.CodeDocument.CaretIndex);
             if (module == null) return;
 
-            int carletOffset = Text.Length;
+            Data.VerilogFile instancedFile = projectProperty.GetFileOfModule(Text) as Data.VerilogFile;
+            if (instancedFile == null) return;
+            Verilog.ParsedDocument instancedParsedDocument = instancedFile.ParsedDocument as Verilog.ParsedDocument;
+            if (instancedParsedDocument == null) return;
+            Verilog.Module instancedModule = instancedParsedDocument.Modules[Text];
+            if (instancedModule == null) return;
+
+            string instanceName;
+            int i = 0;
+            while (true)
+            {
+                instanceName = Text + "_" + i.ToString();
+                if (!module.ModuleInstantiations.ContainsKey(instanceName)) break;
+                i++;
+            }
+
+            // create code
             StringBuilder sb = new StringBuilder();
+
+            // modulename
             sb.Append(" ");
-            if (module.PortParameterNameList.Count > 0)
+
+            // parameters
+            if (instancedModule.PortParameterNameList.Count > 0)
             {
                 sb.Append("#(\r\n");
                 bool first = true;
-                foreach (string portName in module.PortParameterNameList)
+                foreach (string portName in instancedModule.PortParameterNameList)
                 {
                     if (!first) sb.Append(",\r\n");
                     sb.Append("\t");
@@ -60,25 +77,32 @@ namespace pluginVerilog.Verilog.Snippets
                 }
                 sb.Append("\r\n) ");
             }
-            carletOffset = Text.Length + sb.Length;
 
+            int carletOffset = Text.Length + sb.Length;
+            sb.Append(instanceName);
             sb.Append(" (\r\n");
-            int i = 0;
-            foreach (Verilog.Variables.Port port in module.Ports.Values)
+
+            // ports
+            i = 0;
+            foreach (Verilog.Variables.Port port in instancedModule.Ports.Values)
             {
                 sb.Append("\t.");
                 sb.Append(port.Name);
                 sb.Append("\t(  )");
-                if (i != module.Ports.Count - 1) sb.Append(",");
+                if (i != instancedModule.Ports.Count - 1) sb.Append(",");
                 sb.Append("\r\n");
                 i++;
             }
             sb.Append(");");
 
             codeDocument.Replace(headIndex, length, ColorIndex, Text + sb.ToString());
-            codeDocument.CaretIndex = headIndex + carletOffset;
-            codeDocument.SelectionStart = codeDocument.CaretIndex;
-            codeDocument.SelectionLast = codeDocument.CaretIndex;
+            codeDocument.CaretIndex = headIndex + carletOffset + instanceName.Length;
+            codeDocument.SelectionStart = headIndex + carletOffset;
+            codeDocument.SelectionLast = headIndex + carletOffset + instanceName.Length;
+
+            e.Handled = true;
+
+            codeEditor.Controller.CodeEditor.RequestReparse();
         }
     }
 }

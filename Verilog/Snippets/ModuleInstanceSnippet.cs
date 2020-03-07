@@ -24,6 +24,7 @@ namespace pluginVerilog.Verilog.Snippets
             document = codeDocument;
 
             ProjectProperty projectProperty = project.GetProjectProperty(Plugin.StaticID) as ProjectProperty;
+
             Data.VerilogFile targetFile = projectProperty.GetFileOfModule(Text) as Data.VerilogFile;
             if (targetFile == null) return;
 
