@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using codeEditor.CodeEditor;
 using System.Drawing;
 
-namespace pluginVerilog.Verilog.Snippets
+
+namespace pluginVerilog.Verilog.AutoComplete
 {
-    public class NonBlockingAssignmentAutoCompleteItem : codeEditor.CodeEditor.AutocompleteItem
+    public class FunctionAutocompleteItem : codeEditor.CodeEditor.AutocompleteItem
     {
-        public NonBlockingAssignmentAutoCompleteItem(string text, byte colorIndex, Color color) : base(text, colorIndex, color)
+        public FunctionAutocompleteItem(string text, byte colorIndex, Color color) : base(text, colorIndex, color)
         {
         }
 
@@ -23,19 +23,23 @@ namespace pluginVerilog.Verilog.Snippets
             }
             int headIndex, length;
             codeDocument.GetWord(prevIndex, out headIndex, out length);
+            string indent = (codeDocument as CodeEditor.CodeDocument).GetIndentString(prevIndex);
 
             char currentChar = codeDocument.GetCharAt(codeDocument.CaretIndex);
-            string appendText = " #P_DELAY";
+            string appendText = ";\r\n";
+            appendText += indent + "begin\r\n";
+            appendText += indent + "\t\r\n";
+            appendText += indent + "end\r\n";
+            appendText += indent + "endfunction";
             if (currentChar != '\r' && currentChar != '\n')
             {
                 appendText = "";
             }
 
-            codeDocument.Replace(headIndex, length, ColorIndex, Text + appendText );
-            codeDocument.CaretIndex = headIndex + Text.Length + appendText.Length;
+            codeDocument.Replace(headIndex, length, ColorIndex, Text + appendText);
+            codeDocument.CaretIndex = headIndex + Text.Length;
             codeDocument.SelectionStart = headIndex + Text.Length;
             codeDocument.SelectionLast = headIndex + Text.Length;
         }
-
     }
 }

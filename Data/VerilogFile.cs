@@ -329,7 +329,8 @@ namespace pluginVerilog.Data
         {
             List<codeEditor.CodeEditor.ToolItem> toolItems = new List<codeEditor.CodeEditor.ToolItem>();
             toolItems.Add(new Verilog.Snippets.AlwaysFFSnippet());
-            toolItems.Add(new Verilog.Snippets.ConnectionCheckSnippet());
+            toolItems.Add(new Verilog.Snippets.AutoConnectSnippet());
+//            toolItems.Add(new Verilog.Snippets.ConnectionCheckSnippet());
             toolItems.Add(new Verilog.Snippets.AutoFormatSnippet());
             return toolItems;
         }

@@ -15,13 +15,13 @@ namespace pluginVerilog.Verilog.Variables
         public int? BitWidth { get; protected set; }
         public bool Constant { get; protected set; }
 
-        public override string ToString()
+        public string CreateString()
         {
             StringBuilder sb = new StringBuilder();
             sb.Append("[");
-            sb.Append(MsbBitExpression.ToString());
+            sb.Append(MsbBitExpression.CreateString());
             sb.Append(":");
-            sb.Append(LsbBitExpression.ToString());
+            sb.Append(LsbBitExpression.CreateString());
             sb.Append("]");
             return sb.ToString();
         }

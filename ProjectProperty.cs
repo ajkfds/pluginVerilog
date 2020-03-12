@@ -15,7 +15,7 @@ namespace pluginVerilog
         }
         private codeEditor.Data.Project project;
 
-        public Verilog.Snippets.Setup SnippetSetup = new Verilog.Snippets.Setup();
+        public Verilog.AutoComplete.Setup SnippetSetup = new Verilog.AutoComplete.Setup();
 
         public override void SaveSetup(ajkControls.JsonWriter writer)
         {

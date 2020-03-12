@@ -112,7 +112,7 @@ namespace pluginVerilog.Verilog.Snippets
                         module.Parameters[portName].Expression != null
                         )
                     {
-                        initials.Add(module.Parameters[portName].Expression.ToString());
+                        initials.Add(module.Parameters[portName].Expression.CreateString());
                     }
                     else
                     {

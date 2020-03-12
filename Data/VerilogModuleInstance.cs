@@ -77,7 +77,7 @@ namespace pluginVerilog.Data
                 {
                     sb.Append(kvp.Key);
                     sb.Append("=");
-                    sb.Append(kvp.Value.ToString());
+                    sb.Append(kvp.Value.CreateString());
                     sb.Append(",");
                 }
                 return sb.ToString();
@@ -368,7 +368,8 @@ namespace pluginVerilog.Data
         {
             List<codeEditor.CodeEditor.ToolItem> toolItems = new List<codeEditor.CodeEditor.ToolItem>();
             toolItems.Add(new Verilog.Snippets.AlwaysFFSnippet());
-            toolItems.Add(new Verilog.Snippets.ConnectionCheckSnippet());
+            toolItems.Add(new Verilog.Snippets.AutoConnectSnippet());
+            //            toolItems.Add(new Verilog.Snippets.ConnectionCheckSnippet());
             toolItems.Add(new Verilog.Snippets.AutoFormatSnippet());
             return toolItems;
         }

@@ -14,9 +14,9 @@ namespace pluginVerilog.Verilog.Expressions
         public List<Expression> Dimensions = new List<Expression>();
         public Variables.Variable Variable = null;
 
-        public override string ToString()
+        public override string CreateString()
         {
-            return GetLabel().ToString();
+            return GetLabel().CreateString();
         }
         public override void AppendLabel(ajkControls.ColorLabel label)
         {
@@ -47,7 +47,7 @@ namespace pluginVerilog.Verilog.Expressions
 
         public override void AppendString(StringBuilder stringBuilder)
         {
-            stringBuilder.Append(ToString());
+            stringBuilder.Append(CreateString());
         }
 
 

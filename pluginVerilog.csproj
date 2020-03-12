@@ -75,6 +75,18 @@
     <Compile Include="ProjectProperty.cs" />
     <Compile Include="SystemVerilog\ParsedDocument.cs" />
     <Compile Include="SystemVerilog\ProgramItem.cs" />
+    <Compile Include="Tools\AutoConnectForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Tools\AutoConnectForm.Designer.cs">
+      <DependentUpon>AutoConnectForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Tools\ConnectionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Tools\ConnectionForm.Designer.cs">
+      <DependentUpon>ConnectionForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Tools\ProjectPropertyPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -138,17 +150,18 @@
     <Compile Include="Verilog\Popup\VariablePopup.cs" />
     <Compile Include="Verilog\IPortNameSpace.cs" />
     <Compile Include="Verilog\Snippets\AlwaysFFSnippet.cs" />
+    <Compile Include="Verilog\Snippets\AutoConnectSnippet.cs" />
     <Compile Include="Verilog\Snippets\AutoFormatSnippet.cs" />
-    <Compile Include="Verilog\Snippets\BeginAutoCompleteItem.cs" />
+    <Compile Include="Verilog\AutoComplete\BeginAutoCompleteItem.cs" />
     <Compile Include="Verilog\Snippets\ConnectionCheckSnippet.cs" />
-    <Compile Include="Verilog\Snippets\FunctionAutocompleteItem.cs" />
-    <Compile Include="Verilog\Snippets\GenerateAutoCompleteItem.cs" />
-    <Compile Include="Verilog\Snippets\ModuleAutocompleteItem.cs" />
-    <Compile Include="Verilog\Snippets\ModuleInstanceAutocompleteItem.cs" />
+    <Compile Include="Verilog\AutoComplete\FunctionAutocompleteItem.cs" />
+    <Compile Include="Verilog\AutoComplete\GenerateAutoCompleteItem.cs" />
+    <Compile Include="Verilog\AutoComplete\ModuleAutocompleteItem.cs" />
+    <Compile Include="Verilog\AutoComplete\ModuleInstanceAutocompleteItem.cs" />
     <Compile Include="Verilog\Snippets\ModuleInstanceSnippet.cs" />
-    <Compile Include="Verilog\Snippets\NonBlockingAssignmentAutocompleteItem.cs" />
-    <Compile Include="Verilog\Snippets\Setup.cs" />
-    <Compile Include="Verilog\Snippets\TaskAutocompleteItem.cs" />
+    <Compile Include="Verilog\AutoComplete\NonBlockingAssignmentAutocompleteItem.cs" />
+    <Compile Include="Verilog\AutoComplete\Setup.cs" />
+    <Compile Include="Verilog\AutoComplete\TaskAutocompleteItem.cs" />
     <Compile Include="Verilog\Statements\Assignment.cs" />
     <Compile Include="Verilog\Attribute.cs" />
     <Compile Include="Verilog\Statements\CaseStatement.cs" />
@@ -221,6 +234,9 @@
     <EmbeddedResource Include="SetupForm.resx">
       <DependentUpon>SetupForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Tools\AutoConnectForm.resx">
+      <DependentUpon>AutoConnectForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Tools\ProjectPropertyPanel.resx">
       <DependentUpon>ProjectPropertyPanel.cs</DependentUpon>
     </EmbeddedResource>
@@ -264,6 +280,7 @@
   <ItemGroup>
     <None Include="Resources\icarusVerilog.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /I /D /Y "$(ProjectDir)\bin\$(Configuration)\$(ProjectName).dll" "$(SolutionDir)codeEditor\codeEditor\bin\$(Configuration)\dlls" 

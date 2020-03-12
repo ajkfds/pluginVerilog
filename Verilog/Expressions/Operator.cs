@@ -24,7 +24,7 @@ namespace pluginVerilog.Verilog.Expressions
             return label;
         }
 
-        public override string ToString()
+        public override string CreateString()
         {
             return Text;
         }

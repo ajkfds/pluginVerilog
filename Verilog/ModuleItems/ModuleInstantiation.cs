@@ -395,7 +395,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                     sb.Append("\t( ");
                     if (ParameterOverrides.ContainsKey(paramName))
                     {
-                        sb.Append(ParameterOverrides[paramName].ToString());
+                        sb.Append(ParameterOverrides[paramName].CreateString());
                     }
                     else
                     {
@@ -404,7 +404,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                             instancedModule.Parameters[paramName].Expression != null
                             )
                         {
-                            sb.Append(instancedModule.Parameters[paramName].Expression.ToString());
+                            sb.Append(instancedModule.Parameters[paramName].Expression.CreateString());
                         }
                     }
                     sb.Append(" )");
@@ -436,7 +436,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                 sb.Append("( ");
                 if (PortConnection.ContainsKey(port.Name))
                 {
-                    sb.Append(PortConnection[port.Name].ToString());
+                    sb.Append(PortConnection[port.Name].CreateString());
                 }
                 sb.Append(" )");
                 first = false;

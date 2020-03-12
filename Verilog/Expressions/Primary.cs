@@ -32,6 +32,11 @@ namespace pluginVerilog.Verilog.Expressions
             return label;
         }
 
+        public virtual string CreateString()
+        {
+            return "";
+        }
+
         public virtual void AppendLabel(ajkControls.ColorLabel label)
         {
 

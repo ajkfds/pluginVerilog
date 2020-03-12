@@ -180,7 +180,7 @@ namespace pluginVerilog.Verilog
 
 
 
-            new Snippets.BeginAutoCompleteItem("begin",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
+            new AutoComplete.BeginAutoCompleteItem("begin",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("case",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("casex",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("casez",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
@@ -205,8 +205,8 @@ namespace pluginVerilog.Verilog
             new codeEditor.CodeEditor.AutocompleteItem("forever",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("fork",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
 
-            new Snippets.FunctionAutocompleteItem("function",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
-            new Snippets.GenerateAutoCompleteItem("generate",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
+            new AutoComplete.FunctionAutocompleteItem("function",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
+            new AutoComplete.GenerateAutoCompleteItem("generate",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("genvar",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("if",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("incdir",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
@@ -217,7 +217,7 @@ namespace pluginVerilog.Verilog
             new codeEditor.CodeEditor.AutocompleteItem("integer",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("join",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("localparam",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
-            new Snippets.ModuleAutocompleteItem("module",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
+            new AutoComplete.ModuleAutocompleteItem("module",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("nand",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
 
             new codeEditor.CodeEditor.AutocompleteItem("negedge",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
@@ -238,7 +238,7 @@ namespace pluginVerilog.Verilog
             new codeEditor.CodeEditor.AutocompleteItem("repeat",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("signed",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("time",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
-            new Snippets.TaskAutocompleteItem("task",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
+            new AutoComplete.TaskAutocompleteItem("task",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
 
             new codeEditor.CodeEditor.AutocompleteItem("tri0",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("tri1",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
@@ -255,7 +255,7 @@ namespace pluginVerilog.Verilog
             new codeEditor.CodeEditor.AutocompleteItem("wire",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
             new codeEditor.CodeEditor.AutocompleteItem("wor",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
 
-            new Snippets.NonBlockingAssignmentAutoCompleteItem("<=",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Normal), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
+            new AutoComplete.NonBlockingAssignmentAutoCompleteItem("<=",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Normal), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
         };
 
         private NameSpace getSearchNameSpace(NameSpace nameSpace,List<string> hier,bool endWithDot)
@@ -341,7 +341,7 @@ namespace pluginVerilog.Verilog
                 foreach (string moduleName in moduleNames)
                 {
                     items.Add(
-                        new Snippets.ModuleInstanceAutocompleteItem(moduleName, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword), Project)
+                        new AutoComplete.ModuleInstanceAutocompleteItem(moduleName, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword), Project)
                     );
                 }
             }

@@ -21,7 +21,7 @@ namespace pluginVerilog.Verilog.Expressions
         public int? BitWidth { get; protected set; }
         public WordReference Reference { get; protected set; }
 
-        public override string ToString()
+        public string CreateString()
         {
             if(Primary == null)
             {

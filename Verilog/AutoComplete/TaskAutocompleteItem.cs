@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 
-namespace pluginVerilog.Verilog.Snippets
+namespace pluginVerilog.Verilog.AutoComplete
 {
     public class TaskAutocompleteItem : codeEditor.CodeEditor.AutocompleteItem
     {

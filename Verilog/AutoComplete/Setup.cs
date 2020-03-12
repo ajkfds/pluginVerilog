@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace pluginVerilog.Verilog.Snippets
+namespace pluginVerilog.Verilog.AutoComplete
 {
     public class Setup
     {

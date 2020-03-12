@@ -16,6 +16,9 @@ namespace pluginVerilog.Verilog.Snippets
 
         private CodeDocument document;
 
+        // initial value for {n}
+        private List<string> initials = new List<string> { "clock", "reset_x", "reset_x", "" };
+
         public override void Apply(CodeDocument codeDocument)
         {
             document = codeDocument;
@@ -47,6 +50,7 @@ namespace pluginVerilog.Verilog.Snippets
             codeDocument.SelectionStart = startIndexs[0];
             codeDocument.SelectionLast = lastIndexs[0] + 1;
 
+            // set highlights for {n} texts
             codeEditor.Controller.CodeEditor.ClearHighlight();
             for (int i = 0; i < startIndexs.Count; i++)
             {
@@ -56,7 +60,6 @@ namespace pluginVerilog.Verilog.Snippets
             base.Apply(codeDocument);
         }
 
-        private List<string> initials = new List<string> { "clock", "reset_x", "reset_x", "" };
 
         public override void Aborted()
         {
@@ -70,6 +73,7 @@ namespace pluginVerilog.Verilog.Snippets
 
         public override void BeforeKeyDown(object sender, KeyEventArgs e, codeEditor.CodeEditor.AutoCompleteForm autoCompleteForm)
         {
+            // overrider return & escape
             if (autoCompleteForm == null || autoCompleteForm.Visible == false)
             {
                 if (e.KeyCode == Keys.Return || e.KeyCode == Keys.Escape)
@@ -92,10 +96,10 @@ namespace pluginVerilog.Verilog.Snippets
                 int i = codeEditor.Controller.CodeEditor.GetHighlightIndex(document.CaretIndex);
                 switch (i)
                 {
-                    case 0:
+                    case 0: // clock
                         codeEditor.Controller.CodeEditor.SelectHighlight(1);
                         break;
-                    case 1:
+                    case 1: // reset
                         int start, last;
                         codeEditor.Controller.CodeEditor.GetHighlightPosition(1, out start, out last);
                         string text = document.CreateString(start, last - start + 1);
@@ -105,7 +109,7 @@ namespace pluginVerilog.Verilog.Snippets
                         codeEditor.Controller.CodeEditor.AbortInteractiveSnippet();
                         codeEditor.Controller.CodeEditor.RequestReparse();
                         break;
-                    case 2:
+                    case 2: // reset (skip this input)
                         codeEditor.Controller.CodeEditor.SelectHighlight(3);
                         codeEditor.Controller.CodeEditor.AbortInteractiveSnippet();
                         codeEditor.Controller.CodeEditor.RequestReparse();

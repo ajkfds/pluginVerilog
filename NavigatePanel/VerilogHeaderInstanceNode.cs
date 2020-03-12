@@ -13,6 +13,7 @@ namespace pluginVerilog.NavigatePanel
         {
 
         }
+        public Action NodeSelected;
 
         public Data.IVerilogRelatedFile VerilogRelatedFile
         {
@@ -21,6 +22,16 @@ namespace pluginVerilog.NavigatePanel
         public codeEditor.Data.TextFile TextFile
         {
             get { return Item as codeEditor.Data.TextFile; }
+        }
+
+        public override void Selected()
+        {
+            // activate navigate panel context menu
+            var menu = codeEditor.Controller.NavigatePanel.GetContextMenuStrip();
+            if (menu.Items.ContainsKey("openWithExploererTsmi")) menu.Items["openWithExploererTsmi"].Visible = true;
+
+            codeEditor.Controller.CodeEditor.SetTextFile(TextFile);
+            if (NodeSelected != null) NodeSelected();
         }
 
         public override string Text
@@ -44,9 +55,5 @@ namespace pluginVerilog.NavigatePanel
                 );
         }
 
-        public override void Selected()
-        {
-            codeEditor.Controller.CodeEditor.SetTextFile(TextFile);
-        }
     }
 }
