@@ -347,6 +347,7 @@ namespace pluginVerilog.Verilog.Variables
                     }
                 }
 
+                port.SectionName = word.SectionName;
                 word.MoveNext();
 
                 if (word.GetCharAt(0) != ',')
@@ -364,7 +365,6 @@ namespace pluginVerilog.Verilog.Variables
                 string comment = word.GetFollowedComment();
                 port.Comment = comment;
                 port.Variable.Comment = comment;
-                port.SectionName = word.SectionName;
                 if (comment.Contains('@')) commentParser(port, word.GetCommentScanner());
             }
 
@@ -467,7 +467,7 @@ namespace pluginVerilog.Verilog.Variables
                 }
                 word.MoveNext();
 
-
+                port.SectionName = word.SectionName;
                 if (word.GetCharAt(0) != ',')
                 {
                     break;
@@ -482,7 +482,6 @@ namespace pluginVerilog.Verilog.Variables
                 string comment = word.GetFollowedComment();
                 port.Comment = comment;
                 port.Variable.Comment = comment;
-                port.SectionName = word.SectionName;
                 if (comment.Contains('@')) commentParser(port, word.GetCommentScanner());
             }
         }
@@ -637,6 +636,7 @@ namespace pluginVerilog.Verilog.Variables
                     Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
                 }
 
+                port.SectionName = word.SectionName;
                 if (word.GetCharAt(0) != ',')
                 {
                     break;
@@ -651,7 +651,6 @@ namespace pluginVerilog.Verilog.Variables
                 string comment = word.GetFollowedComment();
                 port.Comment = comment;
                 port.Variable.Comment = comment;
-                port.SectionName = word.SectionName;
                 if (comment.Contains('@')) commentParser(port, word.GetCommentScanner());
             }
         }

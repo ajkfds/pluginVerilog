@@ -22,9 +22,9 @@ namespace pluginVerilog
                     System.Drawing.Color.FromArgb(78,201,176),      // identifier
                     System.Drawing.Color.FromArgb(255,94,194),      // Parameter
                     System.Drawing.Color.FromArgb(206,145,120),     // number
-                    System.Drawing.Color.FromArgb(255,80,80),       // Net
+                    System.Drawing.Color.FromArgb(255,100,100),     // Net
                     System.Drawing.Color.FromArgb((int)(106*0.8),(int)(153*0.8),(int)(85*0.8)),        // highlighted comment
-                    System.Drawing.Color.Pink,                      // Variable
+                    System.Drawing.Color.FromArgb(255,150,150),                      // Variable
                     System.Drawing.Color.Black,                     // 12
                     System.Drawing.Color.Black,                     // 13
                     System.Drawing.Color.Black,                     // 14

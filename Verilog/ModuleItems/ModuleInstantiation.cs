@@ -365,12 +365,12 @@ namespace pluginVerilog.Verilog.ModuleItems
         }
 
 
-        public new string ToString()
+        public string CreateString()
         {
-            return ToString("\t");
+            return CreateSrting("\t");
 
         }
-        public string ToString(string indent)
+        public string CreateSrting(string indent)
         {
             Module instancedModule = ProjectProperty.GetModule(ModuleName);
             if (instancedModule == null) return null;

@@ -9,6 +9,7 @@ namespace pluginVerilog.Verilog.ModuleItems
     public class GateInstantiation : Item
     {
         protected GateInstantiation() { }
+        public DriveStrength DriveStrength = null;
 
         // gate_instantiation::=    cmos_switchtype                             [delay3]    cmos_switch_instance        { , cmos_switch_instance }; 
         //                          | enable_gatetype   [drive_strength]        [delay3]    enable_gate_instance        { , enable_gate_instance }; 
@@ -48,7 +49,6 @@ namespace pluginVerilog.Verilog.ModuleItems
 
         //        private List<Verilog.Variables.Port> ports = new List<Variables.Port>();
         //        public IReadOnlyList<Verilog.Variables.Port> Ports { get { return ports; } }
-
         public static GateInstantiation ParseCreate(WordScanner word, IModuleOrGeneratedBlock module)
         {
             switch (word.Text)
@@ -66,7 +66,6 @@ namespace pluginVerilog.Verilog.ModuleItems
                         word.AddError("; expected");
                     }
                     return cmos_switch;
-                    break;
                 // enable_gatetype
                 case "bufif0":
                 case "bufif1":
@@ -167,9 +166,16 @@ namespace pluginVerilog.Verilog.ModuleItems
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
-            DriveStrength.ParseCreate(word, module as NameSpace);
+            if (pull.PullUp)
+            {
+                pull.DriveStrength = DriveStrength.ParseCreatePullUp(word, module as NameSpace);
+            }
+            else
+            {
+                pull.DriveStrength = DriveStrength.ParseCreatePullDown(word, module as NameSpace);
+            }
 
-            if(word.Text != "(")
+            if (word.Text != "(")
             {
                 word.AddError("( expected");
                 word.SkipToKeyword(";");

@@ -55,7 +55,7 @@ namespace pluginVerilog.Verilog
     //        word.MoveNext(); // (
     //        ChargeStrength ret = new ChargeStrength();
     //        ret.Strength = (Strengths)strength;
-            
+
     //        if (word.Text != ")")
     //        {
     //            word.AddError(") required");
@@ -67,8 +67,10 @@ namespace pluginVerilog.Verilog
     //    }
     //}
 
-    public class DriveStrength
-    {
+
+
+        public class DriveStrength
+        {
         protected DriveStrength() { }
 
         public Strengths Strength0;
@@ -180,6 +182,274 @@ namespace pluginVerilog.Verilog
                     strength == Strengths.pull0 ||
                     strength == Strengths.weak0 ||
                     strength == Strengths.highz0
+                    )
+                {
+                    ret.Strength1 = (Strengths)strength;
+                    if (word.Text != ")")
+                    {
+                        word.AddError(") required");
+                        return null;
+                    }
+                    word.MoveNext();
+                    return ret;
+                }
+                else
+                {
+                    word.AddError("illegal strength");
+                    return null;
+                }
+            }
+            else
+            {
+                word.AddError("illegal strength");
+                return null;
+            }
+        }
+        // pullup_strength      ::= (strength0, strength1) | (strength1, strength0) | (strength1 ) 
+        public static DriveStrength ParseCreatePullUp(WordScanner word, NameSpace nameSpace)
+        {
+            return parseCreatePullUpDown(word,nameSpace,true);
+        }
+        private static DriveStrength parseCreatePullUpDown(WordScanner word, NameSpace nameSpace,bool pullUp)
+        {
+            string nextText = word.NextText;
+
+            if (word.Text != "(") return null;
+            switch (nextText)
+            {
+                case "supply0":
+                case "strong0":
+                case "pull0":
+                case "weak0":
+                case "supply1":
+                case "strong1":
+                case "pull1":
+                case "weak1":
+                    break;
+                default:
+                    return null;
+            }
+
+            word.MoveNext(); // (
+            DriveStrength ret = new DriveStrength();
+            Strengths? strength;
+
+            strength = getStrengths(word, nameSpace);
+            if (strength == null)
+            {
+                word.AddError("illegal strength");
+                return null;
+            }
+            if (
+                strength == Strengths.supply0 ||
+                strength == Strengths.strong0 ||
+                strength == Strengths.pull0 ||
+                strength == Strengths.weak0
+                )
+            {
+                ret.Strength0 = (Strengths)strength;
+
+                if (word.Text == ")" && !pullUp)
+                {
+                    word.MoveNext();
+                    return ret;
+                }
+                if (word.Text != ",")
+                {
+                    word.AddError("strength1 is required");
+                    return null;
+                }
+                word.MoveNext();
+
+                strength = getStrengths(word, nameSpace);
+                if (strength == null)
+                {
+                    word.AddError("illegal strength");
+                    return null;
+                }
+                if (
+                    strength == Strengths.supply1 ||
+                    strength == Strengths.strong1 ||
+                    strength == Strengths.pull1 ||
+                    strength == Strengths.weak1
+                    )
+                {
+                    ret.Strength1 = (Strengths)strength;
+                    if (word.Text != ")")
+                    {
+                        word.AddError(") required");
+                        return null;
+                    }
+                    word.MoveNext();
+                    return ret;
+                }
+                else
+                {
+                    word.AddError("illegal strength");
+                    return null;
+                }
+            }
+            else if (
+               strength == Strengths.supply1 ||
+               strength == Strengths.strong1 ||
+               strength == Strengths.pull1 ||
+               strength == Strengths.weak1
+               )
+            {
+                ret.Strength1 = (Strengths)strength;
+                if (word.Text == ")" && pullUp)
+                {
+                    word.MoveNext();
+                    return ret;
+                }
+                if (word.Text != ",")
+                {
+                    word.AddError("strength1 is required");
+                    return null;
+                }
+                word.MoveNext();
+
+                strength = getStrengths(word, nameSpace);
+                if (strength == null)
+                {
+                    word.AddError("illegal strength");
+                    return null;
+                }
+                if (
+                    strength == Strengths.supply0 ||
+                    strength == Strengths.strong0 ||
+                    strength == Strengths.pull0 ||
+                    strength == Strengths.weak0
+                    )
+                {
+                    ret.Strength1 = (Strengths)strength;
+                    if (word.Text != ")")
+                    {
+                        word.AddError(") required");
+                        return null;
+                    }
+                    word.MoveNext();
+                    return ret;
+                }
+                else
+                {
+                    word.AddError("illegal strength");
+                    return null;
+                }
+            }
+            else
+            {
+                word.AddError("illegal strength");
+                return null;
+            }
+        }
+
+        // pulldown_strength    ::= (strength0, strength1) | (strength1, strength0) | (strength0 ) 
+        public static DriveStrength ParseCreatePullDown(WordScanner word, NameSpace nameSpace)
+        {
+            string nextText = word.NextText;
+
+            if (word.Text != "(") return null;
+            switch (nextText)
+            {
+                case "supply0":
+                case "strong0":
+                case "pull0":
+                case "weak0":
+                case "supply1":
+                case "strong1":
+                case "pull1":
+                case "weak1":
+                    break;
+                default:
+                    return null;
+            }
+
+            word.MoveNext(); // (
+            DriveStrength ret = new DriveStrength();
+            Strengths? strength;
+
+            strength = getStrengths(word, nameSpace);
+            if (strength == null)
+            {
+                word.AddError("illegal strength");
+                return null;
+            }
+            if (
+                strength == Strengths.supply0 ||
+                strength == Strengths.strong0 ||
+                strength == Strengths.pull0 ||
+                strength == Strengths.weak0
+                )
+            {
+                ret.Strength0 = (Strengths)strength;
+                if (word.Text == ")")
+                {
+                    word.MoveNext();
+                    return ret;
+                }
+
+                if (word.Text != ",")
+                {
+                    word.AddError("strength1 is required");
+                    return null;
+                }
+                word.MoveNext();
+
+                strength = getStrengths(word, nameSpace);
+                if (strength == null)
+                {
+                    word.AddError("illegal strength");
+                    return null;
+                }
+                if (
+                    strength == Strengths.supply1 ||
+                    strength == Strengths.strong1 ||
+                    strength == Strengths.pull1 ||
+                    strength == Strengths.weak1
+                    )
+                {
+                    ret.Strength1 = (Strengths)strength;
+                    if (word.Text != ")")
+                    {
+                        word.AddError(") required");
+                        return null;
+                    }
+                    word.MoveNext();
+                    return ret;
+                }
+                else
+                {
+                    word.AddError("illegal strength");
+                    return null;
+                }
+            }
+            else if (
+               strength == Strengths.supply1 ||
+               strength == Strengths.strong1 ||
+               strength == Strengths.pull1 ||
+               strength == Strengths.weak1
+               )
+            {
+                ret.Strength1 = (Strengths)strength;
+                if (word.Text != ",")
+                {
+                    word.AddError("strength1 is required");
+                    return null;
+                }
+                word.MoveNext();
+
+                strength = getStrengths(word, nameSpace);
+                if (strength == null)
+                {
+                    word.AddError("illegal strength");
+                    return null;
+                }
+                if (
+                    strength == Strengths.supply0 ||
+                    strength == Strengths.strong0 ||
+                    strength == Strengths.pull0 ||
+                    strength == Strengths.weak0
                     )
                 {
                     ret.Strength1 = (Strengths)strength;

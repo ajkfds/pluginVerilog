@@ -45,7 +45,7 @@ namespace pluginVerilog.Verilog.Snippets
                 moduleInstantiation.BeginIndex,
                 moduleInstantiation.LastIndex - moduleInstantiation.BeginIndex + 1,
                 0,
-                moduleInstantiation.ToString("\t")
+                moduleInstantiation.CreateSrting("\t")
                 );
             codeDocument.SelectionStart = codeDocument.CaretIndex;
             codeDocument.SelectionLast = codeDocument.CaretIndex;

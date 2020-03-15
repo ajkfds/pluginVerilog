@@ -29,7 +29,7 @@ namespace pluginVerilog.Verilog.Expressions
             }
             else
             {
-                return Primary.ToString();
+                return Primary.CreateString();
             }
         }
 
