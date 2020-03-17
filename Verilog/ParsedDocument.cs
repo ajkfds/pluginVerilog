@@ -298,6 +298,10 @@ namespace pluginVerilog.Verilog
             if (space == null) // external module/class/program
             {
                 items = verilogKeywords.ToList();
+                int headIndex;
+                int length;
+                document.GetWord(index, out headIndex, out length);
+                cantidateWord = document.CreateString(headIndex, length);
                 return items;
             }
 
