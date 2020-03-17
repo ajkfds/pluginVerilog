@@ -183,6 +183,7 @@ namespace pluginVerilog.Verilog.Expressions
                         word.AddError("illegal range/dimension");
                         return null;
                 }
+                val.BitWidth = val.RangeExpression.BitWidth;
             }
             else
             {   // w/o range

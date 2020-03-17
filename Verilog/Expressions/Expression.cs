@@ -164,6 +164,12 @@ namespace pluginVerilog.Verilog.Expressions
             return expression;
         }
 
+        public static Expression CreateTempExpression(string text)
+        {
+            Expression expression = new Expression();
+            expression.Primary = new TempPrimary(text);
+            return expression;
+        }
 
         public ajkControls.ColorLabel GetLabel()
         {

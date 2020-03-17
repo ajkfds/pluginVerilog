@@ -108,6 +108,7 @@
     <Compile Include="Verilog\Expressions\RangeExpression.cs" />
     <Compile Include="Verilog\Expressions\References.cs" />
     <Compile Include="Verilog\Expressions\String.cs" />
+    <Compile Include="Verilog\Expressions\TempPrimary.cs" />
     <Compile Include="Verilog\Expressions\VariableReference.cs" />
     <Compile Include="Verilog\Generate.cs" />
     <Compile Include="Verilog\Macro.cs" />

@@ -36,7 +36,8 @@ namespace pluginVerilog.Verilog.AutoComplete
             var vfile = itext as Data.IVerilogRelatedFile;
             ParsedDocument parsedDocument = vfile.VerilogParsedDocument;
             if (parsedDocument == null) return;
-            Module module = parsedDocument.GetModule(vfile.CodeDocument.CaretIndex);
+
+            Module module = parsedDocument.GetModule(vfile.CodeDocument.GetLineStartIndex(vfile.CodeDocument.GetLineAt(vfile.CodeDocument.CaretIndex)));
             if (module == null) return;
 
             Data.VerilogFile instancedFile = projectProperty.GetFileOfModule(Text) as Data.VerilogFile;

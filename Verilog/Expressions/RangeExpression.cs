@@ -48,6 +48,10 @@ namespace pluginVerilog.Verilog.Expressions
         {
             MsbExpression = expression1;
             LsbExpression = expression2;
+            if(MsbExpression.Constant && LsbExpression.Constant && MsbExpression.Value != null && LsbExpression.Value != null)
+            {
+                BitWidth = (int)MsbExpression.Value - (int)LsbExpression.Value;
+            }
         }
         public Expression MsbExpression;
         public Expression LsbExpression;
@@ -67,6 +71,10 @@ namespace pluginVerilog.Verilog.Expressions
         {
             BaseExpression = expression1;
             WidthExpression = expression2;
+            if (WidthExpression.Constant && WidthExpression.Value != null)
+            {
+                BitWidth = (int)WidthExpression.Value;
+            }
         }
         public Expression BaseExpression;
         public Expression WidthExpression;
@@ -87,6 +95,10 @@ namespace pluginVerilog.Verilog.Expressions
         {
             BaseExpression = expression1;
             WidthExpression = expression2;
+            if (WidthExpression.Constant && WidthExpression.Value != null)
+            {
+                BitWidth = (int)WidthExpression.Value;
+            }
         }
         public Expression BaseExpression;
         public Expression WidthExpression;

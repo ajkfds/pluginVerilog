@@ -302,6 +302,7 @@ namespace pluginVerilog.Verilog.Variables
                 net.Name = word.Text;
                 net.Range = range;
                 net.Signed = signed;
+                net.DefinedReference = word.GetReference();
                 if (netType != null) net.NetType = (Net.NetTypeEnum)netType;
                 word.Color(CodeDrawStyle.ColorType.Net);
 
@@ -420,6 +421,7 @@ namespace pluginVerilog.Verilog.Variables
                 Net net = new Net();
                 net.Name = word.Text;
                 net.Range = range;
+                net.DefinedReference = word.GetReference();
                 net.Signed = signed;
                 if (netType != null) net.NetType = (Net.NetTypeEnum)netType;
                 word.Color(CodeDrawStyle.ColorType.Net);
@@ -564,14 +566,17 @@ namespace pluginVerilog.Verilog.Variables
                 {
                     case portVariableType.reg:
                         variable = new Reg(word.Text, range, signed);
+                        variable.DefinedReference = word.GetReference();
                         word.Color(CodeDrawStyle.ColorType.Register);
                         break;
                     case portVariableType.integer:
                         variable = new Integer(word.Text);
+                        variable.DefinedReference = word.GetReference();
                         word.Color(CodeDrawStyle.ColorType.Variable);
                         break;
                     case portVariableType.time:
                         variable = new Time(word.Text);
+                        variable.DefinedReference = word.GetReference();
                         word.Color(CodeDrawStyle.ColorType.Variable);
                         break;
                     case portVariableType.wire:
@@ -579,6 +584,7 @@ namespace pluginVerilog.Verilog.Variables
                         net.Name = word.Text;
                         net.Range = range;
                         net.Signed = signed;
+                        net.DefinedReference = word.GetReference();
                         if (netType != null) net.NetType = (Net.NetTypeEnum)netType;
                         variable = net;
                         word.Color(CodeDrawStyle.ColorType.Net);

@@ -19,20 +19,20 @@ namespace pluginVerilog.Tools
             codeEditor.Data.ITextFile textFile = codeEditor.Controller.CodeEditor.GetTextFile();
             if (textFile == null) return;
 
-            Data.IVerilogRelatedFile verilogRelatedFile = textFile as Data.IVerilogRelatedFile;
+            verilogRelatedFile = textFile as Data.IVerilogRelatedFile;
             if (verilogRelatedFile == null) return;
 
-            Verilog.ParsedDocument parsedDocument = verilogRelatedFile.VerilogParsedDocument;
+            parsedDocument = verilogRelatedFile.VerilogParsedDocument;
             if (parsedDocument == null) return;
 
-            codeEditor.CodeEditor.CodeDocument codeDocument = textFile.CodeDocument;
+            codeDocument = textFile.CodeDocument;
             if (codeDocument == null) return;
 
-            codeEditor.Data.Project project = textFile.Project;
+            project = textFile.Project;
             if (project == null) return;
 
             int index = codeDocument.CaretIndex;
-            Verilog.Module module = parsedDocument.GetModule(index);
+            module = parsedDocument.GetModule(index);
 
 
             foreach (var inst in
@@ -40,40 +40,44 @@ namespace pluginVerilog.Tools
             {
                 if (inst.BeginIndex < index && index < inst.LastIndex)
                 {
-                    setupModule(module, inst, parsedDocument);
+                    moduleInstantiation = inst;
+                    setupModule();
                     return;
                 }
             }
         }
 
-        private void setupModule(
-            Verilog.Module module,
-            Verilog.ModuleItems.ModuleInstantiation moduleInstanciation,
-            Verilog.ParsedDocument parsedDocument
-            )
+        Data.IVerilogRelatedFile verilogRelatedFile;
+        Verilog.ParsedDocument parsedDocument;
+        codeEditor.CodeEditor.CodeDocument codeDocument;
+        codeEditor.Data.Project project;
+        Verilog.Module module;
+        Verilog.ModuleItems.ModuleInstantiation moduleInstantiation;
+
+        private void setupModule()
         {
-            Data.VerilogFile source = parsedDocument.ProjectProperty.GetFileOfModule(moduleInstanciation.ModuleName) as Data.VerilogFile;
+            Data.VerilogFile source = parsedDocument.ProjectProperty.GetFileOfModule(moduleInstantiation.ModuleName) as Data.VerilogFile;
             if (source == null) return;
 
             Verilog.ParsedDocument sourceParsedDocument;
-            if (moduleInstanciation.ParameterOverrides.Count == 0)
+            if (moduleInstantiation.ParameterOverrides.Count == 0)
             {
                 sourceParsedDocument = source.VerilogParsedDocument;
             }
             else
             {
-                sourceParsedDocument = source.GetInstancedParsedDocument(moduleInstanciation.OverrideParameterID) as Verilog.ParsedDocument;
+                sourceParsedDocument = source.GetInstancedParsedDocument(moduleInstantiation.OverrideParameterID) as Verilog.ParsedDocument;
             }
             if (sourceParsedDocument == null) return;
-            Verilog.Module sourceModule = sourceParsedDocument.Modules[moduleInstanciation.ModuleName];
+            Verilog.Module sourceModule = sourceParsedDocument.Modules[moduleInstantiation.ModuleName];
             if (sourceModule == null) return;
 
-            Verilog.Module instancedModule = parsedDocument.ProjectProperty.GetModule(moduleInstanciation.ModuleName);
+            Verilog.Module instancedModule = parsedDocument.ProjectProperty.GetModule(moduleInstantiation.ModuleName);
 
             HeaderLabel header = new HeaderLabel();
-            header.AppendText(moduleInstanciation.ModuleName, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+            header.AppendText(moduleInstantiation.ModuleName, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
             header.AppendText(" ");
-            header.AppendText(moduleInstanciation.Name);
+            header.AppendText(moduleInstantiation.Name);
             header.AppendText("(");
             colorLabelList.Add(header);
 
@@ -89,21 +93,20 @@ namespace pluginVerilog.Tools
                     colorLabelList.Add(section);
                 }
 
-                PortLabel portLabel = new PortLabel();
-                portLabel.AppendText(".");
-                portLabel.AppendText(port.Name, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Identifier));
-                portLabel.AppendText(" ( ");
-                if (moduleInstanciation.PortConnection.ContainsKey(port.Name))
+                PortLabel portLabel;
+                if (moduleInstantiation.PortConnection.ContainsKey(port.Name))
                 {
-                    portLabel.AppendLabel(moduleInstanciation.PortConnection[port.Name].GetLabel());
+                    portLabel = new PortLabel(port.Name, moduleInstantiation.PortConnection[port.Name].GetLabel());
                 }
-                portLabel.AppendText(" )");
-                portLabel.PortName = port.Name;
+                else
+                {
+                    portLabel = new PortLabel(port.Name,null);
+                }
                 colorLabelList.Add(portLabel);
             }
 
             FooterLabel footer = new FooterLabel();
-            footer.AppendText(")");
+            footer.AppendText(");");
             colorLabelList.Add(footer);
 
             checkConnectCantidate(colorLabelList, module, instancedModule);
@@ -116,42 +119,58 @@ namespace pluginVerilog.Tools
                 if( label is PortLabel )
                 {
                     PortLabel portLabel = label as PortLabel;
-                    string searchName = portLabel.PortName.ToLower();
+                    string portName = portLabel.PortName.ToLower();
 
                     int matchLength = 0;
                     foreach(var variable in module.Variables.Values)
                     {
-                        string checkName = variable.Name.ToLower();
-                        
-                        if (searchName.Length > matchLength && checkName.Contains(searchName)){ 
-                            matchLength = searchName.Length;
-
-                            ajkControls.ColorLabel cantidate = new ajkControls.ColorLabel();
-                            cantidate.AppendText(variable.Name, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Variable));
-                            portLabel.Cantidate = cantidate;
-                        }
-
-                        if(checkName.Length > matchLength && searchName.Contains(checkName))
+                        string valName = variable.Name.ToLower();
+                        int i, l;
+                        searchMatch(portName, valName, out i, out l);
+                        if(l > matchLength)
                         {
-                            matchLength = checkName.Length;
+                            matchLength = l;
 
                             ajkControls.ColorLabel cantidate = new ajkControls.ColorLabel();
-                            cantidate.AppendText(variable.Name, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Variable));
+                            if(i != 0)
+                            {
+                                cantidate.AppendText(variable.Name.Substring(0,i), Color.LightGray);
+                            }
+                            cantidate.AppendText(variable.Name.Substring(i, l), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Variable));
+                            if(i+l < variable.Name.Length)
+                            {
+                                cantidate.AppendText(variable.Name.Substring(i+l), Color.LightGray);
+                            }
                             portLabel.Cantidate = cantidate;
                         }
-
                     }
 
-
-
-                    if(portLabel.Cantidate != null)
-                    {
-                        portLabel.AppendText(" -> ");
-                        portLabel.AppendLabel(portLabel.Cantidate);
-                    }
+                    if (portLabel.Cantidate != null) portLabel.Update();
                 }
             }
 
+        }
+
+        private static void searchMatch(string target,string search,out int matchIndex,out int matchLength)
+        {
+            matchIndex = 0;
+            matchLength = 0;
+
+            for(int start = 0; start < search.Length; start++)
+            {
+                for(int l = search.Length-start; l > 0; l--)
+                {
+                    if (l < matchLength) break;
+
+                    string partialSearch = search.Substring(start, l);
+                    if (!target.Contains(partialSearch)) continue;
+                    if (l > matchLength)
+                    {
+                        matchLength = l;
+                        matchIndex = start;
+                    }
+                }
+            }
         }
 
 
@@ -172,8 +191,38 @@ namespace pluginVerilog.Tools
 
         private class PortLabel : ajkControls.ColorLabel
         {
+            public PortLabel(string portName, ajkControls.ColorLabel defaultConnection)
+            {
+                PortName = portName;
+                DefaultConnection = defaultConnection;
+            }
+            public void Update()
+            {
+                Clear();
+                AppendText(".");
+                AppendText(PortName, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Identifier));
+                AppendText(" ( ");
+                if (ApplyCantidate)
+                {
+                    if (Cantidate != null) AppendLabel(Cantidate);
+                }
+                else
+                {
+                    if (DefaultConnection != null) AppendLabel(DefaultConnection);
+                }
+                AppendText(" )");
+
+                if(!ApplyCantidate && Cantidate != null)
+                {
+                    AppendText(" -> ");
+                    AppendLabel(Cantidate);
+                }
+            }
+
             public string PortName;
             public ajkControls.ColorLabel Cantidate;
+            public ajkControls.ColorLabel DefaultConnection;
+            public bool ApplyCantidate = false;
         }
 
         private class FooterLabel : ajkControls.ColorLabel
@@ -185,11 +234,58 @@ namespace pluginVerilog.Tools
         {
             if(e.KeyCode == Keys.Enter)
             {
-
-            }else if(e.KeyCode == Keys.Escape)
+                writeModuleInstance();
+                Hide();
+            }
+            else if(e.KeyCode == Keys.Escape)
             {
                 Hide();
             }
         }
+
+        private void colorLabelList_ColorLabelClicked(ajkControls.ColorLabel colorLabel)
+        {
+            if(colorLabel is PortLabel)
+            {
+                PortLabel portLabel = colorLabel as PortLabel;
+                if (portLabel.ApplyCantidate)
+                {
+                    portLabel.ApplyCantidate = false;
+                }else
+                {
+                    if (portLabel.Cantidate != null) portLabel.ApplyCantidate = true;
+                }
+                portLabel.Update();
+                colorLabelList.Refresh();
+            }
+        }
+
+        private void writeModuleInstance()
+        {
+            foreach(var label in colorLabelList)
+            {
+                if (!(label is PortLabel)) continue;
+                PortLabel portLabel = label as PortLabel;
+                if (!portLabel.ApplyCantidate) continue;
+
+                string connection = portLabel.Cantidate.CreateString();
+                moduleInstantiation.PortConnection[portLabel.PortName] = Verilog.Expressions.Expression.CreateTempExpression(connection);
+            }
+
+
+            int index = codeDocument.CaretIndex;
+            string indent = (codeDocument as CodeEditor.CodeDocument).GetIndentString(index);
+
+            codeDocument.CaretIndex = moduleInstantiation.BeginIndex;
+            codeDocument.Replace(
+                moduleInstantiation.BeginIndex,
+                moduleInstantiation.LastIndex - moduleInstantiation.BeginIndex + 1,
+                0,
+                moduleInstantiation.CreateSrting("\t")
+                );
+            codeDocument.SelectionStart = codeDocument.CaretIndex;
+            codeDocument.SelectionLast = codeDocument.CaretIndex;
+        }
+
     }
 }

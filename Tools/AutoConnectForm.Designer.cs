@@ -47,10 +47,11 @@
             this.colorLabelList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.colorLabelList.ForeColor = System.Drawing.Color.Gainsboro;
             this.colorLabelList.Location = new System.Drawing.Point(0, 33);
-            this.colorLabelList.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.colorLabelList.Margin = new System.Windows.Forms.Padding(4);
             this.colorLabelList.Name = "colorLabelList";
             this.colorLabelList.Size = new System.Drawing.Size(663, 515);
             this.colorLabelList.TabIndex = 2;
+            this.colorLabelList.ColorLabelClicked += new ajkControls.ColorLabelList.DColorLabelClicked(this.colorLabelList_ColorLabelClicked);
             this.colorLabelList.KeyDown += new System.Windows.Forms.KeyEventHandler(this.colorLabelList_KeyDown);
             // 
             // AutoConnectForm
