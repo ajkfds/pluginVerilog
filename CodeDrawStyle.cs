@@ -16,15 +16,15 @@ namespace pluginVerilog
                     System.Drawing.Color.FromArgb(212,212,212),     // Normal
                     System.Drawing.Color.FromArgb(150,150,150),     // inactivated
                     System.Drawing.Color.DarkGray,                  // 2
-                    System.Drawing.Color.FromArgb(212,0,0),         // Resister
+                    System.Drawing.Color.FromArgb(255,50,50),       // Resister
                     System.Drawing.Color.FromArgb(86,156,214),      // keyword
                     System.Drawing.Color.FromArgb(106,153,85),      // Comment
                     System.Drawing.Color.FromArgb(78,201,176),      // identifier
                     System.Drawing.Color.FromArgb(255,94,194),      // Parameter
                     System.Drawing.Color.FromArgb(206,145,120),     // number
-                    System.Drawing.Color.FromArgb(255,100,100),     // Net
-                    System.Drawing.Color.FromArgb((int)(106*0.8),(int)(153*0.8),(int)(85*0.8)),        // highlighted comment
-                    System.Drawing.Color.FromArgb(255,150,150),                      // Variable
+                    System.Drawing.Color.FromArgb(255,150,150),     // Net
+                    System.Drawing.Color.FromArgb(200,255,100),     // highlighted comment
+                    System.Drawing.Color.FromArgb(255,220,220),     // Variable
                     System.Drawing.Color.Black,                     // 12
                     System.Drawing.Color.Black,                     // 13
                     System.Drawing.Color.Black,                     // 14
