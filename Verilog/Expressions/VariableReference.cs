@@ -102,7 +102,7 @@ namespace pluginVerilog.Verilog.Expressions
             }
             else
             {
-                word.Color(CodeDrawStyle.ColorType.Net);
+                word.Color(CodeDrawStyle.ColorType.Variable);
             }
 
             if (assigned)
