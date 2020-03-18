@@ -26,17 +26,7 @@ namespace pluginVerilog.Verilog.Snippets
             Module module = parsedDocument.GetModule(index);
 
             Tools.AutoConnectForm form = new Tools.AutoConnectForm();
-            form.ShowDialog();
-
-            //foreach (var inst in
-            //    module.ModuleInstantiations.Values)
-            //{
-            //    if (inst.BeginIndex < index && index < inst.LastIndex)
-            //    {
-            //        writeModuleInstance(codeDocument, index, inst);
-            //        return;
-            //    }
-            //}
+            codeEditor.Controller.ShowDialogForm(form);
         }
 
 
