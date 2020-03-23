@@ -468,6 +468,7 @@ namespace pluginVerilog.Verilog.Variables
                         port = portNameSpace.Ports[port.Name];
                     }
                 }
+                port.Variable.UsedReferences.Add(word.GetReference());
                 port.Variable.AssignedReferences.Add(word.GetReference());
                 port.SectionName = word.SectionName;
                 word.MoveNext();
@@ -644,6 +645,7 @@ namespace pluginVerilog.Verilog.Variables
                     Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
                 }
 
+                port.Variable.UsedReferences.Add(word.GetReference());
                 port.SectionName = word.SectionName;
                 if (word.GetCharAt(0) != ',')
                 {
