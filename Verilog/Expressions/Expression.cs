@@ -181,74 +181,6 @@ namespace pluginVerilog.Verilog.Expressions
             {
                 return Primary.GetLabel();
             }
-            /*
-            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
-            List<Primary> resultStock = new List<Primary>();
-
-            for (int i = 0; i < RpnPrimarys.Count; i++)
-            {
-                Primary item = RpnPrimarys[i];
-                if (item is Primary)
-                {
-                    resultStock.Add(item as Primary);
-                }
-                else if (item is BinaryOperator)
-                {
-                    if (resultStock.Count < 2) return null;
-                    BinaryOperator op = item as BinaryOperator;
-                    label.AppendLabel(resultStock[0].GetLabel());
-                    label.AppendLabel(op.GetLabel());
-                    label.AppendLabel(resultStock[1].GetLabel());
-
-                    Primary primary = op.Operate(resultStock[0], resultStock[1]);
-                    resultStock.RemoveAt(0);
-                    resultStock.RemoveAt(0);
-                    resultStock.Add(primary);
-                }
-                else if (item is UnaryOperator)
-                {
-                    if (resultStock.Count < 1) return null;
-                    UnaryOperator op = item as UnaryOperator;
-                    label.AppendLabel(op.GetLabel());
-                    label.AppendLabel(resultStock[0].GetLabel());
-
-                    Primary primary = op.Operate(resultStock[0]);
-                    resultStock.RemoveAt(0);
-                    resultStock.Add(primary);
-                }
-                else if (item is TenaryOperator)
-                {
-                    if (resultStock.Count < 3) return null;
-                    TenaryOperator op = item as TenaryOperator;
-
-                    label.AppendLabel(resultStock[0].GetLabel());
-
-                    Primary primary = op.Operate(resultStock[0], resultStock[1], resultStock[2]);
-                    resultStock.RemoveAt(0);
-                    resultStock.RemoveAt(0);
-                    resultStock.RemoveAt(0);
-                    resultStock.Add(primary);
-                }
-                else
-                {
-                    return null;
-                }
-                //                expression.RpnPrimarys.RemoveAt(0);
-            }
-            if (resultStock.Count == 1)
-            {
-                label.AppendLabel(resultStock[0].GetLabel());
-
-                Constant = resultStock[0].Constant;
-                BitWidth = resultStock[0].BitWidth;
-                Value = resultStock[0].Value;
-            }
-            else
-            {
-                return null;
-            }
-            return label;
-            */
         }
 
 
@@ -258,7 +190,10 @@ namespace pluginVerilog.Verilog.Expressions
             List<Operator> operatorsStock = new List<Operator>();
             List<Primary> rpnPrimarys = new List<Primary>();
 
+            WordReference reference = word.GetReference();
+
             parseVariableLValue(word, nameSpace, rpnPrimarys, operatorsStock);
+            expression.Reference = reference;
             while (operatorsStock.Count != 0)
             {
                 rpnPrimarys.Add(operatorsStock.Last());

@@ -52,6 +52,22 @@ namespace pluginVerilog
             }
         }
 
+        public Verilog.Module GetInstancedModule(Verilog.ModuleItems.ModuleInstantiation moduleInstantiation)
+        {
+            if (moduleInstantiation.ParameterOverrides.Count == 0)
+            {
+                return GetModule(moduleInstantiation.ModuleName);
+            }
+            else
+            {
+                Data.VerilogFile file = GetFileOfModule(moduleInstantiation.ModuleName) as Data.VerilogFile;
+                if (file == null) return null;
+                Verilog.ParsedDocument parsedDocument = file.GetInstancedParsedDocument(moduleInstantiation.OverrideParameterID) as Verilog.ParsedDocument;
+                if (parsedDocument == null) return null;
+                if (!parsedDocument.Modules.ContainsKey(moduleInstantiation.ModuleName)) return null;
+                return parsedDocument.Modules[moduleInstantiation.ModuleName];
+            }
+        }
         public void loadMacros(ajkControls.JsonReader jsonReader)
         {
             using(var reader = jsonReader.GetNextObjectReader())

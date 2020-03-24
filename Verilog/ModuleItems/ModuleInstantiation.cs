@@ -44,6 +44,11 @@ namespace pluginVerilog.Verilog.ModuleItems
             WordScanner moduleIdentifier = word.Clone();
             string moduleName = word.Text;
             int beginIndex = word.RootIndex;
+            Module instancedModule = word.ProjectProperty.GetModule(moduleName);
+            if (instancedModule == null)
+            {
+                word.AddError("not defined");
+            }
             word.MoveNext();
 
             string next = word.NextText;
@@ -58,11 +63,7 @@ namespace pluginVerilog.Verilog.ModuleItems
             moduleInstantiation.ModuleName = moduleName;
             moduleInstantiation.BeginIndex = beginIndex;
             moduleInstantiation.Project = word.RootParsedDocument.Project;
-            Module instancedModule = word.RootParsedDocument.ProjectProperty.GetModule(moduleName);
-            if(instancedModule == null)
-            {
-                word.AddError("not defined");
-            }
+
 
             if (word.Text == "#") // parameter
             {
@@ -188,6 +189,11 @@ namespace pluginVerilog.Verilog.ModuleItems
                 word.MoveNext();
             }
 
+            // swap to parameter overrided module
+            if(moduleInstantiation.ParameterOverrides.Count != 0)
+            {
+                instancedModule = word.ProjectProperty.GetInstancedModule(moduleInstantiation);
+            }
 
             while (!word.Eof)
             {
@@ -292,11 +298,49 @@ namespace pluginVerilog.Verilog.ModuleItems
                         {
                             Expressions.Expression expression = Expressions.Expression.ParseCreateVariableLValue(word, module as NameSpace);
                             if ( word.Prototype && expression != null && !moduleInstantiation.PortConnection.ContainsKey(pinName)) moduleInstantiation.PortConnection.Add(pinName, expression);
+
+                            if (!word.Prototype)
+                            {
+                                if (instancedModule != null && expression != null && expression.BitWidth != null && instancedModule.Ports.ContainsKey(pinName))
+                                {
+                                    if (instancedModule.Ports[pinName].Range == null)
+                                    {
+                                        if (expression.BitWidth != null && expression.Reference != null)
+                                        {
+                                            expression.Reference.AddWarning(word.Document, "bitwidth mismatch 1 vs " + expression.BitWidth);
+                                        }
+
+                                    }
+                                    else if (instancedModule.Ports[pinName].Range.BitWidth != expression.BitWidth && expression.Reference != null)
+                                    {
+                                        expression.Reference.AddWarning(word.Document, "bitwidth mismatch " + instancedModule.Ports[pinName].Range.BitWidth + " vs " + expression.BitWidth);
+                                    }
+                                }
+                            }
                         }
                         else
                         {
                             Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
                             if (word.Prototype && expression != null && !moduleInstantiation.PortConnection.ContainsKey(pinName)) moduleInstantiation.PortConnection.Add(pinName, expression);
+
+                            if (!word.Prototype)
+                            {
+                                if (instancedModule != null && expression != null && expression.BitWidth != null && instancedModule.Ports.ContainsKey(pinName))
+                                {
+                                    if (instancedModule.Ports[pinName].Range == null)
+                                    {
+                                        if (expression.BitWidth != null && expression.Reference != null)
+                                        {
+                                            expression.Reference.AddWarning(word.Document, "bitwidth mismatch 1 vs " + expression.BitWidth);
+                                        }
+
+                                    }
+                                    else if (instancedModule.Ports[pinName].Range.BitWidth != expression.BitWidth && expression.Reference != null)
+                                    {
+                                        expression.Reference.AddWarning(word.Document, "bitwidth mismatch " + instancedModule.Ports[pinName].Range.BitWidth + " vs " + expression.BitWidth);
+                                    }
+                                }
+                            }
                         }
                         if (word.Text != ")")
                         {

@@ -27,6 +27,30 @@ namespace pluginVerilog.Verilog
 
         public Verilog.ParsedDocument RootParsedDocument { get; protected set; }
 
+        public CodeEditor.CodeDocument Document
+        {
+            get
+            {
+                return wordPointer.Document;
+            }
+        }
+
+        public codeEditor.Data.Project Project
+        {
+            get
+            {
+                return RootParsedDocument.Project;
+            }
+        }
+
+        public ProjectProperty ProjectProperty
+        {
+            get
+            {
+                if (Project == null) return null;
+                return Project.GetProjectProperty(Plugin.StaticID) as ProjectProperty;
+            }
+        }
         public WordPointer RootPointer
         {
             get

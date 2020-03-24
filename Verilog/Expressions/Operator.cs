@@ -396,7 +396,7 @@ namespace pluginVerilog.Verilog.Expressions
 
             this.Constant = constant;
             this.Value = value;
-            this.BitWidth = BitWidth;
+            this.BitWidth = bitWidth;
             Primary ret = this;
 //            Primary ret = Primary.Create(constant, value, bitWidth);
             if (Operated != null) Operated(ret, primary1, primary2);
