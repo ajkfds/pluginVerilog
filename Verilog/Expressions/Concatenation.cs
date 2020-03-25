@@ -18,6 +18,7 @@ namespace pluginVerilog.Verilog.Expressions
 
         public static Primary ParseCreateConcatenationOrMultipleConcatenation(WordScanner word, NameSpace nameSpace, bool lValue)
         {
+            WordReference reference = word.GetReference();
             word.MoveNext(); // {
 
             Expression exp1;
@@ -36,7 +37,7 @@ namespace pluginVerilog.Verilog.Expressions
             }
             if (word.GetCharAt(0) == '{')
             {
-                return MultipleConcatenation.ParseCreate(word, nameSpace, exp1);
+                return MultipleConcatenation.ParseCreate(word, nameSpace, exp1, reference);
             }
             Concatenation concatenation = new Concatenation();
             concatenation.Expressions.Add(exp1);
@@ -75,6 +76,7 @@ namespace pluginVerilog.Verilog.Expressions
                     return null;
                 }
             }
+            concatenation.Reference = word.GetReference().CreateReferenceFrom(reference);
             word.MoveNext(); // }
             return concatenation;
         }
@@ -112,7 +114,7 @@ namespace pluginVerilog.Verilog.Expressions
         public Expression MultipleExpression { get; protected set; }
         public Expression Expression { get; protected set; }
 
-        public static MultipleConcatenation ParseCreate(WordScanner word, NameSpace nameSpace, Expression multipleExpression)
+        public static MultipleConcatenation ParseCreate(WordScanner word, NameSpace nameSpace, Expression multipleExpression,WordReference reference)
         {
             word.MoveNext(); // {
 
@@ -129,11 +131,13 @@ namespace pluginVerilog.Verilog.Expressions
                 word.AddError("illegal multiple concatenation");
                 return null;
             }
-            word.MoveNext(); // }
-
             MultipleConcatenation multipleConcatenation = new MultipleConcatenation();
             multipleConcatenation.MultipleExpression = multipleExpression;
             multipleConcatenation.Expression = exp;
+            multipleConcatenation.Reference = word.GetReference().CreateReferenceFrom(reference);
+
+            word.MoveNext(); // }
+
             return multipleConcatenation;
         }
 

@@ -73,13 +73,13 @@ namespace pluginVerilog.Verilog.Expressions
             Primary2.AppendString(stringBuilder);
         }
 
-        public delegate void OperatedAction(Primary result, Primary condition, Primary primary1, Primary primary2);
+        public delegate void OperatedAction(TenaryOperator tenaryOperator);
         public static OperatedAction Operated;
 
         public Primary Condition;
         public Primary Primary1;
         public Primary Primary2;
-        public Primary Operate(Primary condition, Primary primary1, Primary primary2)
+        public TenaryOperator Operate(Primary condition, Primary primary1, Primary primary2)
         {
             Condition = condition;
             Primary1 = primary1;
@@ -96,10 +96,9 @@ namespace pluginVerilog.Verilog.Expressions
             this.Constant = constant;
             this.Value = value;
             this.BitWidth = BitWidth;
-            Primary ret = this;
-//            Primary ret = Primary.Create(constant, value, bitWidth);
-            if(Operated!=null) Operated(ret, condition, primary1, primary2);
-            return ret;
+            this.Reference = Primary2.Reference.CreateReferenceFrom(Condition.Reference);
+            if(Operated!=null) Operated(this);
+            return this;
         }
 
         private int? getBitWidth(string operatorText, int bitWidth1, int bitWidth2)
@@ -126,7 +125,11 @@ namespace pluginVerilog.Verilog.Expressions
 
     public class UnaryOperator : Operator
     {
-        protected UnaryOperator(string text,byte precedence) : base(text,precedence) { }
+        protected UnaryOperator(WordScanner word, string text,byte precedence) : base(text,precedence) 
+        {
+            Reference = word.GetReference();
+            word.MoveNext();
+        }
         /*
         unary_operator  ::=   + 
                             | - 
@@ -157,25 +160,25 @@ namespace pluginVerilog.Verilog.Expressions
             switch (word.Length)
             {
                 case 1:
-                    if (word.GetCharAt(0) == '+') { word.MoveNext(); return new UnaryOperator("+",1); }
-                    if (word.GetCharAt(0) == '-') { word.MoveNext(); return new UnaryOperator("-",1); }
-                    if (word.GetCharAt(0) == '!') { word.MoveNext(); return new UnaryOperator("!",1); }
-                    if (word.GetCharAt(0) == '~') { word.MoveNext(); return new UnaryOperator("~",1); }
-                    if (word.GetCharAt(0) == '&') { word.MoveNext(); return new UnaryOperator("&",8); }
-                    if (word.GetCharAt(0) == '|') { word.MoveNext(); return new UnaryOperator("|",10); }
-                    if (word.GetCharAt(0) == '^') { word.MoveNext(); return new UnaryOperator("^",9); }
+                    if (word.GetCharAt(0) == '+') { return new UnaryOperator(word,"+",1); }
+                    if (word.GetCharAt(0) == '-') { return new UnaryOperator(word, "-",1); }
+                    if (word.GetCharAt(0) == '!') { return new UnaryOperator(word, "!",1); }
+                    if (word.GetCharAt(0) == '~') { return new UnaryOperator(word, "~",1); }
+                    if (word.GetCharAt(0) == '&') { return new UnaryOperator(word, "&",8); }
+                    if (word.GetCharAt(0) == '|') { return new UnaryOperator(word, "|",10); }
+                    if (word.GetCharAt(0) == '^') { return new UnaryOperator(word, "^",9); }
                     return null;
                 case 2:
                     if (word.GetCharAt(0) == '~')
                     {
-                        if (word.GetCharAt(1) == '^') { word.MoveNext(); return new UnaryOperator("~^",9); }
-                        if (word.GetCharAt(1) == '&') { word.MoveNext(); return new UnaryOperator("~&",8); }
-                        if (word.GetCharAt(1) == '|') { word.MoveNext(); return new UnaryOperator("~|",10); }
+                        if (word.GetCharAt(1) == '^') { return new UnaryOperator(word, "~^",9); }
+                        if (word.GetCharAt(1) == '&') { return new UnaryOperator(word, "~&",8); }
+                        if (word.GetCharAt(1) == '|') { return new UnaryOperator(word, "~|",10); }
                         return null;
                     }
                     else if (word.GetCharAt(0) == '^')
                     {
-                        if (word.GetCharAt(1) == '~') { word.MoveNext(); return new UnaryOperator("^~",9); }
+                        if (word.GetCharAt(1) == '~') { return new UnaryOperator(word, "^~",9); }
                         return null;
                     }
                     else
@@ -187,11 +190,11 @@ namespace pluginVerilog.Verilog.Expressions
             }
         }
 
-        public delegate void OperatedAction(Primary result, Primary primary);
+        public delegate void OperatedAction(UnaryOperator unaryOperator);
         public static OperatedAction Operated;
 
         Primary Primary;
-        public Primary Operate(Primary primary)
+        public UnaryOperator Operate(Primary primary)
         {
             Primary = primary;
             bool constant = false;
@@ -205,10 +208,9 @@ namespace pluginVerilog.Verilog.Expressions
             this.Constant = constant;
             this.Value = value;
             this.BitWidth = BitWidth;
-            Primary ret = this;
-//            Primary ret = Primary.Create(constant, value, bitWidth);
-            if (Operated != null) Operated(ret, primary);
-            return ret;
+            this.Reference = Primary.Reference.CreateReferenceFrom(Primary.Reference);
+            if (Operated != null) Operated(this);
+            return this;
         }
 
         private double? getValue(string text,double value)
@@ -270,7 +272,11 @@ namespace pluginVerilog.Verilog.Expressions
     }
     public class BinaryOperator : Operator
     {
-        protected BinaryOperator(string text, byte precedence) : base(text, precedence) { }
+        protected BinaryOperator(WordScanner word, string text, byte precedence) : base(text, precedence) 
+        {
+            Reference = word.GetReference();
+            word.MoveNext();
+        }
         /*
         binary_operator ::=   + 
                             | - 
@@ -305,35 +311,35 @@ namespace pluginVerilog.Verilog.Expressions
             switch (word.Length)
             {
                 case 1:
-                    if (word.GetCharAt(0) == '+') { word.MoveNext(); return new BinaryOperator("+",4); }
-                    if (word.GetCharAt(0) == '-') { word.MoveNext(); return new BinaryOperator("-",4); }
-                    if (word.GetCharAt(0) == '*') { word.MoveNext(); return new BinaryOperator("*",3); }
-                    if (word.GetCharAt(0) == '/') { word.MoveNext(); return new BinaryOperator("/",3); }
-                    if (word.GetCharAt(0) == '%') { word.MoveNext(); return new BinaryOperator("%",3); }
-                    if (word.GetCharAt(0) == '<') { word.MoveNext(); return new BinaryOperator("<",6); }
-                    if (word.GetCharAt(0) == '>') { word.MoveNext(); return new BinaryOperator(">",6); }
-                    if (word.GetCharAt(0) == '&') { word.MoveNext(); return new BinaryOperator("&",8); }
-                    if (word.GetCharAt(0) == '|') { word.MoveNext(); return new BinaryOperator("|",10); }
-                    if (word.GetCharAt(0) == '^') { word.MoveNext(); return new BinaryOperator("^",9); }
+                    if (word.GetCharAt(0) == '+') { return new BinaryOperator(word,"+",4); }
+                    if (word.GetCharAt(0) == '-') { return new BinaryOperator(word, "-",4); }
+                    if (word.GetCharAt(0) == '*') { return new BinaryOperator(word, "*",3); }
+                    if (word.GetCharAt(0) == '/') { return new BinaryOperator(word, "/",3); }
+                    if (word.GetCharAt(0) == '%') { return new BinaryOperator(word, "%",3); }
+                    if (word.GetCharAt(0) == '<') { return new BinaryOperator(word, "<",6); }
+                    if (word.GetCharAt(0) == '>') { return new BinaryOperator(word, ">",6); }
+                    if (word.GetCharAt(0) == '&') { return new BinaryOperator(word, "&",8); }
+                    if (word.GetCharAt(0) == '|') { return new BinaryOperator(word, "|",10); }
+                    if (word.GetCharAt(0) == '^') { return new BinaryOperator(word, "^",9); }
                     return null;
                 case 2:
                     if (word.GetCharAt(1) == '=')
                     {
-                        if (word.GetCharAt(0) == '=') { word.MoveNext(); return new BinaryOperator("==",7); }
-                        if (word.GetCharAt(0) == '!') { word.MoveNext(); return new BinaryOperator("!=",7); }
-                        if (word.GetCharAt(0) == '<') { word.MoveNext(); return new BinaryOperator("<=",6); }
-                        if (word.GetCharAt(0) == '>') { word.MoveNext(); return new BinaryOperator(">=",6); }
+                        if (word.GetCharAt(0) == '=') { return new BinaryOperator(word, "==",7); }
+                        if (word.GetCharAt(0) == '!') { return new BinaryOperator(word, "!=",7); }
+                        if (word.GetCharAt(0) == '<') { return new BinaryOperator(word, "<=",6); }
+                        if (word.GetCharAt(0) == '>') { return new BinaryOperator(word, ">=",6); }
                         return null;
                     }
                     else if (word.GetCharAt(0) == word.GetCharAt(1))
                     {
-                        if (word.GetCharAt(0) == '&') { word.MoveNext(); return new BinaryOperator("&&",11); }
-                        if (word.GetCharAt(0) == '|') { word.MoveNext(); return new BinaryOperator("||",12); }
-                        if (word.GetCharAt(0) == '*') { word.MoveNext(); return new BinaryOperator("**",2); }
-                        if (word.GetCharAt(0) == '>') { word.MoveNext(); return new BinaryOperator(">>",5); }
-                        if (word.GetCharAt(0) == '<') { word.MoveNext(); return new BinaryOperator("<<",5); }
-                        if (word.GetCharAt(0) == '^' && word.GetCharAt(1) == '~') { word.MoveNext(); return new BinaryOperator("^~",9); }
-                        if (word.GetCharAt(0) == '~' && word.GetCharAt(1) == '^') { word.MoveNext(); return new BinaryOperator("~^",9); }
+                        if (word.GetCharAt(0) == '&') { return new BinaryOperator(word,"&&",11); }
+                        if (word.GetCharAt(0) == '|') { return new BinaryOperator(word, "||",12); }
+                        if (word.GetCharAt(0) == '*') { return new BinaryOperator(word, "**",2); }
+                        if (word.GetCharAt(0) == '>') { return new BinaryOperator(word, ">>",5); }
+                        if (word.GetCharAt(0) == '<') { return new BinaryOperator(word, "<<",5); }
+                        if (word.GetCharAt(0) == '^' && word.GetCharAt(1) == '~') { return new BinaryOperator(word, "^~",9); }
+                        if (word.GetCharAt(0) == '~' && word.GetCharAt(1) == '^') { return new BinaryOperator(word, "~^",9); }
                         return null;
                     }
                     else
@@ -344,14 +350,14 @@ namespace pluginVerilog.Verilog.Expressions
                     if (word.GetCharAt(1) != word.GetCharAt(2)) return null;
                     if(word.GetCharAt(1) == '=')
                     {
-                        if (word.GetCharAt(0) == '=') { word.MoveNext(); return new BinaryOperator("===",7); }
-                        if (word.GetCharAt(0) == '!') { word.MoveNext(); return new BinaryOperator("!==",7); }
+                        if (word.GetCharAt(0) == '=') { return new BinaryOperator(word, "===",7); }
+                        if (word.GetCharAt(0) == '!') { return new BinaryOperator(word, "!==",7); }
                         return null;
                     }
                     else if (word.GetCharAt(0) == word.GetCharAt(1))
                     {
-                        if (word.GetCharAt(0) == '>') { word.MoveNext(); return new BinaryOperator(">>>",5); }
-                        if (word.GetCharAt(0) == '<') { word.MoveNext(); return new BinaryOperator("<<<",5); }
+                        if (word.GetCharAt(0) == '>') { return new BinaryOperator(word, ">>>",5); }
+                        if (word.GetCharAt(0) == '<') { return new BinaryOperator(word, "<<<",5); }
                         return null;
                     }
                     else
@@ -381,7 +387,10 @@ namespace pluginVerilog.Verilog.Expressions
         Primary Primary1;
         Primary Primary2;
 
-        public Primary Operate(Primary primary1, Primary primary2)
+        public delegate void OperatedAction(BinaryOperator binaryOperator);
+        public static OperatedAction Operated;
+
+        public BinaryOperator Operate(Primary primary1, Primary primary2)
         {
             Primary1 = primary1;
             Primary2 = primary2;
@@ -398,13 +407,12 @@ namespace pluginVerilog.Verilog.Expressions
             this.Value = value;
             this.BitWidth = bitWidth;
             Primary ret = this;
-//            Primary ret = Primary.Create(constant, value, bitWidth);
-            if (Operated != null) Operated(ret, primary1, primary2);
-            return ret;
+            this.Reference = Primary2.Reference.CreateReferenceFrom(Primary1.Reference);
+            //            Primary ret = Primary.Create(constant, value, bitWidth);
+            if (Operated != null) Operated(this);
+            return this;
         }
 
-        public delegate void OperatedAction(Primary result, Primary primary1, Primary primary2);
-        public static OperatedAction Operated;
 
         private int? getBitWidth(string operatorText,int bitWidth1,int bitWidth2)
         {

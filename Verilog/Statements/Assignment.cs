@@ -36,7 +36,6 @@ namespace pluginVerilog.Verilog.Statements
                 System.Diagnostics.Debugger.Break();
                 return null;
             }
-            WordScanner equalPointer = word.Clone();
             word.MoveNext();    // <=
 
             if (word.GetCharAt(0) == '#')
@@ -55,11 +54,16 @@ namespace pluginVerilog.Verilog.Statements
                 word.AddError("illegal non blocking assignment");
                 return null;
             }
-            if (lExpression != null && lExpression.BitWidth != null && expression.BitWidth != null)
-            {
-                if (lExpression.BitWidth != expression.BitWidth)
+
+            if (!word.Prototype) {
+                if(
+                    lExpression != null && 
+                    lExpression.BitWidth != null && 
+                    expression.BitWidth != null &&
+                    lExpression.BitWidth != expression.BitWidth
+                    )
                 {
-                    equalPointer.AddWarning("bitwidth mismatch " + lExpression.BitWidth + " vs " + expression.BitWidth);
+                    expression.Reference.CreateReferenceFrom(lExpression.Reference).AddWarning("bitwidth mismatch " + lExpression.BitWidth + " vs " + expression.BitWidth);
                 }
             }
 
@@ -99,7 +103,6 @@ namespace pluginVerilog.Verilog.Statements
                 System.Diagnostics.Debugger.Break();
                 return null;
             }
-            WordScanner equalPointer = word.Clone();
             word.MoveNext();    // <=
 
             if(word.GetCharAt(0) == '#')
@@ -119,11 +122,17 @@ namespace pluginVerilog.Verilog.Statements
                 word.AddError("illegal non blocking assignment");
                 return null;
             }
-            if(lExpression != null && lExpression.BitWidth != null && expression.BitWidth != null)
+
+            if (!word.Prototype)
             {
-                if(lExpression.BitWidth != expression.BitWidth)
+                if (
+                    lExpression != null && 
+                    lExpression.BitWidth != null && 
+                    expression.BitWidth != null &&
+                    lExpression.BitWidth != expression.BitWidth
+                    )
                 {
-                    equalPointer.AddWarning("bitwidth mismatch "+lExpression.BitWidth+" vs "+expression.BitWidth);
+                    expression.Reference.CreateReferenceFrom(lExpression.Reference).AddWarning("bitwidth mismatch " + lExpression.BitWidth + " vs " + expression.BitWidth);
                 }
             }
 

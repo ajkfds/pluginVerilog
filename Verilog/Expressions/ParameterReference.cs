@@ -30,6 +30,7 @@ namespace pluginVerilog.Verilog.Expressions
             ParameterReference val = new ParameterReference();
             val.ParameterName = word.Text;
             val.Constant = true;
+            val.Reference = word.GetReference();
 
             word.Color(CodeDrawStyle.ColorType.Paramater);
             word.MoveNext();

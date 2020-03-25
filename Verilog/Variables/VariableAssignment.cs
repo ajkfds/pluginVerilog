@@ -35,11 +35,17 @@ namespace pluginVerilog.Verilog.Variables
             variableAssign.Expression = Expressions.Expression.ParseCreate(word, nameSpace);
             if (variableAssign.Expression == null) return null;
 
-            if (variableAssign.NetLValue != null && variableAssign.NetLValue.BitWidth != null && variableAssign.Expression.BitWidth != null)
+            if (!word.Prototype)
             {
-                if (variableAssign.NetLValue.BitWidth != variableAssign.Expression.BitWidth)
+                if (
+                    variableAssign.NetLValue != null &&
+                    variableAssign.NetLValue.BitWidth != null &&
+                    variableAssign.Expression.BitWidth != null &&
+                    variableAssign.NetLValue.BitWidth != variableAssign.Expression.BitWidth
+                    )
                 {
-                    equalPointer.AddWarning("bitwidth mismatch " + variableAssign.NetLValue.BitWidth + " vs " + variableAssign.Expression.BitWidth);
+                    variableAssign.Expression.Reference.CreateReferenceFrom(variableAssign.NetLValue.Reference)
+                        .AddWarning("bitwidth mismatch " + variableAssign.NetLValue.BitWidth + " vs " + variableAssign.Expression.BitWidth);
                 }
             }
 

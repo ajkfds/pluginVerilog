@@ -91,6 +91,7 @@ namespace pluginVerilog.Verilog.Expressions
             VariableReference val = new VariableReference();
             val.VariableName = variable.Name;
             val.Variable = variable;
+            val.Reference = word.GetReference();
 
             if (variable is Variables.Reg)
             {

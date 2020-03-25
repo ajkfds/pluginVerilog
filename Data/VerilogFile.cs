@@ -73,7 +73,7 @@ namespace pluginVerilog.Data
             {
                 if (!ProjectProperty.IsRegisterableModule(module.Name, this))
                 {
-                    if (module.NameReference != null) module.NameReference.AddError(CodeDocument, "duplicated module name");
+                    if (module.NameReference != null) module.NameReference.AddError("duplicated module name");
                     continue;
                 }
 

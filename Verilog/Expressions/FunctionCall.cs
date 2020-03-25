@@ -10,7 +10,6 @@ namespace pluginVerilog.Verilog.Expressions
     {
         protected FunctionCall() { }
         public List<Expression> Expressions = new List<Expression>();
-        public WordReference Reference { get; protected set; }
         public string FunctionName { get; protected set; }
 
         public new static FunctionCall ParseCreate(WordScanner word, NameSpace nameSpace)
@@ -77,6 +76,7 @@ namespace pluginVerilog.Verilog.Expressions
 
                 if(word.Text == ")")
                 {
+                    functionCall.Reference = word.GetReference().CreateReferenceFrom(functionCall.Reference);
                     word.MoveNext();
                     break;
                 }

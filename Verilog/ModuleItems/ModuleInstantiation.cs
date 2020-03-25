@@ -307,13 +307,13 @@ namespace pluginVerilog.Verilog.ModuleItems
                                     {
                                         if (expression.BitWidth != null && expression.Reference != null)
                                         {
-                                            expression.Reference.AddWarning(word.Document, "bitwidth mismatch 1 vs " + expression.BitWidth);
+                                            expression.Reference.AddWarning("bitwidth mismatch 1 vs " + expression.BitWidth);
                                         }
 
                                     }
                                     else if (instancedModule.Ports[pinName].Range.BitWidth != expression.BitWidth && expression.Reference != null)
                                     {
-                                        expression.Reference.AddWarning(word.Document, "bitwidth mismatch " + instancedModule.Ports[pinName].Range.BitWidth + " vs " + expression.BitWidth);
+                                        expression.Reference.AddWarning("bitwidth mismatch " + instancedModule.Ports[pinName].Range.BitWidth + " vs " + expression.BitWidth);
                                     }
                                 }
                             }
@@ -331,13 +331,13 @@ namespace pluginVerilog.Verilog.ModuleItems
                                     {
                                         if (expression.BitWidth != null && expression.Reference != null)
                                         {
-                                            expression.Reference.AddWarning(word.Document, "bitwidth mismatch 1 vs " + expression.BitWidth);
+                                            expression.Reference.AddWarning("bitwidth mismatch 1 vs " + expression.BitWidth);
                                         }
 
                                     }
                                     else if (instancedModule.Ports[pinName].Range.BitWidth != expression.BitWidth && expression.Reference != null)
                                     {
-                                        expression.Reference.AddWarning(word.Document, "bitwidth mismatch " + instancedModule.Ports[pinName].Range.BitWidth + " vs " + expression.BitWidth);
+                                        expression.Reference.AddWarning("bitwidth mismatch " + instancedModule.Ports[pinName].Range.BitWidth + " vs " + expression.BitWidth);
                                     }
                                 }
                             }

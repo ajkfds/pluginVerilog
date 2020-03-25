@@ -15,6 +15,7 @@ namespace pluginVerilog.Verilog.Expressions
         public virtual double? Value { get; protected set; }
         public virtual int? BitWidth { get; protected set; }
         //        public bool Signed { get; protected set; }
+        public WordReference Reference { get; protected set; }
 
         public static Primary Create(bool constant, double? value, int? bitWidth)
         {

@@ -72,7 +72,7 @@ namespace pluginVerilog.Verilog.Expressions
             Hex
         }
 
-        public string CreateString()
+        public new string CreateString()
         {
             return Text;
         }
@@ -95,6 +95,7 @@ namespace pluginVerilog.Verilog.Expressions
             int index = 0;
             int apostropheIndex = -1;
             number.Text = word.Text;
+            number.Reference = word.GetReference();
             StringBuilder sb = new StringBuilder();
 
             // get string before ' and ' index
