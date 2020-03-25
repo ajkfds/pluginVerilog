@@ -25,6 +25,9 @@ namespace pluginVerilog
             gtkWaveTsmi.Image = codeEditor.Global.IconImages.Wave0.GetImage(
                 codeEditor.Controller.NavigatePanel.GetContextMenuStrip().ImageScalingSize.Height,
                 ajkControls.IconImage.ColorStyle.Blue);
+            CreateVerilogFileTsmi.Image = Global.Icons.Verilog.GetImage(
+                codeEditor.Controller.NavigatePanel.GetContextMenuStrip().ImageScalingSize.Height,
+                ajkControls.IconImage.ColorStyle.Blue);
 
         }
 
@@ -80,9 +83,17 @@ namespace pluginVerilog
             if( codeEditor.Controller.ShowDialogForm(saveFileDialog) == DialogResult.OK)
             {
                 System.IO.Stream stream = saveFileDialog.OpenFile();
+                string moduleName = saveFileDialog.FileName;
+                if (moduleName.Contains('\\')) moduleName = moduleName.Substring(moduleName.LastIndexOf('\\')+1);
+                if (moduleName.Contains('.')) moduleName = moduleName.Substring(0, moduleName.IndexOf('.'));
                 using (System.IO.StreamWriter sw = new System.IO.StreamWriter(stream))
                 {
-                    sw.Write("//");
+                    sw.Write("module ");
+                    sw.Write(moduleName);
+                    sw.Write(";\r\n");
+                    sw.Write("\r\n");
+                    sw.Write("endmodule ");
+                    sw.Write("\r\n");
                 }
             }
             if(item == null)
