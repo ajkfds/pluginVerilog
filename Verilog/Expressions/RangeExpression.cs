@@ -50,7 +50,7 @@ namespace pluginVerilog.Verilog.Expressions
             LsbExpression = expression2;
             if(MsbExpression.Constant && LsbExpression.Constant && MsbExpression.Value != null && LsbExpression.Value != null)
             {
-                BitWidth = (int)MsbExpression.Value - (int)LsbExpression.Value;
+                BitWidth = (int)MsbExpression.Value - (int)LsbExpression.Value + 1;
             }
         }
         public Expression MsbExpression;
