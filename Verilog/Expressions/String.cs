@@ -15,6 +15,20 @@ namespace pluginVerilog.Verilog.Expressions
             ConstantString str = new ConstantString();
             str.text = word.Text;
 
+            str.Reference = word.GetReference();
+            str.BitWidth = (word.Text.Length - 2) * 8;
+            str.Constant = true;
+            if(str.BitWidth <= 16)
+            {
+                int value = 0;
+                for(int i = 1;i< word.Text.Length-1; i++)
+                {
+                    value = value << 8;
+                    value = value + word.Text[i];
+                }
+                str.Value = value;
+            }
+
             word.MoveNext();
             return str;
         }
