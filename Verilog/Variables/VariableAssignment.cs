@@ -23,7 +23,11 @@ namespace pluginVerilog.Verilog.Variables
 
             VariableAssignment variableAssign = new VariableAssignment();
             variableAssign.NetLValue = Expressions.Expression.ParseCreateVariableLValue(word, nameSpace);
-            if (variableAssign.NetLValue == null) return null;
+            if (variableAssign.NetLValue == null)
+            {
+                word.AddError("illegal lValue");
+                return null;
+            }
             if (word.Text != "=")
             {
                 word.AddError("= expected.");
