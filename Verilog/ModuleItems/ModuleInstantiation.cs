@@ -305,7 +305,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                                 {
                                     if (instancedModule.Ports[pinName].Range == null)
                                     {
-                                        if (expression.BitWidth != null && expression.Reference != null)
+                                        if (expression.BitWidth != null && expression.Reference != null && expression.BitWidth != 1)
                                         {
                                             expression.Reference.AddWarning("bitwidth mismatch 1 vs " + expression.BitWidth);
                                         }
@@ -329,7 +329,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                                 {
                                     if (instancedModule.Ports[pinName].Range == null)
                                     {
-                                        if (expression.BitWidth != null && expression.Reference != null)
+                                        if (expression.BitWidth != null && expression.Reference != null && expression.BitWidth != 1)
                                         {
                                             expression.Reference.AddWarning("bitwidth mismatch 1 vs " + expression.BitWidth);
                                         }
@@ -406,6 +406,18 @@ namespace pluginVerilog.Verilog.ModuleItems
                 return;
             }
             word.MoveNext();
+        }
+
+        public Module GetInstancedModule()
+        {
+            Module instancedModule = ProjectProperty.GetModule(ModuleName);
+
+            if (ParameterOverrides.Count != 0)
+            {
+                instancedModule = ProjectProperty.GetInstancedModule(this);
+            }
+
+            return instancedModule;
         }
 
 
