@@ -67,6 +67,7 @@ namespace pluginVerilog.Verilog.Expressions
                 }
                 if (exp1 != null)
                 {
+                    concatenation.Expressions.Add(exp1);
                     concatenation.Constant = concatenation.Constant & exp1.Constant;
                     concatenation.BitWidth = concatenation.BitWidth + exp1.BitWidth;
                 }

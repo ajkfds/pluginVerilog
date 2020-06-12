@@ -113,7 +113,7 @@ namespace pluginVerilog.Verilog
             }
             word.MoveNext();
 
-            if(word.Active && expression.Constant && expression.Value == 0)
+            if(word.Active && expression != null && expression.Constant && expression.Value == 0)
             {
                 // false
                 word.StartNonGenenerated();
@@ -130,7 +130,7 @@ namespace pluginVerilog.Verilog
                 word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext();
 
-                if (word.Active && expression.Constant && expression.Value != 0)
+                if (word.Active && expression != null && expression.Constant && expression.Value != 0)
                 {
                     // false
                     word.StartNonGenenerated();

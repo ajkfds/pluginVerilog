@@ -114,7 +114,7 @@ namespace pluginVerilog.Verilog.Statements
                     }
 
                     Expressions.Expression expression = Expressions.Expression.ParseCreateVariableLValue(word, nameSpace);
-                    if(expression != null && expression.Primary != null && expression.Primary is Expressions.TaskReference)
+                    if(expression != null && expression.Primary is Expressions.TaskReference)// Expressions.TaskReference)
                     {
                         Expressions.TaskReference taskReference = expression.Primary as Expressions.TaskReference;
                         return TaskEnable.ParseCreate(taskReference, word, nameSpace);
