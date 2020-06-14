@@ -16,21 +16,29 @@ namespace pluginVerilog.Verilog.Expressions
 //        public List<Primary> RpnPrimarys = new List<Primary>();
 
         public Primary Primary;
-        public bool Constant { get; protected set; }
-        public double? Value { get; protected set; }
-        public int? BitWidth { get; protected set; }
+        public virtual bool Constant { get; protected set; }
+        public virtual double? Value { get; protected set; }
+        public virtual int? BitWidth { get; protected set; }
         public WordReference Reference { get; protected set; }
 
-        public string CreateString()
+        public virtual ajkControls.ColorLabel GetLabel()
         {
-            if(Primary == null)
-            {
-                return null;
-            }
-            else
-            {
-                return Primary.CreateString();
-            }
+            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            AppendLabel(label);
+            return label;
+        }
+        public virtual string CreateString()
+        {
+            return null;
+        }
+        public virtual void AppendLabel(ajkControls.ColorLabel label)
+        {
+
+        }
+
+        public virtual void AppendString(StringBuilder stringBuilder)
+        {
+
         }
 
         public string ConstantValueString()
@@ -103,11 +111,11 @@ namespace pluginVerilog.Verilog.Expressions
             if (rpnPrimarys.Count == 1 && rpnPrimarys[0] is Primary)
             {
                 Primary primary = rpnPrimarys[0] as Primary;
-                expression.Constant = primary.Constant;
-                expression.Value = primary.Value;
-                expression.BitWidth = primary.BitWidth;
-                expression.Primary = primary;
-                return expression;
+                //expression.Constant = primary.Constant;
+                //expression.Value = primary.Value;
+                //expression.BitWidth = primary.BitWidth;
+                //expression.Primary = primary;
+                return primary;
             }
 
             if (!word.Active) return expression;
@@ -150,18 +158,18 @@ namespace pluginVerilog.Verilog.Expressions
             }
             if(Primarys.Count == 1)
             {
-                expression.Constant = Primarys[0].Constant;
-                expression.BitWidth = Primarys[0].BitWidth;
-                expression.Value = Primarys[0].Value;
-                expression.Primary = Primarys[0];
+                //expression.Constant = Primarys[0].Constant;
+                //expression.BitWidth = Primarys[0].BitWidth;
+                //expression.Value = Primarys[0].Value;
+                //expression.Primary = Primarys[0];
             }
             else
             {
                 return null;
             }
 
-
-            return expression;
+            return Primarys[0];
+//            return expression;
         }
 
         public static Expression CreateTempExpression(string text)
@@ -171,17 +179,6 @@ namespace pluginVerilog.Verilog.Expressions
             return expression;
         }
 
-        public ajkControls.ColorLabel GetLabel()
-        {
-            if(Primary == null)
-            {
-                return null;
-            }
-            else
-            {
-                return Primary.GetLabel();
-            }
-        }
 
 
         public static Expression ParseCreateVariableLValue(WordScanner word, NameSpace nameSpace)
@@ -207,11 +204,12 @@ namespace pluginVerilog.Verilog.Expressions
             if (rpnPrimarys.Count == 1 && rpnPrimarys[0] is Primary)
             {
                 Primary primary = rpnPrimarys[0] as Primary;
-                expression.Constant = primary.Constant;
-                expression.Value = primary.Value;
-                expression.BitWidth = primary.BitWidth;
-                expression.Primary = primary;
-                return expression;
+                //expression.Constant = primary.Constant;
+                //expression.Value = primary.Value;
+                //expression.BitWidth = primary.BitWidth;
+                //expression.Primary = primary;
+                //return expression;
+                return primary;
             }
             // parse rpn
             List<Primary> Primarys = new List<Primary>();
@@ -255,9 +253,10 @@ namespace pluginVerilog.Verilog.Expressions
             }
             if (Primarys.Count == 1)
             {
-                expression.Constant = Primarys[0].Constant;
-                expression.BitWidth = Primarys[0].BitWidth;
-                expression.Value = Primarys[0].Value;
+                return Primarys[0];
+//                expression.Constant = Primarys[0].Constant;
+//                expression.BitWidth = Primarys[0].BitWidth;
+//                expression.Value = Primarys[0].Value;
             }
             else
             {

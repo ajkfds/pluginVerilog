@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Verilog.Expressions
 {
-    public class Primary
+    public class Primary : Expression
     {
         protected Primary() {
             Constant = false;
         }
+        /*
         public virtual bool Constant { get; protected set; }
         public virtual double? Value { get; protected set; }
         public virtual int? BitWidth { get; protected set; }
@@ -37,8 +38,8 @@ namespace pluginVerilog.Verilog.Expressions
         {
             return "";
         }
-
-        public virtual void AppendLabel(ajkControls.ColorLabel label)
+        */
+/*        public virtual void AppendLabel(ajkControls.ColorLabel label)
         {
 
         }
@@ -47,7 +48,7 @@ namespace pluginVerilog.Verilog.Expressions
         {
 
         }
-
+        */
         /*
          * 
          * 
