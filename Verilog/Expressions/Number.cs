@@ -72,7 +72,7 @@ namespace pluginVerilog.Verilog.Expressions
             Hex
         }
 
-        public new string CreateString()
+        public override string CreateString()
         {
             return Text;
         }
