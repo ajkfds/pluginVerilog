@@ -81,7 +81,7 @@ namespace pluginVerilog.Verilog.Expressions
                                 | hierarchical_identifier [ expression ] { [ expression ] }  [ range_expression ]
                                 | hierarchical_identifier [ range_expression ]
         */
-        public static Primary ParseCreate(WordScanner word, NameSpace nameSpace)
+        public static new Primary ParseCreate(WordScanner word, NameSpace nameSpace)
         {
             return parseCreate(word, nameSpace, false);
         }
@@ -146,7 +146,10 @@ namespace pluginVerilog.Verilog.Expressions
                                     word.MoveNext();
                                     word.MoveNext(); // .
                                     Primary primary = subParseCreate(word, module, lValue);
-                                    if (primary == null) word.AddError("illegal variable");
+                                    if (primary == null)
+                                    {
+                                        word.AddError("illegal variable");
+                                    }
                                     return primary;
                                 }
                             }
@@ -156,7 +159,10 @@ namespace pluginVerilog.Verilog.Expressions
                                 word.MoveNext();
                                 word.MoveNext(); // .
                                 Primary primary = subParseCreate(word, space,lValue);
-                                if (primary == null) word.AddError("illegal variable");
+                                if (primary == null)
+                                {
+                                    word.AddError("illegal variable");
+                                }
                                 return primary;
                             }
                         }
@@ -236,7 +242,10 @@ namespace pluginVerilog.Verilog.Expressions
                                 word.MoveNext(); // .
 
                                 Primary primary = subParseCreate(word, module,lValue);
-                                if (primary == null) word.AddError("illegal variable");
+                                if (primary == null)
+                                {
+                                    word.AddError("illegal variable");
+                                }
                                 return primary;
                             } else if (nameSpace.NameSpaces.ContainsKey(word.Text))
                             { // namespaces
@@ -247,7 +256,10 @@ namespace pluginVerilog.Verilog.Expressions
                                 word.MoveNext(); // .
 
                                 Primary primary = subParseCreate(word, space, lValue);
-                                if (primary == null) word.AddError("illegal variable");
+                                if (primary == null)
+                                {
+                                    word.AddError("illegal variable");
+                                }
                                 return primary;
                             }
                         }
@@ -261,9 +273,20 @@ namespace pluginVerilog.Verilog.Expressions
                                 if (module == null) return null;
                                 word.MoveNext();
 
-                                Primary primary = subParseCreate(word, module, lValue);
-                                if (primary == null) word.AddError("illegal variable");
-                                return new NameSpaceReference(module);
+                                if(word.Text == ".")
+                                {
+                                    word.MoveNext();
+                                    Primary primary = subParseCreate(word, module, lValue);
+                                    if (primary == null)
+                                    {
+                                        word.AddError("illegal variable");
+                                    }
+                                    return new NameSpaceReference(module);
+                                }
+                                else
+                                {
+                                    return new NameSpaceReference(module);
+                                }
 
                             }else if(nameSpace is Module && nameSpace.Module.Tasks.ContainsKey(word.Text))
                             {
