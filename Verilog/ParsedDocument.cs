@@ -374,6 +374,11 @@ namespace pluginVerilog.Verilog
                 }
             }
 
+            if (!endWithDot && words.Count>0)
+            {
+                words.Remove(words.Last());
+            }
+
             NameSpace target = getSearchNameSpace(space, words, endWithDot);
             if(target != null) target.AppendAutoCompleteItem(items);
 
