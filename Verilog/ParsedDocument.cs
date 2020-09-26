@@ -374,11 +374,14 @@ namespace pluginVerilog.Verilog
                 }
             }
 
+            // fix namespace to get autoComplete items
+            // module.moduleInstance.moduleInstance -> module.moduleInstance
             if (!endWithDot && words.Count>0)
             {
                 words.Remove(words.Last());
             }
 
+            // get target autocomplete item
             NameSpace target = getSearchNameSpace(space, words, endWithDot);
             if(target != null) target.AppendAutoCompleteItem(items);
 

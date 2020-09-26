@@ -97,6 +97,11 @@ namespace pluginVerilog.Verilog.Statements
                 case "deassign":
                     return DeassignStatement.ParseCreate(word, nameSpace);
                 default:
+
+                    NameSpace refNameSpace = null;
+                    refNameSpace = nameSpace.ParseHierNameSpace(word, nameSpace);
+                   if (refNameSpace == null) refNameSpace = nameSpace;
+
                     string nextText = word.NextText;
                     if (nextText == "(" || nextText == ";")
                     {
@@ -113,14 +118,12 @@ namespace pluginVerilog.Verilog.Statements
                         }
                     }
 
-                    Expressions.Expression expression = Expressions.Expression.ParseCreateVariableLValue(word, nameSpace);
+                    Expressions.Expression expression = Expressions.Expression.ParseCreateVariableLValue(word, refNameSpace);
                     if(expression != null && expression.Primary is Expressions.TaskReference)// Expressions.TaskReference)
                     {
                         Expressions.TaskReference taskReference = expression.Primary as Expressions.TaskReference;
                         return TaskEnable.ParseCreate(taskReference, word, nameSpace);
                     }
-
-
 
                     IStatement statement;
                     if(expression == null)
@@ -149,7 +152,16 @@ namespace pluginVerilog.Verilog.Statements
                     }
                     return statement;
             }
-            return null;
+        }
+        private static NameSpace getSpace(string identifier, NameSpace nameSpace)
+        {
+            if (nameSpace.NameSpaces.ContainsKey(identifier))
+            {
+                return nameSpace.NameSpaces[identifier];
+            }
+            if (nameSpace.Parent == null) return null;
+
+            return getSpace(identifier, nameSpace.Parent);
         }
 
         public static IStatement ParseCreateStatementOrNull(WordScanner word, NameSpace nameSpace)
