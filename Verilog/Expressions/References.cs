@@ -11,10 +11,18 @@ namespace pluginVerilog.Verilog.Expressions
         public string TaskName { get; protected set; }
         public string ModuleName { get; protected set; }
 
-        public TaskReference(Task task, NameSpace nameSpace)
+        protected TaskReference()
         {
-            TaskName = task.Name;
-            ModuleName = nameSpace.Module.Name;
+        }
+
+        public static TaskReference ParseCreate(WordScanner word, NameSpace nameSpace, bool assigned)
+        {
+            TaskReference ret = new TaskReference();
+            ret.TaskName = word.Text;
+            ret.ModuleName = nameSpace.Module.Name;
+            word.Color(CodeDrawStyle.ColorType.Identifier);
+            word.MoveNext();
+            return ret;
         }
     }
 

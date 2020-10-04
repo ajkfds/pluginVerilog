@@ -42,25 +42,6 @@ namespace pluginVerilog.Verilog
             return this;
         }
         
-        public virtual NameSpace ParseHierNameSpace(WordScanner word, NameSpace nameSpace)
-        {
-            if (word.NextText != ".") return null;
-            if(NameSpaces.ContainsKey(word.Text))
-            {
-                NameSpace space = NameSpaces[word.Text];
-                word.Color(CodeDrawStyle.ColorType.Identifier);
-                word.MoveNext();
-                word.MoveNext();    // .
-                NameSpace subSpace = space.ParseHierNameSpace(word, space);
-                if (subSpace != null) return subSpace;
-                return space;
-            }
-            else
-            {
-                word.AddError("illegal reference");
-                return null;
-            }
-        }
 
         private codeEditor.CodeEditor.AutocompleteItem newItem(string text, CodeDrawStyle.ColorType colorType)
         {

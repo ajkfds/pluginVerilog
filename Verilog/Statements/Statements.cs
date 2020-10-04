@@ -98,9 +98,9 @@ namespace pluginVerilog.Verilog.Statements
                     return DeassignStatement.ParseCreate(word, nameSpace);
                 default:
 
-                    NameSpace refNameSpace = null;
-                    refNameSpace = nameSpace.ParseHierNameSpace(word, nameSpace);
-                   if (refNameSpace == null) refNameSpace = nameSpace;
+                   // NameSpace refNameSpace = null;
+                   // refNameSpace = nameSpace.ParseHierNameSpace(word, nameSpace);
+                   //if (refNameSpace == null) refNameSpace = nameSpace;
 
                     string nextText = word.NextText;
                     if (nextText == "(" || nextText == ";")
@@ -114,14 +114,14 @@ namespace pluginVerilog.Verilog.Statements
                             return TaskEnable.ParseCreate(word, nameSpace); // system task enable
                         }
                         else if (General.IsIdentifier(word.Text)){
-                            return TaskEnable.ParseCreate(word, nameSpace);
+                            return TaskEnable.ParseCreate(word, nameSpace,nameSpace);
                         }
                     }
 
-                    Expressions.Expression expression = Expressions.Expression.ParseCreateVariableLValue(word, refNameSpace);
-                    if(expression != null && expression.Primary is Expressions.TaskReference)// Expressions.TaskReference)
+                    Expressions.Expression expression = Expressions.Expression.ParseCreateVariableLValue(word, nameSpace);
+                    if(expression != null && expression is Expressions.TaskReference)// Expressions.TaskReference)
                     {
-                        Expressions.TaskReference taskReference = expression.Primary as Expressions.TaskReference;
+                        Expressions.TaskReference taskReference = expression as Expressions.TaskReference;
                         return TaskEnable.ParseCreate(taskReference, word, nameSpace);
                     }
 

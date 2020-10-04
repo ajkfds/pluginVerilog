@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace pluginVerilog.Verilog.Expressions
 {
@@ -109,13 +111,14 @@ namespace pluginVerilog.Verilog.Expressions
                     return ConstantString.ParseCreate(word);
                 case WordPointer.WordTypeEnum.Text:
                     {
-                        var variable = VariableReference.ParseCreate(word, nameSpace,lValue);
+                        var variable = VariableReference.ParseCreate(word, nameSpace, lValue);
                         if (variable != null) return variable;
 
                         var parameter = ParameterReference.ParseCreate(word, nameSpace);
                         if (parameter != null) return parameter;
 
-                        if (word.Text.StartsWith("$") && word.RootParsedDocument.ProjectProperty.SystemFunctions.Keys.Contains(word.Text)) {
+                        if (word.Text.StartsWith("$") && word.RootParsedDocument.ProjectProperty.SystemFunctions.Keys.Contains(word.Text))
+                        {
                             return FunctionCall.ParseCreate(word, nameSpace);
                         }
 
@@ -124,86 +127,102 @@ namespace pluginVerilog.Verilog.Expressions
                             return FunctionCall.ParseCreate(word, nameSpace);
                         }
 
-                        if(word.NextText == ".")
                         {
-                            NameSpace space = null;
-                            if (nameSpace.Module.ModuleInstantiations.ContainsKey(word.Text))
-                            {
-                                ModuleItems.ModuleInstantiation inst = nameSpace.Module.ModuleInstantiations[word.Text];
-                                space = word.RootParsedDocument.ProjectProperty.GetModule(inst.ModuleName);
-                            }
-                            else
-                            {
-                                space = getSpace(word.Text, nameSpace);
-                            }
+                            NameSpace space = nameSpace;
+                            Primary primary = null;
+                            parseHierNameSpace(word, ref space, ref primary);
 
-                            if(space == null)
-                            { // root module
-                                Module module = word.RootParsedDocument.ProjectProperty.GetModule(word.Text);
-                                if(module != null)
-                                {
-                                    word.Color(CodeDrawStyle.ColorType.Keyword);
-                                    word.MoveNext();
-                                    word.MoveNext(); // .
-                                    Primary primary = subParseCreate(word, module, lValue);
-                                    if (primary == null)
+                            if(primary == null || space == null || space == nameSpace)
+                            {
+                                if (word.Eof) return null;
+                                if (General.ListOfKeywords.Contains(word.Text)) return null;
+
+                                if (General.IsIdentifier(word.Text) && !nameSpace.Variables.ContainsKey(word.Text) && !word.Prototype)
+                                {   // undefined net
+                                    if (!word.CellDefine) word.AddWarning("undefined");
+                                    Variables.Net net = new Variables.Net();
+                                    net.Name = word.Text;
+                                    net.Signed = false;
+                                    if (word.Active)
                                     {
-                                        word.AddError("illegal variable");
+                                        nameSpace.Variables.Add(net.Name, net);
                                     }
-                                    return primary;
+                                    variable = VariableReference.ParseCreate(word, nameSpace, lValue);
+                                    if (variable != null) return variable;
                                 }
                             }
-                            else
-                            { // 
-                                word.Color(CodeDrawStyle.ColorType.Identifier);
-                                word.MoveNext();
-                                word.MoveNext(); // .
-                                Primary primary = subParseCreate(word, space,lValue);
-                                if (primary == null)
+                            else if(space != null)
+                            {
+                                if (space.Variables.ContainsKey(word.Text))
                                 {
-                                    word.AddError("illegal variable");
+                                    return VariableReference.ParseCreate(word, space, lValue);
+                                }
+                                if (space.Module.Tasks.ContainsKey(word.Text))
+                                {
+                                    return TaskReference.ParseCreate(word, space, lValue);
                                 }
                                 return primary;
                             }
-                        }
-                        else if (nameSpace.NameSpaces.ContainsKey(word.Text))
-                        {
-                            word.Color(CodeDrawStyle.ColorType.Identifier);
-                            NameSpace space = nameSpace.NameSpaces[word.Text];
-                            if (space == null) return null;
-                            word.MoveNext();
-                            return new NameSpaceReference(space);
-                        }
-                        else if (nameSpace.Module.ModuleInstantiations.ContainsKey(word.Text))
-                        {
-                            word.Color(CodeDrawStyle.ColorType.Identifier);
-                            ModuleItems.ModuleInstantiation minst = nameSpace.Module.ModuleInstantiations[word.Text];
-                            ModuleInstanceReference moduleInstanceReference = new ModuleInstanceReference(minst);
-                            word.MoveNext();
-                            return moduleInstanceReference;
-                        }
 
-
-                        if (word.Eof) return null;
-                        if (General.ListOfKeywords.Contains(word.Text)) return null;
-                        if(General.IsIdentifier(word.Text) && !nameSpace.Variables.ContainsKey(word.Text) && !word.Prototype)
-                        {   // undefined net
-                            if(!word.CellDefine) word.AddWarning("undefined");
-                            Variables.Net net = new Variables.Net();
-                            net.Name = word.Text;
-                            net.Signed = false;
-                            if (word.Active)
-                            {
-                                nameSpace.Variables.Add(net.Name, net);
-                            }
-                            variable = VariableReference.ParseCreate(word, nameSpace,lValue);
-                            if (variable != null) return variable;
                         }
+                        break;
                     }
-                    break;
             }
             return null;
         }
+
+        public static void parseHierNameSpace(WordScanner word, ref NameSpace nameSpace,ref Primary primary)
+        {
+            if( nameSpace is Module)
+            {
+                Module module = nameSpace as Module;
+                if (module.ModuleInstantiations.ContainsKey(word.Text))
+                {
+                    ModuleItems.ModuleInstantiation minst = module.ModuleInstantiations[word.Text];
+                    ModuleInstanceReference moduleInstanceReference = new ModuleInstanceReference(minst);
+                    primary = moduleInstanceReference;
+                    nameSpace = minst.GetInstancedModule();
+                    word.Color(CodeDrawStyle.ColorType.Identifier);
+                    word.MoveNext();
+
+                    if (nameSpace == null) return;
+
+                    if (word.Text == ".")
+                    {
+                        word.MoveNext();    // .
+                        parseHierNameSpace(word, ref nameSpace, ref primary);
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+            }
+            else if (nameSpace.NameSpaces.ContainsKey(word.Text))
+            {
+                nameSpace = nameSpace.NameSpaces[word.Text];
+                word.Color(CodeDrawStyle.ColorType.Identifier);
+                word.MoveNext();
+                NameSpaceReference nameSpaceReference = new NameSpaceReference(nameSpace);
+                primary = nameSpaceReference;
+
+                if (word.Text == ".")
+                {
+                    word.MoveNext();    // .
+                    parseHierNameSpace(word, ref nameSpace, ref primary);
+                }
+                else
+                {
+                    return;
+                }
+            }
+            else
+            {
+                return;
+            }
+        }
+
+
 
         private static Primary subParseCreate(WordScanner word, NameSpace nameSpace,bool lValue)
         {
@@ -290,10 +309,7 @@ namespace pluginVerilog.Verilog.Expressions
 
                             }else if(nameSpace is Module && nameSpace.Module.Tasks.ContainsKey(word.Text))
                             {
-                                Primary primary = new TaskReference(nameSpace.Module.Tasks[word.Text], nameSpace.Module);
-                                word.Color(CodeDrawStyle.ColorType.Identifier);
-                                word.MoveNext();
-                                return primary;
+                                return TaskReference.ParseCreate(word, nameSpace.Module);
                             }
                             else if (nameSpace.NameSpaces.ContainsKey(word.Text))
                             {
@@ -317,16 +333,7 @@ namespace pluginVerilog.Verilog.Expressions
             return null;
         }
 
-        private static NameSpace getSpace(string identifier, NameSpace nameSpace)
-        {
-            if (nameSpace.NameSpaces.ContainsKey(identifier))
-            {
-                return nameSpace.NameSpaces[identifier];
-            }
-            if (nameSpace.Parent == null) return null;
 
-            return getSpace(identifier, nameSpace.Parent);
-        }
     }
 
 

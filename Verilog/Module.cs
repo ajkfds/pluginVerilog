@@ -52,24 +52,6 @@ namespace pluginVerilog.Verilog
         {
             get { return cellDefine; }
         }
-        public override NameSpace ParseHierNameSpace(WordScanner word, NameSpace nameSpace)
-        {
-            if (word.NextText != ".") return nameSpace;
-            if(ModuleInstantiations.ContainsKey(word.Text))
-            {
-                Module module = ModuleInstantiations[word.Text].GetInstancedModule();
-                if(module != null)
-                {
-                    word.Color(CodeDrawStyle.ColorType.Identifier);
-                    word.MoveNext();
-                    word.MoveNext();    // .
-                    NameSpace subSpace = module.ParseHierNameSpace(word, module);
-                    if (subSpace != null) return subSpace;
-                }
-            }
-
-            return base.ParseHierNameSpace(word, nameSpace);
-        }
 
         public static Module Create(WordScanner word, Attribute attribute, Data.IVerilogRelatedFile file, bool protoType)
         {

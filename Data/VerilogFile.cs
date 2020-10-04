@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -119,11 +120,13 @@ namespace pluginVerilog.Data
             if (instancedParsedDocumentRefs.ContainsKey(parameterId))
             {
                 instancedParsedDocumentRefs[parameterId] = new WeakReference<ParsedDocument>(parsedDocument);
+                System.Diagnostics.Debug.Print("update instance " + Name +":"+ parameterId);
             }
             else
             {
                 instancedParsedDocumentRefs.Add(parameterId,new WeakReference<ParsedDocument>(parsedDocument));
                 Project.AddReparseTarget(moduleInstance);
+                System.Diagnostics.Debug.Print("add instance " + Name + ":" + parameterId);
             }
         }
 
@@ -324,7 +327,11 @@ namespace pluginVerilog.Data
             return VerilogParsedDocument.GetPopupItems(index,text);
         }
 
-
+        /// <summary>
+        /// add tool items on alt+space menu
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public override List<codeEditor.CodeEditor.ToolItem> GetToolItems(int index)
         {
             List<codeEditor.CodeEditor.ToolItem> toolItems = new List<codeEditor.CodeEditor.ToolItem>();
