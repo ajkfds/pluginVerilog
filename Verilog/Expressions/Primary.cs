@@ -130,7 +130,7 @@ namespace pluginVerilog.Verilog.Expressions
                         {
                             NameSpace space = nameSpace;
                             Primary primary = null;
-                            parseHierNameSpace(word, ref space, ref primary);
+                            parseHierNameSpace(word, ref space, ref primary,lValue);
 
                             if(primary == null || space == null || space == nameSpace)
                             {
@@ -171,31 +171,28 @@ namespace pluginVerilog.Verilog.Expressions
             return null;
         }
 
-        public static void parseHierNameSpace(WordScanner word, ref NameSpace nameSpace,ref Primary primary)
+        public static void parseHierNameSpace(WordScanner word, ref NameSpace nameSpace,ref Primary primary,bool assigned)
         {
-            if( nameSpace is Module)
+            if( nameSpace is Module && (nameSpace as Module).ModuleInstantiations.ContainsKey(word.Text))
             {
                 Module module = nameSpace as Module;
-                if (module.ModuleInstantiations.ContainsKey(word.Text))
+                ModuleItems.ModuleInstantiation minst = module.ModuleInstantiations[word.Text];
+                ModuleInstanceReference moduleInstanceReference = new ModuleInstanceReference(minst);
+                primary = moduleInstanceReference;
+                nameSpace = minst.GetInstancedModule();
+                word.Color(CodeDrawStyle.ColorType.Identifier);
+                word.MoveNext();
+
+                if (nameSpace == null) return;
+
+                if (word.Text == ".")
                 {
-                    ModuleItems.ModuleInstantiation minst = module.ModuleInstantiations[word.Text];
-                    ModuleInstanceReference moduleInstanceReference = new ModuleInstanceReference(minst);
-                    primary = moduleInstanceReference;
-                    nameSpace = minst.GetInstancedModule();
-                    word.Color(CodeDrawStyle.ColorType.Identifier);
-                    word.MoveNext();
-
-                    if (nameSpace == null) return;
-
-                    if (word.Text == ".")
-                    {
-                        word.MoveNext();    // .
-                        parseHierNameSpace(word, ref nameSpace, ref primary);
-                    }
-                    else
-                    {
-                        return;
-                    }
+                    word.MoveNext();    // .
+                    parseHierNameSpace(word, ref nameSpace, ref primary, assigned);
+                }
+                else
+                {
+                    return;
                 }
             }
             else if (nameSpace.NameSpaces.ContainsKey(word.Text))
@@ -209,7 +206,7 @@ namespace pluginVerilog.Verilog.Expressions
                 if (word.Text == ".")
                 {
                     word.MoveNext();    // .
-                    parseHierNameSpace(word, ref nameSpace, ref primary);
+                    parseHierNameSpace(word, ref nameSpace, ref primary,assigned);
                 }
                 else
                 {
@@ -218,8 +215,23 @@ namespace pluginVerilog.Verilog.Expressions
             }
             else
             {
+                var variable = VariableReference.ParseCreate(word, nameSpace,assigned);
+                if (variable != null)
+                {
+                    primary = variable;
+                    return;
+                }
+
+                var parameter = ParameterReference.ParseCreate(word, nameSpace);
+                if (parameter != null)
+                {
+                    primary = parameter;
+                    return;
+                }
                 return;
             }
+
+
         }
 
 

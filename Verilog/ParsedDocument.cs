@@ -311,6 +311,8 @@ namespace pluginVerilog.Verilog
             {
                 return new List<codeEditor.CodeEditor.AutocompleteItem>();
             }
+
+
  //           if (document.GetCharAt(index - 1) == '.')
             if(endWithDot)
             { // after dot cantidate
@@ -350,7 +352,7 @@ namespace pluginVerilog.Verilog
                 }
             }
             else
-            {
+            { // hire word
                 cantidateWord = words.LastOrDefault();
                 items = new List<codeEditor.CodeEditor.AutocompleteItem>();
                 if(words.Count>2) words.RemoveAt(words.Count - 1);
