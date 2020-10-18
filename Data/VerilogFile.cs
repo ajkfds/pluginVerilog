@@ -34,6 +34,10 @@ namespace pluginVerilog.Data
         {
             get
             {
+                if (Name == "TEST_HIER_PARSE_MOD2.v")
+                {
+                    string A = "";
+                }
                 if (document != null && document as CodeEditor.CodeDocument == null) System.Diagnostics.Debugger.Break();
                 if (document == null)
                 {
@@ -57,6 +61,10 @@ namespace pluginVerilog.Data
             }
             protected set
             {
+                if (Name == "TEST_HIER_PARSE_MOD2.v")
+                {
+                    string A = "";
+                }
                 if (value != null &&  value as CodeEditor.CodeDocument == null) System.Diagnostics.Debugger.Break();
                 document = value as CodeEditor.CodeDocument ;
             }
@@ -349,8 +357,24 @@ namespace pluginVerilog.Data
             if (VerilogParsedDocument == null) return null;
             int line = CodeDocument.GetLineAt(index);
             int lineStartIndex = CodeDocument.GetLineStartIndex(line);
+            bool endWithDot;
+            List<string> words = ((pluginVerilog.CodeEditor.CodeDocument)CodeDocument).GetHierWords(index, out endWithDot);
+            if (endWithDot)
+            {
+                cantidateWord = "";
+            }
+            else
+            {
+                cantidateWord = words.LastOrDefault();
+                if (words.Count > 0)
+                {
+                    words.RemoveAt(words.Count - 1);
+                }
+            }
 
-            List<codeEditor.CodeEditor.AutocompleteItem> items = VerilogParsedDocument.GetAutoCompleteItems(index,lineStartIndex,line,(CodeEditor.CodeDocument)CodeDocument,out cantidateWord);
+
+            List<codeEditor.CodeEditor.AutocompleteItem> items = VerilogParsedDocument.GetAutoCompleteItems(words, lineStartIndex, line, (CodeEditor.CodeDocument)CodeDocument);
+
             return items;
         }
 

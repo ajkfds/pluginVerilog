@@ -45,6 +45,11 @@ namespace pluginVerilog.Data
         {
             get
             {
+                if(Name == "HIER2")
+                {
+                    System.Diagnostics.Debug.Print("inst "+SourceVerilogFile.CodeDocument.GetHashCode());
+                }
+                //                System.Diagnostics.Debug.Print("hid "+this.GetHashCode() +","+ SourceVerilogFile.GetHashCode() + "," + SourceVerilogFile.CodeDocument.GetHashCode());
                 return SourceVerilogFile.CodeDocument;
             }
         }
@@ -381,8 +386,23 @@ namespace pluginVerilog.Data
             if (VerilogParsedDocument == null) return null;
             int line = CodeDocument.GetLineAt(index);
             int lineStartIndex = CodeDocument.GetLineStartIndex(line);
+            bool endWithDot;
+            List<string> words = ((pluginVerilog.CodeEditor.CodeDocument)CodeDocument).GetHierWords(index, out endWithDot);
+            if (endWithDot)
+            {
+                cantidateWord = "";
+            }
+            else
+            {
+                cantidateWord = words.LastOrDefault();
+                if (words.Count > 0)
+                {
+                    words.RemoveAt(words.Count - 1);
+                }
+            }
 
-            List<codeEditor.CodeEditor.AutocompleteItem> items = VerilogParsedDocument.GetAutoCompleteItems(index, lineStartIndex, line, (CodeEditor.CodeDocument)CodeDocument, out cantidateWord);
+            List<codeEditor.CodeEditor.AutocompleteItem> items = VerilogParsedDocument.GetAutoCompleteItems(words, lineStartIndex, line, (CodeEditor.CodeDocument)CodeDocument);
+
             return items;
         }
 
@@ -458,7 +478,7 @@ namespace pluginVerilog.Data
                 }
             }
 
-            CodeDocument.Replace(lineHeadIndex, indentLength, 0, new String('\t', prevTabs));
+            if(prevTabs != 0) CodeDocument.Replace(lineHeadIndex, indentLength, 0, new String('\t', prevTabs));
             CodeDocument.CaretIndex = CodeDocument.CaretIndex + prevTabs - indentLength;
         }
 

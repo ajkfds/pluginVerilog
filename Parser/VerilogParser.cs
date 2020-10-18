@@ -15,8 +15,9 @@ namespace pluginVerilog.Parser
         {
             this.EditId = verilogFile.CodeDocument.EditID;
             this.document = new CodeEditor.CodeDocument(verilogFile); // use verilog codedocument
-            this.document.CopyCharsFrom(verilogFile.CodeDocument);
-            this.document.CopyLineIndexFrom(verilogFile.CodeDocument);
+            this.document.CopyTextOnlyFrom(verilogFile.CodeDocument);
+//            this.document.CopyCharsFrom(verilogFile.CodeDocument);
+//            this.document.CopyLineIndexFrom(verilogFile.CodeDocument);
             this.ParseMode = parseMode;
             this.TextFile = verilogFile as codeEditor.Data.TextFile;
 
@@ -33,8 +34,10 @@ namespace pluginVerilog.Parser
         {
             this.EditId = verilogFile.CodeDocument.EditID;
             this.document = new CodeEditor.CodeDocument(verilogFile); // use verilog codedocument
-            this.document.CopyCharsFrom(verilogFile.CodeDocument);
-            this.document.CopyLineIndexFrom(verilogFile.CodeDocument);
+
+            this.document.CopyTextOnlyFrom(verilogFile.CodeDocument);
+//            this.document.CopyCharsFrom(verilogFile.CodeDocument);
+//            this.document.CopyLineIndexFrom(verilogFile.CodeDocument);
             this.ParseMode = parseMode;
             this.TextFile = verilogFile as codeEditor.Data.TextFile;
 

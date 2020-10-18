@@ -258,7 +258,7 @@ namespace pluginVerilog.Verilog
             new AutoComplete.NonBlockingAssignmentAutoCompleteItem("<=",CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Normal), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword)),
         };
 
-        private NameSpace getSearchNameSpace(NameSpace nameSpace,List<string> hier,bool endWithDot)
+        private NameSpace getSearchNameSpace(NameSpace nameSpace,List<string> hier)
         {
             if(nameSpace == null) return null;
             if (hier.Count == 0) return nameSpace;
@@ -267,31 +267,28 @@ namespace pluginVerilog.Verilog
             {
                 Module module = ProjectProperty.GetModule(nameSpace.Module.ModuleInstantiations[hier[0]].ModuleName);
                 hier.RemoveAt(0);
-                return getSearchNameSpace(module,hier, endWithDot);
+                return getSearchNameSpace(module,hier);
             }
             else if(nameSpace.NameSpaces.ContainsKey(hier[0]))
             {
                 NameSpace space = nameSpace.NameSpaces[hier[0]];
                 hier.RemoveAt(0);
-                return getSearchNameSpace(space, hier, endWithDot);
+                return getSearchNameSpace(space, hier);
             }
-            if (endWithDot) return null;
             return nameSpace;
         }
 
-        public List<codeEditor.CodeEditor.AutocompleteItem> GetAutoCompleteItems(int index,int lineStartIndex,int line,CodeEditor.CodeDocument document,out string cantidateWord)
+        public List<codeEditor.CodeEditor.AutocompleteItem> GetAutoCompleteItems(List<string> words,int index,int line,CodeEditor.CodeDocument document)
         {
-            cantidateWord = null;
-            
             List<codeEditor.CodeEditor.AutocompleteItem> items = null;
 
             // get current nameSpace
             NameSpace space = null;
             foreach (Module module in Modules.Values)
             {
-                if (lineStartIndex < module.BeginIndex) continue;
-                if (lineStartIndex > module.LastIndex) continue;
-                space = module.GetHierNameSpace(lineStartIndex);
+                if (index < module.BeginIndex) continue;
+                if (index > module.LastIndex) continue;
+                space = module.GetHierNameSpace(index);
                 break;
             }
 
@@ -301,64 +298,57 @@ namespace pluginVerilog.Verilog
                 int headIndex;
                 int length;
                 document.GetWord(index, out headIndex, out length);
-                cantidateWord = document.CreateString(headIndex, length);
                 return items;
             }
 
-            bool endWithDot;
-            List<string> words = document.GetHierWords(index,out endWithDot);
-            if(words.Count == 0)
-            {
-                return new List<codeEditor.CodeEditor.AutocompleteItem>();
-            }
+//            bool endWithDot;
+//            List<string> words = document.GetHierWords(index,out endWithDot);
+            //if(words.Count == 0)
+            //{
+            //    return new List<codeEditor.CodeEditor.AutocompleteItem>();
+            //}
 
 
- //           if (document.GetCharAt(index - 1) == '.')
-            if(endWithDot)
-            { // after dot cantidate
-                cantidateWord = "";
-                items = new List<codeEditor.CodeEditor.AutocompleteItem>();
-            }
-            else if(words.Count <= 1)
-            { // non hier word
-                cantidateWord = words.LastOrDefault();
-                if (cantidateWord.StartsWith("$"))
-                {
-                    items = new List<codeEditor.CodeEditor.AutocompleteItem>();
-                    foreach(string key in ProjectProperty.SystemFunctions.Keys)
-                    {
-                        items.Add(
-                            new codeEditor.CodeEditor.AutocompleteItem(key, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword))
-                        );
-                    }
-                    foreach (string key in ProjectProperty.SystemTaskParsers.Keys)
-                    {
-                        items.Add(
-                            new codeEditor.CodeEditor.AutocompleteItem(key, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword))
-                        );
-                    }
-                }
-                else
-                {
-                    items = verilogKeywords.ToList();
-                }
+            items = verilogKeywords.ToList();
+            //if(words.Count < 1)
+            //{ // non hier word
+            //    if (cantidateWord.StartsWith("$"))
+            //    {
+            //        items = new List<codeEditor.CodeEditor.AutocompleteItem>();
+            //        foreach(string key in ProjectProperty.SystemFunctions.Keys)
+            //        {
+            //            items.Add(
+            //                new codeEditor.CodeEditor.AutocompleteItem(key, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword))
+            //            );
+            //        }
+            //        foreach (string key in ProjectProperty.SystemTaskParsers.Keys)
+            //        {
+            //            items.Add(
+            //                new codeEditor.CodeEditor.AutocompleteItem(key, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword))
+            //            );
+            //        }
+            //    }
+            //    else
+            //    {
+            //        items = verilogKeywords.ToList();
+            //    }
 
-                List<string> moduleNames = ProjectProperty.GetModuleNameList();
-                foreach (string moduleName in moduleNames)
-                {
-                    items.Add(
-                        new AutoComplete.ModuleInstanceAutocompleteItem(moduleName, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword), Project)
-                    );
-                }
-            }
-            else
-            { // hire word
-                cantidateWord = words.LastOrDefault();
-                items = new List<codeEditor.CodeEditor.AutocompleteItem>();
-                if(words.Count>2) words.RemoveAt(words.Count - 1);
-            }
+            //    List<string> moduleNames = ProjectProperty.GetModuleNameList();
+            //    foreach (string moduleName in moduleNames)
+            //    {
+            //        items.Add(
+            //            new AutoComplete.ModuleInstanceAutocompleteItem(moduleName, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword), Project)
+            //        );
+            //    }
+            //}
+            //else
+            //{ // hire word
+            //    cantidateWord = words.LastOrDefault();
+            //    items = new List<codeEditor.CodeEditor.AutocompleteItem>();
+            //    if(words.Count>2) words.RemoveAt(words.Count - 1);
+            //}
 
-            for(int i = 0; i < words.Count;i++)
+            for (int i = 0; i < words.Count;i++)
             {
                 if (!words[i].StartsWith("`")) continue;
                 
@@ -378,13 +368,14 @@ namespace pluginVerilog.Verilog
 
             // fix namespace to get autoComplete items
             // module.moduleInstance.moduleInstance -> module.moduleInstance
-            if (!endWithDot && words.Count>0)
-            {
-                words.Remove(words.Last());
-            }
+//            if ( words.Count > 0)
+//                if (!endWithDot && words.Count>0)
+//            {
+//                words.Remove(words.Last());
+//            }
 
             // get target autocomplete item
-            NameSpace target = getSearchNameSpace(space, words, endWithDot);
+            NameSpace target = getSearchNameSpace(space, words);
             if(target != null) target.AppendAutoCompleteItem(items);
 
             return items;
