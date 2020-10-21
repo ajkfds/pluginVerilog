@@ -157,9 +157,9 @@ namespace pluginVerilog.Verilog.Expressions
                                 {
                                     return VariableReference.ParseCreate(word, space, lValue);
                                 }
-                                if (space.Module.Tasks.ContainsKey(word.Text))
+                                if (lValue && space.Module.Tasks.ContainsKey(word.Text))
                                 {
-                                    return TaskReference.ParseCreate(word, space, lValue);
+                                    return TaskReference.ParseCreate(word, space);
                                 }
                                 return primary;
                             }
@@ -194,6 +194,12 @@ namespace pluginVerilog.Verilog.Expressions
                 {
                     return;
                 }
+            }
+            else if (nameSpace.Module.Tasks.ContainsKey(word.Text))
+            {
+                TaskReference taskReference = TaskReference.ParseCreate(word, nameSpace);
+                primary = taskReference;
+                return;
             }
             else if (nameSpace.NameSpaces.ContainsKey(word.Text))
             {
@@ -262,7 +268,6 @@ namespace pluginVerilog.Verilog.Expressions
 
                         if (word.NextText == ".")
                         {
-//                            if(word.RootParsedDocument.Project.)
                            if (nameSpace.Module.ModuleInstantiations.ContainsKey(word.Text))
                             { // module instancce
                                 word.Color(CodeDrawStyle.ColorType.Identifier);
