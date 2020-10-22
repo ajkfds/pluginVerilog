@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -220,6 +221,11 @@ namespace pluginVerilog.Verilog
                     {
                         if(module.Parameters.ContainsKey(vkp.Key))
                         {
+                            if(module.Parameters[vkp.Key].DefinitionRefrecnce != null)
+                            {
+                                module.Parameters[vkp.Key].DefinitionRefrecnce.AddNotice("oveeride " + vkp.Value.CreateString());
+                            }
+
                             module.Parameters.Remove(vkp.Key);
                             Verilog.Variables.Parameter param = new Variables.Parameter();
                             param.Name = vkp.Key;

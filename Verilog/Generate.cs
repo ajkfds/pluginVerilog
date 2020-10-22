@@ -266,15 +266,29 @@ namespace pluginVerilog.Verilog
                 }
                 word.Color(CodeDrawStyle.ColorType.Identifier);
                 block = NamedGeneratedBlock.Create(module.Module, module as NameSpace, word.Text);
-                if (module.NameSpaces.ContainsKey(word.Text))
+                if (word.Prototype)
                 {
-                    word.AddPrototypeError("duplicated identifier");
+                    if (module.NameSpaces.ContainsKey(word.Text))
+                    {
+                        word.AddPrototypeError("duplicated identifier");
+                    }
+                    else
+                    {
+                        module.NameSpaces.Add(word.Text, block as NamedGeneratedBlock);
+                    }
                 }
                 else
                 {
-                    module.NameSpaces.Add(word.Text, block as NamedGeneratedBlock);
+                    if (module.NameSpaces.ContainsKey(word.Text))
+                    {
+//                        word.AddPrototypeError("duplicated identifier");
+                    }
+                    else
+                    {
+                        word.AddPrototypeError("identifier prototype not found");
+                        module.NameSpaces.Add(word.Text, block as NamedGeneratedBlock);
+                    }
                 }
-
                 word.MoveNext();
             }
 

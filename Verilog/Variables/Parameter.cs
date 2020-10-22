@@ -107,6 +107,7 @@ namespace pluginVerilog.Verilog.Variables
                                 Parameter param = new Parameter();
                                 param.Name = identifier;
                                 param.Expression = expression;
+                                param.DefinitionRefrecnce = nameReference;
                                 module.LocalParameters.Add(param.Name, param);
                             }
                         }
@@ -132,6 +133,7 @@ namespace pluginVerilog.Verilog.Variables
                                 Parameter param = new Parameter();
                                 param.Name = identifier;
                                 param.Expression = expression;
+                                param.DefinitionRefrecnce = nameReference;
                                 module.Parameters.Add(param.Name, param);
 
                                 module.PortParameterNameList.Add(identifier);
