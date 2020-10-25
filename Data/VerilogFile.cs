@@ -61,10 +61,6 @@ namespace pluginVerilog.Data
             }
             protected set
             {
-                if (Name == "TEST_HIER_PARSE_MOD2.v")
-                {
-                    string A = "";
-                }
                 if (value != null &&  value as CodeEditor.CodeDocument == null) System.Diagnostics.Debugger.Break();
                 document = value as CodeEditor.CodeDocument ;
             }
@@ -105,36 +101,49 @@ namespace pluginVerilog.Data
             cleanWeakRef();
 
             ParsedDocument ret;
-            if (instancedParsedDocumentRefs.ContainsKey(parameterId))
+
+            if(parameterId == "")
             {
-                if (instancedParsedDocumentRefs[parameterId].TryGetTarget(out ret))
+                return ParsedDocument;
+            }
+            else
+            {
+                if (instancedParsedDocumentRefs.ContainsKey(parameterId))
                 {
-                    return ret;
+                    if (instancedParsedDocumentRefs[parameterId].TryGetTarget(out ret))
+                    {
+                        return ret;
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
                 else
                 {
                     return null;
                 }
             }
-            else
-            {
-                return null;
-            }
         }
 
         public void RegisterInstanceParsedDocument(string parameterId, ParsedDocument parsedDocument,VerilogModuleInstance moduleInstance)
         {
             cleanWeakRef();
-            if (instancedParsedDocumentRefs.ContainsKey(parameterId))
+            if (parameterId == "")
             {
-                instancedParsedDocumentRefs[parameterId] = new WeakReference<ParsedDocument>(parsedDocument);
-                System.Diagnostics.Debug.Print("update instance " + Name +":"+ parameterId);
+                ParsedDocument = parsedDocument;
             }
             else
             {
-                instancedParsedDocumentRefs.Add(parameterId,new WeakReference<ParsedDocument>(parsedDocument));
-                Project.AddReparseTarget(moduleInstance);
-                System.Diagnostics.Debug.Print("add instance " + Name + ":" + parameterId);
+                if (instancedParsedDocumentRefs.ContainsKey(parameterId))
+                {
+                    instancedParsedDocumentRefs[parameterId] = new WeakReference<ParsedDocument>(parsedDocument);
+                }
+                else
+                {
+                    instancedParsedDocumentRefs.Add(parameterId, new WeakReference<ParsedDocument>(parsedDocument));
+                    Project.AddReparseTarget(moduleInstance);
+                }
             }
         }
 
@@ -221,11 +230,7 @@ namespace pluginVerilog.Data
 
         public override void Update()
         {
-            if(Name == "TEST_TOP.v")
-            {
-                string a = "";
-            }
-            if(VerilogParsedDocument == null)
+            if (VerilogParsedDocument == null)
             {
                 // dispose all
                 foreach (Item item in items.Values) item.Dispose();
@@ -246,11 +251,101 @@ namespace pluginVerilog.Data
                 foreach (Verilog.ModuleItems.ModuleInstantiation moduleInstantiation in module.ModuleInstantiations.Values)
                 {
                     if (items.Keys.Contains(moduleInstantiation.Name))
-                    {
-                        currentItems.Add(items[moduleInstantiation.Name]);
+                    { // already exist item
+                        Item oldItem = items[moduleInstantiation.Name];
+                        if (oldItem is Data.VerilogModuleInstance && (oldItem as Data.VerilogModuleInstance).ReplaceBy(moduleInstantiation, Project))
+                        { // sucessfully replaced
+                            currentItems.Add(oldItem);
+                        }
+                        else
+                        { // re-generate
+                            Item item = Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
+                            if (item != null & !newItems.ContainsKey(moduleInstantiation.Name))
+                            {
+                                item.Parent = this;
+                                newItems.Add(moduleInstantiation.Name, item);
+                                if (moduleInstantiation.ParameterOverrides.Count != 0)
+                                {
+                                    Data.VerilogModuleInstance moduleInstance = item as Data.VerilogModuleInstance;
+
+                                    if (moduleInstance.ParsedDocument == null)
+                                    {
+                                        Project.AddReparseTarget(item);
+                                    }
+                                }
+                            }
+                        }
                     }
                     else
-                    {
+                    { // new item
+                        Item item = Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
+                        if (item != null & !newItems.ContainsKey(moduleInstantiation.Name))
+                        {
+                            item.Parent = this;
+                            newItems.Add(moduleInstantiation.Name, item);
+                            if (moduleInstantiation.ParameterOverrides.Count != 0)
+                            {
+                                Data.VerilogModuleInstance moduleInstance = item as Data.VerilogModuleInstance;
+
+                                if (moduleInstance.ParsedDocument == null)
+                                {
+                                    Project.AddReparseTarget(item);
+                                }
+                                else
+                                {
+                                    string a = "";
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            List<Item> removeItems = new List<Item>();
+            foreach (codeEditor.Data.Item item in items.Values)
+            {
+                if (!currentItems.Contains(item)) removeItems.Add(item);
+            }
+
+            foreach (Item item in removeItems)
+            {
+                items.Remove(item.Name);
+                item.Dispose();
+            }
+
+            foreach (Item item in newItems.Values)
+            {
+                items.Add(item.Name, item);
+            }
+        }
+/*        public override void Update()
+        {
+            if(VerilogParsedDocument == null)
+            {
+                // dispose all
+                foreach (Item item in items.Values) item.Dispose();
+                items.Clear();
+                return;
+            }
+
+            List<Item> currentItems = new List<Item>();
+            Dictionary<string, Item> newItems = new Dictionary<string, Item>();
+
+            foreach (Item item in VerilogParsedDocument.IncludeFiles.Values)
+            {
+                currentItems.Add(item);
+            }
+
+            foreach (Verilog.Module module in VerilogParsedDocument.Modules.Values)
+            {
+                foreach (Verilog.ModuleItems.ModuleInstantiation moduleInstantiation in module.ModuleInstantiations.Values)
+                {
+                    //if (items.Keys.Contains(moduleInstantiation.Name))
+                    //{
+                    //    currentItems.Add(items[moduleInstantiation.Name]);
+                    //}
+                    //else
+                    //{
                         Item item = Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
                         if (item != null & !newItems.ContainsKey(moduleInstantiation.Name))
                         {
@@ -268,7 +363,7 @@ namespace pluginVerilog.Data
                                 }
                             }
                         }
-                    }
+                    //}
                 }
             }
 
@@ -291,7 +386,7 @@ namespace pluginVerilog.Data
 //                Project.AddReparseTarget(item);
             }
         }
-
+*/
         public override void AfterKeyDown(System.Windows.Forms.KeyEventArgs e)
         {
             if (VerilogParsedDocument == null) return;

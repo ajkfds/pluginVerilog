@@ -40,34 +40,58 @@ namespace pluginVerilog.Data
             return fileItem;
         }
 
+        public bool ReplaceBy(
+            Verilog.ModuleItems.ModuleInstantiation moduleInstantiation,
+            codeEditor.Data.Project project
+            )
+        {
+            ProjectProperty projectPropery = project.GetProjectProperty(Plugin.StaticID) as ProjectProperty;
+            Data.IVerilogRelatedFile file = projectPropery.GetFileOfModule(moduleInstantiation.ModuleName);
+            if (file == null) return false;
+            if (!IsSameAs(file as File)) return false;
+            if (Project != project) return false;
+            if (ModuleName != moduleInstantiation.ModuleName) return false;
+
+            if (ParameterId == moduleInstantiation.OverrideParameterID) return true;
+
+            // re-register
+            disposeItems();
+
+            ParameterOverrides = moduleInstantiation.ParameterOverrides;
+            ParseRequested = true;
+
+            if (file is Data.VerilogFile)
+            {
+                Data.VerilogFile vfile = file as Data.VerilogFile;
+                vfile.RegisterModuleInstance(this);
+            }
+
+            return true;
+        }
 
         public override codeEditor.CodeEditor.CodeDocument CodeDocument
         {
             get
             {
-                if(Name == "HIER2")
-                {
-                    System.Diagnostics.Debug.Print("inst "+SourceVerilogFile.CodeDocument.GetHashCode());
-                }
-                //                System.Diagnostics.Debug.Print("hid "+this.GetHashCode() +","+ SourceVerilogFile.GetHashCode() + "," + SourceVerilogFile.CodeDocument.GetHashCode());
                 return SourceVerilogFile.CodeDocument;
             }
         }
         public override void Dispose()
         {
+            disposeItems();
+        }
+
+        private void disposeItems()
+        {
             if (ParsedDocument != null && ParameterOverrides.Count != 0)
-            { 
+            {
                 foreach (var incFile in VerilogParsedDocument.IncludeFiles.Values)
                 {
                     incFile.Dispose();
                 }
             }
-            //            CodeDocument = null;
             parsedDocument = null;
-//            if (ParsedDocument != null) ParsedDocument.Dispose();
             SourceVerilogFile.RemoveModuleInstance(this);
-
-            // base.Dispose(); do not call
         }
 
         public string ModuleName { set; get; }
@@ -245,10 +269,6 @@ namespace pluginVerilog.Data
             }
             else
             {
-                if (Name == "TOP_0")
-                {
-                    string a = "";
-                }
                 return new Parser.VerilogParser(this, ParameterOverrides, parseMode);
             }
         }
@@ -278,11 +298,33 @@ namespace pluginVerilog.Data
                 foreach (Verilog.ModuleItems.ModuleInstantiation moduleInstantiation in module.ModuleInstantiations.Values)
                 {
                     if (items.Keys.Contains(moduleInstantiation.Name))
-                    {
-                        currentItems.Add(items[moduleInstantiation.Name]);
+                    { // already exist item
+                        Item oldItem = items[moduleInstantiation.Name];
+                        if(oldItem is Data.VerilogModuleInstance && (oldItem as Data.VerilogModuleInstance).ReplaceBy(moduleInstantiation,Project))
+                        { // sucessfully replaced
+                            currentItems.Add(oldItem);
+                        }
+                        else
+                        { // re-generate
+                            Item item = Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
+                            if (item != null & !newItems.ContainsKey(moduleInstantiation.Name))
+                            {
+                                item.Parent = this;
+                                newItems.Add(moduleInstantiation.Name, item);
+                                if (moduleInstantiation.ParameterOverrides.Count != 0)
+                                {
+                                    Data.VerilogModuleInstance moduleInstance = item as Data.VerilogModuleInstance;
+
+                                    if (moduleInstance.ParsedDocument == null)
+                                    {
+                                        Project.AddReparseTarget(item);
+                                    }
+                                }
+                            }
+                        }
                     }
                     else
-                    {
+                    { // new item
                         Item item = Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
                         if (item != null & !newItems.ContainsKey(moduleInstantiation.Name))
                         {
@@ -302,10 +344,6 @@ namespace pluginVerilog.Data
                                 }
                             }
                         }
-
-
-                        //Item item = Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
-                        //if (item != null & !newItems.ContainsKey(moduleInstantiation.Name)) newItems.Add(moduleInstantiation.Name, item);
                     }
                 }
             }
@@ -325,7 +363,6 @@ namespace pluginVerilog.Data
             foreach (Item item in newItems.Values)
             {
                 items.Add(item.Name, item);
-//                Project.AddReparseTarget(item);
             }
         }
 

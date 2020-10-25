@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pluginVerilog.Verilog.ModuleItems;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -265,7 +266,8 @@ namespace pluginVerilog.Verilog
 
             if (nameSpace.Module.ModuleInstantiations.ContainsKey(hier[0]))
             {
-                Module module = ProjectProperty.GetModule(nameSpace.Module.ModuleInstantiations[hier[0]].ModuleName);
+                ModuleInstantiation inst = nameSpace.Module.ModuleInstantiations[hier[0]];
+                Module module = ProjectProperty.GetInstancedModule(inst);
                 hier.RemoveAt(0);
                 return getSearchNameSpace(module,hier);
             }
