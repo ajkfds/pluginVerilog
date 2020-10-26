@@ -130,7 +130,7 @@ namespace pluginVerilog.Verilog.Expressions
                         {
                             NameSpace space = nameSpace;
                             Primary primary = null;
-                            parseHierNameSpace(word, ref space, ref primary,lValue);
+                            parseHierNameSpace(word, nameSpace, ref space, ref primary,lValue);
 
                             if(primary == null || space == null || space == nameSpace)
                             {
@@ -171,12 +171,11 @@ namespace pluginVerilog.Verilog.Expressions
             return null;
         }
 
-        public static void parseHierNameSpace(WordScanner word, ref NameSpace nameSpace,ref Primary primary,bool assigned)
+        public static void parseHierNameSpace(WordScanner word, NameSpace rootNameSpace, ref NameSpace nameSpace,ref Primary primary,bool assigned)
         {
-            if( nameSpace is Module && (nameSpace as Module).ModuleInstantiations.ContainsKey(word.Text))
+            if( nameSpace.Module != null && nameSpace.Module.ModuleInstantiations.ContainsKey(word.Text))
             {
-                Module module = nameSpace as Module;
-                ModuleItems.ModuleInstantiation minst = module.ModuleInstantiations[word.Text];
+                ModuleItems.ModuleInstantiation minst = nameSpace.Module.ModuleInstantiations[word.Text];
                 ModuleInstanceReference moduleInstanceReference = new ModuleInstanceReference(minst);
                 primary = moduleInstanceReference;
                 nameSpace = minst.GetInstancedModule();
@@ -188,18 +187,37 @@ namespace pluginVerilog.Verilog.Expressions
                 if (word.Text == ".")
                 {
                     word.MoveNext();    // .
-                    parseHierNameSpace(word, ref nameSpace, ref primary, assigned);
+                    parseHierNameSpace(word, rootNameSpace, ref nameSpace, ref primary, assigned);
                 }
                 else
                 {
                     return;
                 }
             }
-            else if (nameSpace.Module.Tasks.ContainsKey(word.Text))
+            //else if (assigned && nameSpace.Module.Tasks.ContainsKey(word.Text))
+            //{
+            //    TaskReference taskReference = TaskReference.ParseCreate(word, nameSpace);
+            //    primary = taskReference;
+            //    return;
+            //}
+            //else if (!assigned && nameSpace.Module.Functions.ContainsKey(word.Text))
+            //{
+            //    FunctionReference functionReference = FunctionReference.ParseCreate(word, nameSpace);
+            //    primary = functionReference;
+            //    return;
+            //}
+            else if (word.NextText == "(")
             {
-                TaskReference taskReference = TaskReference.ParseCreate(word, nameSpace);
-                primary = taskReference;
-                return;
+                if (assigned)
+                { // left value
+                    TaskReference taskReference = TaskReference.ParseCreate(word, rootNameSpace, nameSpace);
+                    primary = taskReference;
+                    return;
+                }
+                else
+                {
+                    primary = FunctionCall.ParseCreate(word,rootNameSpace, nameSpace);
+                }
             }
             else if (nameSpace.NameSpaces.ContainsKey(word.Text))
             {
@@ -212,7 +230,7 @@ namespace pluginVerilog.Verilog.Expressions
                 if (word.Text == ".")
                 {
                     word.MoveNext();    // .
-                    parseHierNameSpace(word, ref nameSpace, ref primary,assigned);
+                    parseHierNameSpace(word, rootNameSpace, ref nameSpace, ref primary,assigned);
                 }
                 else
                 {
@@ -234,10 +252,9 @@ namespace pluginVerilog.Verilog.Expressions
                     primary = parameter;
                     return;
                 }
+
                 return;
             }
-
-
         }
 
 

@@ -106,7 +106,7 @@ namespace pluginVerilog.Data
                 {
                     sb.Append(kvp.Key);
                     sb.Append("=");
-                    sb.Append(kvp.Value.CreateString());
+                    sb.Append(kvp.Value.Value.ToString());
                     sb.Append(",");
                 }
                 return sb.ToString();

@@ -28,7 +28,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                 {
                     sb.Append(kvp.Key);
                     sb.Append("=");
-                    sb.Append(kvp.Value.ConstantValueString());
+                    sb.Append(kvp.Value.Value.ToString());
                     sb.Append(",");
                 }
                 return sb.ToString();

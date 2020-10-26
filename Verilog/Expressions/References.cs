@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Verilog.Expressions
 {
+
+
     public class TaskReference : Primary
     {
         public string TaskName { get; protected set; }
@@ -30,16 +32,21 @@ namespace pluginVerilog.Verilog.Expressions
             }
         }
 
-        public static TaskReference ParseCreate(WordScanner word, NameSpace nameSpace)
+
+        protected static new TaskReference ParseCreate(WordScanner word, NameSpace nameSpace)
+        {
+            return ParseCreate(word, nameSpace, nameSpace);
+        }
+        public static TaskReference ParseCreate(WordScanner word, NameSpace nameSpace,NameSpace taskNameSpace)
         {
             TaskReference ret = new TaskReference();
             ret.TaskName = word.Text;
             ret.ModuleName = nameSpace.Module.Name;
             word.Color(CodeDrawStyle.ColorType.Identifier);
             word.MoveNext();
-            if (nameSpace.Module.Tasks.ContainsKey(ret.TaskName))
+            if (taskNameSpace.Module.Tasks.ContainsKey(ret.TaskName))
             {
-                ret.Task = nameSpace.Module.Tasks[ret.TaskName];
+                ret.Task = taskNameSpace.Module.Tasks[ret.TaskName];
             }
 
             return ret;
