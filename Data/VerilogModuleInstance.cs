@@ -40,6 +40,14 @@ namespace pluginVerilog.Data
             return fileItem;
         }
 
+        public override string ID
+        {
+            get
+            {
+                return RelativePath +":"+ ParameterId;
+            }
+        }
+
         public bool ReplaceBy(
             Verilog.ModuleItems.ModuleInstantiation moduleInstantiation,
             codeEditor.Data.Project project
