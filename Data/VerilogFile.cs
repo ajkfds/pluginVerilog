@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using codeEditor.CodeEditor;
@@ -24,20 +25,19 @@ namespace pluginVerilog.Data
             {
                 fileItem.Name = relativePath;
             }
-            fileItem.ParseRequested = true;
+            //            fileItem.ParseRequested = true;
+            if (fileItem.RelativePath == "TEST_HIER_PARSE.v") {
+                System.Diagnostics.Debug.Print("TEST_HIER_PARSE.v :" + fileItem.GetHashCode());
+            }
 
             return fileItem;
         }
 
-        private CodeEditor.CodeDocument document = null;
+//        private CodeEditor.CodeDocument document = null;
         public override codeEditor.CodeEditor.CodeDocument CodeDocument
         {
             get
             {
-                if (Name == "TEST_HIER_PARSE_MOD2.v")
-                {
-                    string A = "";
-                }
                 if (document != null && document as CodeEditor.CodeDocument == null) System.Diagnostics.Debugger.Break();
                 if (document == null)
                 {
@@ -90,8 +90,33 @@ namespace pluginVerilog.Data
                 }
             }
 
-            ParseRequested = false;
+//            ParseRequested = false;
             Update();
+        }
+        public override void LoadFormFile()
+        {
+            loadDoumentFromFile();
+            ParsedDocument = null;
+            Project.AddReparseTarget(this);
+            if (NavigatePanelNode != null) NavigatePanelNode.Update();
+        }
+        private void loadDoumentFromFile()
+        {
+            try
+            {
+                using (System.IO.StreamReader sr = new System.IO.StreamReader(Project.GetAbsolutePath(RelativePath)))
+                {
+                    document = new CodeEditor.CodeDocument(this);
+                    string text = sr.ReadToEnd();
+                    document.Replace(0, 0, 0, text);
+                    //                            document.ClearHistory();
+                    document.Clean();
+                }
+            }
+            catch
+            {
+                document = null;
+            }
         }
 
         private Dictionary<string, System.WeakReference<ParsedDocument>> instancedParsedDocumentRefs = new Dictionary<string, WeakReference<ParsedDocument>>();
@@ -258,7 +283,7 @@ namespace pluginVerilog.Data
                             currentItems.Add(oldItem);
                         }
                         else
-                        { // re-generate
+                        { // re-generate (same module instance name, but different file or module name or parameter
                             Item item = Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
                             if (item != null & !newItems.ContainsKey(moduleInstantiation.Name))
                             {
@@ -267,9 +292,8 @@ namespace pluginVerilog.Data
                                 if (moduleInstantiation.ParameterOverrides.Count != 0)
                                 {
                                     Data.VerilogModuleInstance moduleInstance = item as Data.VerilogModuleInstance;
-
                                     if (moduleInstance.ParsedDocument == null)
-                                    {
+                                    { // background reparse if not parsed
                                         Project.AddReparseTarget(item);
                                     }
                                 }
@@ -288,7 +312,7 @@ namespace pluginVerilog.Data
                                 Data.VerilogModuleInstance moduleInstance = item as Data.VerilogModuleInstance;
 
                                 if (moduleInstance.ParsedDocument == null)
-                                {
+                                {   // background reparse
                                     Project.AddReparseTarget(item);
                                 }
                                 else

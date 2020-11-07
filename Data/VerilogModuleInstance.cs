@@ -29,7 +29,7 @@ namespace pluginVerilog.Data
             fileItem.RelativePath = file.RelativePath;
             fileItem.Name = moduleInstantiation.Name;
             fileItem.ModuleName = moduleInstantiation.ModuleName;
-            fileItem.ParseRequested = true;
+//            fileItem.ParseRequested = true;
 
             if(file is Data.VerilogFile)
             {
@@ -66,7 +66,7 @@ namespace pluginVerilog.Data
             disposeItems();
 
             ParameterOverrides = moduleInstantiation.ParameterOverrides;
-            ParseRequested = true;
+//            ParseRequested = true;
 
             if (file is Data.VerilogFile)
             {
@@ -129,59 +129,59 @@ namespace pluginVerilog.Data
             }
         }
 
-        private volatile bool parseRequested = false;
-        public override bool ParseRequested
-        {
-            get
-            {
-                if (ParameterOverrides.Count == 0)
-                {
-                    return SourceVerilogFile.ParseRequested;
-                }
-                else
-                {
-                    return parseRequested;
-                }
-            }
-            set
-            {
-                if (ParameterOverrides.Count == 0)
-                {
-                    SourceVerilogFile.ParseRequested = value;
-                }
-                else
-                {
-                    parseRequested = value;
-                }
-            }
-        }
+        //private volatile bool parseRequested = false;
+        //public override bool ParseRequested
+        //{
+        //    get
+        //    {
+        //        if (ParameterOverrides.Count == 0)
+        //        {
+        //            return SourceVerilogFile.ParseRequested;
+        //        }
+        //        else
+        //        {
+        //            return parseRequested;
+        //        }
+        //    }
+        //    set
+        //    {
+        //        if (ParameterOverrides.Count == 0)
+        //        {
+        //            SourceVerilogFile.ParseRequested = value;
+        //        }
+        //        else
+        //        {
+        //            parseRequested = value;
+        //        }
+        //    }
+        //}
 
-        private volatile bool reloadRequested = false;
-        public override bool CloseRequested
-        {
-            get
-            {
-                if (ParameterOverrides.Count == 0)
-                {
-                    return SourceVerilogFile.CloseRequested;
-                }
-                else
-                {
-                    return reloadRequested;
-                }
-            }
-            set
-            {
-                if (ParameterOverrides.Count == 0)
-                {
-                    SourceVerilogFile.CloseRequested = value;
-                }
-                else
-                {
-                    reloadRequested = value;
-                }
-            }
-        }
+        //private volatile bool reloadRequested = false;
+        //public override bool CloseRequested
+        //{
+        //    get
+        //    {
+        //        if (ParameterOverrides.Count == 0)
+        //        {
+        //            return SourceVerilogFile.CloseRequested;
+        //        }
+        //        else
+        //        {
+        //            return reloadRequested;
+        //        }
+        //    }
+        //    set
+        //    {
+        //        if (ParameterOverrides.Count == 0)
+        //        {
+        //            SourceVerilogFile.CloseRequested = value;
+        //        }
+        //        else
+        //        {
+        //            reloadRequested = value;
+        //        }
+        //    }
+        //}
 
 
         public override void Close()
@@ -237,7 +237,7 @@ namespace pluginVerilog.Data
                 source.RegisterInstanceParsedDocument(ParameterId, newParsedDocument,this);
             }
 
-            ParseRequested = false;
+//            ParseRequested = false;
             Update();
         }
 
@@ -301,6 +301,7 @@ namespace pluginVerilog.Data
                 currentItems.Add(item);
             }
 
+            List<Item> removeItems = new List<Item>();
             foreach (Verilog.Module module in VerilogParsedDocument.Modules.Values)
             {
                 foreach (Verilog.ModuleItems.ModuleInstantiation moduleInstantiation in module.ModuleInstantiations.Values)
@@ -318,7 +319,8 @@ namespace pluginVerilog.Data
                             if (item != null & !newItems.ContainsKey(moduleInstantiation.Name))
                             {
                                 item.Parent = this;
-                                newItems.Add(moduleInstantiation.Name, item);
+                                removeItems.Add(items[moduleInstantiation.Name]);
+                               newItems.Add(moduleInstantiation.Name, item);
                                 if (moduleInstantiation.ParameterOverrides.Count != 0)
                                 {
                                     Data.VerilogModuleInstance moduleInstance = item as Data.VerilogModuleInstance;
@@ -356,7 +358,6 @@ namespace pluginVerilog.Data
                 }
             }
 
-            List<Item> removeItems = new List<Item>();
             foreach (codeEditor.Data.Item item in items.Values)
             {
                 if (!currentItems.Contains(item)) removeItems.Add(item);

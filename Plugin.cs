@@ -46,9 +46,9 @@ namespace pluginVerilog
         public bool Initialize()
         {
             // add test rtl project
-            string absolutePath = System.IO.Path.GetFullPath(@"..\\..\\..\\..\\pluginVerilog\\TestRTL");
-            codeEditor.Data.Project project = codeEditor.Data.Project.Create(absolutePath);
-            codeEditor.Controller.AddProject(project);
+//            string absolutePath = System.IO.Path.GetFullPath(@"..\\..\\..\\..\\pluginVerilog\\TestRTL");
+//            codeEditor.Data.Project project = codeEditor.Data.Project.Create(absolutePath);
+//            codeEditor.Controller.AddProject(project);
 
             // register project property form tab
             codeEditor.Tools.ProjectPropertyForm.FormCreated += Tools.ProjectPropertyTab.ProjectPropertyFromCreated;
