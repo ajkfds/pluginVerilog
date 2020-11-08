@@ -280,7 +280,7 @@ namespace pluginVerilog.Verilog
             return nameSpace;
         }
 
-        public List<codeEditor.CodeEditor.AutocompleteItem> GetAutoCompleteItems(List<string> words,int index,int line,CodeEditor.CodeDocument document)
+        public List<codeEditor.CodeEditor.AutocompleteItem> GetAutoCompleteItems(List<string> hierWords,int index,int line,CodeEditor.CodeDocument document,string cantidateWord)
         {
             List<codeEditor.CodeEditor.AutocompleteItem> items = null;
 
@@ -310,8 +310,30 @@ namespace pluginVerilog.Verilog
             //    return new List<codeEditor.CodeEditor.AutocompleteItem>();
             //}
 
+            if(hierWords.Count == 0 && cantidateWord.StartsWith("$"))
+            {
+                items = new List<codeEditor.CodeEditor.AutocompleteItem>();
+                foreach (string key in ProjectProperty.SystemFunctions.Keys)
+                {
+                    items.Add(
+                        new codeEditor.CodeEditor.AutocompleteItem(key, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword))
+                    );
+                    return items;
+                }
+                foreach (string key in ProjectProperty.SystemTaskParsers.Keys)
+                {
+                    items.Add(
+                        new codeEditor.CodeEditor.AutocompleteItem(key, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword))
+                    );
+                    return items;
+                }
+            }
 
-            items = verilogKeywords.ToList();
+            if(hierWords.Count == 0)
+            {
+                items = verilogKeywords.ToList();
+            }
+
             //if(words.Count < 1)
             //{ // non hier word
             //    if (cantidateWord.StartsWith("$"))
@@ -350,34 +372,27 @@ namespace pluginVerilog.Verilog
             //    if(words.Count>2) words.RemoveAt(words.Count - 1);
             //}
 
-            for (int i = 0; i < words.Count;i++)
+            // parse macro in hier words
+            for (int i = 0; i < hierWords.Count;i++)
             {
-                if (!words[i].StartsWith("`")) continue;
+                if (!hierWords[i].StartsWith("`")) continue;
                 
-                string macroText = words[i].Substring(1);
+                string macroText = hierWords[i].Substring(1);
                 if (!Macros.ContainsKey(macroText)) continue;
                 Macro macro = Macros[macroText];
                 if (macro.MacroText.Contains(' ')) continue;
                 if (macro.MacroText.Contains('\t')) continue;
 
                 string[] swapTexts = macro.MacroText.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-                words.RemoveAt(i);
+                hierWords.RemoveAt(i);
                 for(int j = swapTexts.Length - 1; j >= 0; j--)
                 {
-                    words.Insert(i, swapTexts[j]);
+                    hierWords.Insert(i, swapTexts[j]);
                 }
             }
 
-            // fix namespace to get autoComplete items
-            // module.moduleInstance.moduleInstance -> module.moduleInstance
-//            if ( words.Count > 0)
-//                if (!endWithDot && words.Count>0)
-//            {
-//                words.Remove(words.Last());
-//            }
-
             // get target autocomplete item
-            NameSpace target = getSearchNameSpace(space, words);
+            NameSpace target = getSearchNameSpace(space, hierWords);
             if(target != null) target.AppendAutoCompleteItem(items);
 
             return items;

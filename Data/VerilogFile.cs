@@ -74,6 +74,12 @@ namespace pluginVerilog.Data
 
             ParsedDocument = newParsedDocument;
 
+            if(VerilogParsedDocument == null)
+            {
+                Update();
+                return;
+            }
+
             foreach (Verilog.Module module in VerilogParsedDocument.Modules.Values)
             {
                 if (!ProjectProperty.IsRegisterableModule(module.Name, this))
@@ -96,7 +102,8 @@ namespace pluginVerilog.Data
         public override void LoadFormFile()
         {
             loadDoumentFromFile();
-            ParsedDocument = null;
+            AcceptParsedDocument(null);
+//             ParsedDocument = null;
             Project.AddReparseTarget(this);
             if (NavigatePanelNode != null) NavigatePanelNode.Update();
         }
@@ -491,8 +498,11 @@ namespace pluginVerilog.Data
                 }
             }
 
-
-            List<codeEditor.CodeEditor.AutocompleteItem> items = VerilogParsedDocument.GetAutoCompleteItems(words, lineStartIndex, line, (CodeEditor.CodeDocument)CodeDocument);
+            if(words.Count == 0 && (cantidateWord == "" || cantidateWord == null))
+            {
+                return null;
+            }
+            List<codeEditor.CodeEditor.AutocompleteItem> items = VerilogParsedDocument.GetAutoCompleteItems(words, lineStartIndex, line, (CodeEditor.CodeDocument)CodeDocument,cantidateWord);
 
             return items;
         }
