@@ -111,11 +111,13 @@ namespace pluginVerilog.Data
         {
             try
             {
+                if(document == null) document = new CodeEditor.CodeDocument(this);
+
                 using (System.IO.StreamReader sr = new System.IO.StreamReader(Project.GetAbsolutePath(RelativePath)))
                 {
-                    document = new CodeEditor.CodeDocument(this);
+//                    document = new CodeEditor.CodeDocument(this);
                     string text = sr.ReadToEnd();
-                    document.Replace(0, 0, 0, text);
+                    document.Replace(0, document.Length, 0, text);
                     //                            document.ClearHistory();
                     document.Clean();
                 }
