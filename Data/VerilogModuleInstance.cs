@@ -446,6 +446,7 @@ namespace pluginVerilog.Data
                     words.RemoveAt(words.Count - 1);
                 }
             }
+            if (cantidateWord == null) cantidateWord = "";
 
             List<codeEditor.CodeEditor.AutocompleteItem> items = VerilogParsedDocument.GetAutoCompleteItems(words, lineStartIndex, line, (CodeEditor.CodeDocument)CodeDocument,cantidateWord);
 

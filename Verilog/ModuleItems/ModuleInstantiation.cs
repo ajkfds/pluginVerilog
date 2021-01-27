@@ -110,7 +110,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                             error = true;
                         }
 
-                        if (!error & word.Prototype)
+                        if (!error )//& word.Prototype)
                         {
                             if (moduleInstantiation.ParameterOverrides.ContainsKey(paramName))
                             {
