@@ -103,7 +103,7 @@ namespace pluginVerilog.Data
         }
 
 
-        public new ajkControls.CodeDrawStyle DrawStyle
+        public override ajkControls.CodeDrawStyle DrawStyle
         {
             get
             {
@@ -115,7 +115,7 @@ namespace pluginVerilog.Data
         {
             get
             {
-                return null;
+                return ParsedDocument as Verilog.ParsedDocument;
             }
         }
 

@@ -129,59 +129,6 @@ namespace pluginVerilog.Data
             }
         }
 
-        //private volatile bool parseRequested = false;
-        //public override bool ParseRequested
-        //{
-        //    get
-        //    {
-        //        if (ParameterOverrides.Count == 0)
-        //        {
-        //            return SourceVerilogFile.ParseRequested;
-        //        }
-        //        else
-        //        {
-        //            return parseRequested;
-        //        }
-        //    }
-        //    set
-        //    {
-        //        if (ParameterOverrides.Count == 0)
-        //        {
-        //            SourceVerilogFile.ParseRequested = value;
-        //        }
-        //        else
-        //        {
-        //            parseRequested = value;
-        //        }
-        //    }
-        //}
-
-        //private volatile bool reloadRequested = false;
-        //public override bool CloseRequested
-        //{
-        //    get
-        //    {
-        //        if (ParameterOverrides.Count == 0)
-        //        {
-        //            return SourceVerilogFile.CloseRequested;
-        //        }
-        //        else
-        //        {
-        //            return reloadRequested;
-        //        }
-        //    }
-        //    set
-        //    {
-        //        if (ParameterOverrides.Count == 0)
-        //        {
-        //            SourceVerilogFile.CloseRequested = value;
-        //        }
-        //        else
-        //        {
-        //            reloadRequested = value;
-        //        }
-        //    }
-        //}
 
 
         public override void Close()

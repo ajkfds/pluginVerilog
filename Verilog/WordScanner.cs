@@ -162,48 +162,36 @@ namespace pluginVerilog.Verilog
         public void AddError(string message)
         {
             if (prototype) return;
-            //            if (nonGeneratedCount != 0 || prototype) return;
             wordPointer.AddError(message);
-//            RootPointer.AddError(message);
         }
 
         public void AddWarning(string message)
         {
             if (prototype) return;
             wordPointer.AddWarning(message);
-            //            if (nonGeneratedCount != 0 || prototype) return;
-            //            RootPointer.AddWarning(message);
         }
 
         public void AddPrototypeError(string message)
         {
             if (prototype) return;
             wordPointer.AddError(message);
-//            if (nonGeneratedCount != 0) return;
-//            RootPointer.AddError(message);
         }
 
         public void AddPrototypeWarning(string message)
         {
             if (prototype) return;
             wordPointer.AddWarning(message);
-            //            if (nonGeneratedCount != 0) return;
-            //            RootPointer.AddWarning(message);
         }
 
         public void AddNotice(WordReference reference, string message)
         {
             if (prototype) return;
             wordPointer.AddNotice(reference, message);
-            //            if (nonGeneratedCount != 0 || prototype) return;
-            //            RootPointer.AddNotice(reference, message);
         }
         public void AddHint(WordReference reference, string message)
         {
             if (prototype) return;
             wordPointer.AddHint(reference, message);
-            //            if (nonGeneratedCount != 0 || prototype) return;
-            //            RootPointer.AddHint(reference, message);
         }
 
         public int RootIndex
@@ -267,7 +255,7 @@ namespace pluginVerilog.Verilog
                         error = false;
                     }
 
-                    wordPointer.Dispose();
+                    //wordPointer.Dispose(); keep document & parsedData
                     wordPointer = stock.Last();
                     stock.Remove(stock.Last());
                     if (error) wordPointer.AddError("include errors");
@@ -868,6 +856,10 @@ namespace pluginVerilog.Verilog
             if(!RootParsedDocument.IncludeFiles.ContainsKey(vhFile.Name))
             {
                 RootParsedDocument.IncludeFiles.Add(vhFile.Name,vhFile);
+            }
+            else
+            {
+                vhFile = RootParsedDocument.IncludeFiles[vhFile.Name];
             }
             vhFile.ParsedDocument = new Verilog.ParsedDocument(vhFile);// editid =, -1);
 
