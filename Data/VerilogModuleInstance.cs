@@ -296,9 +296,25 @@ namespace pluginVerilog.Data
             List<Item> currentItems = new List<Item>();
             Dictionary<string, Item> newItems = new Dictionary<string, Item>();
 
-            foreach (Item item in VerilogParsedDocument.IncludeFiles.Values)
+            foreach (VerilogHeaderFile vhFile in VerilogParsedDocument.IncludeFiles.Values)
             {
-                currentItems.Add(item);
+                if (items.ContainsValue(vhFile))
+                {
+                    currentItems.Add(vhFile);
+                }
+                else
+                {
+                    string keyname = vhFile.Name;
+                    {
+                        int i = 0;
+                        while (items.ContainsKey(keyname + "_" + i.ToString()))
+                        {
+                            i++;
+                        }
+                        keyname = keyname + "_" + i.ToString();
+                    }
+                    newItems.Add(keyname, vhFile);
+                }
             }
 
             List<Item> removeItems = new List<Item>();

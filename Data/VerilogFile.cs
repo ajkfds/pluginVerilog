@@ -33,7 +33,6 @@ namespace pluginVerilog.Data
             return fileItem;
         }
 
-//        private CodeEditor.CodeDocument document = null;
         public override codeEditor.CodeEditor.CodeDocument CodeDocument
         {
             get
@@ -267,7 +266,7 @@ namespace pluginVerilog.Data
         {
             if (VerilogParsedDocument == null)
             {
-                // dispose all
+                // dispose all subnodes
                 foreach (Item item in items.Values) item.Dispose();
                 items.Clear();
                 return;
@@ -276,9 +275,25 @@ namespace pluginVerilog.Data
             List<Item> currentItems = new List<Item>();
             Dictionary<string, Item> newItems = new Dictionary<string, Item>();
 
-            foreach (Item item in VerilogParsedDocument.IncludeFiles.Values)
+            foreach (VerilogHeaderFile vhFile in VerilogParsedDocument.IncludeFiles.Values)
             {
-                currentItems.Add(item);
+                if (items.ContainsValue(vhFile))
+                {
+                    currentItems.Add(vhFile);
+                }
+                else
+                {
+                    string keyname = vhFile.Name;
+                    {
+                        int i = 0;
+                        while (items.ContainsKey(keyname + "_" + i.ToString()))
+                        {
+                            i++;
+                        }
+                        keyname = keyname + "_" + i.ToString();
+                    }
+                    newItems.Add(keyname, vhFile);
+                }
             }
 
             foreach (Verilog.Module module in VerilogParsedDocument.Modules.Values)

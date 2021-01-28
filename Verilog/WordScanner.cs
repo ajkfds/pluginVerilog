@@ -148,7 +148,8 @@ namespace pluginVerilog.Verilog
 
         public void Color(CodeDrawStyle.ColorType colorType)
         {
-            if (nonGeneratedCount != 0 || prototype) return;
+            if (prototype) return;
+//            if (nonGeneratedCount != 0 || prototype) return;
             wordPointer.Color(colorType);
         }
 
@@ -160,37 +161,49 @@ namespace pluginVerilog.Verilog
         }
         public void AddError(string message)
         {
-            if (nonGeneratedCount != 0 || prototype) return;
-            RootPointer.AddError(message);
+            if (prototype) return;
+            //            if (nonGeneratedCount != 0 || prototype) return;
+            wordPointer.AddError(message);
+//            RootPointer.AddError(message);
         }
 
         public void AddWarning(string message)
         {
-            if (nonGeneratedCount != 0 || prototype) return;
-            RootPointer.AddWarning(message);
+            if (prototype) return;
+            wordPointer.AddWarning(message);
+            //            if (nonGeneratedCount != 0 || prototype) return;
+            //            RootPointer.AddWarning(message);
         }
 
         public void AddPrototypeError(string message)
         {
-            if (nonGeneratedCount != 0) return;
-            RootPointer.AddError(message);
+            if (prototype) return;
+            wordPointer.AddError(message);
+//            if (nonGeneratedCount != 0) return;
+//            RootPointer.AddError(message);
         }
 
         public void AddPrototypeWarning(string message)
         {
-            if (nonGeneratedCount != 0) return;
-            RootPointer.AddWarning(message);
+            if (prototype) return;
+            wordPointer.AddWarning(message);
+            //            if (nonGeneratedCount != 0) return;
+            //            RootPointer.AddWarning(message);
         }
 
         public void AddNotice(WordReference reference, string message)
         {
-            if (nonGeneratedCount != 0 || prototype) return;
-            RootPointer.AddNotice(reference, message);
+            if (prototype) return;
+            wordPointer.AddNotice(reference, message);
+            //            if (nonGeneratedCount != 0 || prototype) return;
+            //            RootPointer.AddNotice(reference, message);
         }
         public void AddHint(WordReference reference, string message)
         {
-            if (nonGeneratedCount != 0 || prototype) return;
-            RootPointer.AddHint(reference, message);
+            if (prototype) return;
+            wordPointer.AddHint(reference, message);
+            //            if (nonGeneratedCount != 0 || prototype) return;
+            //            RootPointer.AddHint(reference, message);
         }
 
         public int RootIndex

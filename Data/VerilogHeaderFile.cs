@@ -32,7 +32,6 @@ namespace pluginVerilog.Data
             return fileItem;
         }
 
-        private CodeEditor.CodeDocument document = null;
         public override codeEditor.CodeEditor.CodeDocument CodeDocument
         {
             get

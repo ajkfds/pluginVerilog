@@ -82,6 +82,7 @@ namespace pluginVerilog.Verilog
         public void AddWarning(string message)
         {
             if (ParsedDocument == null || Document == null) return;
+            if (ParsedDocument.TextFile is Data.VerilogHeaderFile) return;
 
             if (ParsedDocument is Verilog.ParsedDocument && (ParsedDocument as Verilog.ParsedDocument).WarningCount < 100)
             {
