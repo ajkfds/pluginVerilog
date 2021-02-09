@@ -259,6 +259,7 @@ namespace pluginVerilog.Verilog
                     wordPointer = stock.Last();
                     stock.Remove(stock.Last());
                     if (error) wordPointer.AddError("include errors");
+                    wordPointer.MoveNext();
                 }
                 recheckWord();
             }
@@ -354,6 +355,7 @@ namespace pluginVerilog.Verilog
                         wordPointer = stock.Last();
                         stock.Remove(stock.Last());
                         if (error) wordPointer.AddError("include errors");
+                        wordPointer.MoveNext();
                     }
                 }
                 else
@@ -680,7 +682,7 @@ namespace pluginVerilog.Verilog
                 );
                 if (items.Count > 0)
                 {
-                    wordPointer.MoveNext();
+                    //wordPointer.MoveNext();
                     diveIntoIncludeFile(sameFolderPath);
                     return;
                 }
@@ -696,7 +698,7 @@ namespace pluginVerilog.Verilog
                     });
                   if (ffile != null)
                 {
-                    wordPointer.MoveNext();
+                    //wordPointer.MoveNext();
                     diveIntoIncludeFile(ffile.RelativePath);
                     return;
                 }
@@ -843,7 +845,12 @@ namespace pluginVerilog.Verilog
             //}
             //else
             //{
-                item = Data.VerilogHeaderFile.CreateInstance(relativeFilePath, wordPointer.ParsedDocument.Project);
+            //            Data.IVerilogRelatedFile file = wordPointer.ParsedDocument.File;
+
+            string id = wordPointer.ParsedDocument.File.ID + ","+RootParsedDocument.IncludeFiles.Count.ToString();
+
+            item = Data.VerilogHeaderFile.CreateInstance(relativeFilePath, wordPointer.ParsedDocument.Project,id);
+            item.Parent = RootParsedDocument.File as codeEditor.Data.Item;
             //}
             codeEditor.Data.ITextFile textFile = item as codeEditor.Data.ITextFile;
             if(textFile == null ||! (textFile is Data.VerilogHeaderFile))

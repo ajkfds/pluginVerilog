@@ -13,13 +13,12 @@ namespace pluginVerilog.Data
 
     public class VerilogHeaderFile : codeEditor.Data.TextFile, IVerilogRelatedFile
     {
+
         public new static VerilogHeaderFile Create(string relativePath, codeEditor.Data.Project project)
         {
-            //string id = GetID(relativePath, project);
-
             VerilogHeaderFile fileItem = new VerilogHeaderFile();
             fileItem.Project = project;
-           fileItem.RelativePath = relativePath;
+            fileItem.RelativePath = relativePath;
             if (relativePath.Contains('\\'))
             {
                 fileItem.Name = relativePath.Substring(relativePath.LastIndexOf('\\') + 1);
@@ -29,9 +28,18 @@ namespace pluginVerilog.Data
                 fileItem.Name = relativePath;
             }
 
+            fileItem.id = relativePath;
             return fileItem;
         }
 
+        private string id;
+        public override string ID
+        {
+            get
+            {
+                return id;
+            }
+        }
         public override codeEditor.CodeEditor.CodeDocument CodeDocument
         {
             get
@@ -41,15 +49,12 @@ namespace pluginVerilog.Data
                 {
                     try
                     {
-                        using (System.IO.StreamReader sr = new System.IO.StreamReader(Project.GetAbsolutePath(RelativePath)))
+                        while (!readFromFile())
                         {
-                            document = new CodeEditor.CodeDocument(this);
-                            string text = sr.ReadToEnd();
-                            document.Replace(0, 0, 0, text);
-                            document.ClearHistory();
+                            System.Threading.Thread.Sleep(10);
                         }
                     }
-                    catch
+                    catch(Exception ex)
                     {
                         document = null;
                     }
@@ -60,6 +65,32 @@ namespace pluginVerilog.Data
             {
                 if (value != null && value as CodeEditor.CodeDocument == null) System.Diagnostics.Debugger.Break();
                 document = value as CodeEditor.CodeDocument;
+            }
+        }
+
+        private bool readFromFile()
+        {
+            try
+            {
+                using (System.IO.StreamReader sr = new System.IO.StreamReader(Project.GetAbsolutePath(RelativePath)))
+                {
+                    document = new CodeEditor.CodeDocument(this);
+                    string text = sr.ReadToEnd();
+                    document.Replace(0, 0, 0, text);
+                    document.ClearHistory();
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ex.HResult == -2147024864) // used by another process
+                {
+                    return false;
+                }
+                else
+                {
+                    throw ex;
+                }
             }
         }
 
@@ -77,15 +108,8 @@ namespace pluginVerilog.Data
             }
         }
 
-        public static VerilogHeaderFile CreateInstance(string relativePath, codeEditor.Data.Project project)
+        public static VerilogHeaderFile CreateInstance(string relativePath, codeEditor.Data.Project project,string id)
         {
-            //if (project.IsRegistered(ID))
-            //{
-            //    VerilogHeaderFile item = project.GetRegisterdItem(ID) as VerilogHeaderFile;
-            //    project.RegisterProjectItem(item);
-            //    return item;
-            //}
-
             VerilogHeaderFile fileItem = new VerilogHeaderFile();
             fileItem.Project = project;
             fileItem.RelativePath = relativePath;
@@ -97,8 +121,7 @@ namespace pluginVerilog.Data
             {
                 fileItem.Name = relativePath;
             }
-
-            //project.RegisterProjectItem(fileItem);
+            fileItem.id = id;
             return fileItem;
         }
 
@@ -119,16 +142,28 @@ namespace pluginVerilog.Data
             }
         }
 
+        public override void AcceptParsedDocument(codeEditor.CodeEditor.ParsedDocument newParsedDocument)
+        {
+            Data.IVerilogRelatedFile parentFile = Parent as Data.IVerilogRelatedFile;
+            if (parentFile == null) return;
+
+            parentFile.AcceptParsedDocument(newParsedDocument);
+
+            Update();
+        }
+
         public override codeEditor.NavigatePanel.NavigatePanelNode CreateNode()
         {
             return new NavigatePanel.VerilogHeaderNode(this);
         }
 
-        public new virtual codeEditor.CodeEditor.DocumentParser CreateDocumentParser(DocumentParser.ParseModeEnum parseMode)
+        public override codeEditor.CodeEditor.DocumentParser CreateDocumentParser(codeEditor.CodeEditor.DocumentParser.ParseModeEnum parseMode)
         {
-            return null;
-        }
+            Data.IVerilogRelatedFile parentFile = Parent as Data.IVerilogRelatedFile;
+            if (parentFile == null) return null;
 
+            return parentFile.CreateDocumentParser(parseMode);
+        }
         public new void AfterKeyPressed(KeyPressEventArgs e)
         {
             throw new NotImplementedException();

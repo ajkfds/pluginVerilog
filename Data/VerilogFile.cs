@@ -70,6 +70,11 @@ namespace pluginVerilog.Data
         {
             ParsedDocument oldParsedDocument = ParsedDocument;
             ParsedDocument = null;
+
+            // copy include files
+
+
+
             if (oldParsedDocument != null) oldParsedDocument.Dispose();
 
             ParsedDocument = newParsedDocument;
