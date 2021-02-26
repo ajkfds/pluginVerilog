@@ -729,7 +729,7 @@ namespace pluginVerilog.Verilog
                 wordPointer.MoveNext();
                 return;
             }
-            wordPointer.MoveNext();
+//            wordPointer.MoveNext();
 
             string macroText = macro.MacroText;
             if(macro.Aurguments != null)
