@@ -738,6 +738,7 @@ namespace pluginVerilog.Verilog
                 if (wordPointer.Text != "(")
                 {
                     wordPointer.AddError("missing macro arguments");
+                    wordPointer.MoveNext();
                     return;
                 }
                 wordPointer.MoveNext();
