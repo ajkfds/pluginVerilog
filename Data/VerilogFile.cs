@@ -33,24 +33,23 @@ namespace pluginVerilog.Data
             return fileItem;
         }
 
+        public string FileID
+        {
+            get
+            {
+                return RelativePath;
+            }
+        }
+
         public override codeEditor.CodeEditor.CodeDocument CodeDocument
         {
             get
             {
-                if (document != null && document as CodeEditor.CodeDocument == null) System.Diagnostics.Debugger.Break();
                 if (document == null)
                 {
                     try
                     {
                         loadDoumentFromFile();
-                        //using (System.IO.StreamReader sr = new System.IO.StreamReader(Project.GetAbsolutePath(RelativePath)))
-                        //{
-                        //    if(document == null) document = new CodeEditor.CodeDocument(this);
-                        //    string text = sr.ReadToEnd();
-                        //    document.Replace(0, 0, 0, text);
-                        //    document.ClearHistory();
-                        //    document.Clean();
-                        //}
                     }
                     catch
                     {
@@ -66,6 +65,7 @@ namespace pluginVerilog.Data
             }
         }
 
+        // accept new Parsed Document
         public override void AcceptParsedDocument(ParsedDocument newParsedDocument)
         {
             ParsedDocument oldParsedDocument = ParsedDocument;
@@ -101,7 +101,6 @@ namespace pluginVerilog.Data
                 }
             }
 
-//            ParseRequested = false;
             Update();
         }
         public override void LoadFormFile()
@@ -147,20 +146,23 @@ namespace pluginVerilog.Data
             }
             else
             {
-                if (instancedParsedDocumentRefs.ContainsKey(parameterId))
+                lock (instancedParsedDocumentRefs)
                 {
-                    if (instancedParsedDocumentRefs[parameterId].TryGetTarget(out ret))
+                    if (instancedParsedDocumentRefs.ContainsKey(parameterId))
                     {
-                        return ret;
+                        if (instancedParsedDocumentRefs[parameterId].TryGetTarget(out ret))
+                        {
+                            return ret;
+                        }
+                        else
+                        {
+                            return null;
+                        }
                     }
                     else
                     {
                         return null;
                     }
-                }
-                else
-                {
-                    return null;
                 }
             }
         }
@@ -174,14 +176,17 @@ namespace pluginVerilog.Data
             }
             else
             {
-                if (instancedParsedDocumentRefs.ContainsKey(parameterId))
+                lock (instancedParsedDocumentRefs)
                 {
-                    instancedParsedDocumentRefs[parameterId] = new WeakReference<ParsedDocument>(parsedDocument);
-                }
-                else
-                {
-                    instancedParsedDocumentRefs.Add(parameterId, new WeakReference<ParsedDocument>(parsedDocument));
-                    Project.AddReparseTarget(moduleInstance);
+                    if (instancedParsedDocumentRefs.ContainsKey(parameterId))
+                    {
+                        instancedParsedDocumentRefs[parameterId] = new WeakReference<ParsedDocument>(parsedDocument);
+                    }
+                    else
+                    {
+                        instancedParsedDocumentRefs.Add(parameterId, new WeakReference<ParsedDocument>(parsedDocument));
+                        Project.AddReparseTarget(moduleInstance);
+                    }
                 }
             }
         }
@@ -252,7 +257,7 @@ namespace pluginVerilog.Data
             }
         }
 
-        public override ajkControls.CodeDrawStyle DrawStyle
+        public override ajkControls.CodeTextbox.CodeDrawStyle DrawStyle
         {
             get
             {
@@ -369,7 +374,7 @@ namespace pluginVerilog.Data
 
             foreach (Item item in newItems.Values)
             {
-                items.Add(item.Name, item);
+                if(!items.ContainsKey(item.Name))  items.Add(item.Name, item);
             }
         }
 
@@ -401,10 +406,10 @@ namespace pluginVerilog.Data
         {
         }
 
-        public override List<codeEditor.CodeEditor.PopupItem> GetPopupItems(int editId, int index)
+        public override List<codeEditor.CodeEditor.PopupItem> GetPopupItems(ulong version, int index)
         {
             if (VerilogParsedDocument == null) return null;
-            if (VerilogParsedDocument.EditID != editId) return null;
+            if (VerilogParsedDocument.EditID != version) return null;
 
             int headIndex, length;
             CodeDocument.GetWord(index, out headIndex, out length);

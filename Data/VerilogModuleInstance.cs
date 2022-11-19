@@ -201,7 +201,7 @@ namespace pluginVerilog.Data
 
 
 
-        public override ajkControls.CodeDrawStyle DrawStyle
+        public override ajkControls.CodeTextbox.CodeDrawStyle DrawStyle
         {
             get
             {
@@ -366,10 +366,10 @@ namespace pluginVerilog.Data
         {
         }
 
-        public override List<codeEditor.CodeEditor.PopupItem> GetPopupItems(int editId, int index)
+        public override List<codeEditor.CodeEditor.PopupItem> GetPopupItems(ulong version, int index)
         {
             if (VerilogParsedDocument == null) return null;
-            if (VerilogParsedDocument.EditID != editId) return null;
+            if (VerilogParsedDocument.EditID != version) return null;
 
             int headIndex, length;
             CodeDocument.GetWord(index, out headIndex, out length);

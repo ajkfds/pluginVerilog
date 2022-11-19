@@ -128,7 +128,7 @@ namespace pluginVerilog.Verilog.Variables
         }
 
         public static void SyncParser(
-            ajkControls.Document document,
+            ajkControls.CodeTextbox.Document document,
             ref int nextIndex,
             ref WordPointer.WordTypeEnum wordType,
             ref string sectionName

@@ -126,7 +126,7 @@ namespace pluginVerilog.Data
         }
 
 
-        public override ajkControls.CodeDrawStyle DrawStyle
+        public override ajkControls.CodeTextbox.CodeDrawStyle DrawStyle
         {
             get
             {

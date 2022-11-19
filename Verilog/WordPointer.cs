@@ -323,7 +323,7 @@ namespace pluginVerilog.Verilog
         }
 
         public static void FetchNext(
-            ajkControls.Document document,
+            ajkControls.CodeTextbox.Document document,
             ref int index, out int length, out int nextIndex,
             out WordTypeEnum wordType,
             ref string sectionName
@@ -337,7 +337,7 @@ namespace pluginVerilog.Verilog
                 );
         }
         private static void fetchNext(
-            ajkControls.Document document,
+            ajkControls.CodeTextbox.Document document,
             ref int index, out int length, out int nextIndex, 
             out WordTypeEnum wordType,
             ref string sectionName,
@@ -456,7 +456,7 @@ namespace pluginVerilog.Verilog
         }
 
         public static void FetchNextUntilEol(
-            ajkControls.Document document,
+            ajkControls.CodeTextbox.Document document,
             ref int index, out int length, out int nextIndex,
             out WordTypeEnum wordType)
         {
@@ -498,7 +498,7 @@ namespace pluginVerilog.Verilog
         }
 
         private static void fetchNextAtNumber(
-            ajkControls.Document document,
+            ajkControls.CodeTextbox.Document document,
             ref int nextIndex, ref WordTypeEnum wordType
             )
         {
@@ -595,7 +595,7 @@ namespace pluginVerilog.Verilog
         }
 
         private static void fetchNextAtOperator(
-            ajkControls.Document document,
+            ajkControls.CodeTextbox.Document document,
             ref int nextIndex,
             ref WordTypeEnum wordType,
             ref string sectionName,
@@ -702,7 +702,7 @@ namespace pluginVerilog.Verilog
         }
 
         private static void ParseInLineComments(
-            ajkControls.Document document, 
+            ajkControls.CodeTextbox.Document document, 
             ref int nextIndex, 
             ref WordTypeEnum wordType,
             ref string sectionName

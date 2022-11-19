@@ -9,7 +9,7 @@ namespace pluginVerilog.Verilog
 {
     public class ParsedDocument : codeEditor.CodeEditor.ParsedDocument
     {
-        public ParsedDocument(Data.IVerilogRelatedFile file): base(file as codeEditor.Data.TextFile,file.CodeDocument.EditID)
+        public ParsedDocument(Data.IVerilogRelatedFile file): base(file as codeEditor.Data.TextFile,file.CodeDocument.Version)
         {
             fileRef = new WeakReference<Data.IVerilogRelatedFile>(file);
         }
@@ -332,6 +332,10 @@ namespace pluginVerilog.Verilog
             if(hierWords.Count == 0)
             {
                 items = verilogKeywords.ToList();
+            }
+            else
+            {
+                items = new List<codeEditor.CodeEditor.AutocompleteItem>();
             }
 
             //if(words.Count < 1)

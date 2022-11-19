@@ -223,7 +223,7 @@ namespace pluginVerilog.Verilog
                         {
                             if(module.Parameters[vkp.Key].DefinitionRefrecnce != null)
                             {
-                                module.Parameters[vkp.Key].DefinitionRefrecnce.AddNotice("oveeride " + vkp.Value.CreateString());
+                                module.Parameters[vkp.Key].DefinitionRefrecnce.AddNotice("override " + vkp.Value.CreateString());
                             }
 
                             module.Parameters.Remove(vkp.Key);
@@ -234,7 +234,7 @@ namespace pluginVerilog.Verilog
                         }
                         else
                         {
-                            System.Diagnostics.Debug.Print("undefed params "+module.File.Name +":" + vkp.Key );
+                            //System.Diagnostics.Debug.Print("undefed params "+module.File.Name +":" + vkp.Key );
                         }
                     }
                 }
