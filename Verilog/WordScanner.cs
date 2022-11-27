@@ -588,25 +588,45 @@ namespace pluginVerilog.Verilog
         private void parseDefine()
         {
             wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
-            wordPointer.MoveNext();
-            if (!General.IsIdentifier(wordPointer.Text))
-            {
-                wordPointer.AddError("iilegal identifier");
-                return;
-            }
-            bool error = false;
-
-            wordPointer.Color(CodeDrawStyle.ColorType.Identifier);
-            string identifier = wordPointer.Text;
-            if (RootParsedDocument.Macros.ContainsKey(identifier))
-            {
-                if(Active) wordPointer.AddError("dulplicated identifier");
-                error = true;
-            }
-
             wordPointer.MoveNextUntilEol();
 
+            WordReference wordRef = GetReference();
             string macroText = wordPointer.Text;
+
+            //wordPointer.MoveNext();
+            //if (!General.IsIdentifier(wordPointer.Text))
+            //{
+            //    wordPointer.AddError("iilegal identifier");
+            //    return;
+            //}
+//            bool error = false;
+
+            string identifier = "";
+
+            // get identifier separator
+            int separatorIndex;
+            {
+                int spaceIndex = int.MaxValue;
+                if (macroText.Contains(" ")) spaceIndex = macroText.IndexOf(" ");
+
+                int tabIndex = int.MaxValue;
+                if (macroText.Contains("\t")) tabIndex = macroText.IndexOf("\t");
+
+                separatorIndex = spaceIndex;
+                if (tabIndex < separatorIndex) separatorIndex = tabIndex; 
+            }
+
+            if (separatorIndex == int.MaxValue)
+            { // identifier only
+                identifier = macroText;
+                macroText = "";
+            }
+            else
+            {
+                identifier = macroText.Substring(0, separatorIndex);
+                macroText = macroText.Substring(separatorIndex);
+            }
+
             if (macroText.Contains("//"))
             {
                 macroText = macroText.Substring(0, macroText.IndexOf("//"));
@@ -625,14 +645,20 @@ namespace pluginVerilog.Verilog
                 wordPointer.MoveNext();
             }
 
-
-            if (!error)
+            Macro macro = Macro.Create(identifier, macroText);
+            if (!General.IsIdentifier(macro.Name))
             {
-                Macro macro = Macro.Create(identifier, macroText);
-                RootParsedDocument.Macros.Add(identifier, macro);
-
-//                RootParsedDocument.Macros.Add(identifier, macroText);
+                wordRef.AddError("illegal macro identifier");
             }
+            else if (RootParsedDocument.Macros.ContainsKey(macro.Name))
+            {
+                wordRef.AddError("duplicate macro name");
+            }
+            else
+            {
+                RootParsedDocument.Macros.Add(macro.Name, macro);
+            }
+
 
 //            wordPointer.MoveNext();
             recheckWord();
@@ -734,6 +760,8 @@ namespace pluginVerilog.Verilog
             string macroText = macro.MacroText;
             if(macro.Aurguments != null)
             {
+                wordPointer.MoveNext();
+
                 List<string> wordAssingment = new List<string>();
                 if (wordPointer.Text != "(")
                 {

@@ -17,14 +17,19 @@ namespace pluginVerilog.Verilog
         public static Macro Create(string name,string macroText)
         {
             Macro macro = new Macro();
-            macro.Name = name;
 
+            // trim start/end blank of macro text
             string text = macroText;
             text = text.TrimStart(new char[] { ' ', '\t' });
             text = text.TrimEnd(new char[] { ' ', '\t' });
-            if (text.StartsWith("(") && text.Contains(")"))
+
+            // seprarate identifier & argument
+            
+            if (name.Contains("(") && name.EndsWith(")"))
             {
-                string argumentsText = text.Substring(1, text.IndexOf(")")-1);
+                string argumentsText = name.Substring(name.IndexOf("(")+1);
+                argumentsText = argumentsText.Substring(0, argumentsText.Length - 1);
+
                 string[] arguments = argumentsText.Split(',');
                 macro.Aurguments = new List<string>();
                 foreach(string argument in arguments)
@@ -32,8 +37,10 @@ namespace pluginVerilog.Verilog
                     macro.Aurguments.Add(argument.Trim());
                 }
                 text = text.Substring(text.IndexOf(")")+1).Trim();
+                name = name.Substring(0,name.IndexOf("("));
             }
 
+            macro.Name = name;
             macro.MacroText = text;
             return macro;
         }
