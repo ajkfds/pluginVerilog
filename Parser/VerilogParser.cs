@@ -13,7 +13,7 @@ namespace pluginVerilog.Parser
             codeEditor.CodeEditor.DocumentParser.ParseModeEnum parseMode
             )
         {
-            this.EditId = verilogFile.CodeDocument.Version;
+            this.Version = verilogFile.CodeDocument.Version;
             this.document = new CodeEditor.CodeDocument(verilogFile); // use verilog codedocument
             this.document.CopyTextOnlyFrom(verilogFile.CodeDocument);
 //            this.document.CopyCharsFrom(verilogFile.CodeDocument);
@@ -32,7 +32,7 @@ namespace pluginVerilog.Parser
             codeEditor.CodeEditor.DocumentParser.ParseModeEnum parseMode
             ) : base(verilogFile as codeEditor.Data.TextFile, parseMode)
         {
-            this.EditId = verilogFile.CodeDocument.Version;
+            this.Version = verilogFile.CodeDocument.Version;
             this.document = new CodeEditor.CodeDocument(verilogFile); // use verilog codedocument
 
             this.document.CopyTextOnlyFrom(verilogFile.CodeDocument);

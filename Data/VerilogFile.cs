@@ -409,7 +409,7 @@ namespace pluginVerilog.Data
         public override List<codeEditor.CodeEditor.PopupItem> GetPopupItems(ulong version, int index)
         {
             if (VerilogParsedDocument == null) return null;
-            if (VerilogParsedDocument.EditID != version) return null;
+            if (VerilogParsedDocument.Version != version) return null;
 
             int headIndex, length;
             CodeDocument.GetWord(index, out headIndex, out length);
