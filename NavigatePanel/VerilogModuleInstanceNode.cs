@@ -86,11 +86,13 @@ namespace pluginVerilog.NavigatePanel
                 System.Windows.Forms.TextFormatFlags.NoPadding
                 );
 
-            if (VerilogFile != null && VerilogFile.ParsedDocument != null && VerilogFile.VerilogParsedDocument.ErrorCount != 0)
+            // error mark
+            if( VerilogModuleInstance != null && VerilogModuleInstance.VerilogParsedDocument != null && VerilogModuleInstance.VerilogParsedDocument.ErrorCount != 0)
             {
                 graphics.DrawImage(Global.Icons.Exclamation.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Red), new Point(x, y));
             }
 
+            // dirty mark
             if (VerilogFile != null && VerilogFile.Dirty)
             {
                 graphics.DrawImage(Global.Icons.NewBadge.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Orange), new Point(x, y));
