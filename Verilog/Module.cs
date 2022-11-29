@@ -146,7 +146,7 @@ namespace pluginVerilog.Verilog
             Attribute attribute, Module module)
         {
             /*
-            module_declaration  ::= { attribute_instance } module_keyword module_identifier [ module_parameter_port_list ]
+            module_declaration  ::= { attribute_instance } module_keyword module_identifier [ module_parameter_port_list ]Foverride
                                         [ list_of_ports ] ; { module_item }
                                         endmodule
                                     | { attribute_instance } module_keyword module_identifier [ module_parameter_port_list ]
@@ -223,7 +223,7 @@ namespace pluginVerilog.Verilog
                         {
                             if(module.Parameters[vkp.Key].DefinitionRefrecnce != null)
                             {
-                                module.Parameters[vkp.Key].DefinitionRefrecnce.AddNotice("override " + vkp.Value.CreateString());
+                                module.Parameters[vkp.Key].DefinitionRefrecnce.AddNotice("override " + vkp.Value.Value.ToString());
                             }
 
                             module.Parameters.Remove(vkp.Key);

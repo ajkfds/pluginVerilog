@@ -277,6 +277,7 @@ namespace pluginVerilog.Verilog
 
         private void recheckWord()
         {
+
             while (!wordPointer.Eof)
             {
                 if (wordPointer.WordType == WordPointer.WordTypeEnum.Comment)
@@ -292,6 +293,11 @@ namespace pluginVerilog.Verilog
                     break;
                 }
             }
+            if(wordPointer.Eof && wordPointer.WordType == WordPointer.WordTypeEnum.Comment)
+            {
+                MoveNext();
+            }
+
         }
 
         public bool Eof

@@ -235,13 +235,23 @@ namespace pluginVerilog.Verilog
             commentSkipped = false;
             commentIndex = index;
 
-            while (!Eof && wordType == WordTypeEnum.Comment)
+            while (wordType == WordTypeEnum.Comment)
             {
-                commentSkipped = true;
-                index = nextIndex;
-                sectionName = SectionName;
-                fetchNext(Document, ref index, out length, out nextIndex, out wordType,ref sectionName,true);
-                SectionName = sectionName;
+                if (!Eof)
+                {
+                    commentSkipped = true;
+                    index = nextIndex;
+                    sectionName = SectionName;
+                    fetchNext(Document, ref index, out length, out nextIndex, out wordType, ref sectionName, true);
+                    SectionName = sectionName;
+                }
+                else
+                {
+                    commentSkipped = true;
+                    index = nextIndex;
+                    sectionName = SectionName;
+                    break;
+                }
             }
             if (!commentSkipped) commentIndex = -1;
         }
