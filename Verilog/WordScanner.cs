@@ -136,7 +136,7 @@ namespace pluginVerilog.Verilog
             }
             else
             {
-                return new WordReference(stock[0].Index, stock[0].Length, wordPointer.ParsedDocument,Document);
+                return new WordReference(stock[0].Index, stock[0].Length, stock[0].ParsedDocument,stock[0].Document);
             }
             //            return new WordReference(wordPointer.Document, wordPointer.ParsedDocument, wordPointer.Index, wordPointer.Length);
         }
@@ -295,7 +295,26 @@ namespace pluginVerilog.Verilog
             }
             if(wordPointer.Eof && wordPointer.WordType == WordPointer.WordTypeEnum.Comment)
             {
-                MoveNext();
+                if (nonGeneratedCount != 0)
+                {
+                    wordPointer.Color(CodeDrawStyle.ColorType.Inactivated);
+                }
+                while (wordPointer.Eof && stock.Count != 0)
+                {
+                    bool error = false;
+                    if (wordPointer.ParsedDocument.Messages.Count != 0) error = true;
+
+                    if (wordPointer.ParsedDocument == stock.Last().ParsedDocument)
+                    {
+                        error = false;
+                    }
+
+                    //wordPointer.Dispose(); keep document & parsedData
+                    wordPointer = stock.Last();
+                    stock.Remove(stock.Last());
+                    if (error) wordPointer.AddError("include errors");
+                    wordPointer.MoveNext();
+                }
             }
 
         }
@@ -843,8 +862,9 @@ namespace pluginVerilog.Verilog
                 return;
             }
 
-            CodeEditor.CodeDocument codeDocument = new CodeEditor.CodeDocument(wordPointer.Document.VerilogFile);
-            codeDocument.Replace(0, 0, 0, macroText);
+            CodeEditor.CodeDocument codeDocument = new CodeEditor.CodeDocument(macroText);
+//            CodeEditor.CodeDocument codeDocument = new CodeEditor.CodeDocument(wordPointer.Document.VerilogFile);
+//            codeDocument.Replace(0, 0, 0, macroText);
 
             WordPointer newPointer = new WordPointer(codeDocument, wordPointer.ParsedDocument);
             stock.Add(wordPointer);
