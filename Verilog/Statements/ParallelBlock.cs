@@ -79,7 +79,7 @@ namespace pluginVerilog.Verilog.Statements
                 namedBlock.LastIndex = word.RootIndex;
                 word.MoveNext(); // end
 
-                if (word.Active && !nameSpace.NameSpaces.ContainsKey(namedBlock.Name))
+                if (word.Active && namedBlock.Name != null && !nameSpace.NameSpaces.ContainsKey(namedBlock.Name))
                 {
                     nameSpace.NameSpaces.Add(namedBlock.Name, namedBlock);
                 }
