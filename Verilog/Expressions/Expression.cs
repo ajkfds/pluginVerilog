@@ -21,6 +21,27 @@ namespace pluginVerilog.Verilog.Expressions
         public virtual int? BitWidth { get; protected set; }
         public WordReference Reference { get; protected set; }
 
+        /// <summary>
+        /// dispose refrence
+        /// </summary>
+        public virtual void DisposeReference()
+        {
+            Reference.Dispose();
+            Reference = null;
+        }
+
+        /// <summary>
+        ///  dispose reference hierarchy, keep top level reference only.
+        /// </summary>
+        public virtual void DisposeSubRefrence(bool keepThisReference)
+        {
+            if (!keepThisReference) DisposeReference();
+        }
+
+        /// <summary>
+        /// get label object of this expression
+        /// </summary>
+        /// <returns></returns>
         public virtual ajkControls.ColorLabel GetLabel()
         {
             ajkControls.ColorLabel label = new ajkControls.ColorLabel();
@@ -120,43 +141,43 @@ namespace pluginVerilog.Verilog.Expressions
 
             if (!word.Active) return expression;
             // parse rpn
-            List<Primary> Primarys = new List<Primary>();
+            List<Primary> primarys = new List<Primary>();
             for(int i=0;i<rpnPrimarys.Count;i++)
             {
                 Primary item = rpnPrimarys[i];
                 if (item is BinaryOperator)
                 {
-                    if (Primarys.Count < 2) return null;
+                    if (primarys.Count < 2) return null;
                     BinaryOperator op = item as BinaryOperator;
-                    Primary primary = op.Operate(Primarys[0], Primarys[1]);
-                    Primarys.RemoveAt(0);
-                    Primarys.RemoveAt(0);
-                    Primarys.Add(primary);
+                    Primary primary = op.Operate(primarys[0], primarys[1]);
+                    primarys.RemoveAt(0);
+                    primarys.RemoveAt(0);
+                    primarys.Add(primary);
                 }
                 else if (item is UnaryOperator)
                 {
-                    if (Primarys.Count < 1) return null;
+                    if (primarys.Count < 1) return null;
                     UnaryOperator op = item as UnaryOperator;
-                    Primary primary = op.Operate(Primarys[0]);
-                    Primarys.RemoveAt(0);
-                    Primarys.Add(primary);
+                    Primary primary = op.Operate(primarys[0]);
+                    primarys.RemoveAt(0);
+                    primarys.Add(primary);
                 }
                 else if (item is TenaryOperator)
                 {
-                    if (Primarys.Count < 3) return null;
+                    if (primarys.Count < 3) return null;
                     TenaryOperator op = item as TenaryOperator;
-                    Primary primary = op.Operate(Primarys[0], Primarys[1], Primarys[2]);
-                    Primarys.RemoveAt(0);
-                    Primarys.RemoveAt(0);
-                    Primarys.RemoveAt(0);
-                    Primarys.Add(primary);
+                    Primary primary = op.Operate(primarys[0], primarys[1], primarys[2]);
+                    primarys.RemoveAt(0);
+                    primarys.RemoveAt(0);
+                    primarys.RemoveAt(0);
+                    primarys.Add(primary);
                 }
                 else
                 {
-                    Primarys.Add(item as Primary);
+                    primarys.Add(item as Primary);
                 }
             }
-            if(Primarys.Count == 1)
+            if(primarys.Count == 1)
             {
                 //expression.Constant = Primarys[0].Constant;
                 //expression.BitWidth = Primarys[0].BitWidth;
@@ -168,7 +189,7 @@ namespace pluginVerilog.Verilog.Expressions
                 return null;
             }
 
-            return Primarys[0];
+            return primarys[0];
 //            return expression;
         }
 

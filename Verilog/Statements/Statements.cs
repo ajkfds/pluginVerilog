@@ -153,6 +153,7 @@ namespace pluginVerilog.Verilog.Statements
                     return statement;
             }
         }
+
         private static NameSpace getSpace(string identifier, NameSpace nameSpace)
         {
             if (nameSpace.NameSpaces.ContainsKey(identifier))

@@ -9,6 +9,10 @@ namespace pluginVerilog.Verilog.Statements
     public class ProceduralTimingControlStatement : IStatement
     {
         protected ProceduralTimingControlStatement() { }
+        public void DisposeSubReference()
+        {
+            Statement.DisposeSubReference();
+        }
         public DelayControl DelayControl { get; protected set; }
         public EventControl EventControl { get; protected set; }
         public IStatement Statement { get; protected set; }

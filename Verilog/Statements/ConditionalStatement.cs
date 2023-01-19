@@ -10,6 +10,15 @@ namespace pluginVerilog.Verilog.Statements
     {
         protected ConditionalStatement() { }
 
+        public void DisposeSubReference()
+        {
+            foreach(ConditionStatementPair pair in ConditionStatementPairs)
+            {
+                pair.ConditionalExpression.DisposeSubRefrence(true);
+                pair.Statement.DisposeSubReference();
+            }
+        }
+
         public List<ConditionStatementPair> ConditionStatementPairs = new List<ConditionStatementPair>();
 
         public struct ConditionStatementPair
@@ -19,8 +28,8 @@ namespace pluginVerilog.Verilog.Statements
                 ConditionalExpression = conditionalExpression;
                 Statement = statement;
             }
-            Expressions.Expression ConditionalExpression;
-            IStatement Statement;
+            public Expressions.Expression ConditionalExpression;
+            public IStatement Statement;
         }
 
         /*

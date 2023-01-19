@@ -30,17 +30,20 @@ namespace pluginVerilog.Verilog
         public int Index { get; protected set; }
         public int Length { get; protected set; }
 
-        private System.WeakReference<codeEditor.CodeEditor.ParsedDocument> parsedDocumentRef;
+        //        private System.WeakReference<codeEditor.CodeEditor.ParsedDocument> parsedDocumentRef;
+        codeEditor.CodeEditor.ParsedDocument parsedDocument;
         public codeEditor.CodeEditor.ParsedDocument ParsedDocument {
             get
             {
-                codeEditor.CodeEditor.ParsedDocument ret;
-                if (!parsedDocumentRef.TryGetTarget(out ret)) return null;
-                return ret;
+                return parsedDocument;
+                //codeEditor.CodeEditor.ParsedDocument ret;
+                //if (!parsedDocumentRef.TryGetTarget(out ret)) return null;
+                //return ret;
             }
             protected set
             {
-                parsedDocumentRef = new WeakReference<codeEditor.CodeEditor.ParsedDocument>(value);
+                parsedDocument = value;
+                //parsedDocumentRef = new WeakReference<codeEditor.CodeEditor.ParsedDocument>(value);
             }
         }
         private System.WeakReference<pluginVerilog.CodeEditor.CodeDocument> documentRef;
@@ -71,12 +74,7 @@ namespace pluginVerilog.Verilog
                 ParsedDocument.Messages.Add(new Verilog.ParsedDocument.Message(Document.TextFile as Data.IVerilogRelatedFile, ">100 errors", Verilog.ParsedDocument.Message.MessageType.Error, 0, 0, 0, ParsedDocument.Project)); ;
             }
 
-            {
-                for (int i = Index; i < Index + Length; i++)
-                {
-                    Document.SetMarkAt(i, 0);
-                }
-            }
+            Document.SetMarkAt(Index,Length, 0);
             if (ParsedDocument is Verilog.ParsedDocument) (ParsedDocument as Verilog.ParsedDocument).ErrorCount++;
         }
         public void AddWarning(string message)
@@ -94,10 +92,7 @@ namespace pluginVerilog.Verilog
                 ParsedDocument.Messages.Add(new Verilog.ParsedDocument.Message(Document.TextFile as Data.IVerilogRelatedFile, ">100 warnings", Verilog.ParsedDocument.Message.MessageType.Warning, 0, 0, 0, ParsedDocument.Project));
             }
 
-            for (int i = Index; i < Index + Length; i++)
-            {
-                Document.SetMarkAt(i, 1);
-            }
+            Document.SetMarkAt(Index, Length,1);
             if (ParsedDocument is Verilog.ParsedDocument) (ParsedDocument as Verilog.ParsedDocument).WarningCount++;
         }
         public void AddNotice(string message)
@@ -114,10 +109,7 @@ namespace pluginVerilog.Verilog
                 ParsedDocument.Messages.Add(new Verilog.ParsedDocument.Message(Document.TextFile as Data.IVerilogRelatedFile, ">100 notices", Verilog.ParsedDocument.Message.MessageType.Notice, 0, 0, 0, ParsedDocument.Project));
             }
 
-            for (int i = Index; i < Index + Length; i++)
-            {
-                Document.SetMarkAt(i, 2);
-            }
+            Document.SetMarkAt(Index,Length, 2);
             if (ParsedDocument is Verilog.ParsedDocument) (ParsedDocument as Verilog.ParsedDocument).WarningCount++;
         }
 

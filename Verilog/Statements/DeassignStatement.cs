@@ -19,6 +19,11 @@ namespace pluginVerilog.Verilog.Statements
         */
         public Expressions.Expression LValue;
 
+        public void DisposeSubReference()
+        {
+            LValue.DisposeSubRefrence(true);
+        }
+
         protected DeassignStatement() { }
         public static DeassignStatement ParseCreate(WordScanner word, NameSpace nameSpace)
         {

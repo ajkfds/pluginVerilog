@@ -29,6 +29,12 @@ namespace pluginVerilog.Verilog.Statements
          */
         public delegate void NonBlockingAssignedAction(WordScanner word, NameSpace nameSpace, NonBlockingAssignment blockingAssignment);
         public static NonBlockingAssignedAction Assigned;
+
+        public void DisposeSubReference()
+        {
+            LValue.DisposeSubRefrence(true);
+            Expression.DisposeSubRefrence(true);
+        }
         public static NonBlockingAssignment ParseCreate(WordScanner word,NameSpace nameSpace,Expressions.Expression lExpression)
         {
             if(word.Text != "<=")
@@ -78,6 +84,11 @@ namespace pluginVerilog.Verilog.Statements
     {
         protected BlockingAssignment() { }
 
+        public void DisposeSubReference()
+        {
+            LValue.DisposeSubRefrence(true);
+            Expression.DisposeSubRefrence(true);
+        }
         public Expressions.Expression LValue { get; protected set; }
         public Expressions.Expression Expression { get; protected set; }
         /*

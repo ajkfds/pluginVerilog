@@ -21,6 +21,13 @@ namespace pluginVerilog.Verilog.Statements
         public Expressions.Expression Value;
 
         protected ProceduralContinuousAssignment() { }
+
+        public void DisposeSubReference()
+        {
+            LValue.DisposeSubRefrence(true);
+            Value.DisposeSubRefrence(true);
+        }
+
         public static ProceduralContinuousAssignment ParseCreate(WordScanner word, NameSpace nameSpace)
         {
             ProceduralContinuousAssignment ret = new ProceduralContinuousAssignment();

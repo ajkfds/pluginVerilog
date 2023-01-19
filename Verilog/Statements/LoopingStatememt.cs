@@ -9,6 +9,12 @@ namespace pluginVerilog.Verilog.Statements
     public class ForeverStatement : IStatement
     {
         protected ForeverStatement() { }
+
+        public void DisposeSubReference()
+        {
+            Statement.DisposeSubReference();
+        }
+
         public IStatement Statement;
         //A.6.8 Looping statements
         //function_loop_statement ::= forever function_statement          
@@ -34,6 +40,13 @@ namespace pluginVerilog.Verilog.Statements
     public class RepeatStatement : IStatement
     {
         protected RepeatStatement() { }
+
+        public void DisposeSubReference()
+        {
+            Expression.DisposeSubRefrence(true);
+            Statement.DisposeSubReference();
+        }
+
         public Expressions.Expression Expression;
         public IStatement Statement;
         //A.6.8 Looping statements
@@ -76,6 +89,13 @@ namespace pluginVerilog.Verilog.Statements
     public class WhileStatememt : IStatement
     {
         protected WhileStatememt() { }
+
+        public void DisposeSubReference()
+        {
+            Expression.DisposeSubRefrence(true);
+            Statement.DisposeSubReference();
+        }
+
         public Expressions.Expression Expression;
         public IStatement Statement;
         //A.6.8 Looping statements
@@ -118,6 +138,14 @@ namespace pluginVerilog.Verilog.Statements
     public class ForStatememt : IStatement
     {
         protected ForStatememt() { }
+
+        public void DisposeSubReference()
+        {
+            Expression.DisposeSubRefrence(true);
+            Statement.DisposeSubReference();
+        }
+
+
         public IStatement Statement;
 
         public Variables.VariableAssignment VariableAssignment;

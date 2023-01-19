@@ -9,6 +9,12 @@ namespace pluginVerilog.Verilog.Variables
     public class VariableAssignment
     {
         protected VariableAssignment() { }
+
+        public void DisposeSubReference()
+        {
+            Expression.DisposeSubRefrence(true);
+            NetLValue.DisposeSubRefrence(true);
+        }
         public Expressions.Expression NetLValue { get; protected set; }
         public Expressions.Expression Expression { get; protected set; }
  

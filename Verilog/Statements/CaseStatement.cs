@@ -12,6 +12,14 @@ namespace pluginVerilog.Verilog.Statements
         public Expressions.Expression Expression;
         public List<CaseItem> CaseItems = new List<CaseItem>();
 
+        public void DisposeSubReference()
+        {
+            Expression.DisposeSubRefrence(true);
+            foreach(CaseItem caseItem in CaseItems)
+            {
+                caseItem.DisposeSubRefrence();
+            }
+        }
         public static CaseStatement ParseCreate(WordScanner word, NameSpace nameSpace)
         {
             /*
@@ -88,6 +96,14 @@ namespace pluginVerilog.Verilog.Statements
             public List<Expressions.Expression> Expressions = new List<Expressions.Expression>();
             public IStatement Statement;
 
+            public void DisposeSubRefrence()
+            {
+                foreach(pluginVerilog.Verilog.Expressions.Expression expression in Expressions)
+                {
+                    expression.DisposeSubRefrence(true);
+                }
+                Statement.DisposeSubReference();
+            }
             public static CaseItem ParseCreate(WordScanner word,NameSpace nameSpace)
             {
                 //            case_item ::=       expression { , expression } : statement_or_null 

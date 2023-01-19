@@ -10,6 +10,9 @@ namespace pluginVerilog.Verilog.Statements
     public class TaskEnable : IStatement
     {
         // task_enable ::= (From Annex A - A.6.9) hierarchical_task_identifier [ ( expression { , expression } ) ] ;
+        public void DisposeSubReference()
+        {
+        }
         public static TaskEnable ParseCreate(WordScanner word, NameSpace nameSpace)
         {
             return ParseCreate(word, nameSpace, nameSpace);

@@ -22,7 +22,7 @@ namespace pluginVerilog.Parser
             this.TextFile = verilogFile as codeEditor.Data.TextFile;
 
             File = verilogFile;
-            parsedDocument = new Verilog.ParsedDocument(verilogFile);
+            parsedDocument = new Verilog.ParsedDocument(verilogFile, parseMode);
             word = new Verilog.WordScanner(VerilogDocument, parsedDocument,false);
         }
 
@@ -43,7 +43,7 @@ namespace pluginVerilog.Parser
 
             this.parameterOverrides = parameterOverrides;
             File = verilogFile;
-            parsedDocument = new Verilog.ParsedDocument(verilogFile);
+            parsedDocument = new Verilog.ParsedDocument(verilogFile,parseMode);
             parsedDocument.Instance = true;
             word = new Verilog.WordScanner(VerilogDocument, parsedDocument, false);
         }

@@ -9,6 +9,11 @@ namespace pluginVerilog.Verilog.Statements
     public class DisableStatement : IStatement
     {
         protected DisableStatement() { }
+
+        public void DisposeSubReference()
+        {
+        }
+
         public string Identifier { get; protected set; }
 
         // disable_statement::= (From Annex A - A.6.5)  

@@ -9,6 +9,15 @@ namespace pluginVerilog.Verilog.Statements
     public class ParallelBlock : IStatement
     {
         protected ParallelBlock() { }
+
+        public void DisposeSubReference()
+        {
+            foreach(IStatement statement in Statements)
+            {
+                statement.DisposeSubReference();
+            }
+        }
+
         public List<IStatement> Statements = new List<IStatement>();
 
         /*
@@ -111,6 +120,13 @@ namespace pluginVerilog.Verilog.Statements
 
     public class NamedParallelBlock : Verilog.NameSpace, IStatement
     {
+        public void DisposeSubReference()
+        {
+            foreach(IStatement statement in Statements)
+            {
+                statement.DisposeSubReference();
+            }
+        }
         public NamedParallelBlock(Module module, NameSpace parent) : base(module, parent)
         {
         }

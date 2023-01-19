@@ -265,6 +265,11 @@ namespace pluginVerilog.Verilog
                 checkVariablesUseAndDriven(word,module);
             }
 
+            //foreach (var variable in module.Variables.Values)
+            //{
+            //    if (variable.DefinedReference == null) continue;
+            //    variable.UsedReferences.Clear();
+            //}
             return;
         }
         private codeEditor.CodeEditor.AutocompleteItem newItem(string text, CodeDrawStyle.ColorType colorType)

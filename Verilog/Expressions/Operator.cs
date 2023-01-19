@@ -55,6 +55,14 @@ namespace pluginVerilog.Verilog.Expressions
             return new TenaryOperator("?",0);
         }
 
+        public override void DisposeSubRefrence(bool keepThisReference)
+        {
+            base.DisposeSubRefrence(keepThisReference);
+            Condition.DisposeSubRefrence(false);
+            Primary1.DisposeSubRefrence(false);
+            Primary2.DisposeSubRefrence(false);
+        }
+
         public override void AppendLabel(ajkControls.ColorLabel label)
         {
             Condition.AppendLabel(label);
@@ -143,6 +151,13 @@ namespace pluginVerilog.Verilog.Expressions
                             | ~| 
                             | ^~
         */
+
+        public override void DisposeSubRefrence(bool keepThisReference)
+        {
+            base.DisposeSubRefrence(keepThisReference);
+            Primary.DisposeSubRefrence(false);
+        }
+
         public override void AppendLabel(ajkControls.ColorLabel label)
         {
             label.AppendText(Text);
@@ -306,6 +321,12 @@ namespace pluginVerilog.Verilog.Expressions
                             | >>> 
                             | <<< 
         */
+        public override void DisposeSubRefrence(bool keepThisReference)
+        {
+            base.DisposeSubRefrence(keepThisReference);
+            Primary1.DisposeSubRefrence(false);
+            Primary2.DisposeSubRefrence(false);
+        }
         public static BinaryOperator ParseCreate(WordScanner word)
         {
             switch (word.Length)

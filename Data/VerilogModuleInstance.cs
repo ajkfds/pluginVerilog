@@ -385,6 +385,7 @@ namespace pluginVerilog.Data
             toolItems.Add(new Verilog.Snippets.AutoConnectSnippet());
             //            toolItems.Add(new Verilog.Snippets.ConnectionCheckSnippet());
             toolItems.Add(new Verilog.Snippets.AutoFormatSnippet());
+            toolItems.Add(new Verilog.Snippets.ModuleInstanceSnippet());
             return toolItems;
         }
 

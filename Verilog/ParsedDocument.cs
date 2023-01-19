@@ -9,7 +9,7 @@ namespace pluginVerilog.Verilog
 {
     public class ParsedDocument : codeEditor.CodeEditor.ParsedDocument
     {
-        public ParsedDocument(Data.IVerilogRelatedFile file): base(file as codeEditor.Data.TextFile,file.CodeDocument.Version)
+        public ParsedDocument(Data.IVerilogRelatedFile file, codeEditor.CodeEditor.DocumentParser.ParseModeEnum parseMode) : base(file as codeEditor.Data.TextFile,file.CodeDocument.Version,parseMode)
         {
             fileRef = new WeakReference<Data.IVerilogRelatedFile>(file);
         }

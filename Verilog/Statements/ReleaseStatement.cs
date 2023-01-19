@@ -19,6 +19,10 @@ namespace pluginVerilog.Verilog.Statements
         */
         public Expressions.Expression Value;
 
+        public void DisposeSubReference()
+        {
+            Value.DisposeSubRefrence(true);
+        }
         protected ReleaseStatement() { }
         public static ReleaseStatement ParseCreate(WordScanner word, NameSpace nameSpace)
         {

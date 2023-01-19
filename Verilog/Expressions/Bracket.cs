@@ -12,6 +12,12 @@ namespace pluginVerilog.Verilog.Expressions
 
         public Expression Expression { get; protected set; }
 
+        public override void DisposeSubRefrence(bool keepThisReference)
+        {
+            base.DisposeSubRefrence(keepThisReference);
+            Expression.DisposeSubRefrence(false);
+        }
+
         public override ajkControls.ColorLabel GetLabel()
         {
             ajkControls.ColorLabel label = new ajkControls.ColorLabel();

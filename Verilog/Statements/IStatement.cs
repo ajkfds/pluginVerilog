@@ -8,5 +8,7 @@ namespace pluginVerilog.Verilog.Statements
 {
     public interface IStatement
     {
+        void DisposeSubReference();
+
     }
 }

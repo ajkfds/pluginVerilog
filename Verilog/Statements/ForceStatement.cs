@@ -21,6 +21,11 @@ namespace pluginVerilog.Verilog.Statements
         public Expressions.Expression Value;
 
         protected ForceStatement() { }
+        public void DisposeSubReference()
+        {
+            LValue.DisposeSubRefrence(true);
+            Value.DisposeSubRefrence(true);
+        }
         public static ForceStatement ParseCreate(WordScanner word, NameSpace nameSpace)
         {
             ForceStatement ret = new ForceStatement();

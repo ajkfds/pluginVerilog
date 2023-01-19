@@ -128,7 +128,7 @@ namespace pluginVerilog.Verilog
         {
             return wordPointer.GetCommentScanner();
         }
-            public WordReference GetReference()
+        public WordReference GetReference()
         {
             if (stock.Count == 0)
             {
@@ -923,7 +923,7 @@ namespace pluginVerilog.Verilog
             {
                 vhFile = RootParsedDocument.IncludeFiles[vhFile.Name];
             }
-            vhFile.ParsedDocument = new Verilog.ParsedDocument(vhFile);// editid =, -1);
+            vhFile.ParsedDocument = new Verilog.ParsedDocument(vhFile,RootParsedDocument.ParseMode);// editid =, -1);
 
 
             WordPointer newPointer = new WordPointer(vhFile.CodeDocument as CodeEditor.CodeDocument, vhFile.ParsedDocument as Verilog.ParsedDocument);

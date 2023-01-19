@@ -11,9 +11,8 @@ namespace pluginVerilog.Verilog.Snippets
 {
     public class ModuleInstanceSnippet : codeEditor.Snippets.InteractiveSnippet
     {
-        public ModuleInstanceSnippet(string text, codeEditor.Data.Project project) : base(text)
+        public ModuleInstanceSnippet() : base("moduleInstance")
         {
-            this.project = project;
         }
 
         private CodeDocument document;
@@ -22,6 +21,7 @@ namespace pluginVerilog.Verilog.Snippets
         public override void Apply(CodeDocument codeDocument)
         {
             document = codeDocument;
+            project = codeDocument.TextFile.Project;
 
             ProjectProperty projectProperty = project.GetProjectProperty(Plugin.StaticID) as ProjectProperty;
 
