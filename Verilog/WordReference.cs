@@ -30,20 +30,17 @@ namespace pluginVerilog.Verilog
         public int Index { get; protected set; }
         public int Length { get; protected set; }
 
-        //        private System.WeakReference<codeEditor.CodeEditor.ParsedDocument> parsedDocumentRef;
-        codeEditor.CodeEditor.ParsedDocument parsedDocument;
+        private System.WeakReference<codeEditor.CodeEditor.ParsedDocument> parsedDocumentRef;
         public codeEditor.CodeEditor.ParsedDocument ParsedDocument {
             get
             {
-                return parsedDocument;
-                //codeEditor.CodeEditor.ParsedDocument ret;
-                //if (!parsedDocumentRef.TryGetTarget(out ret)) return null;
-                //return ret;
+                codeEditor.CodeEditor.ParsedDocument ret;
+                if (!parsedDocumentRef.TryGetTarget(out ret)) return null;
+                return ret;
             }
             protected set
             {
-                parsedDocument = value;
-                //parsedDocumentRef = new WeakReference<codeEditor.CodeEditor.ParsedDocument>(value);
+                parsedDocumentRef = new WeakReference<codeEditor.CodeEditor.ParsedDocument>(value);
             }
         }
         private System.WeakReference<pluginVerilog.CodeEditor.CodeDocument> documentRef;
