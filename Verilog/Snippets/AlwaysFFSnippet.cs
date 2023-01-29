@@ -22,7 +22,13 @@ namespace pluginVerilog.Verilog.Snippets
         public override void Apply(CodeDocument codeDocument)
         {
             document = codeDocument;
-            string indent = "\t";
+
+            string indent = "";
+            if(document.GetCharAt(document.GetLineStartIndex(document.GetLineAt(document.CaretIndex))) == '\t')
+            {
+                indent = "\t";
+            }
+
             string replaceText =
                 indent + "always @(posedge {0} or negedge {1})\r\n" +
                 indent + "begin\r\n" +
@@ -97,15 +103,16 @@ namespace pluginVerilog.Verilog.Snippets
                 switch (i)
                 {
                     case 0: // clock
-                        codeEditor.Controller.CodeEditor.SelectHighlight(1);
+                        codeEditor.Controller.CodeEditor.SelectHighlight(1);    // move carlet to next highlight
                         break;
                     case 1: // reset
+                        // copy text from {1} to {2}
                         int start, last;
                         codeEditor.Controller.CodeEditor.GetHighlightPosition(1, out start, out last);
                         string text = document.CreateString(start, last - start + 1);
                         codeEditor.Controller.CodeEditor.GetHighlightPosition(2, out start, out last);
                         document.Replace(start, last - start + 1, 0, text);
-                        codeEditor.Controller.CodeEditor.SelectHighlight(3);
+                        codeEditor.Controller.CodeEditor.SelectHighlight(3);    // move carlet to next highlight
                         codeEditor.Controller.CodeEditor.AbortInteractiveSnippet();
                         codeEditor.Controller.CodeEditor.RequestReparse();
                         break;
