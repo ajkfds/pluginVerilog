@@ -27,21 +27,21 @@ namespace pluginVerilog.Verilog.Variables
             {
                 if (!General.IsSimpleIdentifier(word.Text))
                 {
-                    word.AddError("illegal real identifier");
+                    word.AddError("illegal event identifier");
                     return;
                 }
                 Event val = new Event();
                 val.Name = word.Text;
                 if (nameSpace.Variables.ContainsKey(val.Name))
                 {
-                    if (nameSpace.Variables[val.Name] is Net)
+                    if (nameSpace.Variables[val.Name] is Event)
                     {
                         nameSpace.Variables.Remove(val.Name);
                         nameSpace.Variables.Add(val.Name, val);
                     }
                     else
                     {
-                        word.AddError("duplicated real name");
+                        word.AddError("duplicated event name");
                     }
                 }
                 else

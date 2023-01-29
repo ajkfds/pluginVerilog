@@ -272,7 +272,7 @@ namespace pluginVerilog
         public Dictionary<string, Verilog.Macro> Macros = new Dictionary<string, Verilog.Macro>();
 
         // system tasks
-        public Dictionary<string, Action<Verilog.WordScanner>> SystemTaskParsers = new Dictionary<string, Action<Verilog.WordScanner>>
+        public Dictionary<string, Func<Verilog.WordScanner, Verilog.NameSpace, Verilog.Statements.SystemTask.SystemTask>> SystemTaskParsers = new Dictionary<string, Func<Verilog.WordScanner, Verilog.NameSpace, Verilog.Statements.SystemTask.SystemTask>>
         {
             // Display task
             {"$display",null },
@@ -351,11 +351,11 @@ namespace pluginVerilog
             {"$q_exam", null },
 
             // Dump
-            {"$dumpfile",null },
+            {"$dumpfile", (word,nameSpace) =>{ return Verilog.Statements.SystemTask.SystemTask.ParseCreate(word,nameSpace); } },
             {"$dumpall",null },
             {"$dumpoff",null },
             {"$dumpon",null },
-            {"$dumpvars",null },
+            {"$dumpvars", (word,nameSpace) =>{ return Verilog.Statements.SystemTask.SkipArguments.ParseCreate(word,nameSpace); }  },
             {"$dumpflush",null },
             {"$dumplimit",null },
         };

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Verilog
 {
+    /// <summary>
+    /// Document Tokenizer
+    /// </summary>
     public class WordPointer
     {
         public WordPointer(CodeEditor.CodeDocument document, Verilog.ParsedDocument parsedDocument)
@@ -84,6 +87,9 @@ namespace pluginVerilog.Verilog
             Document.AppendBlock(startIndex, lastIndex);
         }
 
+        /// <summary>
+        /// Char Position Index in the Document
+        /// </summary>
         public int Index
         {
             get
@@ -92,12 +98,21 @@ namespace pluginVerilog.Verilog
             }
         }
 
+        /// <summary>
+        /// Add error Message to the document
+        /// </summary>
+        /// <param name="message"></param>
         public void AddError(string message)
         {
             addError(index, length, message);
             if (ParsedDocument == null) return;
         }
 
+        /// <summary>
+        /// Add error message to the document reference
+        /// </summary>
+        /// <param name="fromReference"></param>
+        /// <param name="message"></param>
         public void AddError(WordReference fromReference, string message)
         {
             addError(fromReference.Index, fromReference.Length, message);
@@ -346,6 +361,17 @@ namespace pluginVerilog.Verilog
                 false
                 );
         }
+
+        /// <summary>
+        /// fetch next word token and updete properties
+        /// </summary>
+        /// <param name="document"></param>
+        /// <param name="index"></param>
+        /// <param name="length"></param>
+        /// <param name="nextIndex"></param>
+        /// <param name="wordType"></param>
+        /// <param name="sectionName"></param>
+        /// <param name="colorComment"></param>
         private static void fetchNext(
             ajkControls.CodeTextbox.Document document,
             ref int index, out int length, out int nextIndex, 
@@ -614,6 +640,7 @@ namespace pluginVerilog.Verilog
         {
             int docLength = document.Length;
 
+            // comment block "/*...*/"
             if (docLength > nextIndex + 1 && document.GetCharAt(nextIndex) == '/' && document.GetCharAt(nextIndex + 1) == '*') // "/*"
             { // comment block
                 if(colorComment) document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Comment));
@@ -634,6 +661,7 @@ namespace pluginVerilog.Verilog
                 return;
             }
 
+            // line comment "// ..."
             if (docLength > nextIndex + 1 && document.GetCharAt(nextIndex) == '/' && document.GetCharAt(nextIndex + 1) == '/') // "//"
             { // line comment
                 if (colorComment) document.SetColorAt(nextIndex, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Comment));
@@ -704,6 +732,13 @@ namespace pluginVerilog.Verilog
                 op2 == "=>"
             )
             {
+                nextIndex = nextIndex + 2;
+                return;
+            }
+
+            if (op2 == "->")
+            {
+                wordType = WordTypeEnum.Text;
                 nextIndex = nextIndex + 2;
                 return;
             }

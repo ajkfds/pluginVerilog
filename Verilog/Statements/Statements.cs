@@ -96,6 +96,8 @@ namespace pluginVerilog.Verilog.Statements
                     return ProceduralContinuousAssignment.ParseCreate(word, nameSpace);
                 case "deassign":
                     return DeassignStatement.ParseCreate(word, nameSpace);
+                case "->":
+                    return EventTrigger.ParseCreate(word, nameSpace);
                 default:
 
                    // NameSpace refNameSpace = null;
@@ -110,8 +112,14 @@ namespace pluginVerilog.Verilog.Statements
                             if (!word.RootParsedDocument.ProjectProperty.SystemTaskParsers.ContainsKey(word.Text))
                             {
                                 word.AddError("illegal system task");
+                            }else if(word.RootParsedDocument.ProjectProperty.SystemTaskParsers[word.Text] != null)
+                            {
+                                return word.RootParsedDocument.ProjectProperty.SystemTaskParsers[word.Text](word, nameSpace);
                             }
-                            return TaskEnable.ParseCreate(word, nameSpace); // system task enable
+                            else
+                            {
+                                return SystemTask.SystemTask.ParseCreate(word, nameSpace);
+                            }
                         }
                         else if (General.IsIdentifier(word.Text)){
                             return TaskEnable.ParseCreate(word, nameSpace,nameSpace);
