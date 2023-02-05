@@ -19,57 +19,20 @@ namespace pluginVerilog.Verilog.Statements
         }
         public static TaskEnable ParseCreate(WordScanner word, NameSpace nameSpace,NameSpace taskNameSpace)
         {
-            TaskEnable taskEnable = new TaskEnable();
-
-            word.Color(CodeDrawStyle.ColorType.Identifier);
-            word.MoveNext();
-
-            if(word.Text == "(")
-            {
-                word.MoveNext();
-                if (word.Text == ")")
-                {
-                    word.MoveNext();
-                    word.AddWarning("remove ()");
-                }
-                else
-                {
-
-                    while (!word.Eof)
-                    {
-                        Expressions.Expression expression = Expressions.Expression.ParseCreate(word, nameSpace);
-                        if (expression == null) word.AddError("missed expression");
-                        if (word.Text == ")")
-                        {
-                            break;
-                        }
-                        else if (word.Text == ",")
-                        {
-                            word.MoveNext();
-                            continue;
-                        }
-                        else
-                        {
-                            word.AddError("illegal expression");
-                            return null;
-                        }
-                    }
-                    if (word.Text == ")") word.MoveNext();
-                    else word.AddError(") required");
-                }
-            }
-
-            if (word.Text == ";") word.MoveNext();
-            else word.AddError("; required");
-
-            return taskEnable;
+            Expressions.TaskReference taskReference = Verilog.Expressions.TaskReference.ParseCreate(word, nameSpace, taskNameSpace);
+            return ParseCreate(taskReference, word, nameSpace);
         }
 
         public static TaskEnable ParseCreate(Expressions.TaskReference taskReference,WordScanner word,NameSpace nameSpace)
         {
-            TaskEnable taskEnable = new TaskEnable();
 
             Task task = taskReference.Task;
+            return parseCreate(task, word, nameSpace);
+        }
+
+        private static TaskEnable parseCreate(Task task, WordScanner word, NameSpace nameSpace)
+        {
+            TaskEnable taskEnable = new TaskEnable();
             int portCount = 0;
 
             if (word.Text == "(")
@@ -124,15 +87,21 @@ namespace pluginVerilog.Verilog.Statements
                 if (word.Text == ")") word.MoveNext();
                 else word.AddError(") required");
             }
+            else
+            {
+                if (task != null && task.Ports.Count != 0) word.AddError("missing ports.");
+            }
 
             if (word.Text == ";")
             {
-                if (task != null && task.Ports.Count != 0) word.AddError("missing ports.");
                 word.MoveNext();
             }
             else word.AddError("; required");
 
             return taskEnable;
+
         }
+
+
     }
 }

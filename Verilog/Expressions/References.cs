@@ -23,7 +23,7 @@ namespace pluginVerilog.Verilog.Expressions
             get
             {
                 Task ret;
-                if (!taskReferenceRef.TryGetTarget(out ret)) return null;
+                if(taskReferenceRef == null || !taskReferenceRef.TryGetTarget(out ret)) return null;
                 return ret;
             }
             protected set
@@ -43,11 +43,15 @@ namespace pluginVerilog.Verilog.Expressions
             ret.TaskName = word.Text;
             ret.ModuleName = nameSpace.Module.Name;
             word.Color(CodeDrawStyle.ColorType.Identifier);
-            word.MoveNext();
             if (taskNameSpace.Module.Tasks.ContainsKey(ret.TaskName))
             {
                 ret.Task = taskNameSpace.Module.Tasks[ret.TaskName];
             }
+            else
+            {
+                word.AddError("illegal task name");
+            }
+            word.MoveNext();
 
             return ret;
         }
