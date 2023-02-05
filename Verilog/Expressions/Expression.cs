@@ -201,7 +201,7 @@ namespace pluginVerilog.Verilog.Expressions
         }
 
 
-
+        // parse lvalue expression or task reference
         public static Expression ParseCreateVariableLValue(WordScanner word, NameSpace nameSpace)
         {
             Expression expression = new Expression();

@@ -69,12 +69,41 @@ namespace pluginVerilog.Verilog.Statements
         {
             TaskEnable taskEnable = new TaskEnable();
 
+            Task task = taskReference.Task;
+            int portCount = 0;
+
             if (word.Text == "(")
             {
                 word.MoveNext();
                 while (!word.Eof)
                 {
-                    Expressions.Expression expression = Expressions.Expression.ParseCreate(word, nameSpace);
+                    Expressions.Expression expression;
+                    if (task == null)
+                    {
+                        expression = Expressions.Expression.ParseCreate(word, nameSpace);
+                    }
+                    else if (portCount == task.PortsList.Count)
+                    {
+                        word.AddError("too many expressions");
+                        expression = Expressions.Expression.ParseCreate(word, nameSpace);
+                    }
+                    else if (portCount > task.PortsList.Count)
+                    {
+                        expression = Expressions.Expression.ParseCreate(word, nameSpace);
+                    }
+                    else
+                    {
+                        Verilog.Variables.Port port = task.PortsList[portCount];
+                        if (port.Direction == Variables.Port.DirectionEnum.Input)
+                        {
+                            expression = Expressions.Expression.ParseCreate(word, nameSpace);
+                        }
+                        else
+                        {
+                            expression = Expressions.Expression.ParseCreateVariableLValue(word, nameSpace);
+                        }
+                    }
+
                     if (expression == null) word.AddError("missed expression");
                     if (word.Text == ")")
                     {
@@ -83,6 +112,7 @@ namespace pluginVerilog.Verilog.Statements
                     else if (word.Text == ",")
                     {
                         word.MoveNext();
+                        portCount++;
                         continue;
                     }
                     else
@@ -95,7 +125,11 @@ namespace pluginVerilog.Verilog.Statements
                 else word.AddError(") required");
             }
 
-            if (word.Text == ";") word.MoveNext();
+            if (word.Text == ";")
+            {
+                if (task != null && task.Ports.Count != 0) word.AddError("missing ports.");
+                word.MoveNext();
+            }
             else word.AddError("; required");
 
             return taskEnable;

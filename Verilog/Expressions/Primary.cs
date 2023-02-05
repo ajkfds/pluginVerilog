@@ -122,7 +122,7 @@ namespace pluginVerilog.Verilog.Expressions
                             return FunctionCall.ParseCreate(word, nameSpace);
                         }
 
-                        if (word.NextText == "(")
+                        if (word.NextText == "(" & !lValue)
                         {
                             return FunctionCall.ParseCreate(word, nameSpace);
                         }
@@ -150,6 +150,10 @@ namespace pluginVerilog.Verilog.Expressions
                                     variable = VariableReference.ParseCreate(word, nameSpace, lValue);
                                     if (variable != null) return variable;
                                 }
+                            }
+                            else if(primary is TaskReference)
+                            {
+                                return primary;
                             }
                             else if(space != null)
                             {
@@ -194,20 +198,10 @@ namespace pluginVerilog.Verilog.Expressions
                     return;
                 }
             }
-            //else if (assigned && nameSpace.Module.Tasks.ContainsKey(word.Text))
-            //{
-            //    TaskReference taskReference = TaskReference.ParseCreate(word, nameSpace);
-            //    primary = taskReference;
-            //    return;
-            //}
-            //else if (!assigned && nameSpace.Module.Functions.ContainsKey(word.Text))
-            //{
-            //    FunctionReference functionReference = FunctionReference.ParseCreate(word, nameSpace);
-            //    primary = functionReference;
-            //    return;
-            //}
             else if (word.NextText == "(")
             {
+                // task reference : for left side only
+                // function calll : for right side only
                 if (assigned)
                 { // left value
                     TaskReference taskReference = TaskReference.ParseCreate(word, rootNameSpace, nameSpace);
@@ -222,6 +216,13 @@ namespace pluginVerilog.Verilog.Expressions
             else if (nameSpace.NameSpaces.ContainsKey(word.Text))
             {
                 nameSpace = nameSpace.NameSpaces[word.Text];
+                if(assigned && word.NextText == ";" && nameSpace is Task)
+                {
+                    TaskReference taskReference = TaskReference.ParseCreate(word, rootNameSpace, nameSpace);
+                    primary = taskReference;
+                    return;
+                }
+
                 word.Color(CodeDrawStyle.ColorType.Identifier);
                 word.MoveNext();
                 NameSpaceReference nameSpaceReference = new NameSpaceReference(nameSpace);
