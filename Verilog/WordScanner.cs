@@ -15,6 +15,22 @@ namespace pluginVerilog.Verilog
             this.systemVerilog = systemVerilog;
         }
 
+        public DefaultNetTypeEnum DefaultNetType = WordScanner.DefaultNetTypeEnum.none;
+
+        public enum DefaultNetTypeEnum
+        {
+            wire,
+            tri,
+            tri0,
+            wand,
+            triand,
+            wor,
+            trior,
+            trireg,
+            none
+        }
+
+
         public void GetFirst()
         {
             recheckWord();
@@ -453,8 +469,59 @@ namespace pluginVerilog.Verilog
                     wordPointer.MoveNext();
                     break;
                 case "`default_nettype":
-                    wordPointer.AddError("not supported");
+                    wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
                     wordPointer.MoveNext();
+
+                    switch (wordPointer.Text)
+                    {
+                        case "none":
+                            DefaultNetType = DefaultNetTypeEnum.none;
+                            wordPointer.MoveNext();
+                            break;
+                        case "wire":
+                            DefaultNetType = DefaultNetTypeEnum.wire;
+                            wordPointer.MoveNext();
+                            break;
+                        case "tri":
+                            DefaultNetType = DefaultNetTypeEnum.tri;
+                            wordPointer.AddError("not supported");
+                            wordPointer.MoveNext();
+                            break;
+                        case "tri0":
+                            DefaultNetType = DefaultNetTypeEnum.tri0;
+                            wordPointer.AddError("not supported");
+                            wordPointer.MoveNext();
+                            break;
+                        case "wand":
+                            DefaultNetType = DefaultNetTypeEnum.wand;
+                            wordPointer.AddError("not supported");
+                            wordPointer.MoveNext();
+                            break;
+                        case "triand":
+                            DefaultNetType = DefaultNetTypeEnum.triand;
+                            wordPointer.AddError("not supported");
+                            wordPointer.MoveNext();
+                            break;
+                        case "wor":
+                            DefaultNetType = DefaultNetTypeEnum.wor;
+                            wordPointer.AddError("not supported");
+                            wordPointer.MoveNext();
+                            break;
+                        case "trior":
+                            DefaultNetType = DefaultNetTypeEnum.trior;
+                            wordPointer.AddError("not supported");
+                            wordPointer.MoveNext();
+                            break;
+                        case "trireg":
+                            DefaultNetType = DefaultNetTypeEnum.trireg;
+                            wordPointer.AddError("not supported");
+                            wordPointer.MoveNext();
+                            break;
+                        default:
+                            wordPointer.AddError("illegal netType");
+                            wordPointer.MoveNext();
+                            break;
+                    }
                     break;
                 case "`endif":
                     wordPointer.Color(CodeDrawStyle.ColorType.Keyword);

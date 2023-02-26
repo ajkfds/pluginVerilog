@@ -209,7 +209,7 @@ namespace pluginVerilog.Data
             }
         }
 
-        public override codeEditor.NavigatePanel.NavigatePanelNode CreateNode()
+        protected override codeEditor.NavigatePanel.NavigatePanelNode createNode()
         {
             NavigatePanel.VerilogModuleInstanceNode node = new NavigatePanel.VerilogModuleInstanceNode(this);
             nodeRef = new WeakReference<codeEditor.NavigatePanel.NavigatePanelNode>(node);

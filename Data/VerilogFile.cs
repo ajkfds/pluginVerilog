@@ -265,10 +265,9 @@ namespace pluginVerilog.Data
             }
         }
 
-        public override codeEditor.NavigatePanel.NavigatePanelNode CreateNode()
+        protected override codeEditor.NavigatePanel.NavigatePanelNode createNode()
         {
             NavigatePanel.VerilogFileNode node = new NavigatePanel.VerilogFileNode(this);
-            nodeRef = new WeakReference<codeEditor.NavigatePanel.NavigatePanelNode>(node);
             return node;
         }
 
@@ -369,7 +368,7 @@ namespace pluginVerilog.Data
             foreach (Item item in removeItems)
             {
                 items.Remove(item.Name);
-                item.Dispose();
+//                item.Dispose();
             }
 
             foreach (Item item in newItems.Values)

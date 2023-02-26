@@ -140,7 +140,7 @@ namespace pluginVerilog.NavigatePanel
             foreach (codeEditor.Data.Item item in currentDataItems)
             {
                 if (item == null) continue;
-                TreeNodes.Add(item.CreateNode());
+                TreeNodes.Add(item.NavigatePanelNode);
             }
         }
 

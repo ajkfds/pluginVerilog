@@ -55,6 +55,8 @@ namespace pluginVerilog.NavigatePanel
                 System.Windows.Forms.TextFormatFlags.NoPadding
                 );
 
+            if (Link) graphics.DrawImage(codeEditor.Global.IconImages.Link.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Blue), new Point(x, y));
+
             if (VerilogFile != null && VerilogFile.ParsedDocument != null && VerilogFile.VerilogParsedDocument.ErrorCount != 0)
             {
                 graphics.DrawImage(Global.Icons.Exclamation.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Red), new Point(x, y));
@@ -94,7 +96,7 @@ namespace pluginVerilog.NavigatePanel
             List<codeEditor.NavigatePanel.NavigatePanelNode> removeNodes = new List<codeEditor.NavigatePanel.NavigatePanelNode>();
             foreach (codeEditor.NavigatePanel.NavigatePanelNode node in TreeNodes)
             {
-                if (currentDataItems.Contains(node.Item))
+                if (node.Item != null && currentDataItems.Contains(node.Item))
                 {
                     currentDataItems.Remove(node.Item);
                 }
@@ -113,7 +115,7 @@ namespace pluginVerilog.NavigatePanel
             foreach (codeEditor.Data.Item item in currentDataItems)
             {
                 if (item == null) continue;
-                TreeNodes.Add(item.CreateNode());
+                TreeNodes.Add(item.NavigatePanelNode);
             }
         }
 
