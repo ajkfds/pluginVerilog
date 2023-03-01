@@ -318,18 +318,17 @@ namespace pluginVerilog.Verilog
                     items.Add(
                         new codeEditor.CodeEditor.AutocompleteItem(key, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword))
                     );
-                    return items;
                 }
                 foreach (string key in ProjectProperty.SystemTaskParsers.Keys)
                 {
                     items.Add(
                         new codeEditor.CodeEditor.AutocompleteItem(key, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword))
                     );
-                    return items;
                 }
+                return items;
             }
 
-            if(hierWords.Count == 0)
+            if (hierWords.Count == 0)
             {
                 items = verilogKeywords.ToList();
             }
