@@ -8,6 +8,9 @@ namespace pluginVerilog
 {
     public class Plugin : codeEditorPlugin.IPlugin
     {
+        public static string StaticID = "Verilog";
+        public string Id { get { return StaticID; } }
+
         public bool Register()
         {
             // register filetypes
@@ -37,26 +40,22 @@ namespace pluginVerilog
             }
 
             // register project property creator
-            codeEditor.Data.Project.ProjectPropertyCreated.Add(Id, new Func<codeEditor.Data.Project, codeEditor.Data.ProjectProperty>(
-                (project) => { return new ProjectProperty(project); }
-            ));
+            codeEditor.Data.Project.Created += projectCreated;
 
             return true;
         }
+
+        private void projectCreated(codeEditor.Data.Project project)
+        {
+            project.ProjectProperties.Add(Id, new ProjectProperty(project));
+        }
+
         public bool Initialize()
         {
-            // add test rtl project
-//            string absolutePath = System.IO.Path.GetFullPath(@"..\\..\\..\\..\\pluginVerilog\\TestRTL");
-//            codeEditor.Data.Project project = codeEditor.Data.Project.Create(absolutePath);
-//            codeEditor.Controller.AddProject(project);
-
             // register project property form tab
             codeEditor.Tools.ProjectPropertyForm.FormCreated += Tools.ProjectPropertyTab.ProjectPropertyFromCreated;
 
             return true;
         }
-        public string Id { get { return StaticID; } }
-
-        public static string StaticID = "Verilog";
     }
 }

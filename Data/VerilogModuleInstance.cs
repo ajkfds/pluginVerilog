@@ -19,7 +19,7 @@ namespace pluginVerilog.Data
             codeEditor.Data.Project project
             )
         {
-            ProjectProperty projectPropery = project.GetProjectProperty(Plugin.StaticID) as ProjectProperty;
+            ProjectProperty projectPropery = project.ProjectProperties[Plugin.StaticID] as ProjectProperty;
             Data.IVerilogRelatedFile file = projectPropery.GetFileOfModule(moduleInstantiation.ModuleName);
             if (file == null) return null;
 
@@ -53,7 +53,7 @@ namespace pluginVerilog.Data
             codeEditor.Data.Project project
             )
         {
-            ProjectProperty projectPropery = project.GetProjectProperty(Plugin.StaticID) as ProjectProperty;
+            ProjectProperty projectPropery = project.ProjectProperties[Plugin.StaticID] as ProjectProperty;
             Data.IVerilogRelatedFile file = projectPropery.GetFileOfModule(moduleInstantiation.ModuleName);
             if (file == null) return false;
             if (!IsSameAs(file as File)) return false;
@@ -194,7 +194,7 @@ namespace pluginVerilog.Data
         {
             get
             {
-                return Project.GetProjectProperty(Plugin.StaticID) as ProjectProperty;
+                return Project.ProjectProperties[Plugin.StaticID] as ProjectProperty;
             }
         }
 

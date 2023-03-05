@@ -64,7 +64,7 @@ namespace pluginVerilog.Verilog
             get
             {
                 if (Project == null) return null;
-                return Project.GetProjectProperty(Plugin.StaticID) as ProjectProperty;
+                return Project.ProjectProperties[Plugin.StaticID] as ProjectProperty;
             }
         }
         public WordPointer RootPointer

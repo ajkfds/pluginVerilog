@@ -28,7 +28,7 @@ namespace pluginVerilog.Verilog.AutoComplete
             char currentChar = codeDocument.GetCharAt(codeDocument.CaretIndex);
             if (currentChar != '\r' && currentChar != '\n') return;
 
-            ProjectProperty projectProperty = project.GetProjectProperty(Plugin.StaticID) as ProjectProperty;
+            ProjectProperty projectProperty = project.ProjectProperties[Plugin.StaticID] as ProjectProperty;
 
             codeEditor.Data.ITextFile itext = codeEditor.Controller.CodeEditor.GetTextFile();
 
@@ -105,5 +105,7 @@ namespace pluginVerilog.Verilog.AutoComplete
 
             codeEditor.Controller.CodeEditor.RequestReparse();
         }
+
+
     }
 }

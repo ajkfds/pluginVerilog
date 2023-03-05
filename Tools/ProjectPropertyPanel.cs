@@ -17,7 +17,7 @@ namespace pluginVerilog.Tools
             InitializeComponent();
 
             this.project = project;
-            ProjectProperty property = project.GetProjectProperty(Plugin.StaticID) as ProjectProperty;
+            ProjectProperty property = project.ProjectProperties[Plugin.StaticID] as ProjectProperty;
 
             foreach (var macro in property.Macros.Values)
             {
@@ -76,7 +76,7 @@ namespace pluginVerilog.Tools
         {
             readTxt();
             setTxt();
-            ProjectProperty property = project.GetProjectProperty(Plugin.StaticID) as ProjectProperty;
+            ProjectProperty property = project.ProjectProperties[Plugin.StaticID] as ProjectProperty;
 
             property.Macros.Clear();
             foreach(var macro in macros)
