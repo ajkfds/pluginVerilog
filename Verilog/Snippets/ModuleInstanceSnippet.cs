@@ -115,8 +115,7 @@ namespace pluginVerilog.Verilog.Snippets
                 }
             }
 
-            codeEditor.Controller.CodeEditor.RequestReparse();
-
+            base.Apply(codeDocument);
         }
 
 
