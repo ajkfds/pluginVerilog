@@ -106,5 +106,16 @@ namespace pluginVerilog
             }
             codeEditor.Controller.NavigatePanel.UpdateVisibleNode();
         }
+
+        private void parseHierarchyTsmi_Click(object sender, EventArgs e)
+        {
+            codeEditor.NavigatePanel.NavigatePanelNode node;
+            codeEditor.Controller.NavigatePanel.GetSelectedNode(out node);
+            if (node == null) return;
+
+            Tools.PharseHiarachyForm form = new Tools.PharseHiarachyForm(node);
+            codeEditor.Controller.ShowForm(form);
+//            codeEditor.Controller.ShowDialogForm(form);
+        }
     }
 }

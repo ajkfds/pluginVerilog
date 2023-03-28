@@ -26,8 +26,9 @@ namespace pluginVerilog
             // append navigate context menu items
             System.Windows.Forms.ContextMenuStrip menu = codeEditor.Controller.NavigatePanel.GetContextMenuStrip();
             menu.Items.Insert(0,Global.SetupForm.IcarusVerilogTsmi);
+            menu.Items.Insert(0, Global.SetupForm.parseHierarchyTsmi);
 
-            foreach(var menuItem in menu.Items)
+            foreach (var menuItem in menu.Items)
             {
                 if(menuItem is System.Windows.Forms.ToolStripMenuItem)
                 {

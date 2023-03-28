@@ -37,6 +37,7 @@
             this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CreateVerilogFileTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
+            this.parseHierarchyTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -45,9 +46,10 @@
             this.contextMenuStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.IcarusVerilogTsmi,
-            this.addToolStripMenuItem});
+            this.addToolStripMenuItem,
+            this.parseHierarchyTsmi});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(241, 97);
+            this.contextMenuStrip.Size = new System.Drawing.Size(241, 133);
             // 
             // IcarusVerilogTsmi
             // 
@@ -55,20 +57,20 @@
             this.iVerilogRunTsmi,
             this.gtkWaveTsmi});
             this.IcarusVerilogTsmi.Name = "IcarusVerilogTsmi";
-            this.IcarusVerilogTsmi.Size = new System.Drawing.Size(240, 30);
+            this.IcarusVerilogTsmi.Size = new System.Drawing.Size(240, 32);
             this.IcarusVerilogTsmi.Text = "icarusVerilog";
             // 
             // iVerilogRunTsmi
             // 
             this.iVerilogRunTsmi.Name = "iVerilogRunTsmi";
-            this.iVerilogRunTsmi.Size = new System.Drawing.Size(170, 30);
+            this.iVerilogRunTsmi.Size = new System.Drawing.Size(270, 34);
             this.iVerilogRunTsmi.Text = "Run";
             this.iVerilogRunTsmi.Click += new System.EventHandler(this.IVerilogRunTsmi_Click);
             // 
             // gtkWaveTsmi
             // 
             this.gtkWaveTsmi.Name = "gtkWaveTsmi";
-            this.gtkWaveTsmi.Size = new System.Drawing.Size(170, 30);
+            this.gtkWaveTsmi.Size = new System.Drawing.Size(270, 34);
             this.gtkWaveTsmi.Text = "GTKWave";
             this.gtkWaveTsmi.Click += new System.EventHandler(this.GtkWaveTsmi_Click);
             // 
@@ -77,13 +79,13 @@
             this.addToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.CreateVerilogFileTsmi});
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
-            this.addToolStripMenuItem.Size = new System.Drawing.Size(240, 30);
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(240, 32);
             this.addToolStripMenuItem.Text = "Add";
             // 
             // CreateVerilogFileTsmi
             // 
             this.CreateVerilogFileTsmi.Name = "CreateVerilogFileTsmi";
-            this.CreateVerilogFileTsmi.Size = new System.Drawing.Size(252, 30);
+            this.CreateVerilogFileTsmi.Size = new System.Drawing.Size(270, 34);
             this.CreateVerilogFileTsmi.Text = "VerilogFile";
             this.CreateVerilogFileTsmi.Click += new System.EventHandler(this.CreateVerilogFileTsmi_Click);
             // 
@@ -92,6 +94,13 @@
             this.imageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList.ImageStream")));
             this.imageList.TransparentColor = System.Drawing.Color.Transparent;
             this.imageList.Images.SetKeyName(0, "box.png");
+            // 
+            // parseHierarchyTsmi
+            // 
+            this.parseHierarchyTsmi.Name = "parseHierarchyTsmi";
+            this.parseHierarchyTsmi.Size = new System.Drawing.Size(240, 32);
+            this.parseHierarchyTsmi.Text = "Parse Hierarchy";
+            this.parseHierarchyTsmi.Click += new System.EventHandler(this.parseHierarchyTsmi_Click);
             // 
             // SetupForm
             // 
@@ -114,5 +123,6 @@
         private System.Windows.Forms.ToolStripMenuItem gtkWaveTsmi;
         private System.Windows.Forms.ToolStripMenuItem addToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem CreateVerilogFileTsmi;
+        public System.Windows.Forms.ToolStripMenuItem parseHierarchyTsmi;
     }
 }

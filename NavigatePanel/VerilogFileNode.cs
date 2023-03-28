@@ -74,6 +74,7 @@ namespace pluginVerilog.NavigatePanel
             var menu = codeEditor.Controller.NavigatePanel.GetContextMenuStrip();
             if (menu.Items.ContainsKey("openWithExploererTsmi")) menu.Items["openWithExploererTsmi"].Visible = true;
             if (menu.Items.ContainsKey("icarusVerilogTsmi")) menu.Items["icarusVerilogTsmi"].Visible = true;
+            if (menu.Items.ContainsKey("parseHierarchyTsmi")) menu.Items["parseHierarchyTsmi"].Visible = true;
 
             codeEditor.Controller.CodeEditor.SetTextFile(TextFile);
             if (NodeSelected != null) NodeSelected();
