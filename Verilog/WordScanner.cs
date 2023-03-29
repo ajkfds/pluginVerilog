@@ -926,6 +926,7 @@ namespace pluginVerilog.Verilog
             }
             if(macroText == "")
             {
+                wordPointer.MoveNext();
                 return;
             }
 

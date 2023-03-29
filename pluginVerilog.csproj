@@ -87,12 +87,6 @@
     <Compile Include="Tools\ConnectionForm.Designer.cs">
       <DependentUpon>ConnectionForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Tools\PharseHiarachyForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Tools\PharseHiarachyForm.Designer.cs">
-      <DependentUpon>PharseHiarachyForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Tools\ProjectPropertyPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -247,9 +241,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Tools\AutoConnectForm.resx">
       <DependentUpon>AutoConnectForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Tools\PharseHiarachyForm.resx">
-      <DependentUpon>PharseHiarachyForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Tools\ProjectPropertyPanel.resx">
       <DependentUpon>ProjectPropertyPanel.cs</DependentUpon>
