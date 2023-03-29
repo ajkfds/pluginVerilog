@@ -41,9 +41,12 @@ namespace pluginVerilog.MessageView
 
         public override void Selected()
         {
-            File.CodeDocument.SelectionStart = index;
-            File.CodeDocument.SelectionLast = index + length;
-            File.CodeDocument.CaretIndex = index;
+            if(File != null && File.CodeDocument != null)
+            {
+                File.CodeDocument.SelectionStart = index;
+                File.CodeDocument.SelectionLast = index + length;
+                File.CodeDocument.CaretIndex = index;
+            }
             codeEditor.Controller.CodeEditor.ScrollToCaret();
             codeEditor.Controller.CodeEditor.Refresh();
         }

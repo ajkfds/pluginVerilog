@@ -136,6 +136,7 @@ namespace pluginVerilog.Verilog.Expressions
             multipleConcatenation.MultipleExpression = multipleExpression;
             multipleConcatenation.Expression = exp;
             multipleConcatenation.Reference = word.GetReference().CreateReferenceFrom(reference);
+            multipleConcatenation.Constant = exp.Constant & multipleConcatenation.Constant;
 
             if(exp.BitWidth != null && multipleExpression.Value != null) { 
                 multipleConcatenation.BitWidth = (int)exp.BitWidth * (int)multipleExpression.Value;

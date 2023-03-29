@@ -428,7 +428,10 @@ namespace pluginVerilog.Verilog.Expressions
             this.Value = value;
             this.BitWidth = bitWidth;
             Primary ret = this;
-            this.Reference = Primary2.Reference.CreateReferenceFrom(Primary1.Reference);
+            if (Primary1 != null && Primary2.Reference != null)
+            {
+                this.Reference = Primary2.Reference.CreateReferenceFrom(Primary1.Reference);
+            }
             //            Primary ret = Primary.Create(constant, value, bitWidth);
             if (Operated != null) Operated(this);
             return this;
