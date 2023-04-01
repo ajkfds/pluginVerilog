@@ -88,9 +88,11 @@ namespace pluginVerilog.NavigatePanel
             VerilogFile.Update();
 
             List<codeEditor.Data.Item> currentDataItems = new List<codeEditor.Data.Item>();
+            List<codeEditor.Data.Item> addDataItems = new List<codeEditor.Data.Item>();
             foreach (codeEditor.Data.Item item in VerilogFile.Items.Values)
             {
                 currentDataItems.Add(item);
+                addDataItems.Add(item);
             }
 
             List<codeEditor.NavigatePanel.NavigatePanelNode> removeNodes = new List<codeEditor.NavigatePanel.NavigatePanelNode>();
@@ -98,7 +100,7 @@ namespace pluginVerilog.NavigatePanel
             {
                 if (node.Item != null && currentDataItems.Contains(node.Item))
                 {
-                    currentDataItems.Remove(node.Item);
+                    addDataItems.Remove(node.Item);
                 }
                 else
                 {
@@ -106,17 +108,33 @@ namespace pluginVerilog.NavigatePanel
                 }
             }
 
+
+            int index = 0;
+            foreach (codeEditor.Data.Item item in currentDataItems)
+            {
+                if (item == null) continue;
+                if( addDataItems.Contains(item))
+                {
+                    TreeNodes.Insert(index,item.NavigatePanelNode);
+                    index++;
+                }else
+                {
+                    index = TreeNodes.IndexOf(item.NavigatePanelNode);
+                }
+            }
+
+
             foreach (codeEditor.NavigatePanel.NavigatePanelNode node in removeNodes)
             {
                 TreeNodes.Remove(node);
                 node.Dispose();
             }
 
-            foreach (codeEditor.Data.Item item in currentDataItems)
-            {
-                if (item == null) continue;
-                TreeNodes.Add(item.NavigatePanelNode);
-            }
+            //foreach (codeEditor.Data.Item item in addDataItems)
+            //{
+            //    if (item == null) continue;
+            //    TreeNodes.Add(item.NavigatePanelNode);
+            //}
         }
 
     }
