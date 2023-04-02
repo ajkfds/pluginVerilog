@@ -138,8 +138,17 @@ namespace pluginVerilog.Verilog.Expressions
             multipleConcatenation.Reference = word.GetReference().CreateReferenceFrom(reference);
             multipleConcatenation.Constant = exp.Constant & multipleConcatenation.Constant;
 
-            if(exp.BitWidth != null && multipleExpression.Value != null) { 
-                multipleConcatenation.BitWidth = (int)exp.BitWidth * (int)multipleExpression.Value;
+            if(exp != null && multipleExpression != null)
+            {
+                if (exp.BitWidth != null && multipleExpression.Value != null)
+                {
+                    multipleConcatenation.BitWidth = (int)exp.BitWidth * (int)multipleExpression.Value;
+                }
+                if(exp.Constant && multipleExpression.Constant)
+                {
+                    multipleConcatenation.Constant = true;
+                }
+
             }
 
             word.MoveNext(); // }
