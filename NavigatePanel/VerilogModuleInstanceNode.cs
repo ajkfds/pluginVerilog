@@ -105,6 +105,12 @@ namespace pluginVerilog.NavigatePanel
             if (menu.Items.ContainsKey("openWithExploererTsmi")) menu.Items["openWithExploererTsmi"].Visible = true;
 
             codeEditor.Controller.CodeEditor.SetTextFile(ModuleInstance);
+
+            if (!ModuleInstance.ParseValid)
+            {
+                codeEditor.Tools.ParseHierarchyForm pform = new codeEditor.Tools.ParseHierarchyForm(this);
+                codeEditor.Controller.ShowDialogForm(pform);
+            }
         }
 
         public override void Update()
@@ -112,18 +118,20 @@ namespace pluginVerilog.NavigatePanel
             if (VerilogModuleInstance == null) return;
             VerilogModuleInstance.Update();
 
-            List<codeEditor.Data.Item> currentDataItems = new List<codeEditor.Data.Item>();
+            List<codeEditor.Data.Item> targetDataItems = new List<codeEditor.Data.Item>();
+            List<codeEditor.Data.Item> addDataItems = new List<codeEditor.Data.Item>();
             foreach (codeEditor.Data.Item item in VerilogModuleInstance.Items.Values)
             {
-                currentDataItems.Add(item);
+                targetDataItems.Add(item);
+                addDataItems.Add(item);
             }
 
             List<codeEditor.NavigatePanel.NavigatePanelNode> removeNodes = new List<codeEditor.NavigatePanel.NavigatePanelNode>();
             foreach (codeEditor.NavigatePanel.NavigatePanelNode node in TreeNodes)
             {
-                if (currentDataItems.Contains(node.Item))
+                if (node.Item != null && targetDataItems.Contains(node.Item))
                 {
-                    currentDataItems.Remove(node.Item);
+                    addDataItems.Remove(node.Item);
                 }
                 else
                 {
@@ -137,11 +145,18 @@ namespace pluginVerilog.NavigatePanel
                 node.Dispose();
             }
 
-            foreach (codeEditor.Data.Item item in currentDataItems)
+            int treeIndex = 0;
+            foreach (codeEditor.Data.Item item in targetDataItems)
             {
                 if (item == null) continue;
-                TreeNodes.Add(item.NavigatePanelNode);
+                if (addDataItems.Contains(item))
+                {
+                    TreeNodes.Insert(treeIndex, item.NavigatePanelNode);
+                }
+                treeIndex++;
             }
+
+
         }
 
     }

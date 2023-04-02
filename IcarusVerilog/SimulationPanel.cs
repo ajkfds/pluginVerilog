@@ -107,6 +107,8 @@ namespace pluginVerilog.IcarusVerilog
             NavigatePanel.VerilogFileNode verilogFileNode = node as NavigatePanel.VerilogFileNode;
             if (node == null) return;
 
+            codeEditor.Controller.NavigatePanel.Parse(node);
+
             Data.VerilogFile topFile = verilogFileNode.VerilogFile;
             codeEditor.Data.Project project = topFile.Project;
 

@@ -75,7 +75,12 @@ namespace pluginVerilog.NavigatePanel
             if (menu.Items.ContainsKey("openWithExploererTsmi")) menu.Items["openWithExploererTsmi"].Visible = true;
             if (menu.Items.ContainsKey("icarusVerilogTsmi")) menu.Items["icarusVerilogTsmi"].Visible = true;
 
-            codeEditor.Controller.CodeEditor.SetTextFile(TextFile);
+            if (!TextFile.ParseValid)
+            {
+                codeEditor.Tools.ParseHierarchyForm pform = new codeEditor.Tools.ParseHierarchyForm(this);
+                codeEditor.Controller.ShowDialogForm(pform);
+            }
+
             if (NodeSelected != null) NodeSelected();
         }
 
@@ -87,18 +92,18 @@ namespace pluginVerilog.NavigatePanel
             }
             VerilogFile.Update();
 
-            List<codeEditor.Data.Item> currentDataItems = new List<codeEditor.Data.Item>();
+            List<codeEditor.Data.Item> targetDataItems = new List<codeEditor.Data.Item>();
             List<codeEditor.Data.Item> addDataItems = new List<codeEditor.Data.Item>();
             foreach (codeEditor.Data.Item item in VerilogFile.Items.Values)
             {
-                currentDataItems.Add(item);
+                targetDataItems.Add(item);
                 addDataItems.Add(item);
             }
 
             List<codeEditor.NavigatePanel.NavigatePanelNode> removeNodes = new List<codeEditor.NavigatePanel.NavigatePanelNode>();
             foreach (codeEditor.NavigatePanel.NavigatePanelNode node in TreeNodes)
             {
-                if (node.Item != null && currentDataItems.Contains(node.Item))
+                if (node.Item != null && targetDataItems.Contains(node.Item))
                 {
                     addDataItems.Remove(node.Item);
                 }
@@ -109,32 +114,23 @@ namespace pluginVerilog.NavigatePanel
             }
 
 
-            int index = 0;
-            foreach (codeEditor.Data.Item item in currentDataItems)
-            {
-                if (item == null) continue;
-                if( addDataItems.Contains(item))
-                {
-                    TreeNodes.Insert(index,item.NavigatePanelNode);
-                    index++;
-                }else
-                {
-                    index = TreeNodes.IndexOf(item.NavigatePanelNode);
-                }
-            }
-
-
             foreach (codeEditor.NavigatePanel.NavigatePanelNode node in removeNodes)
             {
                 TreeNodes.Remove(node);
                 node.Dispose();
             }
 
-            //foreach (codeEditor.Data.Item item in addDataItems)
-            //{
-            //    if (item == null) continue;
-            //    TreeNodes.Add(item.NavigatePanelNode);
-            //}
+            int treeIndex = 0;
+            foreach (codeEditor.Data.Item item in targetDataItems)
+            {
+                if (item == null) continue;
+                if (addDataItems.Contains(item))
+                {
+                    TreeNodes.Insert(treeIndex, item.NavigatePanelNode);
+                }
+                treeIndex++;
+            }
+
         }
 
     }

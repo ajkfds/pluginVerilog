@@ -25,11 +25,6 @@ namespace pluginVerilog.Data
             {
                 fileItem.Name = relativePath;
             }
-            //            fileItem.ParseRequested = true;
-            if (fileItem.RelativePath == "TEST_HIER_PARSE.v") {
-                System.Diagnostics.Debug.Print("TEST_HIER_PARSE.v :" + fileItem.GetHashCode());
-            }
-
             return fileItem;
         }
 
@@ -89,7 +84,12 @@ namespace pluginVerilog.Data
             {
                 if (!ProjectProperty.IsRegisterableModule(module.Name, this))
                 {
-                    if (module.NameReference != null) module.NameReference.AddError("duplicated module name");
+                    Verilog.Module registeredModule = ProjectProperty.GetModule(module.Name);
+                    if (registeredModule.File.RelativePath == module.File.RelativePath) continue;
+
+                    if (module.NameReference != null) { 
+                        module.NameReference.AddError("duplicated module name"); 
+                    }
                     continue;
                 }
 
@@ -101,13 +101,14 @@ namespace pluginVerilog.Data
                 }
             }
 
+            ParseValid = true;
             Update();
         }
         public override void LoadFormFile()
         {
+            ParseValid = false;
             loadDoumentFromFile();
             AcceptParsedDocument(null);
-//             ParsedDocument = null;
             Project.AddReparseTarget(this);
             if (NavigatePanelNode != null) NavigatePanelNode.Update();
         }
@@ -281,14 +282,15 @@ namespace pluginVerilog.Data
                 return;
             }
 
-            List<Item> currentItems = new List<Item>();
+            List<Item> targetItems = new List<Item>();
             Dictionary<string, Item> newItems = new Dictionary<string, Item>();
 
+            // include file
             foreach (VerilogHeaderFile vhFile in VerilogParsedDocument.IncludeFiles.Values)
             {
                 if (items.ContainsValue(vhFile))
                 {
-                    currentItems.Add(vhFile);
+                    targetItems.Add(vhFile);
                 }
                 else
                 {
@@ -302,19 +304,21 @@ namespace pluginVerilog.Data
                         keyname = keyname + "_" + i.ToString();
                     }
                     newItems.Add(keyname, vhFile);
+                    targetItems.Add(vhFile);
                 }
             }
 
+            // module instances
             foreach (Verilog.Module module in VerilogParsedDocument.Modules.Values)
             {
                 foreach (Verilog.ModuleItems.ModuleInstantiation moduleInstantiation in module.ModuleInstantiations.Values)
                 {
-                    if (items.Keys.Contains(moduleInstantiation.Name))
+                    if (items.ContainsKey(moduleInstantiation.Name))
                     { // already exist item
                         Item oldItem = items[moduleInstantiation.Name];
                         if (oldItem is Data.VerilogModuleInstance && (oldItem as Data.VerilogModuleInstance).ReplaceBy(moduleInstantiation, Project))
                         { // sucessfully replaced
-                            currentItems.Add(oldItem);
+                            targetItems.Add(oldItem);
                         }
                         else
                         { // re-generate (same module instance name, but different file or module name or parameter
@@ -323,6 +327,7 @@ namespace pluginVerilog.Data
                             {
                                 item.Parent = this;
                                 newItems.Add(moduleInstantiation.Name, item);
+                                targetItems.Add(item);
                                 if (moduleInstantiation.ParameterOverrides.Count != 0)
                                 {
                                     Data.VerilogModuleInstance moduleInstance = item as Data.VerilogModuleInstance;
@@ -341,6 +346,7 @@ namespace pluginVerilog.Data
                         {
                             item.Parent = this;
                             newItems.Add(moduleInstantiation.Name, item);
+                            targetItems.Add(item);
                             if (moduleInstantiation.ParameterOverrides.Count != 0)
                             {
                                 Data.VerilogModuleInstance moduleInstance = item as Data.VerilogModuleInstance;
@@ -349,33 +355,32 @@ namespace pluginVerilog.Data
                                 {   // background reparse
                                     Project.AddReparseTarget(item);
                                 }
-                                else
-                                {
-                                    string a = "";
-                                }
                             }
                         }
                     }
                 }
             }
 
-            List<Item> removeItems = new List<Item>();
-            foreach (codeEditor.Data.Item item in items.Values)
-            {
-                if (!currentItems.Contains(item)) removeItems.Add(item);
+            { // remove unused items
+                List<Item> removeItems = new List<Item>();
+                foreach (codeEditor.Data.Item item in items.Values)
+                {
+                    if (!targetItems.Contains(item)) removeItems.Add(item);
+                }
+
+                foreach (Item item in removeItems)
+                {
+                    items.Remove(item.Name);
+                }
             }
 
-            foreach (Item item in removeItems)
+            items.Clear();
+            foreach(Item item in targetItems)
             {
-                items.Remove(item.Name);
-//                item.Dispose();
-            }
-
-            foreach (Item item in newItems.Values)
-            {
-                if(!items.ContainsKey(item.Name))  items.Add(item.Name, item);
+                items.Add(item.Name, item);
             }
         }
+
 
         public override void AfterKeyDown(System.Windows.Forms.KeyEventArgs e)
         {
