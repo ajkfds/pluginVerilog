@@ -104,8 +104,11 @@ namespace pluginVerilog.Verilog.Expressions
             this.Constant = constant;
             this.Value = value;
             this.BitWidth = BitWidth;
-            this.Reference = Primary2.Reference.CreateReferenceFrom(Condition.Reference);
-            if(Operated!=null) Operated(this);
+            if(Primary2.Reference != null && Condition.Reference != null)
+            {
+                this.Reference = Primary2.Reference.CreateReferenceFrom(Condition.Reference);
+            }
+            if (Operated!=null) Operated(this);
             return this;
         }
 
@@ -223,7 +226,10 @@ namespace pluginVerilog.Verilog.Expressions
             this.Constant = constant;
             this.Value = value;
             this.BitWidth = BitWidth;
-            this.Reference = Primary.Reference.CreateReferenceFrom(Primary.Reference);
+            if(Primary.Reference != null)
+            {
+                this.Reference = Primary.Reference.CreateReferenceFrom(Primary.Reference);
+            }
             if (Operated != null) Operated(this);
             return this;
         }
