@@ -161,7 +161,10 @@ namespace pluginVerilog.Data
         {
             Data.IVerilogRelatedFile parentFile = Parent as Data.IVerilogRelatedFile;
             if (parentFile == null) return null;
+            // do not parse again for background parse. header file is parsed with parent file.
+            if (parseMode != DocumentParser.ParseModeEnum.EditParse ) return null;
 
+            // Use Parent File Parser for Edit Parse
             return parentFile.CreateDocumentParser(parseMode);
         }
         public new void AfterKeyPressed(KeyPressEventArgs e)

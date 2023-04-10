@@ -107,5 +107,18 @@ namespace pluginVerilog
             codeEditor.Controller.NavigatePanel.UpdateVisibleNode();
         }
 
+        private void checkParseDataToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            codeEditor.NavigatePanel.NavigatePanelNode node;
+            codeEditor.Controller.NavigatePanel.GetSelectedNode(out node);
+            var item = node.Item;
+            codeEditor.Data.Project project = item.Project;
+
+            string path;
+            if (item == null) return;
+            path = project.GetAbsolutePath(item.RelativePath);
+
+
+        }
     }
 }

@@ -36,6 +36,8 @@
             this.gtkWaveTsmi = new System.Windows.Forms.ToolStripMenuItem();
             this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.CreateVerilogFileTsmi = new System.Windows.Forms.ToolStripMenuItem();
+            this.VerilogDebugTsmi = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkParseDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -45,9 +47,10 @@
             this.contextMenuStrip.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.IcarusVerilogTsmi,
-            this.addToolStripMenuItem});
+            this.addToolStripMenuItem,
+            this.VerilogDebugTsmi});
             this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(185, 68);
+            this.contextMenuStrip.Size = new System.Drawing.Size(185, 100);
             // 
             // IcarusVerilogTsmi
             // 
@@ -83,9 +86,24 @@
             // CreateVerilogFileTsmi
             // 
             this.CreateVerilogFileTsmi.Name = "CreateVerilogFileTsmi";
-            this.CreateVerilogFileTsmi.Size = new System.Drawing.Size(270, 34);
+            this.CreateVerilogFileTsmi.Size = new System.Drawing.Size(195, 34);
             this.CreateVerilogFileTsmi.Text = "VerilogFile";
             this.CreateVerilogFileTsmi.Click += new System.EventHandler(this.CreateVerilogFileTsmi_Click);
+            // 
+            // VerilogDebugTsmi
+            // 
+            this.VerilogDebugTsmi.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.checkParseDataToolStripMenuItem});
+            this.VerilogDebugTsmi.Name = "VerilogDebugTsmi";
+            this.VerilogDebugTsmi.Size = new System.Drawing.Size(184, 32);
+            this.VerilogDebugTsmi.Text = "Debug";
+            // 
+            // checkParseDataToolStripMenuItem
+            // 
+            this.checkParseDataToolStripMenuItem.Name = "checkParseDataToolStripMenuItem";
+            this.checkParseDataToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.checkParseDataToolStripMenuItem.Text = "Check Parse Data";
+            this.checkParseDataToolStripMenuItem.Click += new System.EventHandler(this.checkParseDataToolStripMenuItem_Click);
             // 
             // imageList
             // 
@@ -114,5 +132,7 @@
         private System.Windows.Forms.ToolStripMenuItem gtkWaveTsmi;
         private System.Windows.Forms.ToolStripMenuItem addToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem CreateVerilogFileTsmi;
+        public System.Windows.Forms.ToolStripMenuItem VerilogDebugTsmi;
+        private System.Windows.Forms.ToolStripMenuItem checkParseDataToolStripMenuItem;
     }
 }

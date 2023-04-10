@@ -274,54 +274,75 @@ namespace pluginVerilog.Data
 
         public override void Update()
         {
-            if (VerilogParsedDocument == null)
+            lock (Items)
             {
-                // dispose all subnodes
-                foreach (Item item in items.Values) item.Dispose();
-                items.Clear();
-                return;
-            }
-
-            List<Item> targetItems = new List<Item>();
-            Dictionary<string, Item> newItems = new Dictionary<string, Item>();
-
-            // include file
-            foreach (VerilogHeaderFile vhFile in VerilogParsedDocument.IncludeFiles.Values)
-            {
-                if (items.ContainsValue(vhFile))
+                if (VerilogParsedDocument == null)
                 {
-                    targetItems.Add(vhFile);
+                    // dispose all subnodes
+                    foreach (Item item in items.Values) item.Dispose();
+                    items.Clear();
+                    return;
                 }
-                else
+
+                List<Item> targetItems = new List<Item>();
+                Dictionary<string, Item> newItems = new Dictionary<string, Item>();
+
+                // include file
+                foreach (VerilogHeaderFile vhFile in VerilogParsedDocument.IncludeFiles.Values)
                 {
-                    string keyname = vhFile.Name;
+                    if (items.ContainsValue(vhFile))
                     {
-                        int i = 0;
-                        while (items.ContainsKey(keyname + "_" + i.ToString()))
-                        {
-                            i++;
-                        }
-                        keyname = keyname + "_" + i.ToString();
+                        targetItems.Add(vhFile);
                     }
-                    newItems.Add(keyname, vhFile);
-                    targetItems.Add(vhFile);
+                    else
+                    {
+                        string keyname = vhFile.Name;
+                        {
+                            int i = 0;
+                            while (items.ContainsKey(keyname + "_" + i.ToString()))
+                            {
+                                i++;
+                            }
+                            keyname = keyname + "_" + i.ToString();
+                        }
+                        newItems.Add(keyname, vhFile);
+                        targetItems.Add(vhFile);
+                    }
                 }
-            }
 
-            // module instances
-            foreach (Verilog.Module module in VerilogParsedDocument.Modules.Values)
-            {
-                foreach (Verilog.ModuleItems.ModuleInstantiation moduleInstantiation in module.ModuleInstantiations.Values)
+                // module instances
+                foreach (Verilog.Module module in VerilogParsedDocument.Modules.Values)
                 {
-                    if (items.ContainsKey(moduleInstantiation.Name))
-                    { // already exist item
-                        Item oldItem = items[moduleInstantiation.Name];
-                        if (oldItem is Data.VerilogModuleInstance && (oldItem as Data.VerilogModuleInstance).ReplaceBy(moduleInstantiation, Project))
-                        { // sucessfully replaced
-                            targetItems.Add(oldItem);
+                    foreach (Verilog.ModuleItems.ModuleInstantiation moduleInstantiation in module.ModuleInstantiations.Values)
+                    {
+                        if (items.ContainsKey(moduleInstantiation.Name))
+                        { // already exist item
+                            Item oldItem = items[moduleInstantiation.Name];
+                            if (oldItem is Data.VerilogModuleInstance && (oldItem as Data.VerilogModuleInstance).ReplaceBy(moduleInstantiation, Project))
+                            { // sucessfully replaced
+                                targetItems.Add(oldItem);
+                            }
+                            else
+                            { // re-generate (same module instance name, but different file or module name or parameter
+                                Item item = Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
+                                if (item != null & !newItems.ContainsKey(moduleInstantiation.Name))
+                                {
+                                    item.Parent = this;
+                                    newItems.Add(moduleInstantiation.Name, item);
+                                    targetItems.Add(item);
+                                    if (moduleInstantiation.ParameterOverrides.Count != 0)
+                                    {
+                                        Data.VerilogModuleInstance moduleInstance = item as Data.VerilogModuleInstance;
+                                        if (moduleInstance.ParsedDocument == null)
+                                        { // background reparse if not parsed
+                                            Project.AddReparseTarget(item);
+                                        }
+                                    }
+                                }
+                            }
                         }
                         else
-                        { // re-generate (same module instance name, but different file or module name or parameter
+                        { // new item
                             Item item = Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
                             if (item != null & !newItems.ContainsKey(moduleInstantiation.Name))
                             {
@@ -331,53 +352,36 @@ namespace pluginVerilog.Data
                                 if (moduleInstantiation.ParameterOverrides.Count != 0)
                                 {
                                     Data.VerilogModuleInstance moduleInstance = item as Data.VerilogModuleInstance;
+
                                     if (moduleInstance.ParsedDocument == null)
-                                    { // background reparse if not parsed
+                                    {   // background reparse
                                         Project.AddReparseTarget(item);
                                     }
                                 }
                             }
                         }
                     }
-                    else
-                    { // new item
-                        Item item = Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
-                        if (item != null & !newItems.ContainsKey(moduleInstantiation.Name))
-                        {
-                            item.Parent = this;
-                            newItems.Add(moduleInstantiation.Name, item);
-                            targetItems.Add(item);
-                            if (moduleInstantiation.ParameterOverrides.Count != 0)
-                            {
-                                Data.VerilogModuleInstance moduleInstance = item as Data.VerilogModuleInstance;
+                }
 
-                                if (moduleInstance.ParsedDocument == null)
-                                {   // background reparse
-                                    Project.AddReparseTarget(item);
-                                }
-                            }
-                        }
+                { // remove unused items
+                    List<Item> removeItems = new List<Item>();
+                    foreach (codeEditor.Data.Item item in items.Values)
+                    {
+                        if (!targetItems.Contains(item)) removeItems.Add(item);
+                    }
+
+                    foreach (Item item in removeItems)
+                    {
+                        items.Remove(item.Name);
                     }
                 }
-            }
 
-            { // remove unused items
-                List<Item> removeItems = new List<Item>();
-                foreach (codeEditor.Data.Item item in items.Values)
+                items.Clear();
+                foreach (Item item in targetItems)
                 {
-                    if (!targetItems.Contains(item)) removeItems.Add(item);
+                    items.Add(item.Name, item);
                 }
 
-                foreach (Item item in removeItems)
-                {
-                    items.Remove(item.Name);
-                }
-            }
-
-            items.Clear();
-            foreach(Item item in targetItems)
-            {
-                items.Add(item.Name, item);
             }
         }
 
