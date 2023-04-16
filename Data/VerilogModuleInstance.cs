@@ -44,7 +44,14 @@ namespace pluginVerilog.Data
         {
             get
             {
-                return RelativePath +":"+ ParameterId;
+                if(ParameterId == "")
+                {
+                    return RelativePath;
+                }
+                else
+                {
+                    return RelativePath + ":" + ParameterId;
+                }
             }
         }
 
