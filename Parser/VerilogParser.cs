@@ -13,7 +13,6 @@ namespace pluginVerilog.Parser
             codeEditor.CodeEditor.DocumentParser.ParseModeEnum parseMode
             )
         {
-            this.Version = verilogFile.CodeDocument.Version;
             this.document = new CodeEditor.CodeDocument(verilogFile); // use verilog codedocument
             this.document.CopyTextOnlyFrom(verilogFile.CodeDocument);
 //            this.document.CopyCharsFrom(verilogFile.CodeDocument);
@@ -23,6 +22,7 @@ namespace pluginVerilog.Parser
 
             File = verilogFile;
             parsedDocument = new Verilog.ParsedDocument(verilogFile, parseMode);
+            parsedDocument.Version = verilogFile.CodeDocument.Version;
             word = new Verilog.WordScanner(VerilogDocument, parsedDocument,false);
         }
 
@@ -32,7 +32,6 @@ namespace pluginVerilog.Parser
             codeEditor.CodeEditor.DocumentParser.ParseModeEnum parseMode
             ) : base(verilogFile as codeEditor.Data.TextFile, parseMode)
         {
-            this.Version = verilogFile.CodeDocument.Version;
             this.document = new CodeEditor.CodeDocument(verilogFile); // use verilog codedocument
 
             this.document.CopyTextOnlyFrom(verilogFile.CodeDocument);
@@ -44,6 +43,7 @@ namespace pluginVerilog.Parser
             this.parameterOverrides = parameterOverrides;
             File = verilogFile;
             parsedDocument = new Verilog.ParsedDocument(verilogFile,parseMode);
+            parsedDocument.Version = verilogFile.CodeDocument.Version;
             parsedDocument.Instance = true;
             word = new Verilog.WordScanner(VerilogDocument, parsedDocument, false);
         }

@@ -101,12 +101,10 @@ namespace pluginVerilog.Data
                 }
             }
 
-            ParseValid = true;
             Update();
         }
         public override void LoadFormFile()
         {
-            ParseValid = false;
             loadDoumentFromFile();
             AcceptParsedDocument(null);
             Project.AddReparseTarget(this);

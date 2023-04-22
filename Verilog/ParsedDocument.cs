@@ -27,8 +27,10 @@ namespace pluginVerilog.Verilog
 
         public bool Instance = false;
         public Dictionary<string, Module> Modules = new Dictionary<string, Module>();
+
         public Dictionary<string, Data.VerilogHeaderFile> IncludeFiles = new Dictionary<string, Data.VerilogHeaderFile>();
         public Dictionary<string, Macro> Macros = new Dictionary<string, Macro>();
+
 
         public void ReloadIncludeFiles()
         {

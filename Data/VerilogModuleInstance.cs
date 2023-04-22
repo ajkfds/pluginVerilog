@@ -204,7 +204,6 @@ namespace pluginVerilog.Data
                 source.RegisterInstanceParsedDocument(ParameterId, newParsedDocument,this);
             }
 
-            ParseValid = true;
             Update();
         }
 
