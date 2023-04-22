@@ -449,7 +449,7 @@ namespace pluginVerilog.Verilog.Expressions
             if(sb.Length <= 10)
             {
                 int value;
-                if(int.TryParse(sb.ToString(),out value))
+                if(int.TryParse(sb.ToString(),System.Globalization.NumberStyles.HexNumber, null, out value))
                 {
                     number.Value = value;
                     number.Constant = true;
