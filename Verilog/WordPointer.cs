@@ -132,12 +132,7 @@ namespace pluginVerilog.Verilog
                 ParsedDocument.Messages.Add(new Verilog.ParsedDocument.Message(Document.TextFile as Data.IVerilogRelatedFile, ">100 errors", Verilog.ParsedDocument.Message.MessageType.Error, 0, 0, 0, ParsedDocument.Project));
             }
 
-            {
-                for (int i = index; i < index + length; i++)
-                {
-                    Document.SetMarkAt(i, 0);
-                }
-            }
+            Document.SetMarkAt(index, length, 0);
             if (ParsedDocument is Verilog.ParsedDocument) (ParsedDocument as Verilog.ParsedDocument).ErrorCount++;
         }
 
@@ -164,10 +159,7 @@ namespace pluginVerilog.Verilog
                 ParsedDocument.Messages.Add(new Verilog.ParsedDocument.Message(Document.TextFile as Data.IVerilogRelatedFile, ">100 warnings", Verilog.ParsedDocument.Message.MessageType.Warning, 0, 0, 0, ParsedDocument.Project));
             }
 
-            for (int i = index; i < index + length; i++)
-            {
-                Document.SetMarkAt(i, 1);
-            }
+            Document.SetMarkAt(index, length, 1);
             if (ParsedDocument is Verilog.ParsedDocument) (ParsedDocument as Verilog.ParsedDocument).WarningCount++;
         }
 
@@ -195,10 +187,7 @@ namespace pluginVerilog.Verilog
                 ParsedDocument.Messages.Add(new Verilog.ParsedDocument.Message(Document.TextFile as Data.IVerilogRelatedFile, ">100 notices", Verilog.ParsedDocument.Message.MessageType.Notice, 0, 0, 0, ParsedDocument.Project));
             }
 
-            for (int i = index; i < index + length; i++)
-            {
-                Document.SetMarkAt(i, 2);
-            }
+            Document.SetMarkAt(index, length, 2);
             if (ParsedDocument is Verilog.ParsedDocument) (ParsedDocument as Verilog.ParsedDocument).WarningCount++;
         }
 
@@ -226,10 +215,7 @@ namespace pluginVerilog.Verilog
                 ParsedDocument.Messages.Add(new Verilog.ParsedDocument.Message(Document.TextFile as Data.IVerilogRelatedFile, ">100 notices", Verilog.ParsedDocument.Message.MessageType.Hint, 0, 0, 0, ParsedDocument.Project));
             }
 
-            for (int i = index; i < index + length; i++)
-            {
-                Document.SetMarkAt(i, 3);
-            }
+            Document.SetMarkAt(index, length, 3);
             if (ParsedDocument is Verilog.ParsedDocument) (ParsedDocument as Verilog.ParsedDocument).WarningCount++;
         }
 
