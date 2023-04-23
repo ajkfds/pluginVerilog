@@ -13,24 +13,59 @@ namespace pluginVerilog.Data
 
     public class VerilogHeaderFile : codeEditor.Data.TextFile, IVerilogRelatedFile
     {
+        //protected VerilogHeaderFile(string relativePath, IVerilogRelatedFile rootFile, codeEditor.Data.Project project) 
+        //{
+        //    Project = project;
+        //    RelativePath = relativePath;
+        //    if (relativePath.Contains('\\'))
+        //    {
+        //        Name = relativePath.Substring(relativePath.LastIndexOf('\\') + 1);
+        //    }
+        //    else
+        //    {
+        //        Name = relativePath;
+        //    }
 
-        public new static VerilogHeaderFile Create(string relativePath, codeEditor.Data.Project project)
+        //    id = relativePath;
+        //    RootFile = rootFile;
+        //}
+        // include
+        public VerilogHeaderFile (string relativePath, IVerilogRelatedFile rootFile, codeEditor.Data.Project project, string id)
         {
-            VerilogHeaderFile fileItem = new VerilogHeaderFile();
-            fileItem.Project = project;
-            fileItem.RelativePath = relativePath;
+            Project = project;
+            RelativePath = relativePath;
             if (relativePath.Contains('\\'))
             {
-                fileItem.Name = relativePath.Substring(relativePath.LastIndexOf('\\') + 1);
+                Name = relativePath.Substring(relativePath.LastIndexOf('\\') + 1);
             }
             else
             {
-                fileItem.Name = relativePath;
+                Name = relativePath;
             }
-
-            fileItem.id = relativePath;
-            return fileItem;
+            this.id = id;
+            this.RootFile = rootFile;
         }
+
+        //public new static VerilogHeaderFile Create(string relativePath, IVerilogRelatedFile rootFile, codeEditor.Data.Project project)
+        //{
+        //    VerilogHeaderFile fileItem = new VerilogHeaderFile();
+        //    fileItem.Project = project;
+        //    fileItem.RelativePath = relativePath;
+        //    if (relativePath.Contains('\\'))
+        //    {
+        //        fileItem.Name = relativePath.Substring(relativePath.LastIndexOf('\\') + 1);
+        //    }
+        //    else
+        //    {
+        //        fileItem.Name = relativePath;
+        //    }
+
+        //    fileItem.id = relativePath;
+        //    fileItem.RootFile = rootFile;
+        //    return fileItem;
+        //}
+
+        public IVerilogRelatedFile RootFile  { get; protected set; }
 
         private string id;
         public override string ID
@@ -108,22 +143,6 @@ namespace pluginVerilog.Data
             }
         }
 
-        public static VerilogHeaderFile CreateInstance(string relativePath, codeEditor.Data.Project project,string id)
-        {
-            VerilogHeaderFile fileItem = new VerilogHeaderFile();
-            fileItem.Project = project;
-            fileItem.RelativePath = relativePath;
-            if (relativePath.Contains('\\'))
-            {
-                fileItem.Name = relativePath.Substring(relativePath.LastIndexOf('\\') + 1);
-            }
-            else
-            {
-                fileItem.Name = relativePath;
-            }
-            fileItem.id = id;
-            return fileItem;
-        }
 
 
         public override ajkControls.CodeTextbox.CodeDrawStyle DrawStyle
@@ -187,9 +206,23 @@ namespace pluginVerilog.Data
             throw new NotImplementedException();
         }
 
-        public new List<PopupItem> GetPopupItems(int EditId, int index)
+        public override List<codeEditor.CodeEditor.PopupItem> GetPopupItems(ulong version, int index)
         {
-            throw new NotImplementedException();
+            if (VerilogParsedDocument == null) return null;
+            if (VerilogParsedDocument.Version != version) return null;
+
+            int headIndex, length;
+            CodeDocument.GetWord(index, out headIndex, out length);
+            string text = CodeDocument.CreateString(headIndex, length);
+            if (headIndex != 0 && CodeDocument.GetCharAt(headIndex - 1) == '.')
+            {
+                text = "." + text;
+            }
+            List<codeEditor.CodeEditor.PopupItem> popups = VerilogParsedDocument.GetPopupItems(index, text);
+            if (popups.Count != 0) return popups;
+
+            if (RootFile == null || RootFile.VerilogParsedDocument == null) return null;
+            return RootFile.VerilogParsedDocument.GetPopupItems(index, text);
         }
 
         public new List<AutocompleteItem> GetAutoCompleteItems(int index, out string cantidateText)

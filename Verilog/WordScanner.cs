@@ -263,18 +263,19 @@ namespace pluginVerilog.Verilog
             {
                 while (wordPointer.Eof && stock.Count != 0)
                 {
-                    bool error = false;
-                    if (wordPointer.ParsedDocument.ErrorCount != 0) error = true;
+                    returnHier();
+                    //bool error = false;
+                    //if (wordPointer.ParsedDocument.ErrorCount != 0) error = true;
 
-                    if (wordPointer.ParsedDocument == stock.Last().ParsedDocument)
-                    {
-                        error = false;
-                    }
+                    //if (wordPointer.ParsedDocument == stock.Last().ParsedDocument)
+                    //{
+                    //    error = false;
+                    //}
 
-                    wordPointer = stock.Last();
-                    stock.Remove(stock.Last());
-                    if (error) wordPointer.AddError("include errors");
-                    wordPointer.MoveNext();
+                    //wordPointer = stock.Last();
+                    //stock.Remove(stock.Last());
+                    //if (error) wordPointer.AddError("include errors");
+                    //wordPointer.MoveNext();
                 }
                 recheckWord();
             }
@@ -316,22 +317,42 @@ namespace pluginVerilog.Verilog
                 }
                 while (wordPointer.Eof && stock.Count != 0)
                 {
-                    bool error = false;
-                    if (wordPointer.ParsedDocument.Messages.Count != 0) error = true;
+                    returnHier();
+                    //bool error = false;
+                    //if (wordPointer.ParsedDocument.Messages.Count != 0) error = true;
 
-                    if (wordPointer.ParsedDocument == stock.Last().ParsedDocument)
-                    {
-                        error = false;
-                    }
+                    //if (wordPointer.ParsedDocument == stock.Last().ParsedDocument)
+                    //{
+                    //    error = false;
+                    //}
 
-                    //wordPointer.Dispose(); keep document & parsedData
-                    wordPointer = stock.Last();
-                    stock.Remove(stock.Last());
-                    if (error) wordPointer.AddError("include errors");
-                    wordPointer.MoveNext();
+                    //wordPointer = stock.Last();
+                    //stock.Remove(stock.Last());
+                    //if (error) wordPointer.AddError("include errors");
+                    //wordPointer.MoveNext();
                 }
             }
 
+        }
+
+        private void returnHier()
+        {
+            bool error = false;
+            if (wordPointer.ParsedDocument.Messages.Count != 0)
+            {
+                error = true;
+            }
+
+            if (wordPointer.ParsedDocument == stock.Last().ParsedDocument)
+            {
+                error = false;
+            }
+
+            //wordPointer.Dispose(); keep document & parsedData
+            wordPointer = stock.Last();
+            stock.Remove(stock.Last());
+            if (error) wordPointer.AddError("include errors");
+            wordPointer.MoveNext();
         }
 
         public bool Eof
@@ -368,34 +389,23 @@ namespace pluginVerilog.Verilog
         {
             get
             {
+                // keep current status
                 WordPointer _wp = wordPointer.Clone();
                 int _nonGeneratedCount = nonGeneratedCount;
                 bool _prototype = prototype;
                 List<WordPointer> _stock = new List<WordPointer>();
+
                 foreach (var wp in stock)
                 {
                     _stock.Add(wp.Clone());
                 }
 
-                //                WordPointer temp = wordPointer.Clone();
 
                 if (wordPointer.Eof)
                 {
                     while (wordPointer.Eof && stock.Count != 0)
                     {
-                        bool error = false;
-                        if (wordPointer.ParsedDocument.Messages.Count != 0) error = true;
-
-                        if (wordPointer.ParsedDocument == stock.Last().ParsedDocument)
-                        {
-                            error = false;
-                        }
-
-                        wordPointer.Dispose();
-                        wordPointer = stock.Last();
-                        stock.Remove(stock.Last());
-                        if (error) wordPointer.AddError("include errors");
-                        wordPointer.MoveNext();
+                        returnHier();
                     }
                 }
                 else
@@ -935,6 +945,7 @@ namespace pluginVerilog.Verilog
 
             WordPointer newPointer = new WordPointer(codeDocument, wordPointer.ParsedDocument);
             stock.Add(wordPointer);
+
             wordPointer = newPointer;
 
             while (true)
@@ -969,9 +980,19 @@ namespace pluginVerilog.Verilog
             //{
             //            Data.IVerilogRelatedFile file = wordPointer.ParsedDocument.File;
 
-            string id = wordPointer.ParsedDocument.File.ID + ","+RootParsedDocument.IncludeFiles.Count.ToString();
+            string id = wordPointer.ParsedDocument.File.ID + ","+ relativeFilePath +"_"+ RootParsedDocument.IncludeFiles.Count.ToString();
 
-            item = Data.VerilogHeaderFile.CreateInstance(relativeFilePath, wordPointer.ParsedDocument.Project,id);
+            Data.IVerilogRelatedFile rootFile;
+            if (stock.Count == 0)
+            {
+                rootFile = wordPointer.VerilogFile;
+            }
+            else
+            {
+                rootFile = stock[0].VerilogFile;
+            }
+
+            item = new Data.VerilogHeaderFile(relativeFilePath,rootFile , wordPointer.ParsedDocument.Project,id);
             item.Parent = RootParsedDocument.File as codeEditor.Data.Item;
             //}
             codeEditor.Data.ITextFile textFile = item as codeEditor.Data.ITextFile;
