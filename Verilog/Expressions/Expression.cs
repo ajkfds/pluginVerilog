@@ -149,9 +149,9 @@ namespace pluginVerilog.Verilog.Expressions
                 {
                     if (primarys.Count < 2) return null;
                     BinaryOperator op = item as BinaryOperator;
-                    Primary primary = op.Operate(primarys[0], primarys[1]);
-                    primarys.RemoveAt(0);
-                    primarys.RemoveAt(0);
+                    Primary primary = op.Operate(primarys[primarys.Count - 2], primarys[primarys.Count-1]);
+                    primarys.RemoveAt(primarys.Count - 1);
+                    primarys.RemoveAt(primarys.Count - 1);
                     primarys.Add(primary);
                 }
                 else if (item is UnaryOperator)
@@ -166,10 +166,10 @@ namespace pluginVerilog.Verilog.Expressions
                 {
                     if (primarys.Count < 3) return null;
                     TenaryOperator op = item as TenaryOperator;
-                    Primary primary = op.Operate(primarys[0], primarys[1], primarys[2]);
-                    primarys.RemoveAt(0);
-                    primarys.RemoveAt(0);
-                    primarys.RemoveAt(0);
+                    Primary primary = op.Operate(primarys[primarys.Count - 3], primarys[primarys.Count - 2], primarys[primarys.Count - 1]);
+                    primarys.RemoveAt(primarys.Count - 1);
+                    primarys.RemoveAt(primarys.Count - 1);
+                    primarys.RemoveAt(primarys.Count - 1);
                     primarys.Add(primary);
                 }
                 else
@@ -375,17 +375,13 @@ namespace pluginVerilog.Verilog.Expressions
 
         private static void addOperator(Operator newOperator,List<Primary> expressioItems, List<Operator> operatorStock)
         {
-            while (true)
+            while (operatorStock.Count != 0 && operatorStock.Last().Precedence <= newOperator.Precedence)
             {
-                if (operatorStock.Count == 0 || operatorStock.Last().Precedence >= newOperator.Precedence)
-                {
-                    operatorStock.Add(newOperator);
-                    return;
-                }
                 Operator popOperator = operatorStock.Last();
+                operatorStock.RemoveAt(operatorStock.Count - 1);
                 expressioItems.Add(popOperator);
-                operatorStock.RemoveAt(operatorStock.Count-1);
             }
+            operatorStock.Add(newOperator);
         }
 
     }
