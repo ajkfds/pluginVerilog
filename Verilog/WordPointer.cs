@@ -308,6 +308,7 @@ namespace pluginVerilog.Verilog
         {
             get
             {
+                if (index + length > Document.Length) return "";
                 return Document.CreateString(index, length);
             }
         }
