@@ -78,7 +78,7 @@ namespace pluginVerilog.NavigatePanel
 
             codeEditor.Controller.CodeEditor.SetTextFile(TextFile);
 
-            if (!TextFile.ParseValid)
+            if (!TextFile.ParseValid | TextFile.ReparseRequested)
             {
                 codeEditor.Tools.ParseHierarchyForm pform = new codeEditor.Tools.ParseHierarchyForm(this);
                 codeEditor.Controller.ShowDialogForm(pform);
@@ -86,6 +86,7 @@ namespace pluginVerilog.NavigatePanel
 
             if (NodeSelected != null) NodeSelected();
         }
+
 
         public override void Update()
         {

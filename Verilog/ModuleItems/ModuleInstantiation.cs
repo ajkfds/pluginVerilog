@@ -194,6 +194,7 @@ namespace pluginVerilog.Verilog.ModuleItems
             {
                 instancedModule = word.ProjectProperty.GetInstancedModule(moduleInstantiation);
             }
+            if (instancedModule == null) module.Module.ReperseRequested = true;
 
             while (!word.Eof)
             {

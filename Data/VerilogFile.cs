@@ -101,6 +101,10 @@ namespace pluginVerilog.Data
                 }
             }
 
+            if (ParsedDocument is Verilog.ParsedDocument)
+            {
+                ReparseRequested = (ParsedDocument as Verilog.ParsedDocument).ReparseRequested;
+            }
             Update();
         }
         public override void LoadFormFile()

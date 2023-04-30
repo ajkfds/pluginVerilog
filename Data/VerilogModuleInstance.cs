@@ -171,14 +171,14 @@ namespace pluginVerilog.Data
                 parsedDocument = value;
             }
         }
-        public void Save()
+        public override void Save()
         {
             if (CodeDocument == null) return;
 
             SourceTextFile.Save();
         }
 
-        public DateTime? LoadedFileLastWriteTime
+        public override DateTime? LoadedFileLastWriteTime
         {
             get
             {
@@ -196,14 +196,15 @@ namespace pluginVerilog.Data
 
         public override void AcceptParsedDocument(ParsedDocument newParsedDocument)
         {
-            parsedDocument = newParsedDocument as Verilog.ParsedDocument;
-
+            Verilog.ParsedDocument vParsedDocument = newParsedDocument as Verilog.ParsedDocument;
+            parsedDocument = vParsedDocument;
+            
             {
                 Data.VerilogFile source = SourceVerilogFile;
                 if (source == null) return;
                 source.RegisterInstanceParsedDocument(ParameterId, newParsedDocument,this);
             }
-
+            ReparseRequested = vParsedDocument.ReparseRequested;
             Update();
         }
 

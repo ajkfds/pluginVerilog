@@ -106,7 +106,7 @@ namespace pluginVerilog.NavigatePanel
 
             codeEditor.Controller.CodeEditor.SetTextFile(ModuleInstance);
 
-            if (!ModuleInstance.ParseValid)
+            if (!ModuleInstance.ParseValid || ModuleInstance.ReparseRequested)
             {
                 codeEditor.Tools.ParseHierarchyForm pform = new codeEditor.Tools.ParseHierarchyForm(this);
                 codeEditor.Controller.ShowDialogForm(pform);
