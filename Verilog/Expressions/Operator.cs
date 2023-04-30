@@ -555,7 +555,17 @@ namespace pluginVerilog.Verilog.Expressions
 
                 // bit-wise binary operators
                 case "&":
+                    {
+                        ulong lng1 = (ulong)value1;
+                        ulong lng2 = (ulong)value2;
+                        return (lng1 & lng2);
+                    }
                 case "|":
+                    {
+                        ulong lng1 = (ulong)value1;
+                        ulong lng2 = (ulong)value2;
+                        return (lng1 | lng2);
+                    }
                 case "^":
                 case "^~":
                 case "~^":
