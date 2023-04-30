@@ -32,6 +32,8 @@ namespace pluginVerilog.Verilog
         public Dictionary<string, Macro> Macros = new Dictionary<string, Macro>();
 
 
+        public bool ReparseRequested = false;
+
         public void ReloadIncludeFiles()
         {
             foreach(var includeFile in IncludeFiles.Values)
@@ -339,43 +341,6 @@ namespace pluginVerilog.Verilog
                 items = new List<codeEditor.CodeEditor.AutocompleteItem>();
             }
 
-            //if(words.Count < 1)
-            //{ // non hier word
-            //    if (cantidateWord.StartsWith("$"))
-            //    {
-            //        items = new List<codeEditor.CodeEditor.AutocompleteItem>();
-            //        foreach(string key in ProjectProperty.SystemFunctions.Keys)
-            //        {
-            //            items.Add(
-            //                new codeEditor.CodeEditor.AutocompleteItem(key, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword))
-            //            );
-            //        }
-            //        foreach (string key in ProjectProperty.SystemTaskParsers.Keys)
-            //        {
-            //            items.Add(
-            //                new codeEditor.CodeEditor.AutocompleteItem(key, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword))
-            //            );
-            //        }
-            //    }
-            //    else
-            //    {
-            //        items = verilogKeywords.ToList();
-            //    }
-
-            //    List<string> moduleNames = ProjectProperty.GetModuleNameList();
-            //    foreach (string moduleName in moduleNames)
-            //    {
-            //        items.Add(
-            //            new AutoComplete.ModuleInstanceAutocompleteItem(moduleName, CodeDrawStyle.ColorIndex(CodeDrawStyle.ColorType.Keyword), Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword), Project)
-            //        );
-            //    }
-            //}
-            //else
-            //{ // hire word
-            //    cantidateWord = words.LastOrDefault();
-            //    items = new List<codeEditor.CodeEditor.AutocompleteItem>();
-            //    if(words.Count>2) words.RemoveAt(words.Count - 1);
-            //}
 
             // parse macro in hier words
             for (int i = 0; i < hierWords.Count;i++)
