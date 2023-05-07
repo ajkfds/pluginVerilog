@@ -9,7 +9,7 @@ namespace pluginVerilog.NavigatePanel
 {
     public class VerilogHeaderInstanceNode : codeEditor.NavigatePanel.FileNode, IVerilogNavigateNode
     {
-        public VerilogHeaderInstanceNode(Data.VerilogHeaderFile vhFile, codeEditor.Data.Project project) : base(vhFile)
+        public VerilogHeaderInstanceNode(Data.VerilogHeaderInstance vhFile, codeEditor.Data.Project project) : base(vhFile)
         {
 
         }

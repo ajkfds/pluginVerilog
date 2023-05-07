@@ -970,7 +970,6 @@ namespace pluginVerilog.Verilog
 
         private void diveIntoIncludeFile(string relativeFilePath)
         {
-            codeEditor.Data.Item item;
             //if (wordPointer.ParsedDocument.Project.IsRegistered(id))
             //{
             //    item = wordPointer.ParsedDocument.Project.GetRegisterdItem(id);
@@ -992,29 +991,28 @@ namespace pluginVerilog.Verilog
                 rootFile = stock[0].VerilogFile;
             }
 
-            item = new Data.VerilogHeaderFile(relativeFilePath,rootFile , wordPointer.ParsedDocument.Project,id);
-            item.Parent = RootParsedDocument.File as codeEditor.Data.Item;
-            //}
-            codeEditor.Data.ITextFile textFile = item as codeEditor.Data.ITextFile;
-            if(textFile == null ||! (textFile is Data.VerilogHeaderFile))
+            Data.VerilogHeaderInstance vhInstance = Data.VerilogHeaderInstance.Create(relativeFilePath,rootFile , wordPointer.ParsedDocument.Project,id);
+            if(vhInstance == null)
             {
-                wordPointer.AddError("illegal filetype");
+                wordPointer.AddError("illegal file");
                 return;
             }
+            vhInstance.Parent = RootParsedDocument.File as codeEditor.Data.Item;
 
-            Data.VerilogHeaderFile vhFile = textFile as Data.VerilogHeaderFile;
-            if(!RootParsedDocument.IncludeFiles.ContainsKey(vhFile.Name))
+            if(!RootParsedDocument.IncludeFiles.ContainsKey(vhInstance.Name))
             {
-                RootParsedDocument.IncludeFiles.Add(vhFile.Name,vhFile);
+                RootParsedDocument.IncludeFiles.Add(vhInstance.Name, vhInstance);
             }
             else
             {
-                vhFile = RootParsedDocument.IncludeFiles[vhFile.Name];
+                vhInstance = RootParsedDocument.IncludeFiles[vhInstance.Name];
             }
-            vhFile.ParsedDocument = new Verilog.ParsedDocument(vhFile,RootParsedDocument.ParseMode);// editid =, -1);
+
+            // assign new parsed document
+            vhInstance.ParsedDocument = new Verilog.ParsedDocument(vhInstance, RootParsedDocument.ParseMode);// editid =, -1);
 
 
-            WordPointer newPointer = new WordPointer(vhFile.CodeDocument as CodeEditor.CodeDocument, vhFile.ParsedDocument as Verilog.ParsedDocument);
+            WordPointer newPointer = new WordPointer(vhInstance.CodeDocument as CodeEditor.CodeDocument, vhInstance.ParsedDocument as Verilog.ParsedDocument);
             stock.Add(wordPointer);
 
             wordPointer = newPointer;

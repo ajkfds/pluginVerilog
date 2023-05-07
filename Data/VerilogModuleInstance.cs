@@ -249,7 +249,7 @@ namespace pluginVerilog.Data
         }
 
 
-
+        // update sub-items from ParsedDocument
         public override void Update()
         {
             lock (Items)
@@ -266,11 +266,22 @@ namespace pluginVerilog.Data
                 Dictionary<string, Item> newItems = new Dictionary<string, Item>();
 
                 // include file
-                foreach (VerilogHeaderFile vhFile in VerilogParsedDocument.IncludeFiles.Values)
+                Dictionary<string, VerilogHeaderInstance> prevIncludes = new Dictionary<string, VerilogHeaderInstance>();
+                foreach (Item item in items.Values)
                 {
-                    if (items.ContainsValue(vhFile))
+                    if (item is VerilogHeaderInstance)
                     {
-                        targetItems.Add(vhFile);
+                        VerilogHeaderInstance vfile = item as VerilogHeaderInstance;
+                        prevIncludes.Add(vfile.ID, vfile);
+                    }
+                }
+
+                // include file
+                foreach (VerilogHeaderInstance vhFile in VerilogParsedDocument.IncludeFiles.Values)
+                {
+                    if (prevIncludes.ContainsKey(vhFile.ID)){
+                        prevIncludes[vhFile.ID].ReplaceBy(vhFile);
+                        targetItems.Add(prevIncludes[vhFile.ID]);
                     }
                     else
                     {
@@ -285,6 +296,7 @@ namespace pluginVerilog.Data
                         }
                         newItems.Add(keyname, vhFile);
                         targetItems.Add(vhFile);
+                        vhFile.Parent = this;
                     }
                 }
 
@@ -362,6 +374,9 @@ namespace pluginVerilog.Data
             }
         }
 
+        // auto complete
+
+        #region auto complete
         public override void AfterKeyDown(System.Windows.Forms.KeyEventArgs e)
         {
             if (VerilogParsedDocument == null) return;
@@ -553,6 +568,8 @@ namespace pluginVerilog.Data
             if (CodeDocument.GetCharAt(prevInex) != 'd') return false;
             return true;
         }
+
+        #endregion
 
     }
 }

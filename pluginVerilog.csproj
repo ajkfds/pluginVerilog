@@ -50,6 +50,7 @@
     <Compile Include="Data\InstanceTextFile.cs" />
     <Compile Include="Data\IVerilogRelatedFile.cs" />
     <Compile Include="Data\SystemVerilogFile.cs" />
+    <Compile Include="Data\VerilogHeaderInstance.cs" />
     <Compile Include="Data\VerilogModuleInstance.cs" />
     <Compile Include="FileTypes\SystemVerilogFile.cs" />
     <Compile Include="NavigatePanel\IVerilogNavigateNode.cs" />
