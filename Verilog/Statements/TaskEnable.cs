@@ -48,7 +48,9 @@ namespace pluginVerilog.Verilog.Statements
                     else if (portCount == task.PortsList.Count)
                     {
                         word.AddError("too many expressions");
-                        expression = Expressions.Expression.ParseCreate(word, nameSpace);
+                        word.SkipToKeyword(";");
+                        return null;
+//                        expression = Expressions.Expression.ParseCreate(word, nameSpace);
                     }
                     else if (portCount > task.PortsList.Count)
                     {
@@ -67,7 +69,12 @@ namespace pluginVerilog.Verilog.Statements
                         }
                     }
 
-                    if (expression == null) word.AddError("missed expression");
+                    if (expression == null)
+                    {
+                        word.AddError("missed expression");
+                        word.SkipToKeyword(";");
+                        return null;
+                    }
                     if (word.Text == ")")
                     {
                         break;

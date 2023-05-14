@@ -772,6 +772,7 @@ namespace pluginVerilog.Verilog
             if(wordPointer.WordType != WordPointer.WordTypeEnum.String)
             {
                 wordPointer.AddError("\" expected");
+                wordPointer.MoveNextUntilEol();
                 return;
             }
             string filePath = wordPointer.Text;

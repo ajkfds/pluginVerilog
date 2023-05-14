@@ -48,6 +48,7 @@ namespace pluginVerilog.Verilog.Expressions
         {
             MsbExpression = expression1;
             LsbExpression = expression2;
+            if (LsbExpression == null || MsbExpression == null) return;
             if(MsbExpression.Constant && LsbExpression.Constant && MsbExpression.Value != null && LsbExpression.Value != null)
             {
                 BitWidth = (int)MsbExpression.Value - (int)LsbExpression.Value + 1;
@@ -57,6 +58,7 @@ namespace pluginVerilog.Verilog.Expressions
         public Expression LsbExpression;
         public override void AppendLabel(ajkControls.ColorLabel label)
         {
+            if (LsbExpression == null || MsbExpression == null) return;
             label.AppendText("[");
             label.AppendLabel(MsbExpression.GetLabel());
             label.AppendText(":");
@@ -81,6 +83,7 @@ namespace pluginVerilog.Verilog.Expressions
 
         public override void AppendLabel(ajkControls.ColorLabel label)
         {
+            if (BaseExpression == null || WidthExpression == null) return;
             label.AppendText("[");
             label.AppendLabel(BaseExpression.GetLabel());
             label.AppendText("+:");
@@ -105,6 +108,7 @@ namespace pluginVerilog.Verilog.Expressions
 
         public override void AppendLabel(ajkControls.ColorLabel label)
         {
+            if (BaseExpression == null || WidthExpression == null) return;
             label.AppendText("[");
             label.AppendLabel(BaseExpression.GetLabel());
             label.AppendText("-:");
