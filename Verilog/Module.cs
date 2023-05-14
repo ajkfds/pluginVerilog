@@ -225,7 +225,8 @@ namespace pluginVerilog.Verilog
                         {
                             if(module.Parameters[vkp.Key].DefinitionRefrecnce != null)
                             {
-                                module.Parameters[vkp.Key].DefinitionRefrecnce.AddNotice("override " + vkp.Value.Value.ToString());
+//                                module.Parameters[vkp.Key].DefinitionRefrecnce.AddNotice("override " + vkp.Value.Value.ToString());
+                                module.Parameters[vkp.Key].DefinitionRefrecnce.AddHint("override " + vkp.Value.Value.ToString());
                             }
 
                             module.Parameters.Remove(vkp.Key);

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using codeEditor.CodeEditor;
 using codeEditor.Data;
 
-namespace pluginVerilog.Data
+namespace pluginVerilog.Data.VerilogCommon
 {
-    public static class VerilogFileUpdater
+    public static class Updater
     {
         public static void Update(IVerilogRelatedFile rootItem)
         {

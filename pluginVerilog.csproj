@@ -50,8 +50,8 @@
     <Compile Include="Data\InstanceTextFile.cs" />
     <Compile Include="Data\IVerilogRelatedFile.cs" />
     <Compile Include="Data\SystemVerilogFile.cs" />
-    <Compile Include="Data\Common\VerilogAutoCompleteHandler.cs" />
-    <Compile Include="Data\Common\VerilogFileUpdater.cs" />
+    <Compile Include="Data\VerilogCommon\AutoCompleteHandler.cs" />
+    <Compile Include="Data\VerilogCommon\Updater.cs" />
     <Compile Include="Data\VerilogHeaderInstance.cs" />
     <Compile Include="Data\VerilogModuleInstance.cs" />
     <Compile Include="FileTypes\SystemVerilogFile.cs" />

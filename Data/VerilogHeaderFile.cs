@@ -28,26 +28,8 @@ namespace pluginVerilog.Data
             }
             return fileItem;
         }
-        // include
-        //public VerilogHeaderFile (string relativePath, IVerilogRelatedFile rootFile, codeEditor.Data.Project project, string id)
-        //{
-        //    Project = project;
-        //    RelativePath = relativePath;
-        //    if (relativePath.Contains('\\'))
-        //    {
-        //        Name = relativePath.Substring(relativePath.LastIndexOf('\\') + 1);
-        //    }
-        //    else
-        //    {
-        //        Name = relativePath;
-        //    }
-        //    this.id = id;
-        //    this.RootFile = rootFile;
-        //}
 
-        //public IVerilogRelatedFile RootFile  { get; protected set; }
-
-        private string id;
+        private string id = null;
         public override string ID
         {
             get
@@ -165,6 +147,8 @@ namespace pluginVerilog.Data
             // Use Parent File Parser for Edit Parse
             return parentFile.CreateDocumentParser(parseMode);
         }
+
+
         public new void AfterKeyPressed(KeyPressEventArgs e)
         {
             throw new NotImplementedException();
@@ -188,21 +172,6 @@ namespace pluginVerilog.Data
         public override List<codeEditor.CodeEditor.PopupItem> GetPopupItems(ulong version, int index)
         {
             return null;
-            ////if (VerilogParsedDocument == null) return null;
-            ////if (VerilogParsedDocument.Version != version) return null;
-
-            ////int headIndex, length;
-            ////CodeDocument.GetWord(index, out headIndex, out length);
-            ////string text = CodeDocument.CreateString(headIndex, length);
-            ////if (headIndex != 0 && CodeDocument.GetCharAt(headIndex - 1) == '.')
-            ////{
-            ////    text = "." + text;
-            ////}
-            ////List<codeEditor.CodeEditor.PopupItem> popups = VerilogParsedDocument.GetPopupItems(index, text);
-            ////if (popups.Count != 0) return popups;
-
-            ////if (RootFile == null || RootFile.VerilogParsedDocument == null) return null;
-            ////return RootFile.VerilogParsedDocument.GetPopupItems(index, text);
         }
 
         public new List<AutocompleteItem> GetAutoCompleteItems(int index, out string cantidateText)

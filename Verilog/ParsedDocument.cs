@@ -76,6 +76,8 @@ namespace pluginVerilog.Verilog
 
         public int ErrorCount = 0;
         public int WarningCount = 0;
+        public int HintCount = 0;
+        public int NoticeCount = 0;
 
 
         public List<codeEditor.CodeEditor.PopupItem> GetPopupItems(int index,string text)

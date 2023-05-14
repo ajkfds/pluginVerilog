@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using codeEditor.CodeEditor;
 using codeEditor.Data;
 
-namespace pluginVerilog.Data
+namespace pluginVerilog.Data.VerilogCommon
 {
-    public static class VerilogAutoCompleteHandler
+    public static class AutoComplete
     {
         public static void AfterKeyDown(IVerilogRelatedFile item, System.Windows.Forms.KeyEventArgs e)
         {
@@ -38,15 +38,16 @@ namespace pluginVerilog.Data
         {
         }
 
-        public static List<codeEditor.CodeEditor.PopupItem> GetPopupItems(IVerilogRelatedFile item, ulong version, int index)
+
+        public static List<codeEditor.CodeEditor.PopupItem> GetPopupItems(IVerilogRelatedFile item, Verilog.ParsedDocument parsedDocument, ulong version, int index)
         {
-            if (item.VerilogParsedDocument == null) return null;
-            if (item.VerilogParsedDocument.Version != version) return null;
+            if (parsedDocument == null) return null;
+            if (parsedDocument.Version != version) return null;
 
             int headIndex, length;
             item.CodeDocument.GetWord(index, out headIndex, out length);
             string text = item.CodeDocument.CreateString(headIndex, length);
-            return item.VerilogParsedDocument.GetPopupItems(index, text);
+            return parsedDocument.GetPopupItems(index, text);
         }
 
 
@@ -61,7 +62,7 @@ namespace pluginVerilog.Data
             return toolItems;
         }
 
-        public static List<codeEditor.CodeEditor.AutocompleteItem> GetAutoCompleteItems(IVerilogRelatedFile item, int index, out string cantidateWord)
+        public static List<codeEditor.CodeEditor.AutocompleteItem> GetAutoCompleteItems(IVerilogRelatedFile item,Verilog.ParsedDocument parsedDocument, int index, out string cantidateWord)
         {
             cantidateWord = null;
 
@@ -84,7 +85,7 @@ namespace pluginVerilog.Data
             }
             if (cantidateWord == null) cantidateWord = "";
 
-            List<codeEditor.CodeEditor.AutocompleteItem> items = item.VerilogParsedDocument.GetAutoCompleteItems(words, lineStartIndex, line, (CodeEditor.CodeDocument)item.CodeDocument, cantidateWord);
+            List<codeEditor.CodeEditor.AutocompleteItem> items = parsedDocument.GetAutoCompleteItems(words, lineStartIndex, line, (CodeEditor.CodeDocument)item.CodeDocument, cantidateWord);
 
             return items;
         }
