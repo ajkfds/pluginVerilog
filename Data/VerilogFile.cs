@@ -276,159 +276,166 @@ namespace pluginVerilog.Data
 
         public override void Update()
         {
-            lock (Items)
-            {
-                if (VerilogParsedDocument == null)
-                {
-                    // dispose all subnodes
-                    foreach (Item item in items.Values) item.Dispose();
-                    items.Clear();
-                    return;
-                }
+            VerilogFileUpdater.Update(this);
+            //lock (Items)
+            //{
+            //    if (VerilogParsedDocument == null)
+            //    {
+            //        // dispose all subnodes
+            //        foreach (Item item in items.Values) item.Dispose();
+            //        items.Clear();
+            //        return;
+            //    }
 
-                List<Item> targetItems = new List<Item>();
-                Dictionary<string, Item> newItems = new Dictionary<string, Item>();
+            //    List<Item> targetItems = new List<Item>();
+            //    Dictionary<string, Item> newItems = new Dictionary<string, Item>();
 
-                // include file
-                foreach (VerilogHeaderInstance vhFile in VerilogParsedDocument.IncludeFiles.Values)
-                {
-                    if (items.ContainsValue(vhFile))
-                    {
-                        targetItems.Add(vhFile);
-                    }
-                    else
-                    {
-                        string keyname = vhFile.Name;
-                        {
-                            int i = 0;
-                            while (items.ContainsKey(keyname + "_" + i.ToString()))
-                            {
-                                i++;
-                            }
-                            keyname = keyname + "_" + i.ToString();
-                        }
-                        newItems.Add(keyname, vhFile);
-                        targetItems.Add(vhFile);
-                    }
-                }
+            //    // include file
+            //    foreach (VerilogHeaderInstance vhFile in VerilogParsedDocument.IncludeFiles.Values)
+            //    {
+            //        if (items.ContainsValue(vhFile))
+            //        {
+            //            targetItems.Add(vhFile);
+            //        }
+            //        else
+            //        {
+            //            string keyname = vhFile.Name;
+            //            {
+            //                int i = 0;
+            //                while (items.ContainsKey(keyname + "_" + i.ToString()))
+            //                {
+            //                    i++;
+            //                }
+            //                keyname = keyname + "_" + i.ToString();
+            //            }
+            //            newItems.Add(keyname, vhFile);
+            //            targetItems.Add(vhFile);
+            //        }
+            //    }
 
-                // module instances
-                foreach (Verilog.Module module in VerilogParsedDocument.Modules.Values)
-                {
-                    foreach (Verilog.ModuleItems.ModuleInstantiation moduleInstantiation in module.ModuleInstantiations.Values)
-                    {
-                        if (items.ContainsKey(moduleInstantiation.Name))
-                        { // already exist item
-                            Item oldItem = items[moduleInstantiation.Name];
-                            if (oldItem is Data.VerilogModuleInstance && (oldItem as Data.VerilogModuleInstance).ReplaceBy(moduleInstantiation, Project))
-                            { // sucessfully replaced
-                                targetItems.Add(oldItem);
-                            }
-                            else
-                            { // re-generate (same module instance name, but different file or module name or parameter
-                                Item item = Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
-                                if (item != null & !newItems.ContainsKey(moduleInstantiation.Name))
-                                {
-                                    item.Parent = this;
-                                    newItems.Add(moduleInstantiation.Name, item);
-                                    targetItems.Add(item);
-                                    if (moduleInstantiation.ParameterOverrides.Count != 0)
-                                    {
-                                        Data.VerilogModuleInstance moduleInstance = item as Data.VerilogModuleInstance;
-                                        if (moduleInstance.ParsedDocument == null)
-                                        { // background reparse if not parsed
-                                            Project.AddReparseTarget(item);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        { // new item
-                            Item item = Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
-                            if (item != null & !newItems.ContainsKey(moduleInstantiation.Name))
-                            {
-                                item.Parent = this;
-                                newItems.Add(moduleInstantiation.Name, item);
-                                targetItems.Add(item);
-                                if (moduleInstantiation.ParameterOverrides.Count != 0)
-                                {
-                                    Data.VerilogModuleInstance moduleInstance = item as Data.VerilogModuleInstance;
+            //    // module instances
+            //    foreach (Verilog.Module module in VerilogParsedDocument.Modules.Values)
+            //    {
+            //        foreach (Verilog.ModuleItems.ModuleInstantiation moduleInstantiation in module.ModuleInstantiations.Values)
+            //        {
+            //            if (items.ContainsKey(moduleInstantiation.Name))
+            //            { // already exist item
+            //                Item oldItem = items[moduleInstantiation.Name];
+            //                if (oldItem is Data.VerilogModuleInstance && (oldItem as Data.VerilogModuleInstance).ReplaceBy(moduleInstantiation, Project))
+            //                { // sucessfully replaced
+            //                    targetItems.Add(oldItem);
+            //                }
+            //                else
+            //                { // re-generate (same module instance name, but different file or module name or parameter
+            //                    Item item = Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
+            //                    if (item != null & !newItems.ContainsKey(moduleInstantiation.Name))
+            //                    {
+            //                        item.Parent = this;
+            //                        newItems.Add(moduleInstantiation.Name, item);
+            //                        targetItems.Add(item);
+            //                        if (moduleInstantiation.ParameterOverrides.Count != 0)
+            //                        {
+            //                            Data.VerilogModuleInstance moduleInstance = item as Data.VerilogModuleInstance;
+            //                            if (moduleInstance.ParsedDocument == null)
+            //                            { // background reparse if not parsed
+            //                                Project.AddReparseTarget(item);
+            //                            }
+            //                        }
+            //                    }
+            //                }
+            //            }
+            //            else
+            //            { // new item
+            //                Item item = Data.VerilogModuleInstance.Create(moduleInstantiation, Project);
+            //                if (item != null & !newItems.ContainsKey(moduleInstantiation.Name))
+            //                {
+            //                    item.Parent = this;
+            //                    newItems.Add(moduleInstantiation.Name, item);
+            //                    targetItems.Add(item);
+            //                    if (moduleInstantiation.ParameterOverrides.Count != 0)
+            //                    {
+            //                        Data.VerilogModuleInstance moduleInstance = item as Data.VerilogModuleInstance;
 
-                                    if (moduleInstance.ParsedDocument == null)
-                                    {   // background reparse
-                                        Project.AddReparseTarget(item);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+            //                        if (moduleInstance.ParsedDocument == null)
+            //                        {   // background reparse
+            //                            Project.AddReparseTarget(item);
+            //                        }
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    }
 
-                { // remove unused items
-                    List<Item> removeItems = new List<Item>();
-                    foreach (codeEditor.Data.Item item in items.Values)
-                    {
-                        if (!targetItems.Contains(item)) removeItems.Add(item);
-                    }
+            //    { // remove unused items
+            //        List<Item> removeItems = new List<Item>();
+            //        foreach (codeEditor.Data.Item item in items.Values)
+            //        {
+            //            if (!targetItems.Contains(item)) removeItems.Add(item);
+            //        }
 
-                    foreach (Item item in removeItems)
-                    {
-                        items.Remove(item.Name);
-                    }
-                }
+            //        foreach (Item item in removeItems)
+            //        {
+            //            items.Remove(item.Name);
+            //        }
+            //    }
 
-                items.Clear();
-                foreach (Item item in targetItems)
-                {
-                    items.Add(item.Name, item);
-                }
+            //    items.Clear();
+            //    foreach (Item item in targetItems)
+            //    {
+            //        items.Add(item.Name, item);
+            //    }
 
-            }
+            //}
         }
 
 
         public override void AfterKeyDown(System.Windows.Forms.KeyEventArgs e)
         {
-            if (VerilogParsedDocument == null) return;
-            switch (e.KeyCode)
-            {
-                case System.Windows.Forms.Keys.Return:
-                    applyAutoInput();
-                    break;
-                case System.Windows.Forms.Keys.Space:
-                    break;
-                default:
-                    break;
-            }
+            VerilogAutoCompleteHandler.AfterKeyDown(this, e);
+            //if (VerilogParsedDocument == null) return;
+            //switch (e.KeyCode)
+            //{
+            //    case System.Windows.Forms.Keys.Return:
+            //        applyAutoInput();
+            //        break;
+            //    case System.Windows.Forms.Keys.Space:
+            //        break;
+            //    default:
+            //        break;
+            //}
         }
 
         public override void AfterKeyPressed(System.Windows.Forms.KeyPressEventArgs e)
         {
-            if (VerilogParsedDocument == null) return;
+            VerilogAutoCompleteHandler.AfterKeyPressed(this, e);
+//            if (VerilogParsedDocument == null) return;
         }
 
         public override void BeforeKeyPressed(System.Windows.Forms.KeyPressEventArgs e)
         {
+            VerilogAutoCompleteHandler.BeforeKeyPressed(this, e);
         }
 
         public override void BeforeKeyDown(System.Windows.Forms.KeyEventArgs e)
         {
+            VerilogAutoCompleteHandler.BeforeKeyDown(this, e);
         }
 
         public override List<codeEditor.CodeEditor.PopupItem> GetPopupItems(ulong version, int index)
         {
-            if (VerilogParsedDocument == null) return null;
-            if (VerilogParsedDocument.Version != version) return null;
+            return VerilogAutoCompleteHandler.GetPopupItems(this, version, index);
 
-            int headIndex, length;
-            CodeDocument.GetWord(index, out headIndex, out length);
-            string text = CodeDocument.CreateString(headIndex, length);
-            if(headIndex != 0 && CodeDocument.GetCharAt(headIndex-1) == '.')
-            {
-                text = "." + text;
-            }
-            return VerilogParsedDocument.GetPopupItems(index,text);
+            //if (VerilogParsedDocument == null) return null;
+            //if (VerilogParsedDocument.Version != version) return null;
+
+            //int headIndex, length;
+            //CodeDocument.GetWord(index, out headIndex, out length);
+            //string text = CodeDocument.CreateString(headIndex, length);
+            //if(headIndex != 0 && CodeDocument.GetCharAt(headIndex-1) == '.')
+            //{
+            //    text = "." + text;
+            //}
+            //return VerilogParsedDocument.GetPopupItems(index,text);
         }
 
         /// <summary>
@@ -438,157 +445,160 @@ namespace pluginVerilog.Data
         /// <returns></returns>
         public override List<codeEditor.CodeEditor.ToolItem> GetToolItems(int index)
         {
-            List<codeEditor.CodeEditor.ToolItem> toolItems = new List<codeEditor.CodeEditor.ToolItem>();
-            toolItems.Add(new Verilog.Snippets.AlwaysFFSnippet());
-            toolItems.Add(new Verilog.Snippets.AutoConnectSnippet());
-//            toolItems.Add(new Verilog.Snippets.ConnectionCheckSnippet());
-            toolItems.Add(new Verilog.Snippets.AutoFormatSnippet());
-            toolItems.Add(new Verilog.Snippets.ModuleInstanceSnippet());
-            return toolItems;
+            return VerilogAutoCompleteHandler.GetToolItems(this, index);
+
+            //List<codeEditor.CodeEditor.ToolItem> toolItems = new List<codeEditor.CodeEditor.ToolItem>();
+            //toolItems.Add(new Verilog.Snippets.AlwaysFFSnippet());
+            //toolItems.Add(new Verilog.Snippets.AutoConnectSnippet());
+            //toolItems.Add(new Verilog.Snippets.AutoFormatSnippet());
+            //toolItems.Add(new Verilog.Snippets.ModuleInstanceSnippet());
+            //return toolItems;
         }
 
         public override List<codeEditor.CodeEditor.AutocompleteItem> GetAutoCompleteItems(int index,out string cantidateWord)
         {
-            cantidateWord = null;
+            return VerilogAutoCompleteHandler.GetAutoCompleteItems(this, index, out cantidateWord);
 
-            if (VerilogParsedDocument == null) return null;
-            int line = CodeDocument.GetLineAt(index);
-            int lineStartIndex = CodeDocument.GetLineStartIndex(line);
-            bool endWithDot;
-            List<string> words = ((pluginVerilog.CodeEditor.CodeDocument)CodeDocument).GetHierWords(index, out endWithDot);
-            if (endWithDot)
-            {
-                cantidateWord = "";
-            }
-            else
-            {
-                cantidateWord = words.LastOrDefault();
-                if (words.Count > 0)
-                {
-                    words.RemoveAt(words.Count - 1);
-                }
-            }
+            //cantidateWord = null;
 
-            if(words.Count == 0 && (cantidateWord == "" || cantidateWord == null))
-            {
-                return null;
-            }
-            List<codeEditor.CodeEditor.AutocompleteItem> items = VerilogParsedDocument.GetAutoCompleteItems(words, lineStartIndex, line, (CodeEditor.CodeDocument)CodeDocument,cantidateWord);
+            //if (VerilogParsedDocument == null) return null;
+            //int line = CodeDocument.GetLineAt(index);
+            //int lineStartIndex = CodeDocument.GetLineStartIndex(line);
+            //bool endWithDot;
+            //List<string> words = ((pluginVerilog.CodeEditor.CodeDocument)CodeDocument).GetHierWords(index, out endWithDot);
+            //if (endWithDot)
+            //{
+            //    cantidateWord = "";
+            //}
+            //else
+            //{
+            //    cantidateWord = words.LastOrDefault();
+            //    if (words.Count > 0)
+            //    {
+            //        words.RemoveAt(words.Count - 1);
+            //    }
+            //}
 
-            return items;
+            //if(words.Count == 0 && (cantidateWord == "" || cantidateWord == null))
+            //{
+            //    return null;
+            //}
+            //List<codeEditor.CodeEditor.AutocompleteItem> items = VerilogParsedDocument.GetAutoCompleteItems(words, lineStartIndex, line, (CodeEditor.CodeDocument)CodeDocument,cantidateWord);
+
+            //return items;
         }
 
 
-        private void applyAutoInput()
-        {
-            int index = CodeDocument.CaretIndex;
-            int line = CodeDocument.GetLineAt(index);
-            if (line == 0) return;
+        //private void applyAutoInput()
+        //{
+        //    int index = CodeDocument.CaretIndex;
+        //    int line = CodeDocument.GetLineAt(index);
+        //    if (line == 0) return;
 
-            int lineHeadIndex = CodeDocument.GetLineStartIndex(line);
+        //    int lineHeadIndex = CodeDocument.GetLineStartIndex(line);
 
-            int prevTabs = 0;
-            if (line != 1)
-            {
-                int prevLine = line - 1;
-                int prevLineHeadIndex = CodeDocument.GetLineStartIndex(prevLine);
-                for (int i = prevLineHeadIndex; i < lineHeadIndex; i++)
-                {
-                    char ch = CodeDocument.GetCharAt(i);
-                    if (ch == '\t')
-                    {
-                        prevTabs++;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
+        //    int prevTabs = 0;
+        //    if (line != 1)
+        //    {
+        //        int prevLine = line - 1;
+        //        int prevLineHeadIndex = CodeDocument.GetLineStartIndex(prevLine);
+        //        for (int i = prevLineHeadIndex; i < lineHeadIndex; i++)
+        //        {
+        //            char ch = CodeDocument.GetCharAt(i);
+        //            if (ch == '\t')
+        //            {
+        //                prevTabs++;
+        //            }
+        //            else
+        //            {
+        //                break;
+        //            }
+        //        }
+        //    }
 
-            int indentLength = 0;
-            for (int i = lineHeadIndex; i < CodeDocument.Length; i++)
-            {
-                char ch = CodeDocument.GetCharAt(i);
-                if (ch == '\t')
-                {
-                    indentLength++;
-                }
-                else if (ch == ' ')
-                {
-                    indentLength++;
-                }
-                else
-                {
-                    break;
-                }
-            }
+        //    int indentLength = 0;
+        //    for (int i = lineHeadIndex; i < CodeDocument.Length; i++)
+        //    {
+        //        char ch = CodeDocument.GetCharAt(i);
+        //        if (ch == '\t')
+        //        {
+        //            indentLength++;
+        //        }
+        //        else if (ch == ' ')
+        //        {
+        //            indentLength++;
+        //        }
+        //        else
+        //        {
+        //            break;
+        //        }
+        //    }
 
 
-            bool prevBegin =  isPrevBegin(lineHeadIndex);
-            bool nextEnd = isNextEnd(lineHeadIndex);
+        //    bool prevBegin =  isPrevBegin(lineHeadIndex);
+        //    bool nextEnd = isNextEnd(lineHeadIndex);
 
-            if (prevBegin)
-            {
-                if (nextEnd) // caret is sandwiched beteen begin and end
-                {
-                    // BEFORE
-                    // begin[enter] end
+        //    if (prevBegin)
+        //    {
+        //        if (nextEnd) // caret is sandwiched beteen begin and end
+        //        {
+        //            // BEFORE
+        //            // begin[enter] end
 
-                    // AFTER
-                    // begin
-                    //     [caret]
-                    // end
-                    CodeDocument.Replace(lineHeadIndex, indentLength, 0, new String('\t', prevTabs+1)+"\r\n"+new String('\t', prevTabs));
-                    CodeDocument.CaretIndex = CodeDocument.CaretIndex + prevTabs+1+1 - indentLength;
-                    return;
-                }
-                else
-                {   // add indent
-                    prevTabs++;
-                }
-            }
+        //            // AFTER
+        //            // begin
+        //            //     [caret]
+        //            // end
+        //            CodeDocument.Replace(lineHeadIndex, indentLength, 0, new String('\t', prevTabs+1)+"\r\n"+new String('\t', prevTabs));
+        //            CodeDocument.CaretIndex = CodeDocument.CaretIndex + prevTabs+1+1 - indentLength;
+        //            return;
+        //        }
+        //        else
+        //        {   // add indent
+        //            prevTabs++;
+        //        }
+        //    }
 
-            CodeDocument.Replace(lineHeadIndex, indentLength, 0, new String('\t', prevTabs));
-            CodeDocument.CaretIndex = CodeDocument.CaretIndex + prevTabs - indentLength;
-        }
+        //    CodeDocument.Replace(lineHeadIndex, indentLength, 0, new String('\t', prevTabs));
+        //    CodeDocument.CaretIndex = CodeDocument.CaretIndex + prevTabs - indentLength;
+        //}
 
-        private bool isPrevBegin(int index)
-        {
-            int prevInex = index;
-            if (prevInex > 0) prevInex--;
+        //private bool isPrevBegin(int index)
+        //{
+        //    int prevInex = index;
+        //    if (prevInex > 0) prevInex--;
 
-            if (prevInex > 0 && CodeDocument.GetCharAt(prevInex) == '\n') prevInex--;
-            if (prevInex > 0 && CodeDocument.GetCharAt(prevInex) == '\r') prevInex--;
+        //    if (prevInex > 0 && CodeDocument.GetCharAt(prevInex) == '\n') prevInex--;
+        //    if (prevInex > 0 && CodeDocument.GetCharAt(prevInex) == '\r') prevInex--;
 
-            if (prevInex == 0 || CodeDocument.GetCharAt(prevInex) != 'n') return false;
-            prevInex--;
-            if (prevInex == 0 || CodeDocument.GetCharAt(prevInex) != 'i') return false;
-            prevInex--;
-            if (prevInex == 0 || CodeDocument.GetCharAt(prevInex) != 'g') return false;
-            prevInex--;
-            if (prevInex == 0 || CodeDocument.GetCharAt(prevInex) != 'e') return false;
-            prevInex--;
-            if (CodeDocument.GetCharAt(prevInex) != 'b') return false;
-            return true;
-        }
+        //    if (prevInex == 0 || CodeDocument.GetCharAt(prevInex) != 'n') return false;
+        //    prevInex--;
+        //    if (prevInex == 0 || CodeDocument.GetCharAt(prevInex) != 'i') return false;
+        //    prevInex--;
+        //    if (prevInex == 0 || CodeDocument.GetCharAt(prevInex) != 'g') return false;
+        //    prevInex--;
+        //    if (prevInex == 0 || CodeDocument.GetCharAt(prevInex) != 'e') return false;
+        //    prevInex--;
+        //    if (CodeDocument.GetCharAt(prevInex) != 'b') return false;
+        //    return true;
+        //}
 
-        private bool isNextEnd(int index)
-        {
-            int prevInex = index;
-            if (prevInex < CodeDocument.Length &&
-                (
-                    CodeDocument.GetCharAt(prevInex) == ' ' || CodeDocument.GetCharAt(prevInex) == '\t'
-                )
-            ) prevInex++;
+        //private bool isNextEnd(int index)
+        //{
+        //    int prevInex = index;
+        //    if (prevInex < CodeDocument.Length &&
+        //        (
+        //            CodeDocument.GetCharAt(prevInex) == ' ' || CodeDocument.GetCharAt(prevInex) == '\t'
+        //        )
+        //    ) prevInex++;
 
-            if (prevInex >= CodeDocument.Length || CodeDocument.GetCharAt(prevInex) != 'e') return false;
-            prevInex++;
-            if (prevInex >= CodeDocument.Length || CodeDocument.GetCharAt(prevInex) != 'n') return false;
-            prevInex++;
-            if (CodeDocument.GetCharAt(prevInex) != 'd') return false;
-            return true;
-        }
+        //    if (prevInex >= CodeDocument.Length || CodeDocument.GetCharAt(prevInex) != 'e') return false;
+        //    prevInex++;
+        //    if (prevInex >= CodeDocument.Length || CodeDocument.GetCharAt(prevInex) != 'n') return false;
+        //    prevInex++;
+        //    if (CodeDocument.GetCharAt(prevInex) != 'd') return false;
+        //    return true;
+        //}
 
         public override DocumentParser CreateDocumentParser(DocumentParser.ParseModeEnum parseMode)
         {
