@@ -84,6 +84,11 @@ namespace pluginVerilog.NavigatePanel
                 codeEditor.Controller.ShowDialogForm(pform);
             }
 
+            foreach (Verilog.Module module in VerilogFile.VerilogParsedDocument.Modules.Values)
+            {
+                VerilogFile.CodeDocument.ExpandBlock(VerilogFile.CodeDocument.GetLineAt(module.BeginIndex));
+            }
+
             if (NodeSelected != null) NodeSelected();
         }
 

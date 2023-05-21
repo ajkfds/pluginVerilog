@@ -111,6 +111,18 @@ namespace pluginVerilog.NavigatePanel
                 codeEditor.Tools.ParseHierarchyForm pform = new codeEditor.Tools.ParseHierarchyForm(this);
                 codeEditor.Controller.ShowDialogForm(pform);
             }
+
+            foreach(Verilog.Module module in ModuleInstance.VerilogParsedDocument.Modules.Values)
+            {
+                if(module.Name != ModuleInstance.ModuleName)
+                {
+                    ModuleInstance.CodeDocument.CollapseBlock(ModuleInstance.CodeDocument.GetLineAt(module.BeginIndex));
+                }
+                else
+                {
+                    ModuleInstance.CodeDocument.ExpandBlock(ModuleInstance.CodeDocument.GetLineAt(module.BeginIndex));
+                }
+            }
         }
 
         public override void Update()
