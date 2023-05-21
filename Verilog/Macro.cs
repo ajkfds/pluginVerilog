@@ -41,7 +41,7 @@ namespace pluginVerilog.Verilog
             }
 
             macro.Name = name;
-            macro.MacroText = text;
+            macro.MacroText = macroText;
             return macro;
         }
 

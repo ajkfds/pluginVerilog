@@ -857,83 +857,13 @@ namespace pluginVerilog.Verilog
                 wordPointer.MoveNext();
                 return;
             }
-//            wordPointer.MoveNext();
 
             string macroText = macro.MacroText;
-            if(macro.Aurguments != null)
+            if (macro.Aurguments != null)
             {
-                wordPointer.MoveNext();
-
-                List<string> wordAssingment = new List<string>();
-                if (wordPointer.Text != "(")
-                {
-                    wordPointer.AddError("missing macro arguments");
-                    wordPointer.MoveNext();
-                    return;
-                }
-                wordPointer.MoveNext();
-
-                while (!wordPointer.Eof)
-                {
-                    StringBuilder sb = new StringBuilder();
-                    int bracketCount = 0;
-                    while (!wordPointer.Eof)
-                    {
-                        if(wordPointer.Text == "(")
-                        {
-                            bracketCount++;
-                        } else if(wordPointer.Text == ")")
-                        {
-                            if(bracketCount == 0)
-                            {
-                                break;
-                            } else
-                            {
-                                bracketCount--;
-                            }
-                        }
-
-                        if(wordPointer.Text == "," && bracketCount == 0)
-                        {
-                            break;
-                        }
-
-                        if (sb.Length != 0) sb.Append(" ");
-                        sb.Append(wordPointer.Text);
-                        wordPointer.MoveNext();
-                    }
-                    wordAssingment.Add(sb.ToString());
-                    if (wordPointer.Text == ")")
-                    {
-                        wordPointer.MoveNext();
-                        break;
-                    }
-                    if (wordPointer.Text == ",")
-                    {
-                        wordPointer.MoveNext();
-                        continue;
-                    }
-                    wordPointer.AddError("illegal macro call");
-                    break;
-                }
-
-                if(macro.Aurguments.Count != wordAssingment.Count)
-                {
-                    wordPointer.AddError("macro arguments mismatch");
-                    return;
-                }
-                else
-                {
-                    for(int i = 0; i < macro.Aurguments.Count; i++)
-                    {
-                        macroText = macroText.Replace(macro.Aurguments[i], "\0" + i.ToString("X4"));
-                    }
-                    for (int i = 0; i < macro.Aurguments.Count; i++)
-                    {
-                        macroText = macroText.Replace("\0" + i.ToString("X4"),wordAssingment[i]);
-                    }
-                }
+                parseMacroArguments(macro,out macroText);
             }
+
             if(macroText == "")
             {
                 wordPointer.MoveNext();
@@ -941,9 +871,6 @@ namespace pluginVerilog.Verilog
             }
 
             CodeEditor.CodeDocument codeDocument = new CodeEditor.CodeDocument(macroText);
-//            CodeEditor.CodeDocument codeDocument = new CodeEditor.CodeDocument(wordPointer.Document.VerilogFile);
-//            codeDocument.Replace(0, 0, 0, macroText);
-
             WordPointer newPointer = new WordPointer(codeDocument, wordPointer.ParsedDocument);
             stock.Add(wordPointer);
 
@@ -967,6 +894,83 @@ namespace pluginVerilog.Verilog
                 }
             }
             return;
+        }
+
+        private   void parseMacroArguments(Macro macro,out string macroText)
+        {
+            macroText = macro.MacroText;
+            wordPointer.MoveNext();
+
+            List<string> wordAssingment = new List<string>();
+            if (wordPointer.Text != "(")
+            {
+                wordPointer.AddError("missing macro arguments");
+                wordPointer.MoveNext();
+                return;
+            }
+            wordPointer.MoveNext();
+
+            while (!wordPointer.Eof)
+            {
+                StringBuilder sb = new StringBuilder();
+                int bracketCount = 0;
+                while (!wordPointer.Eof)
+                {
+                    if (wordPointer.Text == "(")
+                    {
+                        bracketCount++;
+                    }
+                    else if (wordPointer.Text == ")")
+                    {
+                        if (bracketCount == 0)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            bracketCount--;
+                        }
+                    }
+
+                    if (wordPointer.Text == "," && bracketCount == 0)
+                    {
+                        break;
+                    }
+
+                    if (sb.Length != 0) sb.Append(" ");
+                    sb.Append(wordPointer.Text);
+                    wordPointer.MoveNext();
+                }
+                wordAssingment.Add(sb.ToString());
+                if (wordPointer.Text == ")")
+                {
+                    break;
+                }
+                if (wordPointer.Text == ",")
+                {
+                    wordPointer.MoveNext();
+                    continue;
+                }
+                wordPointer.AddError("illegal macro call");
+                break;
+            }
+
+            if (macro.Aurguments.Count != wordAssingment.Count)
+            {
+                wordPointer.AddError("macro arguments mismatch");
+                return;
+            }
+            else
+            {
+                for (int i = 0; i < macro.Aurguments.Count; i++)
+                {
+                    macroText = macroText.Replace(macro.Aurguments[i], "\0" + i.ToString("X4"));
+                }
+                for (int i = 0; i < macro.Aurguments.Count; i++)
+                {
+                    macroText = macroText.Replace("\0" + i.ToString("X4"), wordAssingment[i]);
+                }
+            }
         }
 
         private void diveIntoIncludeFile(string relativeFilePath)
