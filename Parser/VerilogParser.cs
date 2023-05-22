@@ -26,6 +26,7 @@ namespace pluginVerilog.Parser
 
         public VerilogParser(
             Data.IVerilogRelatedFile verilogFile,
+            string moduleName,
             Dictionary<string, Verilog.Expressions.Expression> parameterOverrides,
             codeEditor.CodeEditor.DocumentParser.ParseModeEnum parseMode
             ) : base(verilogFile as codeEditor.Data.TextFile, parseMode)
@@ -35,14 +36,16 @@ namespace pluginVerilog.Parser
             this.document.CopyTextOnlyFrom(verilogFile.CodeDocument);
             this.ParseMode = parseMode;
             this.TextFile = verilogFile as codeEditor.Data.TextFile;
-
             this.parameterOverrides = parameterOverrides;
+            this.targetModuleName = moduleName;
+
             File = verilogFile;
-            parsedDocument = new Verilog.ParsedDocument(verilogFile,parseMode);
+            parsedDocument = new Verilog.ParsedDocument(verilogFile, parseMode);
             parsedDocument.Version = verilogFile.CodeDocument.Version;
             parsedDocument.Instance = true;
             word = new Verilog.WordScanner(VerilogDocument, parsedDocument, false);
         }
+
 
         public Verilog.WordScanner word;
 
@@ -59,6 +62,7 @@ namespace pluginVerilog.Parser
         public virtual Verilog.ParsedDocument VerilogParsedDocument { get { return parsedDocument; } }
 
         private Dictionary<string, Verilog.Expressions.Expression> parameterOverrides;
+        private string targetModuleName = null;
 
         private System.WeakReference<Data.IVerilogRelatedFile> fileRef;
         public Data.IVerilogRelatedFile File
@@ -97,6 +101,18 @@ namespace pluginVerilog.Parser
             {
                 if (word.Text == "module")
                 {
+                    if(targetModuleName != null)
+                    {
+                        string moduleName = word.NextText;
+                        if(moduleName != targetModuleName)
+                        {
+                            word.SkipToKeyword("endmodule");
+                            word.MoveNext();
+                            continue;
+                        }
+                    }
+
+
                     Verilog.Module module;
                     if (ParseMode == ParseModeEnum.LoadParse)
                     {

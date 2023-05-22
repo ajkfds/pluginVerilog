@@ -238,14 +238,15 @@ namespace pluginVerilog.Data
 
         public override codeEditor.CodeEditor.DocumentParser CreateDocumentParser(codeEditor.CodeEditor.DocumentParser.ParseModeEnum parseMode)
         {
-            if (ParameterOverrides.Count == 0)
-            {
-                return new Parser.VerilogParser(this, parseMode);
-            }
-            else
-            {
-                return new Parser.VerilogParser(this, ParameterOverrides, parseMode);
-            }
+            return new Parser.VerilogParser(this, ModuleName, ParameterOverrides, parseMode);
+            //if (ParameterOverrides.Count == 0)
+            //{
+            //    return new Parser.VerilogParser(this, parseMode);
+            //}
+            //else
+            //{
+            //    return new Parser.VerilogParser(this, ModuleName, ParameterOverrides, parseMode);
+            //}
         }
 
 
