@@ -32,7 +32,18 @@ namespace pluginVerilog.Verilog
         public Dictionary<string, Class> Classes { get { return classes;  } }
         public Dictionary<string, ModuleItems.ModuleInstantiation> ModuleInstantiations { get { return moduleInstantiations; } }
 
-        public bool ReperseRequested = false;
+        private bool reparseRequested = false;
+        public bool ReperseRequested
+        {
+            get
+            {
+                return reparseRequested;
+            }
+            set
+            {
+                reparseRequested = value;
+            }
+        }
 
         private System.WeakReference<Data.IVerilogRelatedFile> fileRef;
         public Data.IVerilogRelatedFile File

@@ -32,7 +32,14 @@ namespace pluginVerilog.Verilog
         public Dictionary<string, Macro> Macros = new Dictionary<string, Macro>();
 
 
-        public bool ReparseRequested = false;
+        private bool reparseRequested = false;
+        public bool ReparseRequested
+        {
+            get { return reparseRequested; }
+            set {
+                reparseRequested = value;
+            }
+        }
 
         public void ReloadIncludeFiles()
         {

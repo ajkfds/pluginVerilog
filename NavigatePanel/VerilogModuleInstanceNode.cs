@@ -112,17 +112,44 @@ namespace pluginVerilog.NavigatePanel
                 codeEditor.Controller.ShowDialogForm(pform);
             }
 
-            foreach(Verilog.Module module in ModuleInstance.VerilogParsedDocument.Modules.Values)
+            Verilog.Module targetModule = null;
+            foreach (Verilog.Module module in ModuleInstance.VerilogParsedDocument.Modules.Values)
             {
                 if(module.Name != ModuleInstance.ModuleName)
                 {
                     ModuleInstance.CodeDocument.CollapseBlock(ModuleInstance.CodeDocument.GetLineAt(module.BeginIndex));
+                    targetModule = module;
                 }
                 else
                 {
                     ModuleInstance.CodeDocument.ExpandBlock(ModuleInstance.CodeDocument.GetLineAt(module.BeginIndex));
                 }
             }
+
+            if(targetModule != null)
+            {
+                if (
+                    ModuleInstance.CodeDocument.SelectionStart < targetModule.BeginIndex &&
+                    ModuleInstance.CodeDocument.SelectionLast < targetModule.BeginIndex
+                    )
+                {
+                    ModuleInstance.CodeDocument.SelectionStart = targetModule.BeginIndex;
+                    ModuleInstance.CodeDocument.SelectionLast = targetModule.BeginIndex;
+                    codeEditor.Controller.CodeEditor.ScrollToCaret();
+                }
+
+                if (
+                    targetModule.LastIndex < ModuleInstance.CodeDocument.SelectionStart &&
+                    targetModule.LastIndex < ModuleInstance.CodeDocument.SelectionLast
+                    )
+                {
+                    ModuleInstance.CodeDocument.SelectionStart = targetModule.LastIndex;
+                    ModuleInstance.CodeDocument.SelectionLast = targetModule.LastIndex;
+                    codeEditor.Controller.CodeEditor.ScrollToCaret();
+                }
+            }
+
+            //targetModule.
         }
 
         public override void Update()
