@@ -143,8 +143,8 @@ namespace pluginVerilog.NavigatePanel
                     targetModule.LastIndex < ModuleInstance.CodeDocument.SelectionLast
                     )
                 {
-                    ModuleInstance.CodeDocument.SelectionStart = targetModule.LastIndex;
-                    ModuleInstance.CodeDocument.SelectionLast = targetModule.LastIndex;
+                    ModuleInstance.CodeDocument.SelectionStart = targetModule.BeginIndex;
+                    ModuleInstance.CodeDocument.SelectionLast = targetModule.BeginIndex;
                     codeEditor.Controller.CodeEditor.ScrollToCaret();
                 }
             }
