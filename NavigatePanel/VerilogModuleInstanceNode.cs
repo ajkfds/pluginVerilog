@@ -118,11 +118,11 @@ namespace pluginVerilog.NavigatePanel
                 if(module.Name != ModuleInstance.ModuleName)
                 {
                     ModuleInstance.CodeDocument.CollapseBlock(ModuleInstance.CodeDocument.GetLineAt(module.BeginIndex));
-                    targetModule = module;
                 }
                 else
                 {
                     ModuleInstance.CodeDocument.ExpandBlock(ModuleInstance.CodeDocument.GetLineAt(module.BeginIndex));
+                    targetModule = module;
                 }
             }
 
@@ -135,6 +135,7 @@ namespace pluginVerilog.NavigatePanel
                 {
                     ModuleInstance.CodeDocument.SelectionStart = targetModule.BeginIndex;
                     ModuleInstance.CodeDocument.SelectionLast = targetModule.BeginIndex;
+                    ModuleInstance.CodeDocument.CaretIndex = targetModule.BeginIndex;
                     codeEditor.Controller.CodeEditor.ScrollToCaret();
                 }
 
@@ -145,6 +146,7 @@ namespace pluginVerilog.NavigatePanel
                 {
                     ModuleInstance.CodeDocument.SelectionStart = targetModule.BeginIndex;
                     ModuleInstance.CodeDocument.SelectionLast = targetModule.BeginIndex;
+                    ModuleInstance.CodeDocument.CaretIndex = targetModule.BeginIndex;
                     codeEditor.Controller.CodeEditor.ScrollToCaret();
                 }
             }
