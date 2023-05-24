@@ -37,6 +37,10 @@ namespace pluginVerilog.Verilog.Statements.SystemTask
                         {
                             word.AddError("missed expression");
                             word.SkipToKeyword(";");
+                            if(word.Text == ";")
+                            {
+                                word.MoveNext();
+                            }
                             return null;
                         }
                         if (word.Text == ")")

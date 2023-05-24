@@ -202,7 +202,7 @@ namespace pluginVerilog.Data
             {
                 Data.VerilogFile source = SourceVerilogFile;
                 if (source == null) return;
-                source.RegisterInstanceParsedDocument(ParameterId, newParsedDocument, this);
+                source.RegisterInstanceParsedDocument(ModuleName+":"+ ParameterId, newParsedDocument, this);
             }
             ReparseRequested = vParsedDocument.ReparseRequested;
             Update();

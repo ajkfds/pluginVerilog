@@ -170,10 +170,10 @@ namespace pluginVerilog.Data
             }
         }
 
-        public void RegisterInstanceParsedDocument(string parameterId, ParsedDocument parsedDocument,VerilogModuleInstance moduleInstance)
+        public void RegisterInstanceParsedDocument(string id, ParsedDocument parsedDocument,VerilogModuleInstance moduleInstance)
         {
             cleanWeakRef();
-            if (parameterId == "")
+            if (id == "")
             {
                 ParsedDocument = parsedDocument;
             }
@@ -181,13 +181,13 @@ namespace pluginVerilog.Data
             {
                 lock (instancedParsedDocumentRefs)
                 {
-                    if (instancedParsedDocumentRefs.ContainsKey(parameterId))
+                    if (instancedParsedDocumentRefs.ContainsKey(id))
                     {
-                        instancedParsedDocumentRefs[parameterId] = new WeakReference<ParsedDocument>(parsedDocument);
+                        instancedParsedDocumentRefs[id] = new WeakReference<ParsedDocument>(parsedDocument);
                     }
                     else
                     {
-                        instancedParsedDocumentRefs.Add(parameterId, new WeakReference<ParsedDocument>(parsedDocument));
+                        instancedParsedDocumentRefs.Add(id, new WeakReference<ParsedDocument>(parsedDocument));
                         Project.AddReparseTarget(moduleInstance);
                     }
                 }

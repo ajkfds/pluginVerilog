@@ -98,12 +98,15 @@ namespace pluginVerilog.Verilog.Statements
                     return DeassignStatement.ParseCreate(word, nameSpace);
                 case "->":
                     return EventTrigger.ParseCreate(word, nameSpace);
+                case ";":
+                    word.AddError("illegal module item");
+                    word.MoveNext();
+                    return null;
                 default:
 
                    // NameSpace refNameSpace = null;
                    // refNameSpace = nameSpace.ParseHierNameSpace(word, nameSpace);
                    //if (refNameSpace == null) refNameSpace = nameSpace;
-
                     string nextText = word.NextText;
                     if (nextText == "(" || nextText == ";")
                     {

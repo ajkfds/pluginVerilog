@@ -108,8 +108,11 @@ namespace pluginVerilog.NavigatePanel
 
             if (!ModuleInstance.ParseValid || ModuleInstance.ReparseRequested)
             {
-                codeEditor.Tools.ParseHierarchyForm pform = new codeEditor.Tools.ParseHierarchyForm(this);
-                codeEditor.Controller.ShowDialogForm(pform);
+                if (!codeEditor.Global.StopParse)
+                {
+                    codeEditor.Tools.ParseHierarchyForm pform = new codeEditor.Tools.ParseHierarchyForm(this);
+                    codeEditor.Controller.ShowDialogForm(pform);
+                }
             }
 
             Verilog.Module targetModule = null;
