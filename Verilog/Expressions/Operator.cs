@@ -17,9 +17,9 @@ namespace pluginVerilog.Verilog.Expressions
         public readonly string Text = "";
         public readonly byte Precedence;
 
-        public override ajkControls.ColorLabel GetLabel()
+        public override ajkControls.ColorLabel.ColorLabel GetLabel()
         {
-            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            ajkControls.ColorLabel.ColorLabel label = new ajkControls.ColorLabel.ColorLabel();
             AppendLabel(label);
             return label;
         }
@@ -63,7 +63,7 @@ namespace pluginVerilog.Verilog.Expressions
             Primary2.DisposeSubRefrence(false);
         }
 
-        public override void AppendLabel(ajkControls.ColorLabel label)
+        public override void AppendLabel(ajkControls.ColorLabel.ColorLabel label)
         {
             Condition.AppendLabel(label);
             label.AppendText("?");
@@ -161,7 +161,7 @@ namespace pluginVerilog.Verilog.Expressions
             Primary.DisposeSubRefrence(false);
         }
 
-        public override void AppendLabel(ajkControls.ColorLabel label)
+        public override void AppendLabel(ajkControls.ColorLabel.ColorLabel label)
         {
             label.AppendText(Text);
             Primary.AppendLabel(label);
@@ -396,7 +396,7 @@ namespace pluginVerilog.Verilog.Expressions
             }
         }
 
-        public override void AppendLabel(ajkControls.ColorLabel label)
+        public override void AppendLabel(ajkControls.ColorLabel.ColorLabel label)
         {
             Primary1.AppendLabel(label);
             label.AppendText(Text);

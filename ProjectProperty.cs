@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ajkControls;
+using ajkControls.Json;
 
 namespace pluginVerilog
 {
@@ -17,7 +18,7 @@ namespace pluginVerilog
 
         public Verilog.AutoComplete.Setup SnippetSetup = new Verilog.AutoComplete.Setup();
 
-        public override void SaveSetup(ajkControls.JsonWriter writer)
+        public override void SaveSetup(ajkControls.Json.JsonWriter writer)
         {
             using (var macroWriter = writer.GetObjectWriter("Macros"))
             {
@@ -68,7 +69,7 @@ namespace pluginVerilog
                 return parsedDocument.Modules[moduleInstantiation.ModuleName];
             }
         }
-        public void loadMacros(ajkControls.JsonReader jsonReader)
+        public void loadMacros(ajkControls.Json.JsonReader jsonReader)
         {
             using(var reader = jsonReader.GetNextObjectReader())
             {

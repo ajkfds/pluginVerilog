@@ -100,16 +100,16 @@ namespace pluginVerilog.Verilog
                 switch (message.Type)
                 {
                     case Message.MessageType.Error:
-                        ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.Pink, Global.Icons.ExclamationBox, ajkControls.IconImage.ColorStyle.Red));
+                        ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.Pink, Global.Icons.ExclamationBox, ajkControls.Primitive.IconImage.ColorStyle.Red));
                         break;
                     case Message.MessageType.Warning:
-                        ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.Orange, Global.Icons.ExclamationBox, ajkControls.IconImage.ColorStyle.Orange));
+                        ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.Orange, Global.Icons.ExclamationBox, ajkControls.Primitive.IconImage.ColorStyle.Orange));
                         break;
                     case Message.MessageType.Notice:
-                        ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.LimeGreen, Global.Icons.ExclamationBox, ajkControls.IconImage.ColorStyle.Green));
+                        ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.LimeGreen, Global.Icons.ExclamationBox, ajkControls.Primitive.IconImage.ColorStyle.Green));
                         break;
                     case Message.MessageType.Hint:
-                        ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.LightCyan, Global.Icons.ExclamationBox, ajkControls.IconImage.ColorStyle.Blue));
+                        ret.Add(new codeEditor.CodeEditor.PopupItem(message.Text, System.Drawing.Color.LightCyan, Global.Icons.ExclamationBox, ajkControls.Primitive.IconImage.ColorStyle.Blue));
                         break;
                 }
             }

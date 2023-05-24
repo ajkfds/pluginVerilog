@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
-
+using ajkControls.Primitive;
 
 namespace pluginVerilog.Verilog.AutoComplete
 {
@@ -13,7 +13,7 @@ namespace pluginVerilog.Verilog.AutoComplete
         public GenerateAutoCompleteItem(string text, byte colorIndex, Color color) : base(text, colorIndex, color)
         {
         }
-        public GenerateAutoCompleteItem(string text, byte colorIndex, Color color, ajkControls.IconImage icon, ajkControls.IconImage.ColorStyle iconColorStyle) : base(text, colorIndex, color, icon, iconColorStyle)
+        public GenerateAutoCompleteItem(string text, byte colorIndex, Color color, IconImage icon, IconImage.ColorStyle iconColorStyle) : base(text, colorIndex, color, icon, iconColorStyle)
         {
         }
 

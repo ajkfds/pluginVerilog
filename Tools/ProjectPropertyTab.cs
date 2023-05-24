@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ajkControls.Primitive;
 
 namespace pluginVerilog.Tools
 {
@@ -20,7 +21,7 @@ namespace pluginVerilog.Tools
             TabIndex = 0;
             Text = "Verilog";
             UseVisualStyleBackColor = true;
-            IconImage = new ajkControls.IconImage(Properties.Resources.verilog);
+            IconImage = new IconImage(Properties.Resources.verilog);
 
             panel.Dock = System.Windows.Forms.DockStyle.Fill;
             panel.Name = "codeEditor";

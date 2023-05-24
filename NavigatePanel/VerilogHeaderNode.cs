@@ -30,7 +30,7 @@ namespace pluginVerilog.NavigatePanel
 
         public override void DrawNode(Graphics graphics, int x, int y, Font font, Color color, Color backgroundColor, Color selectedColor, int lineHeight, bool selected)
         {
-            graphics.DrawImage(Global.Icons.VerilogHeader.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Blue), new Point(x, y));
+            graphics.DrawImage(Global.Icons.VerilogHeader.GetImage(lineHeight, ajkControls.Primitive.IconImage.ColorStyle.Blue), new Point(x, y));
             Color bgColor = backgroundColor;
             if (selected) bgColor = selectedColor;
             System.Windows.Forms.TextRenderer.DrawText(

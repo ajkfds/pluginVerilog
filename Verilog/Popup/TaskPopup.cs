@@ -51,7 +51,7 @@ namespace pluginVerilog.Verilog.Popup
             //}
         }
 
-        ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+        ajkControls.ColorLabel.ColorLabel label = new ajkControls.ColorLabel.ColorLabel();
 
         public override Size GetSize(Graphics graphics, Font font)
         {

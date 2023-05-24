@@ -51,22 +51,22 @@ namespace pluginVerilog.MessageView
             codeEditor.Controller.CodeEditor.Refresh();
         }
 
-        private static ajkControls.IconImage icon = new ajkControls.IconImage(Properties.Resources.exclamationBox);
+        private static ajkControls.Primitive.IconImage icon = new ajkControls.Primitive.IconImage(Properties.Resources.exclamationBox);
         public override void DrawNode(Graphics graphics, int x, int y, Font font, Color color, Color backgroundColor, Color selectedColor, int lineHeight, bool selected)
         {
             switch (messageType)
             {
                 case Verilog.ParsedDocument.Message.MessageType.Error:
-                    graphics.DrawImage(icon.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Red), new Point(x, y));
+                    graphics.DrawImage(icon.GetImage(lineHeight, ajkControls.Primitive.IconImage.ColorStyle.Red), new Point(x, y));
                     break;
                 case Verilog.ParsedDocument.Message.MessageType.Warning:
-                    graphics.DrawImage(icon.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Orange), new Point(x, y));
+                    graphics.DrawImage(icon.GetImage(lineHeight, ajkControls.Primitive.IconImage.ColorStyle.Orange), new Point(x, y));
                     break;
                 case Verilog.ParsedDocument.Message.MessageType.Notice:
-                    graphics.DrawImage(icon.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Green), new Point(x, y));
+                    graphics.DrawImage(icon.GetImage(lineHeight, ajkControls.Primitive.IconImage.ColorStyle.Green), new Point(x, y));
                     break;
                 case Verilog.ParsedDocument.Message.MessageType.Hint:
-                    graphics.DrawImage(icon.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Blue), new Point(x, y));
+                    graphics.DrawImage(icon.GetImage(lineHeight, ajkControls.Primitive.IconImage.ColorStyle.Blue), new Point(x, y));
                     break;
             }
             Color bgColor = backgroundColor;

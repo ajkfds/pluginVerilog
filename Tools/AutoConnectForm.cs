@@ -112,9 +112,9 @@ namespace pluginVerilog.Tools
             checkConnectCantidate(colorLabelList, module, instancedModule);
         }
 
-        private static void checkConnectCantidate(ajkControls.ColorLabelList labelList,Verilog.Module module,Verilog.Module instancedModule)
+        private static void checkConnectCantidate(ajkControls.ColorLabel.ColorLabelList labelList,Verilog.Module module,Verilog.Module instancedModule)
         {
-            foreach(ajkControls.ColorLabel label in labelList)
+            foreach(ajkControls.ColorLabel.ColorLabel label in labelList)
             {
                 if( label is PortLabel )
                 {
@@ -131,7 +131,7 @@ namespace pluginVerilog.Tools
                         {
                             matchLength = l;
 
-                            ajkControls.ColorLabel cantidate = new ajkControls.ColorLabel();
+                            ajkControls.ColorLabel.ColorLabel cantidate = new ajkControls.ColorLabel.ColorLabel();
                             if(i != 0)
                             {
                                 cantidate.AppendText(variable.Name.Substring(0,i), Color.LightGray);
@@ -179,19 +179,19 @@ namespace pluginVerilog.Tools
 
         }
 
-        private class HeaderLabel : ajkControls.ColorLabel
+        private class HeaderLabel : ajkControls.ColorLabel.ColorLabel
         {
 
         }
 
-        private class SectionLabel : ajkControls.ColorLabel
+        private class SectionLabel : ajkControls.ColorLabel.ColorLabel
         {
 
         }
 
-        private class PortLabel : ajkControls.ColorLabel
+        private class PortLabel : ajkControls.ColorLabel.ColorLabel
         {
-            public PortLabel(string portName, ajkControls.ColorLabel defaultConnection)
+            public PortLabel(string portName, ajkControls.ColorLabel.ColorLabel defaultConnection)
             {
                 PortName = portName;
                 DefaultConnection = defaultConnection;
@@ -220,12 +220,12 @@ namespace pluginVerilog.Tools
             }
 
             public string PortName;
-            public ajkControls.ColorLabel Cantidate;
-            public ajkControls.ColorLabel DefaultConnection;
+            public ajkControls.ColorLabel.ColorLabel Cantidate;
+            public ajkControls.ColorLabel.ColorLabel DefaultConnection;
             public bool ApplyCantidate = false;
         }
 
-        private class FooterLabel : ajkControls.ColorLabel
+        private class FooterLabel : ajkControls.ColorLabel.ColorLabel
         {
 
         }
@@ -243,7 +243,7 @@ namespace pluginVerilog.Tools
             }
         }
 
-        private void colorLabelList_ColorLabelClicked(ajkControls.ColorLabel colorLabel)
+        private void colorLabelList_ColorLabelClicked(ajkControls.ColorLabel.ColorLabel colorLabel)
         {
             if(colorLabel is PortLabel)
             {

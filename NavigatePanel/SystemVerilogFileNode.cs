@@ -35,7 +35,7 @@ namespace pluginVerilog.NavigatePanel
 
     //    public override void DrawNode(Graphics graphics, int x, int y, Font font, Color color, Color backgroundColor, Color selectedColor, int lineHeight, bool selected)
     //    {
-    //        graphics.DrawImage(Global.Icons.SystemVerilog.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Blue), new Point(x, y));
+    //        graphics.DrawImage(Global.Icons.SystemVerilog.GetImage(lineHeight, IconImage.ColorStyle.Blue), new Point(x, y));
     //        Color bgColor = backgroundColor;
     //        if (selected) bgColor = selectedColor;
     //        System.Windows.Forms.TextRenderer.DrawText(
@@ -50,7 +50,7 @@ namespace pluginVerilog.NavigatePanel
 
     //        if (VerilogFile != null && VerilogFile.ParsedDocument != null && VerilogFile.VerilogParsedDocument.ErrorCount != 0)
     //        {
-    //            graphics.DrawImage(Global.Icons.Exclamation.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Red), new Point(x, y));
+    //            graphics.DrawImage(Global.Icons.Exclamation.GetImage(lineHeight, IconImage.ColorStyle.Red), new Point(x, y));
     //        }
     //    }
 

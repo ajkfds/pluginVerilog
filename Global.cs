@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ajkControls.Primitive;
 
 namespace pluginVerilog
 {
@@ -13,17 +14,17 @@ namespace pluginVerilog
 
         public static class Icons
         {
-            public static ajkControls.IconImage Exclamation = new ajkControls.IconImage(Properties.Resources.exclamation);
-            public static ajkControls.IconImage ExclamationBox = new ajkControls.IconImage(Properties.Resources.exclamationBox);
-            public static ajkControls.IconImage Play = new ajkControls.IconImage(Properties.Resources.play);
-            public static ajkControls.IconImage Pause = new ajkControls.IconImage(Properties.Resources.pause);
-            public static ajkControls.IconImage Verilog = new ajkControls.IconImage(Properties.Resources.verilog);
-            public static ajkControls.IconImage VerilogHeader = new ajkControls.IconImage(Properties.Resources.verilogHeader);
-            public static ajkControls.IconImage SystemVerilog = new ajkControls.IconImage(Properties.Resources.systemVerilog);
-            public static ajkControls.IconImage SystemVerilogHeader = new ajkControls.IconImage(Properties.Resources.systemVerilogHeader);
-            public static ajkControls.IconImage IcarusVerilog = new ajkControls.IconImage(Properties.Resources.icarusVerilog);
-            public static ajkControls.IconImage NewBadge = new ajkControls.IconImage(Properties.Resources.newBadge);
-            public static ajkControls.IconImage MedalBadge = new ajkControls.IconImage(Properties.Resources.medalBadge);
+            public static IconImage Exclamation = new IconImage(Properties.Resources.exclamation);
+            public static IconImage ExclamationBox = new IconImage(Properties.Resources.exclamationBox);
+            public static IconImage Play = new IconImage(Properties.Resources.play);
+            public static IconImage Pause = new IconImage(Properties.Resources.pause);
+            public static IconImage Verilog = new IconImage(Properties.Resources.verilog);
+            public static IconImage VerilogHeader = new IconImage(Properties.Resources.verilogHeader);
+            public static IconImage SystemVerilog = new IconImage(Properties.Resources.systemVerilog);
+            public static IconImage SystemVerilogHeader = new IconImage(Properties.Resources.systemVerilogHeader);
+            public static IconImage IcarusVerilog = new IconImage(Properties.Resources.icarusVerilog);
+            public static IconImage NewBadge = new IconImage(Properties.Resources.newBadge);
+            public static IconImage MedalBadge = new IconImage(Properties.Resources.medalBadge);
         }
     }
 }

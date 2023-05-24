@@ -42,9 +42,9 @@ namespace pluginVerilog.Verilog.Expressions
         /// get label object of this expression
         /// </summary>
         /// <returns></returns>
-        public virtual ajkControls.ColorLabel GetLabel()
+        public virtual ajkControls.ColorLabel.ColorLabel GetLabel()
         {
-            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            ajkControls.ColorLabel.ColorLabel label = new ajkControls.ColorLabel.ColorLabel();
             AppendLabel(label);
             return label;
         }
@@ -52,7 +52,7 @@ namespace pluginVerilog.Verilog.Expressions
         {
             return null;
         }
-        public virtual void AppendLabel(ajkControls.ColorLabel label)
+        public virtual void AppendLabel(ajkControls.ColorLabel.ColorLabel label)
         {
 
         }

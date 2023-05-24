@@ -19,9 +19,9 @@ namespace pluginVerilog.Verilog.Variables
         constant_expression ::= (From Annex A - A.8.3)
         constant_primary | unary_operator { attribute_instance } constant_primary | constant_expression binary_operator { attribute_instance } constant_expression | constant_expression ? { attribute_instance } constant_expression     constant_expression | string 
          */
-        public ajkControls.ColorLabel GetLabel()
+        public ajkControls.ColorLabel.ColorLabel GetLabel()
         {
-            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            ajkControls.ColorLabel.ColorLabel label = new ajkControls.ColorLabel.ColorLabel();
             label.AppendText("[");
             label.AppendLabel(MsbBitExpression.GetLabel());
             label.AppendText(":");

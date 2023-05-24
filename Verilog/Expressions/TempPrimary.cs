@@ -14,9 +14,9 @@ namespace pluginVerilog.Verilog.Expressions
         }
 
         private string text;
-        public override ajkControls.ColorLabel GetLabel()
+        public override ajkControls.ColorLabel.ColorLabel GetLabel()
         {
-            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            ajkControls.ColorLabel.ColorLabel label = new ajkControls.ColorLabel.ColorLabel();
             AppendLabel(label);
             return label;
         }
@@ -26,7 +26,7 @@ namespace pluginVerilog.Verilog.Expressions
             return GetLabel().CreateString();
         }
 
-        public override void AppendLabel(ajkControls.ColorLabel label)
+        public override void AppendLabel(ajkControls.ColorLabel.ColorLabel label)
         {
             label.AppendText(text);
         }

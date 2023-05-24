@@ -14,14 +14,14 @@ namespace pluginVerilog.Verilog.Expressions
     public class RangeExpression
     {
         public int BitWidth;
-        public virtual ajkControls.ColorLabel GetLabel()
+        public virtual ajkControls.ColorLabel.ColorLabel GetLabel()
         {
-            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            ajkControls.ColorLabel.ColorLabel label = new ajkControls.ColorLabel.ColorLabel();
             AppendLabel(label);
             return label;
         }
 
-        public virtual void AppendLabel(ajkControls.ColorLabel label)
+        public virtual void AppendLabel(ajkControls.ColorLabel.ColorLabel label)
         {
         }
     }
@@ -34,7 +34,7 @@ namespace pluginVerilog.Verilog.Expressions
             BitWidth = 1;
         }
         public Expression Expression;
-        public override void AppendLabel(ajkControls.ColorLabel label)
+        public override void AppendLabel(ajkControls.ColorLabel.ColorLabel label)
         {
             label.AppendText("[");
             label.AppendLabel(Expression.GetLabel());
@@ -56,7 +56,7 @@ namespace pluginVerilog.Verilog.Expressions
         }
         public Expression MsbExpression;
         public Expression LsbExpression;
-        public override void AppendLabel(ajkControls.ColorLabel label)
+        public override void AppendLabel(ajkControls.ColorLabel.ColorLabel label)
         {
             if (LsbExpression == null || MsbExpression == null) return;
             label.AppendText("[");
@@ -81,7 +81,7 @@ namespace pluginVerilog.Verilog.Expressions
         public Expression BaseExpression;
         public Expression WidthExpression;
 
-        public override void AppendLabel(ajkControls.ColorLabel label)
+        public override void AppendLabel(ajkControls.ColorLabel.ColorLabel label)
         {
             if (BaseExpression == null || WidthExpression == null) return;
             label.AppendText("[");
@@ -106,7 +106,7 @@ namespace pluginVerilog.Verilog.Expressions
         public Expression BaseExpression;
         public Expression WidthExpression;
 
-        public override void AppendLabel(ajkControls.ColorLabel label)
+        public override void AppendLabel(ajkControls.ColorLabel.ColorLabel label)
         {
             if (BaseExpression == null || WidthExpression == null) return;
             label.AppendText("[");

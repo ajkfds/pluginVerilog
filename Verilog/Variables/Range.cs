@@ -26,7 +26,7 @@ namespace pluginVerilog.Verilog.Variables
             return sb.ToString();
         }
 
-        public void AppendLabel(ajkControls.ColorLabel label)
+        public void AppendLabel(ajkControls.ColorLabel.ColorLabel label)
         {
             label.AppendText("[");
             label.AppendLabel(MsbBitExpression.GetLabel());
@@ -35,9 +35,9 @@ namespace pluginVerilog.Verilog.Variables
             label.AppendText("]");
         }
 
-        public ajkControls.ColorLabel GetLabel()
+        public ajkControls.ColorLabel.ColorLabel GetLabel()
         {
-            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            ajkControls.ColorLabel.ColorLabel label = new ajkControls.ColorLabel.ColorLabel();
             AppendLabel(label);
             return label;
         }

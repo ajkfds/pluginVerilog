@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.panel1 = new System.Windows.Forms.Panel();
-            this.colorLabelList = new ajkControls.ColorLabelList();
+            this.colorLabelList = new ajkControls.ColorLabel.ColorLabelList();
             this.SuspendLayout();
             // 
             // panel1
@@ -51,7 +51,7 @@
             this.colorLabelList.Name = "colorLabelList";
             this.colorLabelList.Size = new System.Drawing.Size(663, 515);
             this.colorLabelList.TabIndex = 2;
-            this.colorLabelList.ColorLabelClicked += new ajkControls.ColorLabelList.DColorLabelClicked(this.colorLabelList_ColorLabelClicked);
+            this.colorLabelList.ColorLabelClicked += new ajkControls.ColorLabel.ColorLabelList.DColorLabelClicked(this.colorLabelList_ColorLabelClicked);
             this.colorLabelList.KeyDown += new System.Windows.Forms.KeyEventHandler(this.colorLabelList_KeyDown);
             // 
             // AutoConnectForm
@@ -72,6 +72,6 @@
 
         #endregion
         private System.Windows.Forms.Panel panel1;
-        private ajkControls.ColorLabelList colorLabelList;
+        private ajkControls.ColorLabel.ColorLabelList colorLabelList;
     }
 }

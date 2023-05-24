@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ajkControls.Primitive;
 
 namespace pluginVerilog
 {
@@ -18,16 +19,16 @@ namespace pluginVerilog
 
             IcarusVerilogTsmi.Image = Global.Icons.IcarusVerilog.GetImage(
                 codeEditor.Controller.NavigatePanel.GetContextMenuStrip().ImageScalingSize.Height,
-                ajkControls.IconImage.ColorStyle.Original );
+                IconImage.ColorStyle.Original );
             iVerilogRunTsmi.Image = codeEditor.Global.IconImages.Play.GetImage(
                 codeEditor.Controller.NavigatePanel.GetContextMenuStrip().ImageScalingSize.Height,
-                ajkControls.IconImage.ColorStyle.Blue);
+                IconImage.ColorStyle.Blue);
             gtkWaveTsmi.Image = codeEditor.Global.IconImages.Wave0.GetImage(
                 codeEditor.Controller.NavigatePanel.GetContextMenuStrip().ImageScalingSize.Height,
-                ajkControls.IconImage.ColorStyle.Blue);
+                IconImage.ColorStyle.Blue);
             CreateVerilogFileTsmi.Image = Global.Icons.Verilog.GetImage(
                 codeEditor.Controller.NavigatePanel.GetContextMenuStrip().ImageScalingSize.Height,
-                ajkControls.IconImage.ColorStyle.Blue);
+                IconImage.ColorStyle.Blue);
 
         }
 

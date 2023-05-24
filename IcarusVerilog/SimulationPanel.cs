@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ajkControls.Primitive;
 
 namespace pluginVerilog.IcarusVerilog
 {
@@ -14,7 +15,7 @@ namespace pluginVerilog.IcarusVerilog
 
     public partial class SimulationPanel : UserControl
     {
-        public Action<ajkControls.IconImage, ajkControls.IconImage.ColorStyle> RequestTabIconChange;
+        public Action<IconImage, IconImage.ColorStyle> RequestTabIconChange;
 
         [System.Runtime.InteropServices.DllImport("kernel32.dll",CharSet = System.Runtime.InteropServices.CharSet.Auto)]
         private static extern uint GetShortPathName( [System.Runtime.InteropServices.MarshalAs(
@@ -41,7 +42,7 @@ namespace pluginVerilog.IcarusVerilog
         }
 
         private int iconCount = 0;
-        ajkControls.IconImage.ColorStyle iconColor = ajkControls.IconImage.ColorStyle.White;
+        IconImage.ColorStyle iconColor = IconImage.ColorStyle.White;
         private void moveTabIcon()
         {
             iconCount++;
@@ -77,12 +78,12 @@ namespace pluginVerilog.IcarusVerilog
         {
             if (lineString == "icarusVerilogShell>")
             {
-                iconColor = ajkControls.IconImage.ColorStyle.Green;
+                iconColor = IconImage.ColorStyle.Green;
                 logView.AppendLogLine(lineString,System.Drawing.Color.ForestGreen);
             }
             else
             {
-                iconColor = ajkControls.IconImage.ColorStyle.White;
+                iconColor = IconImage.ColorStyle.White;
                 logView.AppendLogLine(lineString);
             }
             moveTabIcon();

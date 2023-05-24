@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ajkControls.Primitive;
 
 namespace pluginVerilog.IcarusVerilog
 {
@@ -18,7 +19,7 @@ namespace pluginVerilog.IcarusVerilog
             Controls.Add(panel);
         }
 
-        private void changeIcon(ajkControls.IconImage iconImage, ajkControls.IconImage.ColorStyle color)
+        private void changeIcon(IconImage iconImage, IconImage.ColorStyle color)
         {
             Invoke(new Action(
                 () => {

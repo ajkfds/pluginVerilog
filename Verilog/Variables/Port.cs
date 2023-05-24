@@ -78,9 +78,9 @@ namespace pluginVerilog.Verilog.Variables
             return port;
         }
 
-        public ajkControls.ColorLabel GetLabel()
+        public ajkControls.ColorLabel.ColorLabel GetLabel()
         {
-            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            ajkControls.ColorLabel.ColorLabel label = new ajkControls.ColorLabel.ColorLabel();
             switch (Direction)
             {
                 case DirectionEnum.Input:

@@ -18,9 +18,9 @@ namespace pluginVerilog.Verilog.Expressions
             Expression.DisposeSubRefrence(false);
         }
 
-        public override ajkControls.ColorLabel GetLabel()
+        public override ajkControls.ColorLabel.ColorLabel GetLabel()
         {
-            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            ajkControls.ColorLabel.ColorLabel label = new ajkControls.ColorLabel.ColorLabel();
             label.AppendText("(");
             if (Expression != null) label.AppendLabel(Expression.GetLabel());
             label.AppendText(")");

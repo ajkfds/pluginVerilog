@@ -42,7 +42,7 @@ namespace pluginVerilog.NavigatePanel
 
         public override void DrawNode(Graphics graphics, int x, int y, Font font, Color color, Color backgroundColor, Color selectedColor, int lineHeight, bool selected)
         {
-            graphics.DrawImage(Global.Icons.Verilog.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Blue), new Point(x, y));
+            graphics.DrawImage(Global.Icons.Verilog.GetImage(lineHeight, ajkControls.Primitive.IconImage.ColorStyle.Blue), new Point(x, y));
             Color bgColor = backgroundColor;
             if (selected) bgColor = selectedColor;
             System.Windows.Forms.TextRenderer.DrawText(
@@ -55,16 +55,16 @@ namespace pluginVerilog.NavigatePanel
                 System.Windows.Forms.TextFormatFlags.NoPadding
                 );
 
-            if (Link) graphics.DrawImage(codeEditor.Global.IconImages.Link.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Blue), new Point(x, y));
+            if (Link) graphics.DrawImage(codeEditor.Global.IconImages.Link.GetImage(lineHeight, ajkControls.Primitive.IconImage.ColorStyle.Blue), new Point(x, y));
 
             if (VerilogFile != null && VerilogFile.ParsedDocument != null && VerilogFile.VerilogParsedDocument.ErrorCount != 0)
             {
-                graphics.DrawImage(Global.Icons.Exclamation.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Red), new Point(x, y));
+                graphics.DrawImage(Global.Icons.Exclamation.GetImage(lineHeight, ajkControls.Primitive.IconImage.ColorStyle.Red), new Point(x, y));
             }
 
             if (VerilogFile != null && VerilogFile.Dirty)
             {
-                graphics.DrawImage(Global.Icons.NewBadge.GetImage(lineHeight, ajkControls.IconImage.ColorStyle.Orange), new Point(x, y));
+                graphics.DrawImage(Global.Icons.NewBadge.GetImage(lineHeight, ajkControls.Primitive.IconImage.ColorStyle.Orange), new Point(x, y));
             }
         }
 

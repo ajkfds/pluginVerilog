@@ -16,9 +16,9 @@ namespace pluginVerilog.Verilog.Expressions
         protected ConditionalExpression() { }
         // conditional_expression::= expression1 ? { attribute_instance } expression2: expression3
 
-        public new ajkControls.ColorLabel GetLabel()
+        public new ajkControls.ColorLabel.ColorLabel GetLabel()
         {
-            ajkControls.ColorLabel label = new ajkControls.ColorLabel();
+            ajkControls.ColorLabel.ColorLabel label = new ajkControls.ColorLabel.ColorLabel();
 
             label.AppendLabel(this.ConditionExpression.GetLabel());
             label.AppendText(" ? ");

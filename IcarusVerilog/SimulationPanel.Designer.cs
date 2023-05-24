@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.logView = new ajkControls.LogView();
+            this.logView = new ajkControls.LogView.LogView();
             this.SuspendLayout();
             // 
             // logView
@@ -56,6 +56,6 @@
 
         #endregion
 
-        private ajkControls.LogView logView;
+        private ajkControls.LogView.LogView logView;
     }
 }

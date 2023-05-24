@@ -18,7 +18,7 @@ namespace pluginVerilog.Verilog.Expressions
         {
             return GetLabel().CreateString();
         }
-        public override void AppendLabel(ajkControls.ColorLabel label)
+        public override void AppendLabel(ajkControls.ColorLabel.ColorLabel label)
         {
             if (Variable is Variables.Reg)
             {
