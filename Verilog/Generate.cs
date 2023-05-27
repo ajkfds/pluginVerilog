@@ -251,6 +251,7 @@ namespace pluginVerilog.Verilog
         {
             // generate_block ::= begin[ : generate_block_identifier]  { generate_item } end
             word.Color(CodeDrawStyle.ColorType.Keyword);
+            WordReference beginRef = word.GetReference();
             word.MoveNext();
 
             IModuleOrGeneratedBlock block = module;
@@ -334,11 +335,12 @@ namespace pluginVerilog.Verilog
         {
             // generate_block ::= begin[ : generate_block_identifier]  { generate_item } end
             word.Color(CodeDrawStyle.ColorType.Keyword);
+            WordReference beginRef = word.GetReference();
             word.MoveNext();
 
             if (word.Text != ":")
             {
-                word.AddError(": required");
+                beginRef.AddError(": required");
             }
             else
             {

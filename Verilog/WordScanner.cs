@@ -608,10 +608,12 @@ namespace pluginVerilog.Verilog
                         skip();
                     }
                     break;
+                case "`undef":
+                    parseUndef();
+                    break;
                 case "`line":
                 case "`nounconnected_drive":
                 case "`unconnected_drive":
-                case "`undef":
                     wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
                     wordPointer.AddError("unsupported compiler directive");
                     wordPointer.MoveNext();
@@ -686,6 +688,21 @@ namespace pluginVerilog.Verilog
             }
         }
 
+        private void parseUndef()
+        {
+            wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
+            wordPointer.MoveNextUntilEol();
+
+            string text = wordPointer.Text;
+            text = text.TrimStart(new char[] { ' ', '\t' });
+            text = text.TrimEnd(new char[] { ' ', '\t' });
+            if (RootParsedDocument.Macros.ContainsKey(text))
+            {
+                RootParsedDocument.Macros.Remove(text);
+            }
+            wordPointer.MoveNext();
+        }
+
         private void parseDefine()
         {
             wordPointer.Color(CodeDrawStyle.ColorType.Keyword);
@@ -694,13 +711,13 @@ namespace pluginVerilog.Verilog
             WordReference wordRef = GetReference();
             string macroText = wordPointer.Text;
 
-            //wordPointer.MoveNext();
-            //if (!General.IsIdentifier(wordPointer.Text))
-            //{
-            //    wordPointer.AddError("iilegal identifier");
-            //    return;
-            //}
-//            bool error = false;
+            while(macroText.EndsWith("\\") && !wordPointer.Eof)
+            {
+                macroText = macroText.Substring(0, macroText.Length - 1);
+                wordPointer.MoveNextUntilEol();
+                macroText = macroText + wordPointer.Text;
+            }
+            wordPointer.MoveNext();
 
             string identifier = "";
 
@@ -713,8 +730,12 @@ namespace pluginVerilog.Verilog
                 int tabIndex = int.MaxValue;
                 if (macroText.Contains("\t")) tabIndex = macroText.IndexOf("\t");
 
+                int bracketIndex = int.MaxValue;
+                if (macroText.Contains("(")) bracketIndex = macroText.IndexOf("(");
+
                 separatorIndex = spaceIndex;
-                if (tabIndex < separatorIndex) separatorIndex = tabIndex; 
+                if (tabIndex < separatorIndex) separatorIndex = tabIndex;
+                if (bracketIndex < separatorIndex) separatorIndex = bracketIndex;
             }
 
             if (separatorIndex == int.MaxValue)
@@ -726,24 +747,6 @@ namespace pluginVerilog.Verilog
             {
                 identifier = macroText.Substring(0, separatorIndex);
                 macroText = macroText.Substring(separatorIndex);
-            }
-
-            if (macroText.Contains("//"))
-            {
-                macroText = macroText.Substring(0, macroText.IndexOf("//"));
-            }
-            wordPointer.MoveNext();
-
-            while(!Eof && wordPointer.Text == "\\")
-            {
-                wordPointer.MoveNextUntilEol();
-                string text = wordPointer.Text;
-                if (text.Contains("//"))
-                {
-                    text = text.Substring(0, text.IndexOf("//"));
-                }
-                macroText = macroText + text;
-                wordPointer.MoveNext();
             }
 
             Macro macro = Macro.Create(identifier, macroText);
@@ -855,6 +858,21 @@ namespace pluginVerilog.Verilog
             {
                 wordPointer.AddError("unsupported macro call");
                 wordPointer.MoveNext();
+                if(wordPointer.Text == "(")
+                {
+                    int bracketCount = 1;
+                    while (true)
+                    {
+                        wordPointer.MoveNext();
+                        if (wordPointer.Text == ")") bracketCount--;
+                        if (bracketCount < 1)
+                        {
+                            wordPointer.MoveNext();
+                            break;
+                        }
+                        if (General.ListOfStatementStopKeywords.Contains(Text)) break;
+                    }
+                }
                 return;
             }
 

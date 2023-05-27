@@ -55,6 +55,7 @@
     <Compile Include="Data\VerilogHeaderInstance.cs" />
     <Compile Include="Data\VerilogModuleInstance.cs" />
     <Compile Include="FileTypes\SystemVerilogFile.cs" />
+    <Compile Include="LintRule\LintRules.cs" />
     <Compile Include="NavigatePanel\IVerilogNavigateNode.cs" />
     <Compile Include="NavigatePanel\SystemVerilogFileNode.cs" />
     <Compile Include="NavigatePanel\SystemVerilogHeaderNode.cs" />
@@ -288,9 +289,7 @@
   <ItemGroup>
     <None Include="Resources\icarusVerilog.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="LintRule\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /I /D /Y "$(ProjectDir)\bin\$(Configuration)\$(ProjectName).dll" "$(SolutionDir)codeEditor\codeEditor\bin\$(Configuration)\dlls" 

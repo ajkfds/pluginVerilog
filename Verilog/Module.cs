@@ -602,6 +602,17 @@ namespace pluginVerilog.Verilog
                     case "task":
                         Task.Parse(word, module);
                         break;
+                    case "if":
+                    case "case":
+                    case "for":
+                    case "begin":
+                        // generate region can oimi on system verilog
+                        if (!word.SystemVerilog)
+                        {
+                            word.AddError("generate requred");
+                        }
+                        ParseGenerateItems(word, module);
+                        break;
                     case "generate":
                         word.Color(CodeDrawStyle.ColorType.Keyword);
                         word.MoveNext();
@@ -661,7 +672,6 @@ namespace pluginVerilog.Verilog
                 case "end":
                     return false;
                 case "endmodule":
-                    word.AddError("endgenerate expected");
                     return false;
 
                 case "if":

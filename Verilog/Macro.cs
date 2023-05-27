@@ -24,24 +24,23 @@ namespace pluginVerilog.Verilog
             text = text.TrimEnd(new char[] { ' ', '\t' });
 
             // seprarate identifier & argument
-            
-            if (name.Contains("(") && name.EndsWith(")"))
+            if (text.StartsWith("(") && text.Contains(")"))
             {
-                string argumentsText = name.Substring(name.IndexOf("(")+1);
-                argumentsText = argumentsText.Substring(0, argumentsText.Length - 1);
+                string argumentsText = text.Substring(1, text.IndexOf(")")-1);
+                text = text.Substring(argumentsText.Length + 2);
 
                 string[] arguments = argumentsText.Split(',');
                 macro.Aurguments = new List<string>();
-                foreach(string argument in arguments)
+                foreach (string argument in arguments)
                 {
                     macro.Aurguments.Add(argument.Trim());
                 }
-                text = text.Substring(text.IndexOf(")")+1).Trim();
-                name = name.Substring(0,name.IndexOf("("));
             }
 
+            text = text.TrimStart(new char[] { ' ', '\t' });
+
             macro.Name = name;
-            macro.MacroText = macroText;
+            macro.MacroText = text;
             return macro;
         }
 

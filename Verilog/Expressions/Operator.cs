@@ -211,7 +211,6 @@ namespace pluginVerilog.Verilog.Expressions
         public delegate void OperatedAction(UnaryOperator unaryOperator);
         public static OperatedAction Operated;
 
-        Primary Primary;
         public UnaryOperator Operate(Primary primary)
         {
             Primary = primary;

@@ -114,9 +114,10 @@ namespace pluginVerilog.Verilog.Statements
                         {
                             if (!word.RootParsedDocument.ProjectProperty.SystemTaskParsers.ContainsKey(word.Text))
                             {
-                                word.AddError("illegal system task");
-                                word.SkipToKeyword(";");
-                                return null;
+                                word.AddError("unsupported system task");
+                                return SystemTask.SkipArguments.ParseCreate(word, nameSpace);
+//                                word.SkipToKeyword(";");
+//                                return null;
                             }else if(word.RootParsedDocument.ProjectProperty.SystemTaskParsers[word.Text] != null)
                             {
                                 return word.RootParsedDocument.ProjectProperty.SystemTaskParsers[word.Text](word, nameSpace);

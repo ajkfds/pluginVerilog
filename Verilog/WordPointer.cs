@@ -518,6 +518,13 @@ namespace pluginVerilog.Verilog
             }
 
             length = nextIndex - index;
+
+            while (docLength > nextIndex)
+            {
+                ch = document.GetCharAt(nextIndex);
+                if (ch != '\r' && ch != '\n') break;
+                nextIndex++;
+            }
         }
 
         private static void fetchNextAtNumber(
