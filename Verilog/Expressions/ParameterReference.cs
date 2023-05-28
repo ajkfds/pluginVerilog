@@ -89,7 +89,7 @@ namespace pluginVerilog.Verilog.Expressions
                         return null;
                 }
             }
-
+            val.Constant = true;
             return val;
         }
     }

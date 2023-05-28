@@ -152,108 +152,123 @@ namespace pluginVerilog
 
         public bool RegisterModule(string moduleName,Data.IVerilogRelatedFile file)
         {
-            if (moduleFileRefs.ContainsKey(moduleName))
+            lock (moduleFileRefs)
             {
-                Data.IVerilogRelatedFile prevFile;
-                if(!moduleFileRefs[moduleName].TryGetTarget(out prevFile))
+                if (moduleFileRefs.ContainsKey(moduleName))
                 {
-                    moduleFileRefs[moduleName] = new WeakReference<Data.IVerilogRelatedFile>(file);
-                    return true;
+                    Data.IVerilogRelatedFile prevFile;
+                    if(!moduleFileRefs[moduleName].TryGetTarget(out prevFile))
+                    {
+                        moduleFileRefs[moduleName] = new WeakReference<Data.IVerilogRelatedFile>(file);
+                        return true;
+                    }
+                    else
+                    {
+                        if(prevFile == file)
+                        {
+                            System.Diagnostics.Debugger.Break(); // duplicated register
+                            return true;
+                        }
+                        // other taeget registered
+                        return false;
+                    }
                 }
                 else
                 {
-                    if(prevFile == file)
-                    {
-                        System.Diagnostics.Debugger.Break(); // duplicated register
-                        return true;
-                    }
-                    // other taeget registered
-                    return false;
+                    moduleFileRefs.Add(moduleName, new WeakReference<Data.IVerilogRelatedFile>(file));
+                    return true;
                 }
-            }
-            else
-            {
-                moduleFileRefs.Add(moduleName, new WeakReference<Data.IVerilogRelatedFile>(file));
-                return true;
             }
         }
 
         public bool RemoveModule(string moduleName, Data.IVerilogRelatedFile file)
         {
-            if (moduleFileRefs.ContainsKey(moduleName))
+            lock (moduleFileRefs)
             {
-                Data.IVerilogRelatedFile prevFile;
-                if (!moduleFileRefs[moduleName].TryGetTarget(out prevFile))
+                if (moduleFileRefs.ContainsKey(moduleName))
                 {
-                    System.Diagnostics.Debugger.Break(); // already disposed
-                    moduleFileRefs.Remove(moduleName);
-                    return true;
-                }
-                else
-                {
-                    if (prevFile == file)
+                    Data.IVerilogRelatedFile prevFile;
+                    if (!moduleFileRefs[moduleName].TryGetTarget(out prevFile))
                     {
+                        System.Diagnostics.Debugger.Break(); // already disposed
                         moduleFileRefs.Remove(moduleName);
                         return true;
                     }
-                    // unmatch target file
+                    else
+                    {
+                        if (prevFile == file)
+                        {
+                            moduleFileRefs.Remove(moduleName);
+                            return true;
+                        }
+                        // unmatch target file
+                        return false;
+                    }
+                }
+                else
+                {
+                    // no target file
                     return false;
                 }
-            }
-            else
-            {
-                // no target file
-                return false;
             }
         }
 
         public bool IsRegisterableModule(string moduleName, Data.IVerilogRelatedFile file)
         {
-            if (moduleFileRefs.ContainsKey(moduleName))
+            lock (moduleFileRefs) 
             {
-                Data.IVerilogRelatedFile prevFile;
-                if (!moduleFileRefs[moduleName].TryGetTarget(out prevFile))
+                if (moduleFileRefs.ContainsKey(moduleName))
                 {
-                    return true;
+                    Data.IVerilogRelatedFile prevFile;
+                    if (!moduleFileRefs[moduleName].TryGetTarget(out prevFile))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        if (prevFile == file)
+                        {
+                            return false;
+                        }
+                        return false;
+                    }
                 }
                 else
                 {
-                    if (prevFile == file)
-                    {
-                        return false;
-                    }
-                    return false;
+                    return true;
                 }
-            }
-            else
-            {
-                return true;
             }
         }
 
         public Data.IVerilogRelatedFile GetFileOfModule(string moduleName)
         {
-            if (moduleFileRefs.ContainsKey(moduleName))
+            lock (moduleFileRefs)
             {
-                Data.IVerilogRelatedFile file;
-                if (!moduleFileRefs[moduleName].TryGetTarget(out file))
+                if (moduleFileRefs.ContainsKey(moduleName))
                 {
-                    return null;
+                    Data.IVerilogRelatedFile file;
+                    if (!moduleFileRefs[moduleName].TryGetTarget(out file))
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        return file;
+                    }
                 }
                 else
                 {
-                    return file;
+                    return null;
                 }
-            }
-            else
-            {
-                return null;
             }
         }
 
         public List<string> GetModuleNameList()
         {
-            return moduleFileRefs.Keys.ToList<string>();
+            lock (moduleFileRefs)
+            {
+                return moduleFileRefs.Keys.ToList<string>();
+            }
         }
 
         public Verilog.Module GetModule(string moduleName)

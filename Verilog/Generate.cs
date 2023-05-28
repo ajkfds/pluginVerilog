@@ -101,7 +101,7 @@ namespace pluginVerilog.Verilog
             word.MoveNext();
 
             Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
-            if (expression != null && !expression.Constant)
+            if (word.Active && expression != null && !expression.Constant)
             {
                 word.AddError("should be constant");
             }

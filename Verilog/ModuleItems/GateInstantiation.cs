@@ -318,7 +318,7 @@ namespace pluginVerilog.Verilog.ModuleItems
         protected EnableGate() { }
 
         Delay3 Delay3;
-        DriveStrength DriveStrength;
+//        DriveStrength DriveStrength;
 
         //                          | enable_gatetype   [drive_strength]        [delay3]    enable_gate_instance        { , enable_gate_instance }; 
         // enable_gate_instance             ::= [name_of_gate_instance] (output_terminal, input_terminal, enable_terminal) 
@@ -371,7 +371,7 @@ namespace pluginVerilog.Verilog.ModuleItems
         protected NInputGate() { }
 
         Delay2 Delay2;
-        DriveStrength DriveStrength;
+//        DriveStrength DriveStrength;
 
         // n_input_gatetype  [drive_strength]        [delay2]    n_input_gate_instance       {, n_input_gate_instance }; 
         // n_input_gate_instance            ::= [name_of_gate_instance] (output_terminal, input_terminal { , input_terminal } ) 
@@ -427,7 +427,7 @@ namespace pluginVerilog.Verilog.ModuleItems
         protected NOutputGate() { }
 
         Delay2 Delay2;
-        DriveStrength DriveStrength;
+//        DriveStrength DriveStrength;
 
         // n_output_gatetype [drive_strength]        [delay2]    n_output_gate_instance      { , n_output_gate_instance }; 
         // n_output_gate_instance           ::= [name_of_gate_instance] (output_terminal { , output_terminal } , input_terminal ) 

@@ -51,7 +51,7 @@ namespace pluginVerilog.Data
                             System.Threading.Thread.Sleep(10);
                         }
                     }
-                    catch(Exception ex)
+                    catch
                     {
                         document = null;
                     }
