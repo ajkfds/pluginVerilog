@@ -49,7 +49,8 @@ namespace pluginVerilog.Verilog
             // function_statement 
             // endfunction 
 
-            // function_item_declaration::= block_item_declaration | tf_input_declaration; function_port_list::= { attribute_instance }
+            // function_item_declaration::= block_item_declaration | tf_input_declaration;
+            // function_port_list::= { attribute_instance }
             // tf_input_declaration { , { attribute_instance } tf_input_declaration }
             // range_or_type::= range | integer | real | realtime | time
 
@@ -160,25 +161,34 @@ namespace pluginVerilog.Verilog
                 function.Variables.Add(retVal.Name, retVal);
             }
 
-            /*            A.2.8 Block item declarations
-                        block_item_declaration ::=            { attribute_instance }
-                        block_reg_declaration | { attribute_instance }
-                        event_declaration | { attribute_instance }
-                        integer_declaration | { attribute_instance }
-                        local_parameter_declaration | { attribute_instance }
-                        parameter_declaration | { attribute_instance }
-                        real_declaration | { attribute_instance }
-                        realtime_declaration | { attribute_instance }
-                        time_declaration block_reg_declaration ::= reg[signed][range]                    list_of_block_variable_identifiers;
+            /*            
+            // function_item_declaration::= block_item_declaration | tf_input_declaration;
+
+            A.2.8 Block item declarations
+            
+            block_item_declaration ::=
+                { attribute_instance } block_reg_declaration |
+                { attribute_instance } event_declaration |
+                { attribute_instance } integer_declaration |
+                { attribute_instance } local_parameter_declaration |
+                { attribute_instance } parameter_declaration |
+                { attribute_instance } real_declaration |
+                { attribute_instance } realtime_declaration |
+                { attribute_instance } time_declaration
+            
+            block_reg_declaration ::= reg[signed][range] list_of_block_variable_identifiers;
             */
+
             if (word.Text == ";")
             {
                 word.MoveNext();
+
+                // TODO imlement { attriute_instance }
                 while(!word.Eof)
                 {
                     switch (word.Text)
                     {
-                        case "input":
+                        case "input": // tf_input_declaration
                             Verilog.Variables.Port.ParseFunctionPortDeclaration(word,function, null);
                             if(word.Text != ";")
                             {
@@ -189,14 +199,29 @@ namespace pluginVerilog.Verilog
                                 word.MoveNext();
                             }
                             continue;
-                        case "reg":
+                        case "reg": // block_reg_declaration
                             Verilog.Variables.Reg.ParseCreateFromDeclaration(word, function);
                             continue;
-                        case "integer":
+                        // event_declaration
+                        case "integer": // integer_declaration
                             Verilog.Variables.Integer.ParseCreateFromDeclaration(word, function);
                             continue;
-                        case "real":
+                        case "localparameter": // local_parameter_declaration
+                        case "paraeter":  // parameter_declaration
+                            Verilog.Variables.Parameter.ParseCreateDeclaration(word, function,null);
+                            continue;
+                        case "real": // real_declaration
                             Verilog.Variables.Real.ParseCreateFromDeclaration(word, function);
+                            continue;
+                        case "realtime": // realtime_declaration
+                            Verilog.Variables.RealTime.ParseCreateFromDeclaration(word, function);
+                            continue;
+                        case "time": // time_declaration
+                            Verilog.Variables.Time.ParseCreateFromDeclaration(word, function);
+                            continue;
+                        case "wire": // illegal format for Verilog 2001
+                            word.AddError("not supported(Veriog2001)");
+                            Verilog.Variables.Net.ParseCreateFromDeclaration(word, function);
                             continue;
                         default:
                             break;

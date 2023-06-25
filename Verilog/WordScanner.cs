@@ -189,13 +189,13 @@ namespace pluginVerilog.Verilog
 
         public void AddPrototypeError(string message)
         {
-            if (prototype) return;
+//            if (prototype) return;
             wordPointer.AddError(message);
         }
 
         public void AddPrototypeWarning(string message)
         {
-            if (prototype) return;
+//            if (prototype) return;
             wordPointer.AddWarning(message);
         }
 
@@ -264,18 +264,6 @@ namespace pluginVerilog.Verilog
                 while (wordPointer.Eof && stock.Count != 0)
                 {
                     returnHier();
-                    //bool error = false;
-                    //if (wordPointer.ParsedDocument.ErrorCount != 0) error = true;
-
-                    //if (wordPointer.ParsedDocument == stock.Last().ParsedDocument)
-                    //{
-                    //    error = false;
-                    //}
-
-                    //wordPointer = stock.Last();
-                    //stock.Remove(stock.Last());
-                    //if (error) wordPointer.AddError("include errors");
-                    //wordPointer.MoveNext();
                 }
                 recheckWord();
             }
@@ -294,6 +282,7 @@ namespace pluginVerilog.Verilog
         private void recheckWord()
         {
 
+            // skip comments on the end of file
             while (!wordPointer.Eof)
             {
                 if (wordPointer.WordType == WordPointer.WordTypeEnum.Comment)
@@ -309,27 +298,20 @@ namespace pluginVerilog.Verilog
                     break;
                 }
             }
-            if(wordPointer.Eof && wordPointer.WordType == WordPointer.WordTypeEnum.Comment)
+
+            // return hier at EOF
+            if (wordPointer.Eof)
             {
-                if (nonGeneratedCount != 0)
+                if (wordPointer.WordType == WordPointer.WordTypeEnum.Comment || wordPointer.Text == "")
                 {
-                    wordPointer.Color(CodeDrawStyle.ColorType.Inactivated);
-                }
-                while (wordPointer.Eof && stock.Count != 0)
-                {
-                    returnHier();
-                    //bool error = false;
-                    //if (wordPointer.ParsedDocument.Messages.Count != 0) error = true;
-
-                    //if (wordPointer.ParsedDocument == stock.Last().ParsedDocument)
-                    //{
-                    //    error = false;
-                    //}
-
-                    //wordPointer = stock.Last();
-                    //stock.Remove(stock.Last());
-                    //if (error) wordPointer.AddError("include errors");
-                    //wordPointer.MoveNext();
+                    if (nonGeneratedCount != 0)
+                    {
+                        wordPointer.Color(CodeDrawStyle.ColorType.Inactivated);
+                    }
+                    while (wordPointer.Eof && stock.Count != 0)
+                    {
+                        returnHier();
+                    }
                 }
             }
 

@@ -190,11 +190,15 @@ namespace pluginVerilog.Verilog.ModuleItems
             }
 
             // swap to parameter overrided module
-            if(moduleInstantiation.ParameterOverrides.Count != 0)
+            if( instancedModule != null)
             {
-                instancedModule = word.ProjectProperty.GetInstancedModule(moduleInstantiation);
+                if (moduleInstantiation.ParameterOverrides.Count != 0)
+                {
+                    instancedModule = word.ProjectProperty.GetInstancedModule(moduleInstantiation);
+                }
+                if (instancedModule == null) module.Module.ReperseRequested = true;
             }
-            if (instancedModule == null) module.Module.ReperseRequested = true;
+
 
             while (!word.Eof)
             {

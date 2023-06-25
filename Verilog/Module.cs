@@ -120,7 +120,6 @@ namespace pluginVerilog.Verilog
                 prototypeWord.Prototype = true;
                 parseModuleItems(prototypeWord, parameterOverrides, null, module);
                 prototypeWord.Dispose();
-                prototypeWord = null;
 
                 // parse
                 word.RootParsedDocument.Macros = macroKeep;
@@ -174,6 +173,10 @@ namespace pluginVerilog.Verilog
 
             // module_identifier
             module.Name = word.Text;
+            if(module.Name == "TEST_RTL")
+            {
+                string a = "";
+            }
             word.Color(CodeDrawStyle.ColorType.Identifier);
             if (!General.IsIdentifier(word.Text))
             {

@@ -25,8 +25,26 @@ namespace pluginVerilog.Verilog.Statements
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
-            word.Color(CodeDrawStyle.ColorType.Identifier);
-            word.MoveNext();
+            Expressions.Expression ex = Expressions.Expression.ParseCreate(word, nameSpace);
+
+            if(ex is Verilog.Expressions.VariableReference)
+            {
+                var valRef = ex as Expressions.VariableReference;
+                if (valRef.Variable is Verilog.Variables.Event)
+                {
+                    // event expression
+                }
+                else
+                {
+                    word.AddError("event expected");
+                    word.SkipToKeyword(";");
+                }
+            }
+            else
+            {
+                word.AddError("event expected");
+                word.SkipToKeyword(";");
+            }
 
             if (word.Text != ";")
             {

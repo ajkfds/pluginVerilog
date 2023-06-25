@@ -36,7 +36,7 @@ namespace pluginVerilog.Verilog.Expressions
                 word.AddError("undefined");
             }
 
-            word.Color(CodeDrawStyle.ColorType.Identifier);
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
             if(word.GetCharAt(0) != '(')

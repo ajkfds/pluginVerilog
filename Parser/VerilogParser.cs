@@ -124,6 +124,10 @@ namespace pluginVerilog.Parser
                         {
                             module = Verilog.Module.Create(word, parameterOverrides, null, File, true);
                         }
+                        if(module.ModuleInstantiations.Count != 0) // prepare reparse (instanced module could have un-refferenced link)
+                        {
+                            module.ReperseRequested = true;
+                        }
                     }
                     else
                     {

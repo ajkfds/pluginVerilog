@@ -85,7 +85,7 @@ namespace pluginVerilog.Data
 
         private void disposeItems()
         {
-            if (ParsedDocument != null && ParameterOverrides.Count != 0)
+            if (ParsedDocument != null)// && ParameterOverrides.Count != 0)
             {
                 foreach (var incFile in VerilogParsedDocument.IncludeFiles.Values)
                 {
@@ -99,20 +99,21 @@ namespace pluginVerilog.Data
         public string ModuleName { set; get; }
 
 
-        public Dictionary<string, Verilog.Expressions.Expression> ParameterOverrides;
+//        public Dictionary<string, Verilog.Expressions.Expression> ParameterOverrides;
         public string ParameterId
         {
             get
             {
-                StringBuilder sb = new StringBuilder();
-                foreach (var kvp in ParameterOverrides)
-                {
-                    sb.Append(kvp.Key);
-                    sb.Append("=");
-                    sb.Append(kvp.Value.Value.ToString());
-                    sb.Append(",");
-                }
-                return sb.ToString();
+                return "";
+                //StringBuilder sb = new StringBuilder();
+                //foreach (var kvp in ParameterOverrides)
+                //{
+                //    sb.Append(kvp.Key);
+                //    sb.Append("=");
+                //    sb.Append(kvp.Value.Value.ToString());
+                //    sb.Append(",");
+                //}
+                //return sb.ToString();
             }
         }
 
