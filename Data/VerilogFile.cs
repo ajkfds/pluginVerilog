@@ -25,8 +25,28 @@ namespace pluginVerilog.Data
             {
                 fileItem.Name = relativePath;
             }
+
             return fileItem;
         }
+
+        public static VerilogFile CreateSystemVerilog(string relativePath, codeEditor.Data.Project project)
+        {
+            VerilogFile fileItem = new VerilogFile();
+            fileItem.Project = project;
+            fileItem.RelativePath = relativePath;
+            if (relativePath.Contains('\\'))
+            {
+                fileItem.Name = relativePath.Substring(relativePath.LastIndexOf('\\') + 1);
+            }
+            else
+            {
+                fileItem.Name = relativePath;
+            }
+            fileItem.SystemVerilog = true;
+            return fileItem;
+        }
+
+        public bool SystemVerilog { get; set; } = false;
 
         public string FileID
         {

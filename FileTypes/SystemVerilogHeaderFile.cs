@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.FileTypes
 {
-    public class SystemVerilogFile : codeEditor.FileTypes.FileType
+    public class SystemVerilogHeaderFile : codeEditor.FileTypes.FileType
     {
-        public override string ID { get { return "SystemVerilogFile"; } }
+        public override string ID { get { return "SystemVerilogHeaderFile"; } }
 
         public override bool IsThisFileType(string relativeFilePath, codeEditor.Data.Project project)
         {
             if (
-                relativeFilePath.ToLower().EndsWith(".sv")
+                relativeFilePath.ToLower().EndsWith(".svh")
             )
             {
                 return true;
@@ -23,7 +23,8 @@ namespace pluginVerilog.FileTypes
 
         public override codeEditor.Data.File CreateFile(string relativeFilePath, codeEditor.Data.Project project)
         {
-            return Data.VerilogFile.Create(relativeFilePath, project);
+            return Data.VerilogHeaderFile.Create(relativeFilePath, project);
         }
+
     }
 }

@@ -101,6 +101,7 @@ namespace pluginVerilog.Verilog.Variables
 
         public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
         {
+            // ### Verilog 2001
             // net_declaration ::=    net_type                                          [signed]        [delay3] list_of_net_identifiers;
             //                      | net_type[drive_strength]                          [signed]        [delay3] list_of_net_decl_assignments;
             //                      | net_type                  [vectored | scalared]   [signed] range  [delay3] list_of_net_identifiers;
@@ -117,6 +118,35 @@ namespace pluginVerilog.Verilog.Variables
             // net_decl_assignment          ::= net_identifier = expression
             // dimension                    ::= [ dimension_constant_expression : dimension_constant_expression ]
             // range                        ::= [ msb_constant_expression : lsb_constant_expression ] 
+
+            // ### SystemVerilog 2012
+            //          net_declaration::=
+            //                  net_type[drive_strength | charge_strength][vectored | scalared] data_type_or_implicit[delay3] list_of_net_decl_assignments;
+            //                  //
+            //                  | net_type_identifier[delay_control] list_of_net_decl_assignments;
+            //                  // net_type_identifier : user defined nettype
+            //                  | interconnect implicit_data_type[ # delay_value ] net_identifier { unpacked_dimension } [ , net_identifier { unpacked_dimension }] ;
+            //                  // 
+            //          data_type_or_implicit::= data_type | implicit_data_type
+            //          implicit_data_type ::= [ signing ] { packed_dimension } 
+
+            //          data_type::=
+            //              integer_vector_type[signing] { packed_dimension }
+            //              | integer_atom_type[signing]
+            //              | non_integer_type
+            //              | struct_union[packed[signing]] { struct_union_member { struct_union_member } } { packed_dimension }
+            //              | enum [enum_base_type] { enum_name_declaration { , enum_name_declaration } } { packed_dimension }
+            //              | string
+            //              | chandle
+            //              | virtual [interface ] interface_identifier[parameter_value_assignment][ . modport_identifier]
+            //              | [class_scope | package_scope] type_identifier { packed_dimension }
+            //              | class_type
+            //              | event
+            //              | ps_covergroup_identifier 
+            //              | type_reference
+
+            // integer_vector_type::= bit | logic | reg
+
 
             NetTypeEnum netType = NetTypeEnum.Wire;
             switch (word.Text)

@@ -21,7 +21,11 @@ namespace pluginVerilog.Parser
             File = verilogFile;
             parsedDocument = new Verilog.ParsedDocument(verilogFile, parseMode);
             parsedDocument.Version = verilogFile.CodeDocument.Version;
-            word = new Verilog.WordScanner(VerilogDocument, parsedDocument,false);
+            if (verilogFile is Data.VerilogFile && (verilogFile as Data.VerilogFile).SystemVerilog)
+            {
+                parsedDocument.SystemVerilog = true;
+            }
+             word = new Verilog.WordScanner(VerilogDocument, parsedDocument, parsedDocument.SystemVerilog);
         }
 
         public VerilogParser(
@@ -43,7 +47,7 @@ namespace pluginVerilog.Parser
             parsedDocument = new Verilog.ParsedDocument(verilogFile, parseMode);
             parsedDocument.Version = verilogFile.CodeDocument.Version;
             parsedDocument.Instance = true;
-            word = new Verilog.WordScanner(VerilogDocument, parsedDocument, false);
+            word = new Verilog.WordScanner(VerilogDocument, parsedDocument, parsedDocument.SystemVerilog);
         }
 
 
@@ -80,19 +84,55 @@ namespace pluginVerilog.Parser
         }
 
 
-        /*
-        source_text ::= { description }
-        description ::= module_declaration
-                        | udp_declaration
-        module_declaration ::=  { attribute_instance } module_keyword module_identifier [ module_parameter_port_list ]
-                                    [ list_of_ports ] ; { module_item }
-                                    endmodule
-                                | { attribute_instance } module_keyword module_identifier [ module_parameter_port_list ]
-                                    [ list_of_port_declarations ] ; { non_port_module_item }
-                                    endmodule
-        module_keyword ::= module | macromodule  
+        /* Verilog 2001
+            source_text ::= { description }
+            description ::= module_declaration
+                            | udp_declaration
+            module_declaration ::=      { attribute_instance } module_keyword module_identifier [ module_parameter_port_list ]
+                                        [ list_of_ports ] ; { module_item }
+                                        endmodule
+
+                                        | { attribute_instance } module_keyword module_identifier [ module_parameter_port_list ]
+                                        [ list_of_port_declarations ] ; { non_port_module_item }
+                                        endmodule
+            module_keyword ::= module | macromodule
         */
-        //        public static System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+
+        /* System Verilog 2012
+            source_text ::= [ timeunits_declaration ] { description } 
+            description ::= 
+                module_declaration 
+                | udp_declaration 
+                | interface_declaration 
+                | program_declaration         
+                | package_declaration 
+                | { attribute_instance } package_item 
+                | { attribute_instance } bind_directive 
+                | config_declaration 
+
+        module_nonansi_header ::= 
+            { attribute_instance } module_keyword [ lifetime ] module_identifier 
+            { package_import_declaration } [ parameter_port_list ] list_of_ports ;
+
+        module_ansi_header ::= 
+            { attribute_instance } module_keyword [ lifetime ] module_identifier 
+            { package_import_declaration }1 [ parameter_port_list ] [ list_of_port_declarations ] ;
+
+        module_declaration ::= 
+                module_nonansi_header [ timeunits_declaration ] { module_item } 
+                endmodule [ : module_identifier ] 
+
+                | module_ansi_header [ timeunits_declaration ] { non_port_module_item } 
+                endmodule [ : module_identifier ] 
+
+                | { attribute_instance } module_keyword [ lifetime ] module_identifier ( .* ) ;
+                [ timeunits_declaration ] { module_item } endmodule [ : module_identifier ] 
+
+                | extern module_nonansi_header 
+                | extern module_ansi_header 
+        module_keyword ::= module | macromodule
+
+        */
 
         public override void Parse()
         {

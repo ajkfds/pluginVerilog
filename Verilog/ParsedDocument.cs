@@ -25,6 +25,7 @@ namespace pluginVerilog.Verilog
             }
         }
 
+        public bool SystemVerilog = false;
         public bool Instance = false;
         public Dictionary<string, Module> Modules = new Dictionary<string, Module>();
 

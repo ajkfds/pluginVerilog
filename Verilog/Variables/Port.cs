@@ -267,7 +267,9 @@ namespace pluginVerilog.Verilog.Variables
 
         private static void parseInputDeclaration(WordScanner word, NameSpace nameSpace, IPortNameSpace portNameSpace, Attribute attribute)
         {
+            // Verilog 2001
             // input_declaration ::= input[net_type][signed][range] list_of_port_identifiers
+
             if (word.Text != "input") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
@@ -537,6 +539,11 @@ namespace pluginVerilog.Verilog.Variables
                         break;
                     case "time":
                         varType = portVariableType.time;
+                        word.Color(CodeDrawStyle.ColorType.Keyword);
+                        word.MoveNext();
+                        break;
+                    case "logic":
+                        if (!word.SystemVerilog) word.AddError("SystemVerilog Description");
                         word.Color(CodeDrawStyle.ColorType.Keyword);
                         word.MoveNext();
                         break;
