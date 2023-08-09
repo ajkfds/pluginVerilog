@@ -35,6 +35,7 @@ namespace pluginVerilog.Verilog.Variables
             label.AppendText("]");
         }
 
+
         public ajkControls.ColorLabel.ColorLabel GetLabel()
         {
             ajkControls.ColorLabel.ColorLabel label = new ajkControls.ColorLabel.ColorLabel();

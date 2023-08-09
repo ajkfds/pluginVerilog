@@ -139,7 +139,11 @@ namespace pluginVerilog.Verilog.Expressions
                 number.Value = long.Parse(sb.ToString());
                 number.Constant = true;
                 word.MoveNext();
-                return number;
+
+                if (!word.Text.StartsWith("\'")) return number;
+                Number number2 = Number.ParseCreate(word);
+                if(number2 != null && number != null) number2.BitWidth = number.BitWidth;
+                return number2;
             }
             else
             {

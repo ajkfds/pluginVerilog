@@ -23,7 +23,7 @@ namespace pluginVerilog.FileTypes
 
         public override codeEditor.Data.File CreateFile(string relativeFilePath, codeEditor.Data.Project project)
         {
-            return Data.VerilogFile.Create(relativeFilePath, project);
+            return Data.VerilogFile.CreateSystemVerilog(relativeFilePath, project);
         }
     }
 }

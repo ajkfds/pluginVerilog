@@ -11,10 +11,31 @@ namespace pluginVerilog.Verilog.ModuleItems
         protected AlwaysConstruct() { }
         public Statements.IStatement Statetment { get; protected set;}
 
+        /* ## Verilog2001
+            always_construct ::= always statement     */
+
+        /* ## SystemVeriloh
+            always_construct ::= always_keyword statement 
+            always_keyword ::= always | always_comb | always_latch | always_ff     
+         */
         public static AlwaysConstruct ParseCreate(WordScanner word, IModuleOrGeneratedBlock module)
         {
-        //  always_construct::= always statement
-            System.Diagnostics.Debug.Assert(word.Text == "always");
+            switch (word.Text)
+            {
+                case "always":
+                    break;
+                case "always_comb":
+                case "always_latch":
+                case "always_ff":
+                    if (!word.SystemVerilog) word.AddError("Systemverilog Function");
+                    break;
+                default:
+                    System.Diagnostics.Debug.Assert(true);
+                    break;
+            }
+
+
+            //System.Diagnostics.Debug.Assert(word.Text == "always");
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
@@ -28,17 +49,5 @@ namespace pluginVerilog.Verilog.ModuleItems
             return always;
         }
     }
-    /*
-    A.6.2 Procedural blocks and assignments
-    blocking_assignment ::= variable_lvalue = [ delay_or_event_control ] expression  
-    nonblocking_assignment ::= variable_lvalue <= [ delay_or_event_control ] expression  
-    procedural_continuous_assignments   ::= assign variable_assignment
-                                            | deassign variable_lvalue
-                                            | force variable_assignment
-                                            | force net_assignment
-                                            | release variable_lvalue
-                                            | release net_lvalue 
-    function_blocking_assignment    ::= variable_lvalue = expression
-    function_statement_or_null      ::= function_statement        | { attribute_instance } ;  
-    */
+
 }

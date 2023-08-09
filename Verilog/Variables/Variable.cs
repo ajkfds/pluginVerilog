@@ -7,18 +7,26 @@ using System.Drawing;
 
 namespace pluginVerilog.Verilog.Variables
 {
-    // Verilog 2001
-    // Variable -+-> net
-    //           +-> reg
-    //           +-> real
-    //           +-> integer
-    //           +-> event
-    //           +-> genvar
-    //           +-> real
-    //           +-> realtime
-    //           +-> reg
-    //           +-> time
-    //           +-> trireg
+    // ## Verilog 2001
+    // Variable -+-net +-> wire         4state  >=1bit      v
+    //           +-data+-> reg          4state  >=1bit      v
+    //                 +-> real                             v
+    //                 +-> integer              32bit       v
+    //                 +-> event                            v
+    //                 +-> genvar                           v
+    //                 +-> real                             v
+    //                 +-> realtime                         v
+    //                 +-> reg                              v
+    //                 +-> time                             v
+    //                 +-> trireg                           v
+    // ## SystemVerilog2012
+    // Variable -+-data+-> logic        4state  >=1bit      v
+    //                 +-> bit          2state  >=1bit      v
+    //                 +-> byte         2state  8bit
+    //                 +-> shortint     2state  16bit
+    //                 +-> int          2state  32bit
+    //                 +-> longint      2state  64bit
+    //                 +-> shortreal
 
 
     public class Variable : CommentAnnotated
@@ -40,6 +48,12 @@ namespace pluginVerilog.Verilog.Variables
         public virtual void AppendTypeLabel(ajkControls.ColorLabel.ColorLabel label)
         {
 
+        }
+
+        public virtual Variable Clone()
+        {
+            Variable val = new Variable();
+            return val;
         }
 
         // comment annotation
@@ -190,6 +204,13 @@ namespace pluginVerilog.Verilog.Variables
         data_type_or_implicit ::=   data_type | implicit_data_type 
 
         implicit_data_type ::= [ signing ] { packed_dimension } 
+     */
+    /*
+        net_declaration ::= 
+            net_type [ drive_strength | charge_strength ] [ vectored | scalared ]  data_type_or_implicit [ delay3 ] list_of_net_decl_assignments ;
+            | net_type_identifier [ delay_control ] list_of_net_decl_assignments ;
+            | interconnect implicit_data_type [ # delay_value ] net_identifier { unpacked_dimension } [ , net_identifier { unpacked_dimension }] ;
+            net_type ::= supply0 | supply1 | tri | triand | trior | trireg| tri0 | tri1 | uwire| wire | wand | wor
      */
 
     /* 

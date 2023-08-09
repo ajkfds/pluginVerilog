@@ -446,6 +446,7 @@ namespace pluginVerilog.Verilog
         }
 
         /*
+        ##Verilog 2001
         module_item ::= module_or_generate_item
             | port_declaration ;
             | { attribute_instance } generated_instantiation 
@@ -473,6 +474,59 @@ namespace pluginVerilog.Verilog
             | function_declaration          
         parameter_override ::= defparam list_of_param_assignments ;  
         */
+
+        /*
+         ## SystemVerilog 2012
+        
+        module_common_item::=
+                      module_or_generate_item_declaration 
+                    | interface_instantiation 
+                    | program_instantiation 
+                    | assertion_item 
+                    | bind_directive 
+                    | continuous_assign 
+                    | net_alias 
+                    | initial_construct 
+                    | final_construct 
+                    | always_construct 
+                    | loop_generate_construct 
+                    | conditional_generate_construct
+        
+        module_item ::= 
+                      port_declaration ;
+                    | non_port_module_item
+
+        module_or_generate_item ::= 
+                      { attribute_instance } parameter_override 
+                    | { attribute_instance } gate_instantiation 
+                    | { attribute_instance } udp_instantiation
+                    | { attribute_instance } module_instantiation
+                    | { attribute_instance } module_common_item
+
+        module_or_generate_item_declaration ::= 
+                      package_or_generate_item_declaration
+                    | genvar_declaration
+                    | clocking_declaration
+                    | default clocking clocking_identifier ;
+
+        package_or_generate_item_declaration ::= 
+                      net_declaration 
+                    | data_declaration 
+                    | task_declaration 
+                    | function_declaration 
+                    | checker_declaration 
+                    | dpi_import_export 
+                    | extern_constraint_declaration 
+                    | class_declaration 
+                    | class_constructor_declaration 
+                    | local_parameter_declaration ;
+                    | parameter_declaration ;
+                    | covergroup_declaration 
+                    | overload_declaration 
+                    | assertion_item_declaration 
+                    | ;
+        */
+
         private static void parseModuleItems(WordScanner word, Module module)
         {
             while (!word.Eof)
@@ -498,7 +552,7 @@ namespace pluginVerilog.Verilog
                             word.MoveNext();
                         }
                         break;
-                    // module_or_generate_item_declaration
+                    // module_or_generate_item_declaration(V) / package_or_generate_item_declaration(SV)
                     case "reg":
                         Verilog.Variables.Reg.ParseCreateFromDeclaration(word, module);
                         break;
@@ -535,8 +589,20 @@ namespace pluginVerilog.Verilog
                     case "genvar":
                         Verilog.Variables.Genvar.ParseCreateFromDeclaration(word, module);
                         break;
+                    case "logic":
+                        Verilog.Variables.Logic.ParseCreateFromDeclaration(word, module);
+                        break;
+                    case "bit":
+                        Verilog.Variables.Bit.ParseCreateFromDeclaration(word, module);
+                        break;
+                    case "enum":
+                        Verilog.Variables.Enum.ParseCreateFromDeclaration(word, module);
+                        break;
                     // always_construct
                     case "always":
+                    case "always_comb":
+                    case "always_latch":
+                    case "always_ff":
                         ModuleItems.AlwaysConstruct always = ModuleItems.AlwaysConstruct.ParseCreate(word, module);
                         break;
                     // initial_construct

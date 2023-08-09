@@ -8,15 +8,15 @@ using ajkControls.ColorLabel;
 
 namespace pluginVerilog.Verilog.Variables
 {
-    public class Reg : Variable
+    public class Logic : Variable
     {
-        protected Reg() { }
+        protected Logic() { }
 
         public Range Range { get; protected set; }
 
         public bool Signed { get; protected set; }
 
-        public Reg(string Name, Range range, bool signed)
+        public Logic(string Name, Range range, bool signed)
         {
             this.Name = Name;
             this.Range = range;
@@ -45,7 +45,7 @@ namespace pluginVerilog.Verilog.Variables
 
         public override void AppendTypeLabel(ColorLabel label)
         {
-            label.AppendText("reg ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+            label.AppendText("logic ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
             label.AppendText(" ");
             if (Signed)
             {
@@ -59,76 +59,54 @@ namespace pluginVerilog.Verilog.Variables
             }
         }
 
-        public override Variable Clone()
+        public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
         {
-            Reg val = new Reg();
-            val.Range = Range;
-            val.Signed = Signed;
-            return val;
-        }
+        // reg_declaration::= reg [signed] [range] list_of_variable_identifiers;
 
-        public static Reg ParseCreateType(WordScanner word,NameSpace nameSpace)
-        {
-            if (word.Text != "reg") System.Diagnostics.Debugger.Break();
+        // ## Systemverilog
+        //         data_declaration ::= [ const ] [var][lifetime] data_type_or_implicit list_of_variable_decl_assignments;
+        //                              | ...
+
+        //         data_type_or_implicit ::=  data_type
+        //                                    |...
+
+        // data_type::=     integer_vector_type[signing] { packed_dimension }
+        //                  |...
+        // integer_vector_type: bit | logic | reg
+
             word.Color(CodeDrawStyle.ColorType.Keyword);
-            word.MoveNext(); // reg
-
-
-            Reg type = new Reg();
-            type.Signed = false;
+            word.MoveNext(); // logic
+            bool signed = false;
 
             if (word.Eof)
             {
                 word.AddError("illegal reg declaration");
-                return null;
+                return;
             }
             if (word.Text == "signed")
             {
                 word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext();
-                type.Signed = true;
+                signed = true;
             }
             if (word.Eof)
             {
                 word.AddError("illegal reg declaration");
-                return null;
-            }
-
-            type.Range = null;
-            if (word.GetCharAt(0) == '[')
-            {
-                type.Range = Range.ParseCreate(word, nameSpace);
-                if (word.Eof || type.Range == null)
-                {
-                    word.AddError("illegal reg declaration");
-                    return null;
-                }
-            }
-            return type;
-        }
-
-        public static Reg CreateFromType(string name,Reg type)
-        {
-            Reg reg = new Reg();
-            reg.Signed = type.Signed;
-            reg.Range = type.Range;
-            reg.Name = name;
-            return reg;
-        }
-
-        public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
-        {
-            // reg_declaration::= reg [signed] [range] list_of_variable_identifiers;
-
-            Reg type = Reg.ParseCreateType(word, nameSpace);
-            if (type == null)
-            {
-                word.SkipToKeyword(";");
-                if (word.Text == ";") word.MoveNext();
                 return;
             }
 
-            List<Reg> regs = new List<Reg>();
+            Range range = null;
+            if (word.GetCharAt(0) == '[')
+            {
+                range = Range.ParseCreate(word, nameSpace);
+                if (word.Eof || range == null)
+                {
+                    word.AddError("illegal reg declaration");
+                    return;
+                }
+            }
+
+            List<Logic> logics = new List<Logic>();
             while (!word.Eof)
             {
                 if (!General.IsIdentifier(word.Text))
@@ -137,10 +115,13 @@ namespace pluginVerilog.Verilog.Variables
                     return;
                 }
 
-                Reg reg = Reg.CreateFromType(word.Text, type);
+                Logic logic = new Logic();
+                logics.Add(logic);
                 WordReference nameRef = word.GetReference();
-                reg.DefinedReference = word.GetReference();
-                regs.Add(reg);
+                logic.Signed = signed;
+                logic.Range = range;
+                logic.Name = word.Text;
+                logic.DefinedReference = word.GetReference();
 
                 // register valiable
                 if (!word.Active)
@@ -148,12 +129,12 @@ namespace pluginVerilog.Verilog.Variables
                     // skip
                 }else if (word.Prototype)
                 {
-                    if (nameSpace.Variables.ContainsKey(reg.Name))
+                    if (nameSpace.Variables.ContainsKey(logic.Name))
                     {
-                        if (nameSpace.Variables[reg.Name] is Net)
+                        if (nameSpace.Variables[logic.Name] is Net)
                         {
-                            nameSpace.Variables.Remove(reg.Name);
-                            nameSpace.Variables.Add(reg.Name, reg);
+                            nameSpace.Variables.Remove(logic.Name);
+                            nameSpace.Variables.Add(logic.Name, logic);
                         }
                         else
                         {
@@ -162,15 +143,15 @@ namespace pluginVerilog.Verilog.Variables
                     }
                     else
                     {
-                        nameSpace.Variables.Add(reg.Name, reg);
+                        nameSpace.Variables.Add(logic.Name, logic);
                     }
                     word.Color(CodeDrawStyle.ColorType.Register);
                 }
                 else
                 {
-                    if(nameSpace.Variables.ContainsKey(reg.Name) && nameSpace.Variables[reg.Name] is Reg)
+                    if(nameSpace.Variables.ContainsKey(logic.Name) && nameSpace.Variables[logic.Name] is Reg)
                     {
-                        reg = nameSpace.Variables[reg.Name] as Reg;
+                        logic = nameSpace.Variables[logic.Name] as Logic;
                     }
                     word.Color(CodeDrawStyle.ColorType.Register);
                 }
@@ -181,7 +162,7 @@ namespace pluginVerilog.Verilog.Variables
                 {
                     word.MoveNext();
                     Expressions.Expression initalValue = Expressions.Expression.ParseCreate(word, nameSpace);
-                    reg.AssignedReferences.Add(reg.DefinedReference);
+                    logic.AssignedReferences.Add(logic.DefinedReference);
                 }
                 else if (word.Text == "[")
                 {
@@ -190,7 +171,7 @@ namespace pluginVerilog.Verilog.Variables
                         Dimension dimension = Dimension.ParseCreate(word, nameSpace);
                         if(word.Active && word.Prototype)
                         {
-                            reg.dimensions.Add(dimension);
+                            logic.dimensions.Add(dimension);
                         }
                     }
                 }
@@ -207,9 +188,9 @@ namespace pluginVerilog.Verilog.Variables
             {
                 word.MoveNext();
                 string comment = word.GetFollowedComment();
-                foreach (Reg reg in regs)
+                foreach (Logic logic in logics)
                 {
-                    reg.Comment = comment;
+                    logic.Comment = comment;
                 }
             }
 

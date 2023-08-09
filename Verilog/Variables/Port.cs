@@ -267,8 +267,22 @@ namespace pluginVerilog.Verilog.Variables
 
         private static void parseInputDeclaration(WordScanner word, NameSpace nameSpace, IPortNameSpace portNameSpace, Attribute attribute)
         {
-            // Verilog 2001
+            // ##Verilog 2001
             // input_declaration ::= input[net_type][signed][range] list_of_port_identifiers
+            // net_type ::= wire | tri | tri0 | wand | triand | wor | trior | trireg | none
+
+            // ##SystemVerilog
+            // input_declaration ::=      input net_port_type list_of_port_identifiers
+            //                          | input variable_port_type list_of_variable_identifiers
+            //
+            // net_port_type ::=    [net_type] data_type_or_implicit
+            //                      | net_type_identifier
+            //                      | interconnect implicit_data_type
+            //
+            // variable_port_type   ::= var_data_type 
+            // var_data_type        ::= data_type | var data_type_or_implicit
+
+            // SystemVerilog Accepts net & variable port types. Verilog accepts only nets.
 
             if (word.Text != "input") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);
@@ -276,7 +290,41 @@ namespace pluginVerilog.Verilog.Variables
 
             bool signed = false;
 
+            portVariableType varType = portVariableType.wire;
+
             Net.NetTypeEnum? netType = parseNetType(word);
+            if (netType == null)
+            {
+                switch (word.Text)
+                {
+                    case "reg":
+                        if (!word.SystemVerilog) word.AddError("SystemVerilog Description");
+                        varType = portVariableType.reg;
+                        word.Color(CodeDrawStyle.ColorType.Keyword);
+                        word.MoveNext();
+                        break;
+                    case "integer":
+                        if (!word.SystemVerilog) word.AddError("SystemVerilog Description");
+                        varType = portVariableType.integer;
+                        word.Color(CodeDrawStyle.ColorType.Keyword);
+                        word.MoveNext();
+                        break;
+                    case "time":
+                        if (!word.SystemVerilog) word.AddError("SystemVerilog Description");
+                        varType = portVariableType.time;
+                        word.Color(CodeDrawStyle.ColorType.Keyword);
+                        word.MoveNext();
+                        break;
+                    case "logic":
+                        if (!word.SystemVerilog) word.AddError("SystemVerilog Description");
+                        word.Color(CodeDrawStyle.ColorType.Keyword);
+                        word.MoveNext();
+                        break;
+                    default:
+                        netType = Net.NetTypeEnum.Wire;
+                        break;
+                }
+            }
 
             if (word.Text == "signed")
             {
@@ -394,7 +442,26 @@ namespace pluginVerilog.Verilog.Variables
 
         private static void parseInoutDeclaration(WordScanner word, Module module, IPortNameSpace portNameSpace, Attribute attribute)
         {
+            // ## Verilog2001
             // inout_declaration::= inout[net_type][signed][range] list_of_port_identifiers
+
+            // SystemVerilog
+            // port_declaration ::=
+            //        { attribute_instance } inout_declaration
+            //      | { attribute_instance } input_declaration
+            //      | { attribute_instance } output_declaration
+            //      | { attribute_instance } ref_declaration
+            //      | { attribute_instance } interface_port_declaration
+            //
+            // inout_declaration ::=    inout net_port_type list_of_port_identifiers
+            // input_declaration ::=      input net_port_type list_of_port_identifiers
+            //                          | input variable_port_type list_of_variable_identifiers
+            // output_declaration::=      output net_port_type list_of_port_identifiers
+            //                          | output variable_port_type list_of_variable_port_identifiers
+            // interface_port_declaration::=      interface_identifier list_of_interface_identifiers
+            //                                  | interface_identifier.modport_identifier list_of_interface_identifiers
+            // ref_declaration ::=      ref variable_port_type list_of_variable_identifiers
+
             if (word.Text != "inout") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
@@ -505,15 +572,28 @@ namespace pluginVerilog.Verilog.Variables
 
         private static void parseOutputDeclaration(WordScanner word, Module module, IPortNameSpace portNameSpace, Attribute attribute)
         {
+            // Verilog 2001
             // output_declaration ::=     output       [net_type] [signed][range] list_of_port_identifiers
             //                          | output [reg]            [signed][range] list_of_port_identifiers
             //                          | output  reg             [signed][range] list_of_variable_port_identifiers
             //                          | output [output_variable_type]           list_of_port_identifiers
             //                          | output output_variable_type             list_of_variable_port_identifiers 
             // output_variable_type ::= integer | time  
-
+            //
             // list_of_port_identifiers::= port_identifier { , port_identifier }
             // list_of_variable_port_identifiers::= port_identifier[ = constant_expression] { , port_identifier[ = constant_expression] }
+
+
+            // SystemVerilog
+            // output_declaration::=      output net_port_type list_of_port_identifiers
+            //                          | output variable_port_type list_of_variable_port_identifiers
+            //
+            // net_port_type ::=    [net_type] data_type_or_implicit
+            //                      | net_type_identifier
+            //                      | interconnect implicit_data_type
+            //
+            // variable_port_type   ::= var_data_type 
+            // var_data_type        ::= data_type | var data_type_or_implicit
 
             if (word.Text != "output") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);

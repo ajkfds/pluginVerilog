@@ -16,12 +16,38 @@ namespace pluginVerilog.Verilog.Variables
             this.Name = Name;
         }
 
+        public static Integer ParseCreateType(WordScanner word, NameSpace nameSpace)
+        {
+            if (word.Text != "integer") System.Diagnostics.Debugger.Break();
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext(); // integer
+
+            Integer type = new Integer();
+            if (word.Eof)
+            {
+                word.AddError("illegal integer declaration");
+                return null;
+            }
+            return type;
+        }
+
+        public static Integer CreateFromType(string name, Integer type)
+        {
+            Integer integer = new Integer();
+            integer.Name = name;
+            return integer;
+        }
         public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
         {
             //            integer_declaration::= integer list_of_variable_identifiers;
 
-            word.Color(CodeDrawStyle.ColorType.Keyword);
-            word.MoveNext(); // integer
+            Integer type = Integer.ParseCreateType(word, nameSpace);
+            if (type == null)
+            {
+                word.SkipToKeyword(";");
+                if (word.Text == ";") word.MoveNext();
+                return;
+            }
 
             while (!word.Eof)
             {
@@ -30,8 +56,7 @@ namespace pluginVerilog.Verilog.Variables
                     word.AddError("illegal integer identifier");
                     return;
                 }
-                Integer val = new Integer();
-                val.Name = word.Text;
+                Integer val = Integer.CreateFromType(word.Text, type);
                 val.DefinedReference = word.GetReference();
 
                 word.Color(CodeDrawStyle.ColorType.Variable);

@@ -45,6 +45,10 @@ namespace pluginVerilog.Parser
 
             File = verilogFile;
             parsedDocument = new Verilog.ParsedDocument(verilogFile, parseMode);
+            if (verilogFile is Data.VerilogFile && (verilogFile as Data.VerilogFile).SystemVerilog)
+            {
+                parsedDocument.SystemVerilog = true;
+            }
             parsedDocument.Version = verilogFile.CodeDocument.Version;
             parsedDocument.Instance = true;
             word = new Verilog.WordScanner(VerilogDocument, parsedDocument, parsedDocument.SystemVerilog);

@@ -8,15 +8,15 @@ using ajkControls.ColorLabel;
 
 namespace pluginVerilog.Verilog.Variables
 {
-    public class Reg : Variable
+    public class Bit : Variable
     {
-        protected Reg() { }
+        protected Bit() { }
 
         public Range Range { get; protected set; }
 
         public bool Signed { get; protected set; }
 
-        public Reg(string Name, Range range, bool signed)
+        public Bit(string Name, Range range, bool signed)
         {
             this.Name = Name;
             this.Range = range;
@@ -45,7 +45,7 @@ namespace pluginVerilog.Verilog.Variables
 
         public override void AppendTypeLabel(ColorLabel label)
         {
-            label.AppendText("reg ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+            label.AppendText("bit ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
             label.AppendText(" ");
             if (Signed)
             {
@@ -59,22 +59,14 @@ namespace pluginVerilog.Verilog.Variables
             }
         }
 
-        public override Variable Clone()
+        public static Bit ParseCreateType(WordScanner word, NameSpace nameSpace)
         {
-            Reg val = new Reg();
-            val.Range = Range;
-            val.Signed = Signed;
-            return val;
-        }
-
-        public static Reg ParseCreateType(WordScanner word,NameSpace nameSpace)
-        {
-            if (word.Text != "reg") System.Diagnostics.Debugger.Break();
+            if (word.Text != "bit") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);
-            word.MoveNext(); // reg
+            word.MoveNext(); // bit
 
 
-            Reg type = new Reg();
+            Bit type = new Bit();
             type.Signed = false;
 
             if (word.Eof)
@@ -107,20 +99,28 @@ namespace pluginVerilog.Verilog.Variables
             return type;
         }
 
-        public static Reg CreateFromType(string name,Reg type)
+        public static Bit CreateFromType(string name, Bit type)
         {
-            Reg reg = new Reg();
-            reg.Signed = type.Signed;
-            reg.Range = type.Range;
-            reg.Name = name;
-            return reg;
+            Bit bit = new Bit();
+            bit.Signed = type.Signed;
+            bit.Range = type.Range;
+            bit.Name = name;
+            return bit;
         }
-
         public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
         {
-            // reg_declaration::= reg [signed] [range] list_of_variable_identifiers;
+            // ## Systemverilog
+            //         data_declaration ::= [ const ] [var][lifetime] data_type_or_implicit list_of_variable_decl_assignments;
+            //                              | ...
 
-            Reg type = Reg.ParseCreateType(word, nameSpace);
+            //         data_type_or_implicit ::=  data_type
+            //                                    |...
+
+            // data_type::=     integer_vector_type[signing] { packed_dimension }
+            //                  |...
+            // integer_vector_type: bit | logic | reg
+
+            Bit type = Bit.ParseCreateType(word, nameSpace);
             if (type == null)
             {
                 word.SkipToKeyword(";");
@@ -128,7 +128,9 @@ namespace pluginVerilog.Verilog.Variables
                 return;
             }
 
-            List<Reg> regs = new List<Reg>();
+            if (!word.SystemVerilog) word.AddError("systemverilog description");
+
+            List<Bit> bits = new List<Bit>();
             while (!word.Eof)
             {
                 if (!General.IsIdentifier(word.Text))
@@ -137,40 +139,41 @@ namespace pluginVerilog.Verilog.Variables
                     return;
                 }
 
-                Reg reg = Reg.CreateFromType(word.Text, type);
+                Bit bit = Bit.CreateFromType(word.Text, type);
+                bits.Add(bit);
                 WordReference nameRef = word.GetReference();
-                reg.DefinedReference = word.GetReference();
-                regs.Add(reg);
+                bit.DefinedReference = word.GetReference();
 
                 // register valiable
                 if (!word.Active)
                 {
                     // skip
-                }else if (word.Prototype)
+                }
+                else if (word.Prototype)
                 {
-                    if (nameSpace.Variables.ContainsKey(reg.Name))
+                    if (nameSpace.Variables.ContainsKey(bit.Name))
                     {
-                        if (nameSpace.Variables[reg.Name] is Net)
+                        if (nameSpace.Variables[bit.Name] is Net)
                         {
-                            nameSpace.Variables.Remove(reg.Name);
-                            nameSpace.Variables.Add(reg.Name, reg);
+                            nameSpace.Variables.Remove(bit.Name);
+                            nameSpace.Variables.Add(bit.Name, bit);
                         }
                         else
                         {
-//                            nameRef.AddError("duplicated reg name");
+                            //                            nameRef.AddError("duplicated reg name");
                         }
                     }
                     else
                     {
-                        nameSpace.Variables.Add(reg.Name, reg);
+                        nameSpace.Variables.Add(bit.Name, bit);
                     }
                     word.Color(CodeDrawStyle.ColorType.Register);
                 }
                 else
                 {
-                    if(nameSpace.Variables.ContainsKey(reg.Name) && nameSpace.Variables[reg.Name] is Reg)
+                    if (nameSpace.Variables.ContainsKey(bit.Name) && nameSpace.Variables[bit.Name] is Reg)
                     {
-                        reg = nameSpace.Variables[reg.Name] as Reg;
+                        bit = nameSpace.Variables[bit.Name] as Bit;
                     }
                     word.Color(CodeDrawStyle.ColorType.Register);
                 }
@@ -181,16 +184,16 @@ namespace pluginVerilog.Verilog.Variables
                 {
                     word.MoveNext();
                     Expressions.Expression initalValue = Expressions.Expression.ParseCreate(word, nameSpace);
-                    reg.AssignedReferences.Add(reg.DefinedReference);
+                    bit.AssignedReferences.Add(bit.DefinedReference);
                 }
                 else if (word.Text == "[")
                 {
                     while (word.Text == "[")
                     {
                         Dimension dimension = Dimension.ParseCreate(word, nameSpace);
-                        if(word.Active && word.Prototype)
+                        if (word.Active && word.Prototype)
                         {
-                            reg.dimensions.Add(dimension);
+                            bit.dimensions.Add(dimension);
                         }
                     }
                 }
@@ -207,9 +210,9 @@ namespace pluginVerilog.Verilog.Variables
             {
                 word.MoveNext();
                 string comment = word.GetFollowedComment();
-                foreach (Reg reg in regs)
+                foreach (Bit logic in bits)
                 {
-                    reg.Comment = comment;
+                    logic.Comment = comment;
                 }
             }
 
