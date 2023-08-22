@@ -58,41 +58,44 @@ namespace pluginVerilog.Verilog.Variables
                 label.AppendText(" ");
             }
         }
-
-        public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
+        public static new Logic ParseCreateType(WordScanner word, NameSpace nameSpace)
         {
-        // reg_declaration::= reg [signed] [range] list_of_variable_identifiers;
+            // ## Verilog2001
+            // reg_declaration::= reg [signed] [range] list_of_variable_identifiers;
 
-        // ## Systemverilog
-        //         data_declaration ::= [ const ] [var][lifetime] data_type_or_implicit list_of_variable_decl_assignments;
-        //                              | ...
+            // ## Systemverilog
+            //         data_declaration ::= [ const ] [var][lifetime] data_type_or_implicit list_of_variable_decl_assignments;
+            //                              | ...
 
-        //         data_type_or_implicit ::=  data_type
-        //                                    |...
+            //         data_type_or_implicit ::=  data_type
+            //                                    |...
 
-        // data_type::=     integer_vector_type[signing] { packed_dimension }
-        //                  |...
-        // integer_vector_type: bit | logic | reg
+            // data_type::=     integer_vector_type[signing] { packed_dimension }
+            //                  |...
+            // integer_vector_type: bit | logic | reg
 
+            if (word.Text != "logic") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext(); // logic
-            bool signed = false;
+
+            Logic ret = new Logic();
+            ret.Signed = false;
 
             if (word.Eof)
             {
                 word.AddError("illegal reg declaration");
-                return;
+                return null;
             }
             if (word.Text == "signed")
             {
                 word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext();
-                signed = true;
+                ret.Signed = true;
             }
             if (word.Eof)
             {
                 word.AddError("illegal reg declaration");
-                return;
+                return null;
             }
 
             Range range = null;
@@ -102,10 +105,36 @@ namespace pluginVerilog.Verilog.Variables
                 if (word.Eof || range == null)
                 {
                     word.AddError("illegal reg declaration");
-                    return;
+                    return null;
                 }
             }
 
+            ret.Range = range;
+            return ret;
+        }
+        public static Logic CreateFromType(string name, Logic type)
+        {
+            Logic ret = new Logic();
+            ret.Signed = type.Signed;
+            ret.Range = type.Range;
+            ret.Name = name;
+            return ret;
+        }
+        public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
+        {
+            Logic type = Logic.ParseCreateType(word, nameSpace);
+            if (type == null)
+            {
+                word.SkipToKeyword(";");
+                if (word.Text == ";") word.MoveNext();
+                return;
+            }
+
+            ParseCreateFromDeclaration(word, nameSpace, type);
+        }
+
+        public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace,Logic type)
+        {
             List<Logic> logics = new List<Logic>();
             while (!word.Eof)
             {
@@ -115,12 +144,9 @@ namespace pluginVerilog.Verilog.Variables
                     return;
                 }
 
-                Logic logic = new Logic();
+                Logic logic = Logic.CreateFromType(word.Text, type);
                 logics.Add(logic);
                 WordReference nameRef = word.GetReference();
-                logic.Signed = signed;
-                logic.Range = range;
-                logic.Name = word.Text;
                 logic.DefinedReference = word.GetReference();
 
                 // register valiable

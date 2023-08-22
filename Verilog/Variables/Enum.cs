@@ -39,6 +39,10 @@ namespace pluginVerilog.Verilog.Variables
     {
         protected Enum() { }
 
+        public string Name;
+        public List<Item> Items = new List<Item>();
+
+
         public Range Range { get; protected set; }
 
 
@@ -71,7 +75,6 @@ namespace pluginVerilog.Verilog.Variables
         public override void AppendTypeLabel(ColorLabel label)
         {
         }
-
 
         public static Variable ParseCrateBaseDataType(WordScanner word, NameSpace nameSpace)
         {
@@ -131,9 +134,13 @@ namespace pluginVerilog.Verilog.Variables
             return val;
 
         }
-
-        public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
+        public static Enum ParseCreateType(WordScanner word, NameSpace nameSpace)
         {
+            if (word.Text != "enum") System.Diagnostics.Debugger.Break();
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext(); // enum
+
+
             /*
                 data_declaration ::= 
                         [ const ] [ var ] [ lifetime ] data_type_or_implicit list_of_variable_decl_assignments ;
@@ -149,9 +156,7 @@ namespace pluginVerilog.Verilog.Variables
                     ... 
              */
 
-            if (word.Text != "enum") System.Diagnostics.Debugger.Break();
-            word.Color(CodeDrawStyle.ColorType.Keyword);
-            word.MoveNext(); // enum
+            Enum enum_ = new Enum();
             if (!word.SystemVerilog) word.AddError("systemverilog description");
 
             Variable type = ParseCrateBaseDataType(word, nameSpace);
@@ -160,13 +165,15 @@ namespace pluginVerilog.Verilog.Variables
             {
                 word.AddError("( expected");
                 word.SkipToKeyword(":");
-                return;
+                return null;
             }
             word.MoveNext();
 
             // { enum_name_declaration { , enum_name_declaration } }
-            while ( !word.Eof)
+            while (!word.Eof)
             {
+                Item item = new Item();
+
                 /*
                                 enum_name_declaration::=
                                     enum_identifier[ [integral_number[ : integral_number]] ] [ = constant_expression ]
@@ -175,12 +182,14 @@ namespace pluginVerilog.Verilog.Variables
                 {
                     word.AddError("illegal enum_identifier");
                     word.SkipToKeyword(";");
-                    return;
+                    return null;
                 }
+                item.Identifier = word.Text;
                 word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext();
+                enum_.Items.Add(item);
 
-                if(word.Text == "[")
+                if (word.Text == "[")
                 {
                     word.MoveNext();
                     Expressions.Expression integral_number = Expressions.Expression.ParseCreate(word, nameSpace);
@@ -189,15 +198,19 @@ namespace pluginVerilog.Verilog.Variables
                     {
                         word.AddError("should be integral_number");
                         word.SkipToKeyword(";");
-                        return;
+                        return null;
                     }
-                    if(word.Text != "]")
+                    if (word.Text != "]")
                     {
                         word.SkipToKeyword(";");
-                        return;
+                        return null;
                     }
 
                     word.MoveNext();
+                    if (integral_number.Constant && integral_number.Value != null)
+                    {
+                        item.Index = (int)integral_number.Value;
+                    }
                 }
 
                 // [ = constant_expression ]
@@ -206,9 +219,10 @@ namespace pluginVerilog.Verilog.Variables
                     word.MoveNext();
                     Expressions.Expression ex = Expressions.Expression.ParseCreate(word, nameSpace);
                     if (ex != null && !ex.Constant) ex.Reference.AddError("should be constant");
+                    if (ex != null && ex.Constant) item.Value = ex;
                 }
 
-                if(word.Text == ",")
+                if (word.Text == ",")
                 {
                     word.MoveNext();
                     continue;
@@ -220,12 +234,33 @@ namespace pluginVerilog.Verilog.Variables
             {
                 word.AddError("} expected");
                 word.SkipToKeyword(":");
-                return;
+                return null;
             }
             word.MoveNext();
 
             // todo { packed_dimension }
 
+            return enum_;
+        }
+
+        public static Enum CreateFromType(string name, Enum type)
+        {
+            Enum enum_ = new Enum();
+            enum_.Range = type.Range;
+            enum_.Name = name;
+            return enum_;
+        }
+
+
+        public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
+        {
+            Enum type = Enum.ParseCreateType(word, nameSpace);
+            if (type == null) return;
+
+            ParseCreateFromDeclaration(word, nameSpace, type);
+        }
+        public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace, Enum type)
+        { 
             // list_of_variable_decl_assignments
 
             while (!word.Eof)
@@ -236,7 +271,37 @@ namespace pluginVerilog.Verilog.Variables
                     word.SkipToKeyword(";");
                     return;
                 }
-                word.Color(CodeDrawStyle.ColorType.Keyword);
+
+                word.Color(CodeDrawStyle.ColorType.Variable);
+                Enum enum_ = Enum.CreateFromType(word.Text, type);
+
+                // register valiable
+                if (!word.Active)
+                {
+                    // skip
+                }
+                else if (word.Prototype)
+                {
+                    if (nameSpace.Enums.ContainsKey(enum_.Name))
+                    {
+                        word.AddError("duplicated enum name");
+                    }
+                    else
+                    {
+                        nameSpace.Enums.Add(enum_.Name, enum_);
+                    }
+                    word.Color(CodeDrawStyle.ColorType.Register);
+                }
+                else
+                {
+                    if (nameSpace.Enums.ContainsKey(enum_.Name))
+                    {
+                        if (nameSpace.Enums[enum_.Name] is Enum)
+                        {
+                            enum_ = nameSpace.Enums[enum_.Name] as Enum;
+                        }
+                    }
+                }
                 word.MoveNext();
 
                 if (word.Text == ",")
@@ -247,7 +312,6 @@ namespace pluginVerilog.Verilog.Variables
                 break;
             }
 
-
             // ;
             if (word.Text == ";")
             {
@@ -257,6 +321,14 @@ namespace pluginVerilog.Verilog.Variables
             }
 
             return;
+        }
+
+
+        public class Item
+        {
+            public string Identifier;
+            public int Index;
+            public Expressions.Expression Value;
         }
     }
 }

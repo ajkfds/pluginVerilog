@@ -186,6 +186,12 @@ namespace pluginVerilog.Verilog.Expressions
                     case 'H':
                         if (!parseHexValue(number, word, ref index, sb)) return null;
                         break;
+                    case '1':
+                    case '0':
+                    case 'x':
+                    case 'z':
+                        if (word.Length == 2) return parseSingleBitPadding(word, index);
+                        return null;
                     default:
                         return null;
                 }
@@ -194,6 +200,34 @@ namespace pluginVerilog.Verilog.Expressions
             word.MoveNext();
             return number;
         }
+
+        private static Number parseSingleBitPadding(WordScanner word, int index)
+        {
+            Number number = new Number();
+            switch (word.GetCharAt(index))
+            {
+                case '1':
+                    number.Constant = true;
+                    number.Value = 1;
+                    number.NumberType = NumberTypeEnum.Decimal;
+                    word.MoveNext();
+                    return number;
+                case '0':
+                    number.Constant = true;
+                    number.Value = 0;
+                    number.NumberType = NumberTypeEnum.Decimal;
+                    word.MoveNext();
+                    return number;
+                case 'x':
+                    word.MoveNext();
+                    return number;
+                case 'z':
+                    word.MoveNext();
+                    return number;
+            }
+            return null;
+        }
+
 
         private static bool parseRealValueAfterInteger(Number number, WordScanner word, ref int index, StringBuilder sb)
         {

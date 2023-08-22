@@ -67,7 +67,7 @@ namespace pluginVerilog.Verilog.Variables
             return val;
         }
 
-        public static Reg ParseCreateType(WordScanner word,NameSpace nameSpace)
+        public static new Reg ParseCreateType(WordScanner word,NameSpace nameSpace)
         {
             if (word.Text != "reg") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);
@@ -128,6 +128,13 @@ namespace pluginVerilog.Verilog.Variables
                 return;
             }
 
+            ParseCreateFromDeclaration(word, nameSpace, type);
+        }
+
+        public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace, Reg type)
+        {
+            if (!(type is Reg)) System.Diagnostics.Debugger.Break();
+
             List<Reg> regs = new List<Reg>();
             while (!word.Eof)
             {
@@ -146,7 +153,8 @@ namespace pluginVerilog.Verilog.Variables
                 if (!word.Active)
                 {
                     // skip
-                }else if (word.Prototype)
+                }
+                else if (word.Prototype)
                 {
                     if (nameSpace.Variables.ContainsKey(reg.Name))
                     {
@@ -157,7 +165,7 @@ namespace pluginVerilog.Verilog.Variables
                         }
                         else
                         {
-//                            nameRef.AddError("duplicated reg name");
+                            //                            nameRef.AddError("duplicated reg name");
                         }
                     }
                     else
@@ -168,7 +176,7 @@ namespace pluginVerilog.Verilog.Variables
                 }
                 else
                 {
-                    if(nameSpace.Variables.ContainsKey(reg.Name) && nameSpace.Variables[reg.Name] is Reg)
+                    if (nameSpace.Variables.ContainsKey(reg.Name) && nameSpace.Variables[reg.Name] is Reg)
                     {
                         reg = nameSpace.Variables[reg.Name] as Reg;
                     }
@@ -188,7 +196,7 @@ namespace pluginVerilog.Verilog.Variables
                     while (word.Text == "[")
                     {
                         Dimension dimension = Dimension.ParseCreate(word, nameSpace);
-                        if(word.Active && word.Prototype)
+                        if (word.Active && word.Prototype)
                         {
                             reg.dimensions.Add(dimension);
                         }
@@ -215,5 +223,6 @@ namespace pluginVerilog.Verilog.Variables
 
             return;
         }
+
     }
 }

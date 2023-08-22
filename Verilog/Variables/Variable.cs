@@ -56,6 +56,210 @@ namespace pluginVerilog.Verilog.Variables
             return val;
         }
 
+        public static Variable ParseCrateDataType(WordScanner word, NameSpace nameSpace)
+        {
+            /*
+            data_type::=
+                  integer_vector_type[signing] { packed_dimension }
+                | integer_atom_type[signing]
+                | non_integer_type
+                | struct_union["packed"[signing]] { struct_union_member { struct_union_member } } { packed_dimension }
+                | "enum" [enum_base_type] { enum_name_declaration { , enum_name_declaration } { packed_dimension }
+                | "string"
+                | "chandle"
+                | "virtual" ["interface"] interface_identifier[parameter_value_assignment][ . modport_identifier] 
+                | [class_scope | package_scope] type_identifier { packed_dimension }
+                | class_type
+                | "event"
+                | ps_covergroup_identifier 
+                | type_reference
+
+            integer_atom_type   ::= "byte" | "shortint" | "int" | "longint" | "integer" | "time"
+            integer_vector_type ::= "bit" | "logic" | "reg"
+            non_integer_type    ::= "shortreal" | "real" | "realtime"
+
+
+            */
+
+            // systemverilog data type does not include nets
+
+            switch (word.Text)
+            {
+                //integer_vector_type::= bit | logic | reg
+                case "bit":
+                    return Bit.ParseCreateType(word, nameSpace);
+                case "logic":
+                    return Logic.ParseCreateType(word, nameSpace);
+                case "reg":
+                    return Reg.ParseCreateType(word, nameSpace);
+
+                //integer_atom_type::= byte | shortint | int | longint | integer | time
+                //case "byte":
+                //    return Byte.ParseCreateType(word, nameSpace);
+
+                // shortint
+                // int
+                // longint
+                case "integer":
+                    return Integer.ParseCreateType(word, nameSpace);
+                case "time":
+                    return Time.ParseCreateType(word, nameSpace);
+
+
+                //non_integer_type::= shortreal | real | realtime
+                // shortreal
+                case "real":
+                    return Real.ParseCreateType(word, nameSpace);
+                case "realtime":
+                    return RealTime.ParseCreateType(word, nameSpace);
+
+                // struct_union["packed"[signing]] { struct_union_member { struct_union_member } } { packed_dimension }
+
+                // "enum" [enum_base_type] { enum_name_declaration { , enum_name_declaration } { packed_dimension }
+                case "enum":
+                    return Enum.ParseCreateType(word, nameSpace);
+
+                // "string"
+                // "chandle"
+                // "virtual" ["interface"] interface_identifier[parameter_value_assignment][ . modport_identifier] 
+
+                // class_type
+                // "event"
+                // ps_covergroup_identifier 
+                // type_reference
+                default:
+                    // [class_scope | package_scope] type_identifier { packed_dimension }
+                    {
+                        Variable variable = parseCrateDataType_TypeIdentifier(word, nameSpace);
+                        if (variable != null) return variable;
+                    }
+                    break;
+            }
+            return null;
+        }
+        public static void ParseCreateFromDataDeclaration(WordScanner word, NameSpace nameSpace)
+        {
+            Variable type = ParseCrateDataType(word, nameSpace);
+            ParseCreateFromDataDeclaration(word, nameSpace,type);
+        }
+        public static void ParseCreateFromDataDeclaration(WordScanner word, NameSpace nameSpace,Variable type)
+        {
+
+            // integer_vector_type
+            // integer_vector_type::= "bit" | "logic" | "reg"
+            // bit
+            if (type is Logic)
+            {
+                Logic.ParseCreateFromDeclaration(word, nameSpace, type as Logic);
+                return;
+            }
+            if (type is Reg)
+            {
+                Reg.ParseCreateFromDeclaration(word, nameSpace, type as Reg);
+                return;
+            }
+
+            // integer_atom_type
+            // integer_atom_type::= byte | shortint | int | longint | integer | time
+            // byte
+            // shortint
+            // int
+            // longint
+            // integer
+            if(type is Integer)
+            {
+                Integer.ParseCreateFromDeclaration(word, nameSpace, type as Integer);
+                return;
+            }
+            // time
+            if (type is Time)
+            {
+                Time.ParseCreateFromDeclaration(word, nameSpace, type as Time);
+                return;
+            }
+
+            // non_integer_type
+            // non_integer_type::= "shortreal" | "real" | "realtime"
+            // shortreal
+            // real
+            if (type is Real)
+            {
+                Real.ParseCreateFromDeclaration(word, nameSpace, type as Real);
+                return;
+            }
+            // realtime
+            if (type is RealTime)
+            {
+                RealTime.ParseCreateFromDeclaration(word, nameSpace, type as RealTime);
+                return;
+            }
+
+            // struct_union
+
+            // enum
+            if (type is Enum)
+            {
+                Enum.ParseCreateFromDeclaration(word, nameSpace, type as Enum);
+                return;
+            }
+
+            //| "string"
+            //| "chandle"
+            //| interface_identifier
+            //| type_identifier
+            //| class_type
+            //| event
+            //| ps_covergroup_identifier
+            //| type_reference
+
+            if (type is Enum)
+            {
+                Enum.ParseCreateFromDeclaration(word, nameSpace, type as Enum);
+                return;
+            }
+        }
+
+
+        private static Variable parseCrateDataType_TypeIdentifier(WordScanner word, NameSpace nameSpace)
+        {
+            // [class_scope | package_scope] type_identifier { packed_dimension }
+            // class_scope::= class_type"::"
+            // class_type ::= ps_class_identifier [parameter_value_assignment] { ::class_identifier[parameter_value_assignment] }
+            // package_scope ::=    package_identifier "::"
+            //                      | $unit"::"
+            // parameter_identifier ::= identifier port_identifier::= identifier
+
+            if (!nameSpace.Typedefs.ContainsKey(word.Text)) return null;
+
+            return nameSpace.Typedefs[word.Text].VariableType;
+        }
+
+        public static Variable ParseCreateType(WordScanner word, NameSpace nameSpace)
+        {
+            Variable val = ParseCrateDataType(word, nameSpace);
+            if (val != null) return val;
+
+            switch (word.Text)
+            {
+                //net_type::= supply0 | supply1 | tri | triand | trior | trireg | tri0 | tri1 | uwire | wire | wand | wor
+                case "supply0":
+                case "supply1":
+                case "tri":
+                case "triand":
+                case "trior":
+                case "trireg":
+                case "tri0":
+                case "tri1":
+                case "uwire":
+                case "wire":
+                case "wand":
+                case "wor":
+                    return Net.ParseCreateType(word, nameSpace);
+            }
+            return null;
+        }
+
+
         // comment annotation
 
         private Dictionary<string, string> commentAnnotations = new Dictionary<string, string>();

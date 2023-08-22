@@ -102,6 +102,7 @@
     <Compile Include="Verilog\CommentAnnotated.cs" />
     <Compile Include="Verilog\CommentScanner.cs" />
     <Compile Include="Verilog\Delay.cs" />
+    <Compile Include="Verilog\DesignElement.cs" />
     <Compile Include="Verilog\Expressions\Bracket.cs" />
     <Compile Include="Verilog\Expressions\Concatenation.cs" />
     <Compile Include="Verilog\Expressions\MinTypMax.cs" />
@@ -204,7 +205,7 @@
     <Compile Include="Verilog\Variables\Reg.cs" />
     <Compile Include="Verilog\Variables\Time.cs" />
     <Compile Include="Verilog\Variables\Trireg.cs" />
-    <Compile Include="Verilog\Variables\TypeDef.cs" />
+    <Compile Include="Verilog\Variables\Typedef.cs" />
     <Compile Include="Verilog\Variables\VariableAssignment.cs" />
     <Compile Include="Verilog\Variables\Parameter.cs" />
     <Compile Include="Verilog\Variables\Port.cs" />

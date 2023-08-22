@@ -59,10 +59,13 @@ namespace pluginVerilog.Verilog.Variables
             }
         }
 
-        public static Bit ParseCreateType(WordScanner word, NameSpace nameSpace)
+
+        public new  static Bit ParseCreateType(WordScanner word, NameSpace nameSpace)
         {
             if (word.Text != "bit") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);
+            if (!word.SystemVerilog) word.AddError("systemverilog description");
+
             word.MoveNext(); // bit
 
 
@@ -109,6 +112,19 @@ namespace pluginVerilog.Verilog.Variables
         }
         public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
         {
+            Bit type = Bit.ParseCreateType(word, nameSpace);
+            if (type == null)
+            {
+                word.SkipToKeyword(";");
+                if (word.Text == ";") word.MoveNext();
+                return;
+            }
+
+            ParseCreateFromDeclaration(word, nameSpace, type);
+        }
+
+        public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace, Bit type)
+        {
             // ## Systemverilog
             //         data_declaration ::= [ const ] [var][lifetime] data_type_or_implicit list_of_variable_decl_assignments;
             //                              | ...
@@ -120,15 +136,6 @@ namespace pluginVerilog.Verilog.Variables
             //                  |...
             // integer_vector_type: bit | logic | reg
 
-            Bit type = Bit.ParseCreateType(word, nameSpace);
-            if (type == null)
-            {
-                word.SkipToKeyword(";");
-                if (word.Text == ";") word.MoveNext();
-                return;
-            }
-
-            if (!word.SystemVerilog) word.AddError("systemverilog description");
 
             List<Bit> bits = new List<Bit>();
             while (!word.Eof)

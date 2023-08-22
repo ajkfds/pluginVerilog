@@ -15,8 +15,35 @@ namespace pluginVerilog.Verilog.Variables
         {
             this.Name = Name;
         }
+        public static new Real ParseCreateType(WordScanner word, NameSpace nameSpace)
+        {
+            if (word.Text != "real") System.Diagnostics.Debugger.Break();
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext(); // real
+
+            Real type = new Real();
+            return type;
+        }
+        public static Real CreateFromType(string name, Real type)
+        {
+            Real reg = new Real();
+            return reg;
+        }
 
         public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
+        {
+            Real type = Real.ParseCreateType(word, nameSpace);
+            if (type == null)
+            {
+                word.SkipToKeyword(";");
+                if (word.Text == ";") word.MoveNext();
+                return;
+            }
+
+            ParseCreateFromDeclaration(word, nameSpace, type);
+        }
+
+        public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace,Real type)
         {
             //            real_declaration::= real list_of_real_identifiers;
 
@@ -30,8 +57,7 @@ namespace pluginVerilog.Verilog.Variables
                     word.AddError("illegal real identifier");
                     return;
                 }
-                Real val = new Real();
-                val.Name = word.Text;
+                Real val = Real.CreateFromType(word.Text, type);
                 val.DefinedReference = word.GetReference();
 
                 word.Color(CodeDrawStyle.ColorType.Variable);

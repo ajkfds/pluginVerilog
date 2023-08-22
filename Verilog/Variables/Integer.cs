@@ -16,7 +16,7 @@ namespace pluginVerilog.Verilog.Variables
             this.Name = Name;
         }
 
-        public static Integer ParseCreateType(WordScanner word, NameSpace nameSpace)
+        public static new Integer ParseCreateType(WordScanner word, NameSpace nameSpace)
         {
             if (word.Text != "integer") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);
@@ -37,10 +37,9 @@ namespace pluginVerilog.Verilog.Variables
             integer.Name = name;
             return integer;
         }
+
         public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
         {
-            //            integer_declaration::= integer list_of_variable_identifiers;
-
             Integer type = Integer.ParseCreateType(word, nameSpace);
             if (type == null)
             {
@@ -48,6 +47,12 @@ namespace pluginVerilog.Verilog.Variables
                 if (word.Text == ";") word.MoveNext();
                 return;
             }
+
+            ParseCreateFromDeclaration(word, nameSpace, type);
+        }
+        public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace, Integer type)
+        {
+            //            integer_declaration::= integer list_of_variable_identifiers;
 
             while (!word.Eof)
             {

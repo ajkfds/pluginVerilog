@@ -22,12 +22,17 @@ namespace pluginVerilog.Verilog
         private Dictionary<string, Variables.Variable> variables = new Dictionary<string, Variables.Variable>();
         private Dictionary<string, Variables.Parameter> parameters = new Dictionary<string, Variables.Parameter>();
         private Dictionary<string, Variables.Parameter> localParameters = new Dictionary<string, Variables.Parameter>();
+        private Dictionary<string, Variables.Enum> enums = new Dictionary<string, Variables.Enum>();
+        private Dictionary<string, Variables.Typedef> typedefs = new Dictionary<string, Variables.Typedef>();
+
         private Dictionary<string, NameSpace> nameSpaces = new Dictionary<string, NameSpace>();
 
         public Dictionary<string, Variables.Variable> Variables { get { return variables; } }
         public NameSpace Parent { get; protected set; }
         public Dictionary<string, Variables.Parameter> Parameters { get { return parameters; } }
         public Dictionary<string, Variables.Parameter> LocalParameters { get { return localParameters; } }
+        public Dictionary<string, Variables.Enum> Enums { get { return enums; } }
+        public Dictionary<string, Variables.Typedef> Typedefs { get { return typedefs; } }
         public Module Module { get; protected set; }
         public Dictionary<string, NameSpace> NameSpaces { get { return nameSpaces;  } }
 

@@ -15,13 +15,36 @@ namespace pluginVerilog.Verilog.Variables
         {
             this.Name = Name;
         }
+        public static new RealTime ParseCreateType(WordScanner word, NameSpace nameSpace)
+        {
+            if (word.Text != "realtime") System.Diagnostics.Debugger.Break();
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            word.MoveNext(); // real
 
+            RealTime type = new RealTime();
+            return type;
+        }
+        public static RealTime CreateFromType(string name, RealTime type)
+        {
+            RealTime ret = new RealTime();
+            return ret;
+        }
         public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
         {
-            //            realtime_declaration::= realtime list_of_real_identifiers;
+            RealTime type = RealTime.ParseCreateType(word, nameSpace);
+            if (type == null)
+            {
+                word.SkipToKeyword(";");
+                if (word.Text == ";") word.MoveNext();
+                return;
+            }
 
-            word.Color(CodeDrawStyle.ColorType.Keyword);
-            word.MoveNext(); // reg
+            ParseCreateFromDeclaration(word, nameSpace, type);
+        }
+
+        public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace, RealTime type)
+        {
+            //            realtime_declaration::= realtime list_of_real_identifiers;
 
             while (!word.Eof)
             {
@@ -30,8 +53,7 @@ namespace pluginVerilog.Verilog.Variables
                     word.AddError("illegal real identifier");
                     return;
                 }
-                RealTime val = new RealTime();
-                val.Name = word.Text;
+                RealTime val = RealTime.CreateFromType(word.Text, type);
                 val.DefinedReference = word.GetReference();
 
                 word.Color(CodeDrawStyle.ColorType.Variable);

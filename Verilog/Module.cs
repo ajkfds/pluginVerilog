@@ -568,35 +568,26 @@ namespace pluginVerilog.Verilog
                     case "wor":
                         Verilog.Variables.Net.ParseCreateFromDeclaration(word, module);
                         break;
+
+
                     case "trireg":
                         Verilog.Variables.Trireg.ParseCreateFromDeclaration(word, module);
                         break;
+
                     case "integer":
-                        Verilog.Variables.Integer.ParseCreateFromDeclaration(word, module);
-                        break;
                     case "real":
-                        Verilog.Variables.Real.ParseCreateFromDeclaration(word, module);
-                        break;
                     case "realtime":
-                        Verilog.Variables.RealTime.ParseCreateFromDeclaration(word, module);
-                        break;
                     case "time":
-                        Verilog.Variables.Time.ParseCreateFromDeclaration(word, module);
+                    case "logic":
+                    case "bit":
+                    case "enum":
+                        Verilog.Variables.Variable.ParseCreateFromDataDeclaration(word, module);
                         break;
                     case "event":
                         Verilog.Variables.Event.ParseCreateFromDeclaration(word, module);
                         break;
                     case "genvar":
                         Verilog.Variables.Genvar.ParseCreateFromDeclaration(word, module);
-                        break;
-                    case "logic":
-                        Verilog.Variables.Logic.ParseCreateFromDeclaration(word, module);
-                        break;
-                    case "bit":
-                        Verilog.Variables.Bit.ParseCreateFromDeclaration(word, module);
-                        break;
-                    case "enum":
-                        Verilog.Variables.Enum.ParseCreateFromDeclaration(word, module);
                         break;
                     // always_construct
                     case "always":
@@ -696,20 +687,37 @@ namespace pluginVerilog.Verilog
                             word.MoveNext();
                         }
                         break;
+                    case "typedef":
+                        Verilog.Variables.Typedef.ParseCreateFromDeclaration(word, module);
+                        break;
                     case "": // blank at include return
                         word.MoveNext();
                         break;
+                    case "class":
+                        if (!word.SystemVerilog) word.AddError("SystemVerilog description");
+                        Verilog.Class.Parse(word, module);
+                        break;
+                    case ";":
+                        word.AddError("illegal ;");
+                        word.MoveNext();
+                        break;
                     default:
-                        if (word.SystemVerilog)
+                        if (module.Typedefs.ContainsKey(word.Text))
                         {
-                            if(word.Text == "class")
+                            Verilog.Variables.Variable type = module.Typedefs[word.Text].VariableType;
+                            word.Color(CodeDrawStyle.ColorType.Identifier);
+                            word.MoveNext();
+                            if (type == null)
                             {
-                                Verilog.Class.Parse(word, module);
+                                word.SkipToKeyword(";");
                                 break;
                             }
+                            Verilog.Variables.Variable.ParseCreateFromDataDeclaration(word, module, type);
                         }
-
-                        ModuleItems.ModuleInstantiation.Parse(word, module);
+                        else
+                        {
+                            ModuleItems.ModuleInstantiation.Parse(word, module);
+                        }
                         break;
                 }
             }
@@ -880,6 +888,367 @@ namespace pluginVerilog.Verilog
             "assign","specify","endspecify",
             "generate","endgenerate"
         };
+
+        /* #SystemVerilog
+         * 
+        source_text ::=
+            [ timeunits_declaration ] { description } 
+
+        description ::=
+              module_declaration 
+            | udp_declaration 
+            | interface_declaration 
+            | program_declaration 
+            | package_declaration 
+            | { attribute_instance } package_item 
+            | { attribute_instance } bind_directive
+        
+        ## module
+
+        module_declaration ::=
+              module_nonansi_header [ timeunits_declaration ] { module_item } "endmodule" [ : module_identifier ] 
+            | module_ansi_header [ timeunits_declaration ] { non_port_module_item } "endmodule" [ : module_identifier ] 
+            | { attribute_instance } module_keyword [ lifetime ] module_identifier "( .* ) ;"  [ timeunits_declaration ] { module_item } "endmodule" [ : module_identifier ] 
+            | extern module_nonansi_header 
+            | extern module_ansi_header
+        
+        module_nonansi_header ::= 
+            { attribute_instance } module_keyword [ lifetime ] module_identifier { package_import_declaration } [ parameter_port_list ] list_of_ports ";"
+        module_ansi_header ::= 
+            { attribute_instance } module_keyword [ lifetime ] module_identifier { package_import_declaration }1 [ parameter_port_list ] [ list_of_port_declarations ] ";"
+
+        module_item ::= 
+              port_declaration ";"
+            | non_port_module_item
+
+        non_port_module_item ::=
+              generate_region 
+            | module_or_generate_item 
+            | specify_block 
+            | { attribute_instance } specparam_declaration 
+            | program_declaration 
+            | module_declaration 
+            | interface_declaration 
+            | timeunits_declaration
+
+        module_or_generate_item ::=
+              { attribute_instance } parameter_override 
+            | { attribute_instance } gate_instantiation 
+            | { attribute_instance } udp_instantiation 
+            | { attribute_instance } module_instantiation 
+            | { attribute_instance } module_common_item
+
+        module_common_item ::= 
+              module_or_generate_item_declaration 
+            | interface_instantiation 
+            | program_instantiation 
+            | assertion_item 
+            | bind_directive 
+            | continuous_assign 
+            | net_alias 
+            | initial_construct 
+            | final_construct 
+            | always_construct 
+            | loop_generate_construct 
+            | conditional_generate_construct
+            | elaboration_system_task                 
+         
+        module_or_generate_item_declaration ::= 
+              package_or_generate_item_declaration 
+            | genvar_declaration 
+            | clocking_declaration 
+            | default clocking clocking_identifier ;
+        
+        ## program
+        program_declaration ::= 
+              program_nonansi_header [ timeunits_declaration ] { program_item } "endprogram" [ : program_identifier ] 
+            | program_ansi_header [ timeunits_declaration ] { non_port_program_item } "endprogram" [ : program_identifier ] 
+            | { attribute_instance } program program_identifier "( .* ) ;" [ timeunits_declaration ] { program_item } "endprogram" [ : program_identifier ] 
+            | extern program_nonansi_header 
+            | extern program_ansi_header
+
+        program_nonansi_header ::= 
+            { attribute_instance } "program" [ lifetime ] program_identifier { package_import_declaration } [ parameter_port_list ] list_of_ports ";"
+        program_ansi_header ::= 
+            {attribute_instance } "program" [ lifetime ] program_identifier { package_import_declaration } [ parameter_port_list ] [ list_of_port_declarations ] ";"
+
+        program_item ::=
+              port_declaration ";"
+            | non_port_program_item 
+        non_port_program_item ::= 
+              { attribute_instance } continuous_assign 
+            | { attribute_instance } module_or_generate_item_declaration 
+            | { attribute_instance } initial_construct 
+            | { attribute_instance } final_construct 
+            | { attribute_instance } concurrent_assertion_item 
+            | timeunits_declaration
+            | program_generate_item 
+        program_generate_item ::= 
+              loop_generate_construct 
+            | conditional_generate_construct 
+            | generate_region 
+
+        ## package
+
+        package_declaration ::=
+            { attribute_instance } "package" [ lifetime ] package_identifier ";" [ timeunits_declaration ] { { attribute_instance } package_item } "endpackage" [ : package_identifier ] 
+
+        package_item ::= 
+              package_or_generate_item_declaration 
+            | anonymous_program 
+            | package_export_declaration 
+            | timeunits_declaration
+
+        package_or_generate_item_declaration ::= 
+              net_declaration 
+            | data_declaration 
+            | task_declaration 
+            | function_declaration 
+            | checker_declaration 
+            | dpi_import_export 
+            | extern_constraint_declaration 
+            | class_declaration 
+            | class_constructor_declaration 
+            | local_parameter_declaration ;
+            | parameter_declaration ;
+            | covergroup_declaration 
+            | overload_declaration 
+            | assertion_item_declaration 
+            | ;
+
+        anonymous_program ::= "program" ; { anonymous_program_item } "endprogram"
+        anonymous_program_item ::= 
+            task_declaration 
+            | function_declaration 
+            | class_declaration 
+            | covergroup_declaration 
+            | class_constructor_declaration 
+            | ";"
+
+        ## class
+
+        class_declaration ::=
+            [ "virtual" ] "class" [ lifetime ] class_identifier [ parameter_port_list ] [ "extends" class_type [ ( list_of_arguments ) ] ] 
+            [ "implements" interface_class_type { , interface_class_type } ] ; { class_item } "endclass" [ : class_identifier] 
+
+        interface_class_type ::= ps_class_identifier [ parameter_value_assignment ] 
+        
+        class_item ::=
+              { attribute_instance } class_property 
+            | { attribute_instance } class_method 
+            | { attribute_instance } class_constraint 
+            | { attribute_instance } class_declaration 
+            | { attribute_instance } covergroup_declaration 
+            | local_parameter_declaration ";"
+            | parameter_declaration7 ";"
+            | ";"
+
+        class_property ::= 
+              { property_qualifier } data_declaration 
+            | "const" { class_item_qualifier } data_type const_identifier [ "=" constant_expression ] ";"
+
+        class_method ::= 
+              { method_qualifier } task_declaration 
+            | { method_qualifier } function_declaration 
+            | "pure virtual" { class_item_qualifier } method_prototype ; 
+            | "extern" { method_qualifier } method_prototype ;
+            | { method_qualifier } class_constructor_declaration 
+            | "extern" { method_qualifier } class_constructor_prototype
+        
+        class_constructor_prototype ::= 
+            function new [ ( [ tf_port_list ] ) ] ;
+
+        class_constraint ::= 
+              constraint_prototype 
+            | constraint_declaration
+
+        property_qualifier ::= 
+              random_qualifier 
+            | class_item_qualifier 
+
+        random_qualifier ::= 
+              "rand"
+            | "randc"
+
+        method_qualifier ::= 
+              [ "pure" ] "virtual"
+            | class_item_qualifier
+
+        class_item_qualifier ::= 
+              "static"
+            | "protected"
+            | "local"
+
+        method_prototype ::= 
+              task_prototype 
+            | function_prototype 
+
+        ## interface
+        interface_declaration ::=
+            interface_nonansi_header [ timeunits_declaration ] { interface_item } 
+            endinterface [ : interface_identifier ] 
+            | interface_ansi_header [ timeunits_declaration ] { non_port_interface_item } 
+            endinterface [ : interface_identifier ] 
+            | { attribute_instance } interface interface_identifier ( .* ) ;
+            [ timeunits_declaration ] { interface_item } 
+            endinterface [ : interface_identifier ] 
+            | extern interface_nonansi_header 
+            | extern interface_ansi_header 
+
+        interface_nonansi_header ::= 
+            { attribute_instance } interface [ lifetime ] interface_identifier { package_import_declaration } [ parameter_port_list ] list_of_ports ;
+
+        interface_ansi_header ::= 
+            {attribute_instance } interface [ lifetime ] interface_identifier { package_import_declaration }1 [ parameter_port_list ] [ list_of_port_declarations ] ;
+
+        interface_or_generate_item ::= 
+              { attribute_instance } module_common_item 
+            | { attribute_instance } modport_declaration 
+            | { attribute_instance } extern_tf_declaration 
+
+        extern_tf_declaration ::= 
+              extern method_prototype ;
+            | extern forkjoin task_prototype ;
+
+        interface_item ::= 
+              port_declaration ;
+            | non_port_interface_item 
+        
+        non_port_interface_item ::= 
+              generate_region 
+            | interface_or_generate_item 
+            | program_declaration 
+            | interface_declaration 
+            | timeunits_declaration
+
+        modport_declaration ::= modport modport_item { , modport_item } ; // from A.2.9
+
+        modport_item ::= modport_identifier ( modport_ports_declaration { , modport_ports_declaration } )
+
+        modport_ports_declaration ::=
+              { attribute_instance } modport_simple_ports_declaration 
+            | { attribute_instance } modport_tf_ports_declaration 
+            | { attribute_instance } modport_clocking_declaration 
+
+        modport_clocking_declaration ::= clocking clocking_identifier 
+
+        modport_simple_ports_declaration ::= 
+            port_direction modport_simple_port { , modport_simple_port } 
+
+        modport_simple_port ::= 
+              port_identifier 
+            | . port_identifier ( [ expression ] )
+
+        modport_tf_ports_declaration ::= 
+            import_export modport_tf_port { , modport_tf_port } 
+
+        modport_tf_port ::= 
+              method_prototype 
+            | tf_identifier 
+
+        import_export ::= import | export
+
+        interface_instantiation ::=
+            interface_identifier [ parameter_value_assignment ] hierarchical_instance { , hierarchical_instance } ;
+
+        timeunits_declaration ::= 
+              timeunit time_literal [ / time_literal ] ;
+            | timeprecision time_literal ;
+            | timeunit time_literal ; timeprecision time_literal ;
+            | timeprecision time_literal ; timeunit time_literal ;
+
+        ## checker
+        checker_declaration ::=
+            "checker" checker_identifier [ ( [ checker_port_list ] ) ] ; { { attribute_instance } checker_or_generate_item } "endchecker" [ : checker_identifier ] 
+        checker_port_list ::= 
+            checker_port_item {, checker_port_item}
+
+        checker_port_item ::= 
+            { attribute_instance } [ checker_port_direction ] property_formal_type formal_port_identifier {variable_dimension} [ "=" property_actual_arg ]
+
+        checker_port_direction ::= 
+            "input" | "output"
+
+        checker_or_generate_item ::= 
+              checker_or_generate_item_declaration 
+            | initial_construct
+            | always_construct 
+            | final_construct
+            | assertion_item
+            | continuous_assign 
+            | checker_generate_item
+
+        checker_or_generate_item_declaration ::=
+              [ rand ] data_declaration
+            | function_declaration 
+            | checker_declaration 
+            | assertion_item_declaration
+            | covergroup_declaration 
+            | overload_declaration
+            | genvar_declaration
+            | clocking_declaration
+            | default clocking clocking_identifier ;
+            | default disable iff expression_or_dist ;
+            | ;
+
+        checker_generate_item6 ::= 
+            loop_generate_construct
+            | conditional_generate_construct
+            | generate_region
+            | elaboration_system_task
+        checker_identifier ::= 
+            identifier
+
+        ## primitive
+        // udp
+
+        ## configuration
+        config_declaration ::=
+            "config" config_identifier ;
+            { local_parameter_declaration ; } 
+            design_statement 
+            { config_rule_statement } 
+            "endconfig" [ : config_identifier ] 
+
+        design_statement ::= "design" { [ library_identifier . ] cell_identifier } ;
+
+        config_rule_statement ::= 
+            default_clause liblist_clause ;
+            | inst_clause liblist_clause ;
+            | inst_clause use_clause ;
+            | cell_clause liblist_clause ;
+            | cell_clause use_clause ;
+
+        default_clause ::= "default"
+        inst_clause ::= "instance" inst_name 
+        inst_name ::= topmodule_identifier { . instance_identifier } 
+        cell_clause ::= "cell" [ library_identifier . ] cell_identifier 
+        liblist_clause ::= "liblist" {library_identifier} 
+
+        use_clause ::=
+            "use" [ library_identifier . ] cell_identifier [ ": config" ] 
+            | "use" named_parameter_assignment { , named_parameter_assignment } [ ": config" ] 
+            | "use" [ library_identifier . ] cell_identifier named_parameter_assignment 
+            { , named_parameter_assignment } [ ": config" ] 
+
+        ## declaration
+        package_or_generate_item_declaration ::= 
+              net_declaration 
+            | data_declaration 
+            | task_declaration 
+            | function_declaration 
+            | checker_declaration 
+            | dpi_import_export 
+            | extern_constraint_declaration 
+            | class_declaration 
+            | class_constructor_declaration 
+            | local_parameter_declaration ;
+            | parameter_declaration ;
+            | covergroup_declaration 
+            | overload_declaration 
+            | assertion_item_declaration 
+            | ;
+         */
 
     }
 }
