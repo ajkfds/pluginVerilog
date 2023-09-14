@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using codeEditor.CodeEditor;
 using System.Windows.Forms;
+using pluginVerilog.Verilog.BuildingBlocks;
 
 namespace pluginVerilog.Verilog.Snippets
 {

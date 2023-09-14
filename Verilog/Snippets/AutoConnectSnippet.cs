@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using codeEditor.CodeEditor;
+using pluginVerilog.Verilog.BuildingBlocks;
 
 namespace pluginVerilog.Verilog.Snippets
 {

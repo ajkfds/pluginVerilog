@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pluginVerilog.Verilog.BuildingBlocks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace pluginVerilog.Verilog
 {
     public class Function : NameSpace, IPortNameSpace
     {
-        protected Function(Module module, NameSpace parent) : base(module,parent)
+        protected Function(NameSpace parent) : base(parent.BuildingBlock, parent)
         {
         }
 
@@ -28,13 +29,13 @@ namespace pluginVerilog.Verilog
             time
         }
 
-        public static void Parse(WordScanner word, IModuleOrGeneratedBlock module)
+        public static void Parse(WordScanner word, NameSpace nameSpace)
         {
             if(word.Text != "function")
             {
                 System.Diagnostics.Debugger.Break();
             }
-            Function function = new Function(module.Module, module as NameSpace);
+            Function function = new Function(nameSpace);
             word.Color(CodeDrawStyle.ColorType.Keyword);
             function.BeginIndex = word.RootIndex;
             word.MoveNext();
@@ -114,10 +115,10 @@ namespace pluginVerilog.Verilog
             }
             else if (word.Prototype)
             {
-                if (!module.Functions.ContainsKey(function.Name) && !module.NameSpaces.ContainsKey(function.Name))
+                if (!nameSpace.BuildingBlock.Functions.ContainsKey(function.Name) && !nameSpace.BuildingBlock.NameSpaces.ContainsKey(function.Name))
                 {
-                    module.Functions.Add(function.Name, function);
-                    module.NameSpaces.Add(function.Name, function);
+                    nameSpace.BuildingBlock.Functions.Add(function.Name, function);
+                    nameSpace.BuildingBlock.NameSpaces.Add(function.Name, function);
                 }
                 else
                 {
@@ -126,9 +127,9 @@ namespace pluginVerilog.Verilog
             }
             else
             {
-                if (module.Module.Functions.ContainsKey(function.Name))
+                if (nameSpace.BuildingBlock.Functions.ContainsKey(function.Name))
                 {
-                    function = module.Functions[function.Name];
+                    function = nameSpace.BuildingBlock.Functions[function.Name];
                 }
             }
             word.Color(CodeDrawStyle.ColorType.Identifier);

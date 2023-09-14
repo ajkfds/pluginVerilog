@@ -97,12 +97,20 @@
     <Compile Include="Tools\ProjectPropertyTab.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Verilog\Class.cs" />
+    <Compile Include="Verilog\BuildingBlocks\BuildingBlock.cs" />
+    <Compile Include="Verilog\BuildingBlocks\Checker.cs" />
+    <Compile Include="Verilog\BuildingBlocks\IBuildingBlock.cs" />
+    <Compile Include="Verilog\BuildingBlocks\IBuildingBlockWithModuleInstance.cs" />
+    <Compile Include="Verilog\BuildingBlocks\IModuleOrInterface.cs" />
+    <Compile Include="Verilog\BuildingBlocks\IModuleOrInterfaceOrProgram.cs" />
+    <Compile Include="Verilog\BuildingBlocks\Package.cs" />
     <Compile Include="Verilog\Comment.cs" />
     <Compile Include="Verilog\CommentAnnotated.cs" />
     <Compile Include="Verilog\CommentScanner.cs" />
     <Compile Include="Verilog\Delay.cs" />
-    <Compile Include="Verilog\DesignElement.cs" />
+    <Compile Include="Verilog\BuildingBlocks\Class.cs" />
+    <Compile Include="Verilog\BuildingBlocks\Interface.cs" />
+    <Compile Include="Verilog\BuildingBlocks\Program.cs" />
     <Compile Include="Verilog\Expressions\Bracket.cs" />
     <Compile Include="Verilog\Expressions\Concatenation.cs" />
     <Compile Include="Verilog\Expressions\MinTypMax.cs" />
@@ -112,7 +120,21 @@
     <Compile Include="Verilog\Expressions\String.cs" />
     <Compile Include="Verilog\Expressions\TempPrimary.cs" />
     <Compile Include="Verilog\Expressions\VariableReference.cs" />
-    <Compile Include="Verilog\Generate.cs" />
+    <Compile Include="Verilog\Items\Generate\CaseGenerateConstruct.cs" />
+    <Compile Include="Verilog\Items\Generate\Generate.cs" />
+    <Compile Include="Verilog\Items\Generate\GenerateBlock.cs" />
+    <Compile Include="Verilog\Items\Generate\GenerateItem.cs" />
+    <Compile Include="Verilog\Items\Generate\GenerateRegion.cs" />
+    <Compile Include="Verilog\Items\Generate\GenvarInitialization.cs" />
+    <Compile Include="Verilog\Items\Generate\GenvarIteration.cs" />
+    <Compile Include="Verilog\Items\Generate\IfGenerateConstruct.cs" />
+    <Compile Include="Verilog\Items\Generate\LoopGenerateConstruct.cs" />
+    <Compile Include="Verilog\Items\ModuleCommonItem.cs" />
+    <Compile Include="Verilog\Items\ModuleItem.cs" />
+    <Compile Include="Verilog\Items\ModuleOrGenerateItem.cs" />
+    <Compile Include="Verilog\Items\ModuleOrGenerateItemDeclaration.cs" />
+    <Compile Include="Verilog\Items\NonPortModuleItem.cs" />
+    <Compile Include="Verilog\Items\PackageOrGenerateItemDeclaration.cs" />
     <Compile Include="Verilog\Macro.cs" />
     <Compile Include="Verilog\ModuleItems\ContinuousAssign.cs" />
     <Compile Include="Data\VerilogFile.cs" />
@@ -128,7 +150,7 @@
     <Compile Include="Verilog\ModuleItems\ModuleInstantiation.cs" />
     <Compile Include="NavigatePanel\VerilogFileNode.cs" />
     <Compile Include="Verilog\ModuleItems\ParameterOverride.cs" />
-    <Compile Include="Verilog\IModuleOrGeneratedBlock.cs" />
+    <Compile Include="Verilog\BuildingBlocks\IModuleOrGeneratedBlock.cs" />
     <Compile Include="Verilog\ModuleReference.cs" />
     <Compile Include="Verilog\NamedGeneratedBlock.cs" />
     <Compile Include="Verilog\ParsedDocument.cs" />
@@ -179,7 +201,7 @@
     <Compile Include="Verilog\Statements\ForceStatement.cs" />
     <Compile Include="Verilog\Statements\IStatement.cs" />
     <Compile Include="Verilog\Statements\LoopingStatememt.cs" />
-    <Compile Include="Verilog\Module.cs" />
+    <Compile Include="Verilog\BuildingBlocks\Module.cs" />
     <Compile Include="Verilog\NameSpace.cs" />
     <Compile Include="Verilog\Expressions\Number.cs" />
     <Compile Include="Verilog\Expressions\Operator.cs" />

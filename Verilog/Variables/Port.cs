@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pluginVerilog.Verilog.BuildingBlocks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -159,7 +160,7 @@ namespace pluginVerilog.Verilog.Variables
 
         }
 
-        public static void ParsePortDeclaration(WordScanner word, Module module, Attribute attribute)
+        public static void ParsePortDeclaration(WordScanner word, NameSpace nameSpace)
         {
             // port_declaration::= { attribute_instance} inout_declaration | { attribute_instance} input_declaration | { attribute_instance} output_declaration  
 
@@ -173,16 +174,18 @@ namespace pluginVerilog.Verilog.Variables
             // list_of_port_identifiers::= port_identifier { , port_identifier }
             // range ::= [ msb_constant_expression : lsb_constant_expression ]  
 
+            BuildingBlock buildingBlock = nameSpace.BuildingBlock;
+
             switch (word.Text)
             {
                 case "input":
-                    parseInputDeclaration(word, module, module, attribute);
+                    parseInputDeclaration(word, nameSpace);
                     break;
                 case "output":
-                    parseOutputDeclaration(word, module, module, attribute);
-                   break;
+                    parseOutputDeclaration(word, nameSpace);
+                    break;
                 case "inout":
-                    parseInoutDeclaration(word, module,module, attribute);
+                    parseInoutDeclaration(word, nameSpace);
                     break;
                 default:
                     break;
@@ -207,7 +210,7 @@ namespace pluginVerilog.Verilog.Variables
             switch (word.Text)
             {
                 case "input":
-                    ParseTfInputDeclaration(word,function.Module,function,attribute);
+                    ParseTfInputDeclaration(word,function);
                     break;
                 default:
                     break;
@@ -226,18 +229,18 @@ namespace pluginVerilog.Verilog.Variables
                                             | realtime 
                                             | integer
         */
-        public static void ParseTaskPortDeclaration(WordScanner word, Task task, Attribute attribute)
+        public static void ParseTaskPortDeclaration(WordScanner word, Task task)
         {
             switch (word.Text)
             {
                 case "input":
-                    ParseTfInputDeclaration(word, task.Module, task, attribute);
+                    ParseTfInputDeclaration(word, task);
                     break;
                 case "inout":
-                    ParseTfInoutDeclaration(word, task.Module, task, attribute);
+                    ParseTfInoutDeclaration(word, task);
                     break;
                 case "output":
-                    ParseTfOutputDeclaration(word, task.Module, task, attribute);
+                    ParseTfOutputDeclaration(word, task);
                     break;
                 default:
                     break;
@@ -245,34 +248,37 @@ namespace pluginVerilog.Verilog.Variables
             return;
         }
 
-        public static void ParseClassPortDeclaration(WordScanner word, Class classItem, Attribute attribute)
-        {
-            switch (word.Text)
-            {
-                case "input":
-                    ParseTfInputDeclaration(word, classItem.Module, classItem, attribute);
-                    break;
-                case "inout":
-                    ParseTfInoutDeclaration(word, classItem.Module, classItem, attribute);
-                    break;
-                case "output":
-                    ParseTfOutputDeclaration(word, classItem.Module, classItem, attribute);
-                    break;
-                default:
-                    break;
-            }
-            return;
-        }
+        //public static void ParseClassPortDeclaration(WordScanner word, Class classItem, Attribute attribute)
+        //{
+        //    switch (word.Text)
+        //    {
+        //        case "input":
+        //            ParseTfInputDeclaration(word, classItem.Module, classItem, attribute);
+        //            break;
+        //        case "inout":
+        //            ParseTfInoutDeclaration(word, classItem.Module, classItem, attribute);
+        //            break;
+        //        case "output":
+        //            ParseTfOutputDeclaration(word, classItem.Module, classItem, attribute);
+        //            break;
+        //        default:
+        //            break;
+        //    }
+        //    return;
+        //}
 
 
-        private static void parseInputDeclaration(WordScanner word, NameSpace nameSpace, IPortNameSpace portNameSpace, Attribute attribute)
+        private static void parseInputDeclaration(WordScanner word, NameSpace nameSpace)
         {
+            IPortNameSpace portNameSpace = nameSpace.BuildingBlock as IPortNameSpace;
+            if (portNameSpace == null) System.Diagnostics.Debugger.Break();
+
             // ##Verilog 2001
             // input_declaration ::= input[net_type][signed][range] list_of_port_identifiers
             // net_type ::= wire | tri | tri0 | wand | triand | wor | trior | trireg | none
 
             // ##SystemVerilog
-            // input_declaration ::=      input net_port_type list_of_port_identifiers
+            // input_declaration ::=      input net_port_type list_of_port_identifierss
             //                          | input variable_port_type list_of_variable_identifiers
             //
             // net_port_type ::=    [net_type] data_type_or_implicit
@@ -440,8 +446,11 @@ namespace pluginVerilog.Verilog.Variables
             }
         }
 
-        private static void parseInoutDeclaration(WordScanner word, Module module, IPortNameSpace portNameSpace, Attribute attribute)
+        private static void parseInoutDeclaration(WordScanner word, NameSpace nameSpace)
         {
+            IPortNameSpace portNameSpace = nameSpace.BuildingBlock as IPortNameSpace;
+            if (portNameSpace == null) System.Diagnostics.Debugger.Break();
+
             // ## Verilog2001
             // inout_declaration::= inout[net_type][signed][range] list_of_port_identifiers
 
@@ -480,7 +489,7 @@ namespace pluginVerilog.Verilog.Variables
             Range range = null;
             if (word.GetCharAt(0) == '[')
             {
-                range = Range.ParseCreate(word, module);
+                range = Range.ParseCreate(word, nameSpace);
             }
 
             List<Port> ports = new List<Port>();
@@ -570,8 +579,11 @@ namespace pluginVerilog.Verilog.Variables
             reg
         }
 
-        private static void parseOutputDeclaration(WordScanner word, Module module, IPortNameSpace portNameSpace, Attribute attribute)
+        private static void parseOutputDeclaration(WordScanner word, NameSpace nameSpace)
         {
+            IPortNameSpace portNameSpace = nameSpace.BuildingBlock as IPortNameSpace;
+            if (portNameSpace == null) System.Diagnostics.Debugger.Break();
+            
             // Verilog 2001
             // output_declaration ::=     output       [net_type] [signed][range] list_of_port_identifiers
             //                          | output [reg]            [signed][range] list_of_port_identifiers
@@ -643,7 +655,7 @@ namespace pluginVerilog.Verilog.Variables
             Range range = null;
             if (word.GetCharAt(0) == '[')
             {
-                range = Range.ParseCreate(word, module);
+                range = Range.ParseCreate(word, nameSpace);
             }
 
             List<Port> ports = new List<Port>();
@@ -729,7 +741,7 @@ namespace pluginVerilog.Verilog.Variables
                 if (varType != portVariableType.wire && word.Text == "=")
                 {
                     word.MoveNext();
-                    Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
+                    Expressions.Expression expression = Expressions.Expression.ParseCreate(word, nameSpace);
                 }
 
                 port.Variable.UsedReferences.Add(word.GetReference());
@@ -802,8 +814,11 @@ namespace pluginVerilog.Verilog.Variables
             }
         }
 
-        public static void ParseTfOutputDeclaration(WordScanner word, Module module, IPortNameSpace portNameSpace, Attribute attribute)
-        {
+        public static void ParseTfOutputDeclaration(WordScanner word, NameSpace nameSpace)
+        { 
+            IPortNameSpace portNameSpace = nameSpace as IPortNameSpace;
+            if (portNameSpace == null) System.Diagnostics.Debugger.Break();
+
             // tf_output_declaration::= output[reg][signed][range] list_of_port_identifiers
             //                        | output[task_port_type] list_of_port_identifiers
             // task_port_type::= time | real | realtime | integer
@@ -856,7 +871,7 @@ namespace pluginVerilog.Verilog.Variables
 
                 if (word.GetCharAt(0) == '[')
                 {
-                    range = Range.ParseCreate(word, module);
+                    range = Range.ParseCreate(word, nameSpace);
                 }
             }
             else
@@ -870,7 +885,7 @@ namespace pluginVerilog.Verilog.Variables
 
                 if (word.GetCharAt(0) == '[')
                 {
-                    range = Range.ParseCreate(word, module);
+                    range = Range.ParseCreate(word, nameSpace);
                 }
             }
 
@@ -976,8 +991,11 @@ namespace pluginVerilog.Verilog.Variables
             }
         }
 
-        public static void ParseTfInoutDeclaration(WordScanner word, Module module, IPortNameSpace portNameSpace, Attribute attribute)
+        public static void ParseTfInoutDeclaration(WordScanner word, NameSpace nameSpace)
         {
+            IPortNameSpace portNameSpace = nameSpace as IPortNameSpace;
+            if (portNameSpace == null) System.Diagnostics.Debugger.Break();
+            
             // tf_inout_declaration::= inout[reg][signed][range] list_of_port_identifiers
             //                       | inout[task_port_type] list_of_port_identifiers
             // task_port_type::= time | real | realtime | integer
@@ -1030,7 +1048,7 @@ namespace pluginVerilog.Verilog.Variables
 
                 if (word.GetCharAt(0) == '[')
                 {
-                    range = Range.ParseCreate(word, module);
+                    range = Range.ParseCreate(word, nameSpace);
                 }
             }
             else
@@ -1044,7 +1062,7 @@ namespace pluginVerilog.Verilog.Variables
 
                 if (word.GetCharAt(0) == '[')
                 {
-                    range = Range.ParseCreate(word, module);
+                    range = Range.ParseCreate(word, nameSpace);
                 }
             }
 
@@ -1150,8 +1168,11 @@ namespace pluginVerilog.Verilog.Variables
             }
         }
 
-        public static void ParseTfInputDeclaration(WordScanner word, Module module, IPortNameSpace portNameSpace, Attribute attribute)
+        public static void ParseTfInputDeclaration(WordScanner word, NameSpace nameSpace)
         {
+            IPortNameSpace portNameSpace = nameSpace as IPortNameSpace;
+            if (portNameSpace == null) System.Diagnostics.Debugger.Break();
+
             //            tf_input_declaration::= input[reg][signed][range] list_of_port_identifiers
             //                          | input[task_port_type] list_of_port_identifiers
             //            task_port_type::= time | real | realtime | integer
@@ -1204,7 +1225,7 @@ namespace pluginVerilog.Verilog.Variables
 
                 if (word.GetCharAt(0) == '[')
                 {
-                    range = Range.ParseCreate(word, module);
+                    range = Range.ParseCreate(word, nameSpace);
                 }
             }
             else
@@ -1218,7 +1239,7 @@ namespace pluginVerilog.Verilog.Variables
 
                 if (word.GetCharAt(0) == '[')
                 {
-                    range = Range.ParseCreate(word, module);
+                    range = Range.ParseCreate(word, nameSpace);
                 }
             }
 

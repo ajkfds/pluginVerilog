@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ajkControls.Primitive;
+using pluginVerilog.Verilog.BuildingBlocks;
 
 namespace pluginVerilog.IcarusVerilog
 {
@@ -135,7 +136,7 @@ namespace pluginVerilog.IcarusVerilog
 
             List<string> includeFileList = new List<string>();
 
-            foreach (Verilog.Module module in topParsedDocument.Modules.Values)
+            foreach (Module module in topParsedDocument.Modules.Values)
             {
                 appendFiles(filePathList,includeFileList, module, project);
             }
@@ -183,7 +184,7 @@ namespace pluginVerilog.IcarusVerilog
 
         }
 
-        private void appendFiles(List<string> filePathList, List<string> includePathList, Verilog.Module module, codeEditor.Data.Project project)
+        private void appendFiles(List<string> filePathList, List<string> includePathList, Module module, codeEditor.Data.Project project)
         {
             string fileId = module.FileId;
             Data.VerilogFile file = module.File as Data.VerilogFile;
@@ -203,7 +204,7 @@ namespace pluginVerilog.IcarusVerilog
 
             foreach(Verilog.ModuleItems.ModuleInstantiation instance in module.ModuleInstantiations.Values)
             {
-                Verilog.Module subModule = project.GetPluginProperty().GetModule(instance.ModuleName);
+                Module subModule = project.GetPluginProperty().GetModule(instance.ModuleName);
                 if (subModule != null) appendFiles(filePathList, includePathList, subModule, project);
             }
 

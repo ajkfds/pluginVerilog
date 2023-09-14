@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pluginVerilog.Verilog.BuildingBlocks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,9 @@ namespace pluginVerilog.Verilog
         NameSpace Parent { get; }
         Dictionary<string, Variables.Parameter> Parameters { get; }
         Dictionary<string, Variables.Parameter> LocalParameters { get; }
-        Module Module { get; }
+
+        BuildingBlocks.BuildingBlock BuildingBlock { get; }
+
         Dictionary<string, NameSpace> NameSpaces { get; }
 
         Dictionary<string, Variables.Port> Ports { get; }

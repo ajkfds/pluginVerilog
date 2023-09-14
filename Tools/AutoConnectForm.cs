@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pluginVerilog.Verilog.BuildingBlocks;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -51,7 +52,7 @@ namespace pluginVerilog.Tools
         Verilog.ParsedDocument parsedDocument;
         codeEditor.CodeEditor.CodeDocument codeDocument;
         codeEditor.Data.Project project;
-        Verilog.Module module;
+        Module module;
         Verilog.ModuleItems.ModuleInstantiation moduleInstantiation;
 
         private void setupModule()
@@ -69,10 +70,10 @@ namespace pluginVerilog.Tools
                 sourceParsedDocument = source.GetInstancedParsedDocument(moduleInstantiation.OverrideParameterID) as Verilog.ParsedDocument;
             }
             if (sourceParsedDocument == null) return;
-            Verilog.Module sourceModule = sourceParsedDocument.Modules[moduleInstantiation.ModuleName];
+            Module sourceModule = sourceParsedDocument.Modules[moduleInstantiation.ModuleName];
             if (sourceModule == null) return;
 
-            Verilog.Module instancedModule = parsedDocument.ProjectProperty.GetModule(moduleInstantiation.ModuleName);
+            Module instancedModule = parsedDocument.ProjectProperty.GetModule(moduleInstantiation.ModuleName);
 
             HeaderLabel header = new HeaderLabel();
             header.AppendText(moduleInstantiation.ModuleName, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
@@ -112,7 +113,7 @@ namespace pluginVerilog.Tools
             checkConnectCantidate(colorLabelList, module, instancedModule);
         }
 
-        private static void checkConnectCantidate(ajkControls.ColorLabel.ColorLabelList labelList,Verilog.Module module,Verilog.Module instancedModule)
+        private static void checkConnectCantidate(ajkControls.ColorLabel.ColorLabelList labelList, Module module, Module instancedModule)
         {
             foreach(ajkControls.ColorLabel.ColorLabel label in labelList)
             {

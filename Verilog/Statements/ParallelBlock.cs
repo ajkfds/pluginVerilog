@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pluginVerilog.Verilog.BuildingBlocks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,7 +40,7 @@ namespace pluginVerilog.Verilog.Statements
 
             if (word.GetCharAt(0) == ':')
             {
-                NamedParallelBlock namedBlock = new NamedParallelBlock(nameSpace.Module, nameSpace);
+                NamedParallelBlock namedBlock = new NamedParallelBlock(nameSpace.BuildingBlock , nameSpace);
                 namedBlock.BeginIndex = beginIndex;
 
                 word.MoveNext(); // :
@@ -127,7 +128,7 @@ namespace pluginVerilog.Verilog.Statements
                 statement.DisposeSubReference();
             }
         }
-        public NamedParallelBlock(Module module, NameSpace parent) : base(module, parent)
+        public NamedParallelBlock(BuildingBlock buildingBlock, NameSpace parent) : base(buildingBlock, parent)
         {
         }
 

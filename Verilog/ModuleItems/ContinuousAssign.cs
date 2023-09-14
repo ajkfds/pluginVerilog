@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pluginVerilog.Verilog.BuildingBlocks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +15,13 @@ namespace pluginVerilog.Verilog.ModuleItems
 
         public Variables.VariableAssignment VariableAssignment { get; protected set; }
 
-        public static ContinuousAssign ParseCreate(WordScanner word, IModuleOrGeneratedBlock module)
+        public static bool Parse(WordScanner word, NameSpace nameSpace)
+        {
+            ModuleItems.ContinuousAssign continuousAssign = ModuleItems.ContinuousAssign.ParseCreate(word, nameSpace);
+            return true;
+        }
+
+        public static ContinuousAssign ParseCreate(WordScanner word, NameSpace nameSpace)
         {
             // continuous_assign::= assign[drive_strength][delay3] list_of_net_assignments;
             // list_of_net_assignments::= net_assignment { , net_assignment }
@@ -28,11 +35,11 @@ namespace pluginVerilog.Verilog.ModuleItems
 
             ContinuousAssign continuousAssign = new ContinuousAssign();
 
-            continuousAssign.DriveStrength = DriveStrength.ParseCreate(word, module as NameSpace);
-            continuousAssign.Delay3 = Delay3.ParseCreate(word, module as NameSpace);
+            continuousAssign.DriveStrength = DriveStrength.ParseCreate(word, nameSpace);
+            continuousAssign.Delay3 = Delay3.ParseCreate(word, nameSpace);
 
 
-            continuousAssign.VariableAssignment = Variables.VariableAssignment.ParseCreate(word, module as NameSpace);
+            continuousAssign.VariableAssignment = Variables.VariableAssignment.ParseCreate(word, nameSpace);
 
             if(word.GetCharAt(0) == ';')
             {

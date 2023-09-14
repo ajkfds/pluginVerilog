@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pluginVerilog.Verilog.BuildingBlocks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +12,13 @@ namespace pluginVerilog.Verilog.ModuleItems
         protected InitialConstruct() { }
         public Statements.IStatement Statetment { get; protected set; }
 
-        public static InitialConstruct ParseCreate(WordScanner word, IModuleOrGeneratedBlock module)
+        public static bool Parse(WordScanner word, NameSpace nameSpace)
+        {
+            ModuleItems.InitialConstruct initial = ModuleItems.InitialConstruct.ParseCreate(word, nameSpace);
+            return true;
+        }
+
+        public static InitialConstruct ParseCreate(WordScanner word, NameSpace nameSpace)
         {
             //    initial_construct   ::= initial statement
             System.Diagnostics.Debug.Assert(word.Text == "initial");
@@ -19,7 +26,7 @@ namespace pluginVerilog.Verilog.ModuleItems
             word.MoveNext();
 
             InitialConstruct initial = new InitialConstruct();
-            initial.Statetment = Statements.Statements.ParseCreateStatement(word, module as NameSpace);
+            initial.Statetment = Statements.Statements.ParseCreateStatement(word, nameSpace);
             if (initial.Statetment == null)
             {
                 word.AddError("illegal initial construct");

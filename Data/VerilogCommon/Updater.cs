@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using codeEditor.CodeEditor;
 using codeEditor.Data;
+using pluginVerilog.Verilog.BuildingBlocks;
 
 namespace pluginVerilog.Data.VerilogCommon
 {
@@ -71,11 +72,11 @@ namespace pluginVerilog.Data.VerilogCommon
                 }
 
                 // module instances
-                foreach (Verilog.Module module in rootItem.VerilogParsedDocument.Modules.Values)
+                foreach (Module module in rootItem.VerilogParsedDocument.Modules.Values)
                 {
                     if(moduleName == null || moduleName == module.Name)
                     {
-                        updateModuleInstance(module, project, rootItem, targetItems, newItems);
+                        UpdateModuleInstance(module, project, rootItem, targetItems, newItems);
                     }
                 }
 
@@ -100,7 +101,7 @@ namespace pluginVerilog.Data.VerilogCommon
             }
         }
 
-        private static void updateModuleInstance(Verilog.Module module,Project project, IVerilogRelatedFile rootItem, List<Item> targetItems,Dictionary<string, Item> newItems)
+        private static void UpdateModuleInstance(Module module,Project project, IVerilogRelatedFile rootItem, List<Item> targetItems,Dictionary<string, Item> newItems)
         {
             foreach (Verilog.ModuleItems.ModuleInstantiation subModuleInstantiation in module.ModuleInstantiations.Values)
             {

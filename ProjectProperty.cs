@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ajkControls;
 using ajkControls.Json;
+using pluginVerilog.Verilog.BuildingBlocks;
 
 namespace pluginVerilog
 {
@@ -53,7 +54,7 @@ namespace pluginVerilog
             }
         }
 
-        public Verilog.Module GetInstancedModule(Verilog.ModuleItems.ModuleInstantiation moduleInstantiation)
+        public Module GetInstancedModule(Verilog.ModuleItems.ModuleInstantiation moduleInstantiation)
         {
             if (moduleInstantiation.ParameterOverrides.Count == 0)
             {
@@ -271,7 +272,7 @@ namespace pluginVerilog
             }
         }
 
-        public Verilog.Module GetModule(string moduleName)
+        public Module GetModule(string moduleName)
         {
             Data.IVerilogRelatedFile file = GetFileOfModule(moduleName);
             if (file == null) return null;

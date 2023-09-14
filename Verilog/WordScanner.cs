@@ -175,6 +175,14 @@ namespace pluginVerilog.Verilog
             if (wordPointer.Document.GetLineAt(startIndex) == wordPointer.Document.GetLineAt(lastIndex)) return;
             wordPointer.AppendBlock(startIndex, lastIndex);
         }
+
+        private bool systemVerilogError = false;
+        public void AddSystemVerilogError()
+        {
+            if (systemVerilogError) return;
+            AddError("SystemVerilog Description");
+        }
+
         public void AddError(string message)
         {
             if (prototype) return;
@@ -254,10 +262,10 @@ namespace pluginVerilog.Verilog
 
         public void MoveNext()
         {
-            if (nonGeneratedCount != 0)
-            {
-                wordPointer.Color(CodeDrawStyle.ColorType.Inactivated);
-            }
+            //if (nonGeneratedCount != 0)
+            //{
+            //    wordPointer.Color(CodeDrawStyle.ColorType.Inactivated);
+            //}
 
             if (wordPointer.Eof)
             {

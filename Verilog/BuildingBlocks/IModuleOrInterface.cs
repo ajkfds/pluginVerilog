@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace pluginVerilog.Verilog
+namespace pluginVerilog.Verilog.BuildingBlocks
 {
-    internal class DesignElement
+    public interface IModuleOrInterface : IModuleOrInterfaceOrProgram
     {
+
     }
 }

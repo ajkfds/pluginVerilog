@@ -82,6 +82,16 @@ namespace pluginVerilog.Verilog.Expressions
             throw new Exception("illegal access");
         }
 
+        public static VariableReference Create(Variables.Variable variable,NameSpace nameSpace)
+        {
+            VariableReference val = new VariableReference();
+            val.VariableName = variable.Name;
+            val.Variable = variable;
+            val.Reference = variable.DefinedReference;
+
+            return val;
+        }
+
         public static VariableReference ParseCreate(WordScanner word, NameSpace nameSpace, bool assigned)
         {
             if (nameSpace == null) System.Diagnostics.Debugger.Break();

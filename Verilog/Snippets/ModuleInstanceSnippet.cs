@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using codeEditor.CodeEditor;
 using System.Windows.Forms;
 using System.Drawing;
+using pluginVerilog.Verilog.BuildingBlocks;
 
 namespace pluginVerilog.Verilog.Snippets
 {
@@ -79,7 +80,7 @@ namespace pluginVerilog.Verilog.Snippets
             Verilog.ParsedDocument targetParsedDocument = targetFile.ParsedDocument as Verilog.ParsedDocument;
             if (targetParsedDocument == null) return;
 
-            Verilog.Module targetModule = targetParsedDocument.Modules[Text];
+            Module targetModule = targetParsedDocument.Modules[Text];
             if (targetModule == null) return;
 
             string replaceText = getReplaceText(targetModule, instanceName);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pluginVerilog.Verilog.BuildingBlocks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,15 +40,18 @@ namespace pluginVerilog.Verilog.ModuleItems
 
         public int BeginIndex;
         public int LastIndex;
-        public static void Parse(WordScanner word, IModuleOrGeneratedBlock module)
+        public static bool Parse(WordScanner word, NameSpace nameSpace)
         {
+            Module module = nameSpace.BuildingBlock as Module;
+            if (module == null) System.Diagnostics.Debugger.Break();
+
             WordScanner moduleIdentifier = word.Clone();
             string moduleName = word.Text;
             int beginIndex = word.RootIndex;
             Module instancedModule = word.ProjectProperty.GetModule(moduleName);
             if (instancedModule == null)
             {
-                word.AddError("not defined");
+                return false;
             }
             word.MoveNext();
 
@@ -56,7 +60,7 @@ namespace pluginVerilog.Verilog.ModuleItems
             {
                 moduleIdentifier.AddError("illegal module item");
                 word.SkipToKeyword(";");
-                return;
+                return true;
             }
             moduleIdentifier.Color(CodeDrawStyle.ColorType.Keyword);
             ModuleInstantiation moduleInstantiation = new ModuleInstantiation();
@@ -74,7 +78,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                 {
                     word.AddError("( expected");
                     word.SkipToKeyword(";");
-                    return;
+                    return true;
                 }
                 word.MoveNext();
 
@@ -100,7 +104,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                         {
                             word.MoveNext();
                         }
-                        Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
+                        Expressions.Expression expression = Expressions.Expression.ParseCreate(word, nameSpace);
                         if(expression == null)
                         {
                             error = true;
@@ -145,7 +149,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                     int i = 0;
                     while (!word.Eof && word.Text != ")")
                     {
-                        Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
+                        Expressions.Expression expression = Expressions.Expression.ParseCreate(word, nameSpace);
                         if(instancedModule != null)
                         {
                             if (i >= instancedModule.PortParameterNameList.Count)
@@ -184,7 +188,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                 if (word.Text != ")")
                 {
                     word.AddError("( expected");
-                    return;
+                    return true;
                 }
                 word.MoveNext();
             }
@@ -196,7 +200,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                 {
                     instancedModule = word.ProjectProperty.GetInstancedModule(moduleInstantiation);
                 }
-                if (instancedModule == null) module.Module.ReperseRequested = true;
+                if (instancedModule == null) nameSpace.BuildingBlock.ReperseRequested = true;
             }
 
 
@@ -221,13 +225,13 @@ namespace pluginVerilog.Verilog.ModuleItems
                     {
                         // 
                     }
-                    else if (module.Module.ModuleInstantiations.ContainsKey(moduleInstantiation.Name))
+                    else if (module.ModuleInstantiations.ContainsKey(moduleInstantiation.Name))
                     {   // duplicated
                         word.AddPrototypeError("instance name duplicated");
                     }
                     else
                     {
-                        module.Module.ModuleInstantiations.Add(moduleInstantiation.Name, moduleInstantiation);
+                        module.ModuleInstantiations.Add(moduleInstantiation.Name, moduleInstantiation);
                     }
                 }
                 else
@@ -236,11 +240,11 @@ namespace pluginVerilog.Verilog.ModuleItems
                     {
                         // 
                     }
-                    else if (module.Module.ModuleInstantiations.ContainsKey(moduleInstantiation.Name))
+                    else if (module.ModuleInstantiations.ContainsKey(moduleInstantiation.Name))
                     {   // duplicated
-                        if (module.Module.ModuleInstantiations[moduleInstantiation.Name].Prototype)
+                        if (module.ModuleInstantiations[moduleInstantiation.Name].Prototype)
                         {
-                            moduleInstantiation = module.Module.ModuleInstantiations[moduleInstantiation.Name];
+                            moduleInstantiation = module.ModuleInstantiations[moduleInstantiation.Name];
                             moduleInstantiation.Prototype = false;
                         }
                         else
@@ -260,7 +264,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                     word.AddError("( expected");
                     word.SkipToKeyword(";");
                     if (word.Text == ";") word.MoveNext();
-                    return;
+                    return true;
                 }
                 word.MoveNext();
 
@@ -301,7 +305,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                         }
                         if (outPort)
                         {
-                            Expressions.Expression expression = Expressions.Expression.ParseCreateVariableLValue(word, module as NameSpace);
+                            Expressions.Expression expression = Expressions.Expression.ParseCreateVariableLValue(word, nameSpace);
                             if ( word.Prototype && expression != null && !moduleInstantiation.PortConnection.ContainsKey(pinName)) moduleInstantiation.PortConnection.Add(pinName, expression);
 
                             if (!word.Prototype)
@@ -325,7 +329,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                         }
                         else
                         {
-                            Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
+                            Expressions.Expression expression = Expressions.Expression.ParseCreate(word, nameSpace);
                             if (word.Prototype && expression != null && !moduleInstantiation.PortConnection.ContainsKey(pinName)) moduleInstantiation.PortConnection.Add(pinName, expression);
 
                             if (!word.Prototype)
@@ -374,13 +378,13 @@ namespace pluginVerilog.Verilog.ModuleItems
                         if(instancedModule != null && i < instancedModule.PortsList.Count)
                         {
                             pinName = instancedModule.PortsList[i].Name;
-                            Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
+                            Expressions.Expression expression = Expressions.Expression.ParseCreate(word,nameSpace);
                             if (word.Prototype && expression != null && !moduleInstantiation.PortConnection.ContainsKey(pinName)) moduleInstantiation.PortConnection.Add(pinName, expression);
                         }
                         else
                         {
                             word.AddError("illegal port connection");
-                            Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module as NameSpace);
+                            Expressions.Expression expression = Expressions.Expression.ParseCreate(word, nameSpace);
                         }
                         if (word.Text != ",")
                         {
@@ -395,7 +399,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                 if (word.Text != ")")
                 {
                     word.AddError(") expected");
-                    return;
+                    return true;
                 }
                 word.MoveNext();
                 moduleInstantiation.LastIndex = word.RootIndex;
@@ -408,9 +412,10 @@ namespace pluginVerilog.Verilog.ModuleItems
             if (word.Text != ";")
             {
                 word.AddError("; expected");
-                return;
+                return true;
             }
             word.MoveNext();
+            return true;
         }
 
         public Module GetInstancedModule()

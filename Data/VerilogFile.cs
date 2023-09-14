@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using codeEditor.CodeEditor;
 using codeEditor.Data;
+using pluginVerilog.Verilog.BuildingBlocks;
 
 namespace pluginVerilog.Data
 {
@@ -100,11 +101,11 @@ namespace pluginVerilog.Data
                 return;
             }
 
-            foreach (Verilog.Module module in VerilogParsedDocument.Modules.Values)
+            foreach (Module module in VerilogParsedDocument.Modules.Values)
             {
                 if (!ProjectProperty.IsRegisterableModule(module.Name, this))
                 {
-                    Verilog.Module registeredModule = ProjectProperty.GetModule(module.Name);
+                    Module registeredModule = ProjectProperty.GetModule(module.Name);
                     if (registeredModule.File.RelativePath == module.File.RelativePath) continue;
 
                     if (module.NameReference != null) { 

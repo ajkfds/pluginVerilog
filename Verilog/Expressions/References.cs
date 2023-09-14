@@ -41,11 +41,11 @@ namespace pluginVerilog.Verilog.Expressions
         {
             TaskReference ret = new TaskReference();
             ret.TaskName = word.Text;
-            ret.ModuleName = nameSpace.Module.Name;
+            ret.ModuleName = nameSpace.BuildingBlock.Name;
             word.Color(CodeDrawStyle.ColorType.Keyword);
-            if (taskNameSpace.Module.Tasks.ContainsKey(ret.TaskName))
+            if (taskNameSpace.BuildingBlock.Tasks.ContainsKey(ret.TaskName))
             {
-                ret.Task = taskNameSpace.Module.Tasks[ret.TaskName];
+                ret.Task = taskNameSpace.BuildingBlock.Tasks[ret.TaskName];
             }
             else
             {

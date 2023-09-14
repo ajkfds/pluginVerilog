@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pluginVerilog.Verilog.BuildingBlocks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -145,10 +146,10 @@ namespace pluginVerilog.Parser
             {
                 if (word.Text == "module")
                 {
-                    if(targetModuleName != null)
+                    if (targetModuleName != null)
                     {
                         string moduleName = word.NextText;
-                        if(moduleName != targetModuleName)
+                        if (moduleName != targetModuleName)
                         {
                             word.SkipToKeyword("endmodule");
                             word.MoveNext();
@@ -157,16 +158,20 @@ namespace pluginVerilog.Parser
                     }
 
 
-                    Verilog.Module module;
+                    Module module;
+                    if (File.RelativePath.EndsWith("MODULE3.v")){
+                        string A = "";
+                            }
+                    
                     if (ParseMode == ParseModeEnum.LoadParse)
                     {
                         if (parameterOverrides == null)
                         {
-                            module = Verilog.Module.Create(word, null, File, true);
+                            module = Module.Create(word, null, File, true);
                         }
                         else
                         {
-                            module = Verilog.Module.Create(word, parameterOverrides, null, File, true);
+                            module = Module.Create(word, parameterOverrides, null, File, true);
                         }
                         if(module.ModuleInstantiations.Count != 0) // prepare reparse (instanced module could have un-refferenced link)
                         {
@@ -177,11 +182,11 @@ namespace pluginVerilog.Parser
                     {
                         if (parameterOverrides == null)
                         {
-                            module = Verilog.Module.Create(word, null, File, false);
+                            module = Module.Create(word, null, File, false);
                         }
                         else
                         {
-                            module = Verilog.Module.Create(word, parameterOverrides, null, File, false);
+                            module = Module.Create(word, parameterOverrides, null, File, false);
                         }
                     }
 

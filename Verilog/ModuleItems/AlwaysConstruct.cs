@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pluginVerilog.Verilog.BuildingBlocks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,7 +19,13 @@ namespace pluginVerilog.Verilog.ModuleItems
             always_construct ::= always_keyword statement 
             always_keyword ::= always | always_comb | always_latch | always_ff     
          */
-        public static AlwaysConstruct ParseCreate(WordScanner word, IModuleOrGeneratedBlock module)
+
+        public static bool Parse(WordScanner word, NameSpace nameSpace)
+        {
+            ModuleItems.AlwaysConstruct always = ModuleItems.AlwaysConstruct.ParseCreate(word, nameSpace);
+            return true;
+        }
+        public static AlwaysConstruct ParseCreate(WordScanner word, NameSpace nameSpace)
         {
             switch (word.Text)
             {
@@ -40,7 +47,7 @@ namespace pluginVerilog.Verilog.ModuleItems
             word.MoveNext();
 
             AlwaysConstruct always = new AlwaysConstruct();
-            always.Statetment = Statements.Statements.ParseCreateStatement(word, module as NameSpace);
+            always.Statetment = Statements.Statements.ParseCreateStatement(word, nameSpace);
             if(always.Statetment == null)
             {
                 word.AddError("illegal always construct");

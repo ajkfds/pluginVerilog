@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using pluginVerilog.Verilog.BuildingBlocks;
 
 namespace pluginVerilog.NavigatePanel
 {
@@ -87,7 +88,7 @@ namespace pluginVerilog.NavigatePanel
                 }
             }
 
-            foreach (Verilog.Module module in VerilogFile.VerilogParsedDocument.Modules.Values)
+            foreach (Module module in VerilogFile.VerilogParsedDocument.Modules.Values)
             {
                 VerilogFile.CodeDocument.ExpandBlock(VerilogFile.CodeDocument.GetLineAt(module.BeginIndex));
             }

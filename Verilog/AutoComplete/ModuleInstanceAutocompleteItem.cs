@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using pluginVerilog.Verilog.BuildingBlocks;
 
 namespace pluginVerilog.Verilog.AutoComplete
 {
@@ -44,7 +45,7 @@ namespace pluginVerilog.Verilog.AutoComplete
             if (instancedFile == null) return;
             Verilog.ParsedDocument instancedParsedDocument = instancedFile.ParsedDocument as Verilog.ParsedDocument;
             if (instancedParsedDocument == null) return;
-            Verilog.Module instancedModule = instancedParsedDocument.Modules[Text];
+            Module instancedModule = instancedParsedDocument.Modules[Text];
             if (instancedModule == null) return;
 
             string instanceName;

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using pluginVerilog.Verilog.BuildingBlocks;
 
 namespace pluginVerilog.NavigatePanel
 {
@@ -115,8 +116,8 @@ namespace pluginVerilog.NavigatePanel
                 }
             }
 
-            Verilog.Module targetModule = null;
-            foreach (Verilog.Module module in ModuleInstance.VerilogParsedDocument.Modules.Values)
+            Module targetModule = null;
+            foreach (Module module in ModuleInstance.VerilogParsedDocument.Modules.Values)
             {
                 if(module.Name != ModuleInstance.ModuleName)
                 {

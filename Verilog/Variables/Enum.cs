@@ -39,7 +39,6 @@ namespace pluginVerilog.Verilog.Variables
     {
         protected Enum() { }
 
-        public string Name;
         public List<Item> Items = new List<Item>();
 
 
@@ -134,7 +133,7 @@ namespace pluginVerilog.Verilog.Variables
             return val;
 
         }
-        public static Enum ParseCreateType(WordScanner word, NameSpace nameSpace)
+        public static new Enum ParseCreateType(WordScanner word, NameSpace nameSpace)
         {
             if (word.Text != "enum") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);

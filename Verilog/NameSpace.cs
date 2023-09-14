@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pluginVerilog.Verilog.BuildingBlocks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,9 +11,9 @@ namespace pluginVerilog.Verilog
     public class NameSpace : Item
     {
         private NameSpace() { }
-        protected NameSpace(Module module,NameSpace parent)
+        protected NameSpace(BuildingBlocks.BuildingBlock buildingBlock,NameSpace parent)
         {
-            Module = module;
+            BuildingBlock = buildingBlock;
             Parent = parent;
         }
 
@@ -33,7 +34,7 @@ namespace pluginVerilog.Verilog
         public Dictionary<string, Variables.Parameter> LocalParameters { get { return localParameters; } }
         public Dictionary<string, Variables.Enum> Enums { get { return enums; } }
         public Dictionary<string, Variables.Typedef> Typedefs { get { return typedefs; } }
-        public Module Module { get; protected set; }
+        public BuildingBlocks.BuildingBlock BuildingBlock { get; protected set; }
         public Dictionary<string, NameSpace> NameSpaces { get { return nameSpaces;  } }
 
         public NameSpace GetHierNameSpace(int index)
@@ -74,22 +75,22 @@ namespace pluginVerilog.Verilog
                 }
             }
 
-            foreach (Variables.Parameter parameter in Module.Parameters.Values)
+            foreach (Variables.Parameter parameter in BuildingBlock.Parameters.Values)
             {
                 items.Add(newItem(parameter.Name, CodeDrawStyle.ColorType.Paramater));
             }
 
-            foreach (Variables.Parameter parameter in Module.LocalParameters.Values)
+            foreach (Variables.Parameter parameter in BuildingBlock.LocalParameters.Values)
             {
                 items.Add(newItem(parameter.Name, CodeDrawStyle.ColorType.Paramater));
             }
 
-            foreach (Function function in Module.Functions.Values)
+            foreach (Function function in BuildingBlock.Functions.Values)
             {
                 items.Add(newItem(function.Name, CodeDrawStyle.ColorType.Identifier));
             }
 
-            foreach (Task task in Module.Tasks.Values)
+            foreach (Task task in BuildingBlock.Tasks.Values)
             {
                 items.Add(newItem(task.Name, CodeDrawStyle.ColorType.Identifier));
             }

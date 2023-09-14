@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pluginVerilog.Verilog.BuildingBlocks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -43,7 +44,7 @@ namespace pluginVerilog.Verilog
         list_of_block_variable_identifiers  ::= block_variable_type { , block_variable_type } 
         block_variable_type                 ::= variable_identifier | variable_identifier dimension { dimension }
          */
-        protected Task(Module module, NameSpace parent) : base(module, parent)
+        protected Task(NameSpace parent) : base(parent.BuildingBlock , parent)
         {
         }
 
@@ -54,13 +55,13 @@ namespace pluginVerilog.Verilog
 
         public Statements.IStatement Statement;
 
-        public static void Parse(WordScanner word, IModuleOrGeneratedBlock module)
+        public static void Parse(WordScanner word, NameSpace nameSpace)
         {
             if (word.Text != "task")
             {
                 System.Diagnostics.Debugger.Break();
             }
-            Task task = new Task(module.Module, module as NameSpace);
+            Task task = new Task(nameSpace);
             word.Color(CodeDrawStyle.ColorType.Keyword);
             task.BeginIndex = word.RootIndex;
             word.MoveNext();
@@ -89,10 +90,10 @@ namespace pluginVerilog.Verilog
             }
             else if (word.Prototype)
             {
-                if (!module.Tasks.ContainsKey(task.Name) && !module.NameSpaces.ContainsKey(task.Name))
+                if (!nameSpace.BuildingBlock.Tasks.ContainsKey(task.Name) && !nameSpace.BuildingBlock.NameSpaces.ContainsKey(task.Name))
                 {
-                    module.Tasks.Add(task.Name, task);
-                    module.NameSpaces.Add(task.Name, task);
+                    nameSpace.BuildingBlock.Tasks.Add(task.Name, task);
+                    nameSpace.BuildingBlock.NameSpaces.Add(task.Name, task);
                 }
                 else
                 {
@@ -101,9 +102,9 @@ namespace pluginVerilog.Verilog
             }
             else
             {
-                if (module.Tasks.ContainsKey(task.Name))
+                if (nameSpace.BuildingBlock.Tasks.ContainsKey(task.Name))
                 {
-                    task = module.Tasks[task.Name];
+                    task = nameSpace.BuildingBlock.Tasks[task.Name];
                 }
             }
 
@@ -132,7 +133,7 @@ namespace pluginVerilog.Verilog
                         case "input":
                         case "output":
                         case "inout":
-                            Verilog.Variables.Port.ParseTaskPortDeclaration(word, task, null);
+                            Verilog.Variables.Port.ParseTaskPortDeclaration(word, task);
                             if (word.Text != ";")
                             {
                                 word.AddError("; expected");
@@ -189,10 +190,10 @@ namespace pluginVerilog.Verilog
 
             if (word.Prototype)
             {
-                if (module.Tasks.ContainsKey(task.Name)) return;
-                if (module.NameSpaces.ContainsKey(task.Name)) return;
-                module.Tasks.Add(task.Name, task);
-                module.NameSpaces.Add(task.Name, task);
+                if (nameSpace.BuildingBlock.Tasks.ContainsKey(task.Name)) return;
+                if (nameSpace.BuildingBlock.NameSpaces.ContainsKey(task.Name)) return;
+                nameSpace.BuildingBlock.Tasks.Add(task.Name, task);
+                nameSpace.BuildingBlock.NameSpaces.Add(task.Name, task);
             }
 
             return;

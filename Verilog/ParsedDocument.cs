@@ -1,4 +1,5 @@
-﻿using pluginVerilog.Verilog.ModuleItems;
+﻿using pluginVerilog.Verilog.BuildingBlocks;
+using pluginVerilog.Verilog.ModuleItems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,7 +70,7 @@ namespace pluginVerilog.Verilog
                 if (file is Data.VerilogFile)
                 {
                     Data.VerilogFile verilogFile = file as Data.VerilogFile;
-                    foreach (Verilog.Module module in Modules.Values)
+                    foreach (Module module in Modules.Values)
                     {
                         verilogFile.ProjectProperty.RemoveModule(module.Name, verilogFile);
                     }
@@ -163,13 +164,13 @@ namespace pluginVerilog.Verilog
             {
                 ret.Add(new Popup.MacroPopup(text.Substring(1), Macros[text.Substring(1)].MacroText));
             }
-            if (space.Module.Functions.ContainsKey(text))
+            if (space.BuildingBlock.Functions.ContainsKey(text))
             {
-                ret.Add(new Popup.FunctionPopup(space.Module.Functions[text]));
+                ret.Add(new Popup.FunctionPopup(space.BuildingBlock.Functions[text]));
             }
-            if (space.Module.Tasks.ContainsKey(text))
+            if (space.BuildingBlock.Tasks.ContainsKey(text))
             {
-                ret.Add(new Popup.TaskPopup(space.Module.Tasks[text]));
+                ret.Add(new Popup.TaskPopup(space.BuildingBlock.Tasks[text]));
             }
             return ret;
         }
@@ -275,12 +276,15 @@ namespace pluginVerilog.Verilog
 
         private NameSpace getSearchNameSpace(NameSpace nameSpace,List<string> hier)
         {
+            IBuildingBlockWithModuleInstance buildingBlock = nameSpace.BuildingBlock as IBuildingBlockWithModuleInstance;
+            if (buildingBlock == null) System.Diagnostics.Debugger.Break();
+
             if(nameSpace == null) return null;
             if (hier.Count == 0) return nameSpace;
 
-            if (nameSpace.Module.ModuleInstantiations.ContainsKey(hier[0]))
+            if (buildingBlock.ModuleInstantiations.ContainsKey(hier[0]))
             {
-                ModuleInstantiation inst = nameSpace.Module.ModuleInstantiations[hier[0]];
+                ModuleInstantiation inst = buildingBlock.ModuleInstantiations[hier[0]];
                 Module module = ProjectProperty.GetInstancedModule(inst);
                 hier.RemoveAt(0);
                 return getSearchNameSpace(module,hier);
