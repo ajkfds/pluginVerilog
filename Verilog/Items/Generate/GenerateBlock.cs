@@ -45,7 +45,6 @@ namespace pluginVerilog.Verilog.Items.Generate
             else
             {
                 int beginCount = 0;
-//                word.AddError("illegal sequential block");
                 while (!word.Eof && word.Text != "endgenerate")
                 {
                     if (word.Text == "begin")

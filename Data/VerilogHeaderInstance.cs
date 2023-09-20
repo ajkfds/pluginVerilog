@@ -52,6 +52,11 @@ namespace pluginVerilog.Data
             }
         }
 
+        public void SetName(string name)
+        {
+            this.Name = name;
+        }
+
         public bool ReplaceBy(
             VerilogHeaderInstance file
             //Verilog.ModuleItems.ModuleInstantiation moduleInstantiation,
@@ -66,6 +71,7 @@ namespace pluginVerilog.Data
             //if (ModuleName != moduleInstantiation.ModuleName) return false;
 
             ParsedDocument = file.ParsedDocument;
+
 
             return true;
         }

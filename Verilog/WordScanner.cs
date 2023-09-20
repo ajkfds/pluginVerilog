@@ -1011,24 +1011,46 @@ namespace pluginVerilog.Verilog
                 return;
             }
             vhInstance.Parent = RootParsedDocument.File as codeEditor.Data.Item;
+            vhInstance.SetName(vhInstance.Name + ":" + RootParsedDocument.IncludeFiles.Count);
 
-            if(!RootParsedDocument.IncludeFiles.ContainsKey(vhInstance.Name))
+            if (!prototype)
             {
-                RootParsedDocument.IncludeFiles.Add(vhInstance.Name, vhInstance);
-            }
-            else
-            {
-                vhInstance = RootParsedDocument.IncludeFiles[vhInstance.Name];
+                if (!RootParsedDocument.IncludeFiles.ContainsKey(vhInstance.Name))
+                {
+                    RootParsedDocument.IncludeFiles.Add(vhInstance.Name, vhInstance);
+                }
+                else
+                {
+                    vhInstance = RootParsedDocument.IncludeFiles[vhInstance.Name];
+                }
             }
 
             // assign new parsed document
             vhInstance.ParsedDocument = new Verilog.ParsedDocument(vhInstance, RootParsedDocument.ParseMode);// editid =, -1);
 
-
             WordPointer newPointer = new WordPointer(vhInstance.CodeDocument as CodeEditor.CodeDocument, vhInstance.ParsedDocument as Verilog.ParsedDocument);
             stock.Add(wordPointer);
-
             wordPointer = newPointer;
+
+            wordPointer.InitibitColor = true;
+            {
+                codeEditor.NavigatePanel.NavigatePanelNode node;
+                codeEditor.Controller.NavigatePanel.GetSelectedNode(out node);
+                if(node != null)
+                {
+                    Data.VerilogHeaderInstance vh = node.Item as Data.VerilogHeaderInstance;
+                    if (vh != null)
+                    {
+                        if (vh.ID == vhInstance.ID)
+                        {
+                            wordPointer.InitibitColor = false;
+                            System.Diagnostics.Debug.Print("current insatance");
+                        }
+                    }
+                }
+            }
+
+
 
             if (wordPointer.Eof)
             {

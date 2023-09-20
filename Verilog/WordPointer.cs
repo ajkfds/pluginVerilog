@@ -29,6 +29,7 @@ namespace pluginVerilog.Verilog
 
         public CodeEditor.CodeDocument Document { get; protected set; }
         public Verilog.ParsedDocument ParsedDocument { get; protected set; }
+        public bool InitibitColor = false;
 
         public Data.IVerilogRelatedFile VerilogFile
         {
@@ -76,6 +77,7 @@ namespace pluginVerilog.Verilog
 
         public void Color(CodeDrawStyle.ColorType colorType)
         {
+            if (InitibitColor) return;
             for (int i = index; i < index + length; i++)
             {
                 Document.SetColorAt(i, CodeDrawStyle.ColorIndex(colorType));
