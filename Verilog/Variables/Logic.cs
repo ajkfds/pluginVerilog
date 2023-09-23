@@ -81,17 +81,26 @@ namespace pluginVerilog.Verilog.Variables
             Logic ret = new Logic();
             ret.Signed = false;
 
+
+
             if (word.Eof)
             {
                 word.AddError("illegal reg declaration");
                 return null;
             }
+
             if (word.Text == "signed")
             {
                 word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext();
                 ret.Signed = true;
+            }else if(word.Text == "unsigned")
+            {
+                word.Color(CodeDrawStyle.ColorType.Keyword);
+                word.MoveNext();
+                ret.Signed = false;
             }
+
             if (word.Eof)
             {
                 word.AddError("illegal reg declaration");

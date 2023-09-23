@@ -33,6 +33,8 @@ namespace pluginVerilog.Verilog
         public Dictionary<string, Data.VerilogHeaderInstance> IncludeFiles = new Dictionary<string, Data.VerilogHeaderInstance>();
         public Dictionary<string, Macro> Macros = new Dictionary<string, Macro>();
 
+        public Dictionary<string, Verilog.Expressions.Expression> ParameterOverrides;
+        public string TargetBuldingBlockName = null;
 
         private bool reparseRequested = false;
         public bool ReparseRequested

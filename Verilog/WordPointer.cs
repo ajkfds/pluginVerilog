@@ -84,6 +84,17 @@ namespace pluginVerilog.Verilog
             }
         }
 
+        public void Color(CodeDrawStyle.ColorType colorType,int start,int last)
+        {
+            if (InitibitColor) return;
+//            if (last > length) System.Diagnostics.Debugger.Break();
+
+            for (int i = index+start; i < index + last; i++)
+            {
+                Document.SetColorAt(i, CodeDrawStyle.ColorIndex(colorType));
+            }
+        }
+
         public void AppendBlock(int startIndex,int lastIndex)
         {
             Document.AppendBlock(startIndex, lastIndex);

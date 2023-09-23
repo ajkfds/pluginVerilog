@@ -65,6 +65,12 @@ namespace pluginVerilog.Data
             }
         }
 
+        // update sub-items from ParsedDocument
+        public override void Update()
+        {
+            VerilogCommon.Updater.Update(this);
+        }
+
         private bool readFromFile()
         {
             try

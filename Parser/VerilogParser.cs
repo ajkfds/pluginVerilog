@@ -41,8 +41,6 @@ namespace pluginVerilog.Parser
             this.document.CopyTextOnlyFrom(verilogFile.CodeDocument);
             this.ParseMode = parseMode;
             this.TextFile = verilogFile as codeEditor.Data.TextFile;
-            this.parameterOverrides = parameterOverrides;
-            this.targetModuleName = moduleName;
 
             File = verilogFile;
             parsedDocument = new Verilog.ParsedDocument(verilogFile, parseMode);
@@ -52,6 +50,8 @@ namespace pluginVerilog.Parser
             }
             parsedDocument.Version = verilogFile.CodeDocument.Version;
             parsedDocument.Instance = true;
+            parsedDocument.ParameterOverrides = parameterOverrides;
+            parsedDocument.TargetBuldingBlockName = moduleName;
             word = new Verilog.WordScanner(VerilogDocument, parsedDocument, parsedDocument.SystemVerilog);
         }
 
@@ -70,8 +70,8 @@ namespace pluginVerilog.Parser
         public override codeEditor.CodeEditor.ParsedDocument ParsedDocument { get { return parsedDocument as codeEditor.CodeEditor.ParsedDocument; } }
         public virtual Verilog.ParsedDocument VerilogParsedDocument { get { return parsedDocument; } }
 
-        private Dictionary<string, Verilog.Expressions.Expression> parameterOverrides;
-        private string targetModuleName = null;
+//        private Dictionary<string, Verilog.Expressions.Expression> parameterOverrides;
+//        private string targetModuleName = null;
 
         private System.WeakReference<Data.IVerilogRelatedFile> fileRef;
         public Data.IVerilogRelatedFile File
@@ -104,16 +104,16 @@ namespace pluginVerilog.Parser
         */
 
         /* System Verilog 2012
-            source_text ::= [ timeunits_declaration ] { description } 
-            description ::= 
-                module_declaration 
-                | udp_declaration 
-                | interface_declaration 
-                | program_declaration         
-                | package_declaration 
-                | { attribute_instance } package_item 
-                | { attribute_instance } bind_directive 
-                | config_declaration 
+        source_text ::= [ timeunits_declaration ] { description } 
+        description ::= 
+              module_declaration 
+            | udp_declaration 
+            | interface_declaration 
+            | program_declaration         
+            | package_declaration 
+            | { attribute_instance } package_item 
+            | { attribute_instance } bind_directive 
+            | config_declaration 
 
         module_nonansi_header ::= 
             { attribute_instance } module_keyword [ lifetime ] module_identifier 
@@ -142,69 +142,70 @@ namespace pluginVerilog.Parser
         public override void Parse()
         {
             word.GetFirst();
-            while (!word.Eof)
-            {
-                if (word.Text == "module")
-                {
-                    if (targetModuleName != null)
-                    {
-                        string moduleName = word.NextText;
-                        if (moduleName != targetModuleName)
-                        {
-                            word.SkipToKeyword("endmodule");
-                            word.MoveNext();
-                            continue;
-                        }
-                    }
+
+            Root root = Root.ParseCreate(word,VerilogParsedDocument,File as Data.VerilogFile);
 
 
-                    Module module;
-                    if (File.RelativePath.EndsWith("MODULE3.v")){
-                        string A = "";
-                            }
+            //while (!word.Eof)
+            //{
+            //    if (word.Text == "module")
+            //    {
+            //        if (targetModuleName != null)
+            //        {
+            //            string moduleName = word.NextText;
+            //            if (moduleName != targetModuleName)
+            //            {
+            //                word.SkipToKeyword("endmodule");
+            //                word.MoveNext();
+            //                continue;
+            //            }
+            //        }
+
+
+            //        Module module;
                     
-                    if (ParseMode == ParseModeEnum.LoadParse)
-                    {
-                        if (parameterOverrides == null)
-                        {
-                            module = Module.Create(word, null, File, true);
-                        }
-                        else
-                        {
-                            module = Module.Create(word, parameterOverrides, null, File, true);
-                        }
-                        if(module.ModuleInstantiations.Count != 0) // prepare reparse (instanced module could have un-refferenced link)
-                        {
-                            module.ReperseRequested = true;
-                        }
-                    }
-                    else
-                    {
-                        if (parameterOverrides == null)
-                        {
-                            module = Module.Create(word, null, File, false);
-                        }
-                        else
-                        {
-                            module = Module.Create(word, parameterOverrides, null, File, false);
-                        }
-                    }
+            //        if (ParseMode == ParseModeEnum.LoadParse)
+            //        {
+            //            if (parameterOverrides == null)
+            //            {
+            //                module = Module.Create(word, null, File, true);
+            //            }
+            //            else
+            //            {
+            //                module = Module.Create(word, parameterOverrides, null, File, true);
+            //            }
+            //            if(module.ModuleInstantiations.Count != 0) // prepare reparse (instanced module could have un-refferenced link)
+            //            {
+            //                module.ReperseRequested = true;
+            //            }
+            //        }
+            //        else
+            //        {
+            //            if (parameterOverrides == null)
+            //            {
+            //                module = Module.Create(word, null, File, false);
+            //            }
+            //            else
+            //            {
+            //                module = Module.Create(word, parameterOverrides, null, File, false);
+            //            }
+            //        }
 
-                    if (!parsedDocument.Modules.ContainsKey(module.Name))
-                    {
-                        parsedDocument.Modules.Add(module.Name, module);
-                        if (module.ReperseRequested) parsedDocument.ReparseRequested = true;
-                    }
-                    else
-                    {
-                        word.AddError("duplicated module name");
-                    }
-                }
-                else
-                {
-                    word.MoveNext();
-                }
-            }
+            //        if (!parsedDocument.Modules.ContainsKey(module.Name))
+            //        {
+            //            parsedDocument.Modules.Add(module.Name, module);
+            //            if (module.ReperseRequested) parsedDocument.ReparseRequested = true;
+            //        }
+            //        else
+            //        {
+            //            word.AddError("duplicated module name");
+            //        }
+            //    }
+            //    else
+            //    {
+            //        word.MoveNext();
+            //    }
+            //}
             word.Dispose();
             word = null;
         }

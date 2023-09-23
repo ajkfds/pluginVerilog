@@ -29,6 +29,18 @@ namespace pluginVerilog.Verilog.Variables
             param_assignment ::= (From Annex A - A.2.4) parameter_identifier = constant_expression  
             range ::=  (From Annex A - A.2.5) [ msb_constant_expression : lsb_constant_expression ]              
             */
+
+            /* ## SystemVerilog
+             * 
+            local_parameter_declaration ::= 
+                  "localparam" data_type_or_implicit list_of_param_assignments 
+                | "localparam" type list_of_type_assignments 
+
+            parameter_declaration ::= 
+                  "parameter" data_type_or_implicit list_of_param_assignments 
+                | "parameter" type list_of_type_assignments
+
+             */
             bool local = false;
             if (word.Text == "parameter")
             {
@@ -44,6 +56,8 @@ namespace pluginVerilog.Verilog.Variables
             }
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
+
+//            Variable dataType = Variable.ParseCrateDataType(word, module);
 
             switch(word.Text)
             {
@@ -185,36 +199,38 @@ namespace pluginVerilog.Verilog.Variables
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
-            switch (word.Text)
-            {
-                case "integer":
-                    word.Color( CodeDrawStyle.ColorType.Keyword);
-                    word.MoveNext();
-                    break;
-                case "real":
-                    word.Color(CodeDrawStyle.ColorType.Keyword);
-                    word.MoveNext();
-                    break;
-                case "realtime":
-                    word.Color(CodeDrawStyle.ColorType.Keyword);
-                    word.MoveNext();
-                    break;
-                case "time":
-                    word.Color(CodeDrawStyle.ColorType.Keyword);
-                    word.MoveNext();
-                    break;
-                default:
-                    if (word.Text == "signed")
-                    {
-                        word.Color(CodeDrawStyle.ColorType.Keyword);
-                        word.MoveNext();
-                    }
-                    if (word.GetCharAt(0) == '[')
-                    {
-                        Range range = Range.ParseCreate(word, nameSpace);
-                    }
-                    break;
-            }
+            Variable dataType = Variable.ParseCrateDataType(word, nameSpace);
+
+            //switch (word.Text)
+            //{
+            //    case "integer":
+            //        word.Color( CodeDrawStyle.ColorType.Keyword);
+            //        word.MoveNext();
+            //        break;
+            //    case "real":
+            //        word.Color(CodeDrawStyle.ColorType.Keyword);
+            //        word.MoveNext();
+            //        break;
+            //    case "realtime":
+            //        word.Color(CodeDrawStyle.ColorType.Keyword);
+            //        word.MoveNext();
+            //        break;
+            //    case "time":
+            //        word.Color(CodeDrawStyle.ColorType.Keyword);
+            //        word.MoveNext();
+            //        break;
+            //    default:
+            //        if (word.Text == "signed")
+            //        {
+            //            word.Color(CodeDrawStyle.ColorType.Keyword);
+            //            word.MoveNext();
+            //        }
+            //        if (word.GetCharAt(0) == '[')
+            //        {
+            //            Range range = Range.ParseCreate(word, nameSpace);
+            //        }
+            //        break;
+            //}
 
             while (!word.Eof)
             {

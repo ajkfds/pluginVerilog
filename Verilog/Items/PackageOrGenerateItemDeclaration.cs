@@ -26,7 +26,7 @@ namespace pluginVerilog.Verilog.Items
             | assertion_item_declaration 
             | ;
          */
-        public static bool Parse(WordScanner word, BuildingBlocks.BuildingBlock module)
+        public static bool Parse(WordScanner word, NameSpace nameSpace)
         {
             switch (word.Text)
             {
@@ -41,10 +41,10 @@ namespace pluginVerilog.Verilog.Items
                 case "wire":
                 case "wand":
                 case "wor":
-                    Verilog.Variables.Net.ParseCreateFromDeclaration(word, module as NameSpace);
+                    Verilog.Variables.Net.ParseCreateFromDeclaration(word, nameSpace);
                     break;
                 case "trireg":
-                    Verilog.Variables.Trireg.ParseCreateFromDeclaration(word, module as NameSpace);
+                    Verilog.Variables.Trireg.ParseCreateFromDeclaration(word, nameSpace);
                     break;
                 //  data_declaration
                 //      [ const ] [var][lifetime] data_type_or_implicit
@@ -52,31 +52,31 @@ namespace pluginVerilog.Verilog.Items
                 //              integer_vector_type[signing] { packed_dimension }
                 //                  "bit" | "logic" | "reg"
                 case "bit":
-                    Verilog.Variables.Bit.ParseCreateFromDeclaration(word, module as NameSpace);
+                    Verilog.Variables.Bit.ParseCreateFromDeclaration(word, nameSpace);
                     break;
                 case "logic":
-                    Verilog.Variables.Logic.ParseCreateFromDeclaration(word, module as NameSpace);
+                    Verilog.Variables.Logic.ParseCreateFromDeclaration(word, nameSpace);
                     break;
                 case "reg":
-                    Verilog.Variables.Reg.ParseCreateFromDeclaration(word, module as NameSpace);
+                    Verilog.Variables.Reg.ParseCreateFromDeclaration(word, nameSpace);
                     break;
 
                 //              integer_atom_type[signing]
                 //                  "byte" | "shortint" | "int" | "longint" | "integer" | "time"
                 case "integer":
-                    Verilog.Variables.Integer.ParseCreateFromDeclaration(word, module as NameSpace);
+                    Verilog.Variables.Integer.ParseCreateFromDeclaration(word, nameSpace);
                     break;
                 case "time":
-                    Verilog.Variables.Time.ParseCreateFromDeclaration(word, module as NameSpace);
+                    Verilog.Variables.Time.ParseCreateFromDeclaration(word, nameSpace);
                     break;
 
                 //              non_integer_type
                 //                  "shortreal" | "real" | "realtime"
                 case "real":
-                    Verilog.Variables.Real.ParseCreateFromDeclaration(word, module as NameSpace);
+                    Verilog.Variables.Real.ParseCreateFromDeclaration(word, nameSpace);
                     break;
                 case "realtime":
-                    Verilog.Variables.RealTime.ParseCreateFromDeclaration(word, module as NameSpace);
+                    Verilog.Variables.RealTime.ParseCreateFromDeclaration(word, nameSpace);
                     break;
 
                 //              struct_union["packed"[signing]] { struct_union_member { struct_union_member } }{ packed_dimension }
@@ -84,7 +84,7 @@ namespace pluginVerilog.Verilog.Items
 
                 //              "enum"[enum_base_type] {enum_name_declaration { , enum_name_declaration } { packed_dimension }
                 case "enum":
-                    Verilog.Variables.Enum.ParseCreateFromDataDeclaration(word, module as NameSpace);
+                    Verilog.Variables.Enum.ParseCreateFromDataDeclaration(word, nameSpace);
                     break;
 
                 //              "string"
@@ -92,7 +92,7 @@ namespace pluginVerilog.Verilog.Items
                 //              "virtual"["interface"] interface_identifier[parameter_value_assignment][ . modport_identifier] [class_scope | package_scope] type_identifier { packed_dimension } class_type
                 //              "event"
                 case "event":
-                    Verilog.Variables.Event.ParseCreateFromDeclaration(word, module as NameSpace);
+                    Verilog.Variables.Event.ParseCreateFromDeclaration(word, nameSpace);
                     break;
                 //              ps_covergroup_identifier
                 //              type_reference
@@ -105,12 +105,12 @@ namespace pluginVerilog.Verilog.Items
 
                 // task_declaration
                 case "task":
-                    Task.Parse(word, module);
+                    Task.Parse(word, nameSpace);
                     break;
 
                 // function_declaration
                 case "function":
-                    Function.Parse(word, module);
+                    Function.Parse(word, nameSpace);
                     break;
 
                 // checker_declaration
@@ -131,7 +131,7 @@ namespace pluginVerilog.Verilog.Items
                 // parameter_declaration;
                 case "parameter":
                 case "localparam":
-                    Verilog.Variables.Parameter.ParseCreateDeclaration(word, module as NameSpace, null);
+                    Verilog.Variables.Parameter.ParseCreateDeclaration(word, nameSpace, null);
                     break;
 
                 // covergroup_declaration

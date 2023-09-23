@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Verilog.BuildingBlocks
 {
-    internal class Package
+    public class Package : BuildingBlock
     {
+        protected Package() : base(null, null)
+        {
+
+        }
+
     }
 }

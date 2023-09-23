@@ -104,6 +104,7 @@
     <Compile Include="Verilog\BuildingBlocks\IModuleOrInterface.cs" />
     <Compile Include="Verilog\BuildingBlocks\IModuleOrInterfaceOrProgram.cs" />
     <Compile Include="Verilog\BuildingBlocks\Package.cs" />
+    <Compile Include="Verilog\BuildingBlocks\Root.cs" />
     <Compile Include="Verilog\Comment.cs" />
     <Compile Include="Verilog\CommentAnnotated.cs" />
     <Compile Include="Verilog\CommentScanner.cs" />
@@ -134,6 +135,7 @@
     <Compile Include="Verilog\Items\ModuleOrGenerateItem.cs" />
     <Compile Include="Verilog\Items\ModuleOrGenerateItemDeclaration.cs" />
     <Compile Include="Verilog\Items\NonPortModuleItem.cs" />
+    <Compile Include="Verilog\Items\PackageItem.cs" />
     <Compile Include="Verilog\Items\PackageOrGenerateItemDeclaration.cs" />
     <Compile Include="Verilog\Macro.cs" />
     <Compile Include="Verilog\ModuleItems\ContinuousAssign.cs" />
@@ -215,10 +217,12 @@
     <Compile Include="Verilog\Strength.cs" />
     <Compile Include="Verilog\Task.cs" />
     <Compile Include="Verilog\Variables\Bit.cs" />
+    <Compile Include="Verilog\Variables\DataType.cs" />
     <Compile Include="Verilog\Variables\Dimension.cs" />
     <Compile Include="Verilog\Variables\Enum.cs" />
     <Compile Include="Verilog\Variables\Event.cs" />
     <Compile Include="Verilog\Variables\Genvar.cs" />
+    <Compile Include="Verilog\Variables\Int.cs" />
     <Compile Include="Verilog\Variables\Integer.cs" />
     <Compile Include="Verilog\Variables\Net.cs" />
     <Compile Include="Verilog\Variables\Real.cs" />

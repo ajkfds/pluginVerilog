@@ -319,6 +319,7 @@ namespace pluginVerilog.Verilog
                     while (wordPointer.Eof && stock.Count != 0)
                     {
                         returnHier();
+                        recheckWord();
                     }
                 }
             }
@@ -337,6 +338,7 @@ namespace pluginVerilog.Verilog
             {
                 error = false;
             }
+            if(wordPointer.ParsedDocument.Item != null) wordPointer.ParsedDocument.Item.Update();
 
             //wordPointer.Dispose(); keep document & parsedData
             wordPointer = stock.Last();
@@ -707,7 +709,6 @@ namespace pluginVerilog.Verilog
                 wordPointer.MoveNextUntilEol();
                 macroText = macroText + wordPointer.Text;
             }
-            wordPointer.MoveNext();
 
             string identifier = "";
 
@@ -731,11 +732,13 @@ namespace pluginVerilog.Verilog
             if (separatorIndex == int.MaxValue)
             { // identifier only
                 identifier = macroText;
+                wordPointer.Color(CodeDrawStyle.ColorType.Identifier);
                 macroText = "";
             }
             else
             {
                 identifier = macroText.Substring(0, separatorIndex);
+                wordPointer.Color(CodeDrawStyle.ColorType.Identifier, 0, separatorIndex);
                 macroText = macroText.Substring(separatorIndex);
             }
 
@@ -754,7 +757,7 @@ namespace pluginVerilog.Verilog
             }
 
 
-//            wordPointer.MoveNext();
+            wordPointer.MoveNext();
             recheckWord();
         }
 
@@ -992,7 +995,7 @@ namespace pluginVerilog.Verilog
             //{
             //            Data.IVerilogRelatedFile file = wordPointer.ParsedDocument.File;
 
-            string id = wordPointer.ParsedDocument.File.ID + ","+ relativeFilePath +"_"+ RootParsedDocument.IncludeFiles.Count.ToString();
+            string id = wordPointer.ParsedDocument.File.ID + ","+ relativeFilePath +"_"+ wordPointer.ParsedDocument.IncludeFiles.Count.ToString();
 
             Data.IVerilogRelatedFile rootFile;
             if (stock.Count == 0)
@@ -1010,6 +1013,57 @@ namespace pluginVerilog.Verilog
                 wordPointer.AddError("illegal file");
                 return;
             }
+
+
+            vhInstance.Parent = wordPointer.ParsedDocument.File as codeEditor.Data.Item;
+            
+            if(wordPointer.ParsedDocument.IncludeFiles.ContainsKey(vhInstance.Name))
+            { // avoid duplicate name
+                int count = 1;
+                while (wordPointer.ParsedDocument.IncludeFiles.ContainsKey(vhInstance.Name + ":"+count.ToString()))
+                {
+                    count++;
+                }
+                vhInstance.SetName(vhInstance.Name + ":" + count.ToString());
+            }
+
+            if (!prototype)
+            {
+                if (!wordPointer.ParsedDocument.IncludeFiles.ContainsKey(vhInstance.Name))
+                {
+                    wordPointer.ParsedDocument.IncludeFiles.Add(vhInstance.Name, vhInstance);
+                }
+                else
+                {
+                    vhInstance = wordPointer.ParsedDocument.IncludeFiles[vhInstance.Name];
+                }
+            }
+
+            // assign new parsed document
+            vhInstance.ParsedDocument = new Verilog.ParsedDocument(vhInstance, RootParsedDocument.ParseMode);// editid =, -1);
+
+            WordPointer newPointer = new WordPointer(vhInstance.CodeDocument as CodeEditor.CodeDocument, vhInstance.ParsedDocument as Verilog.ParsedDocument);
+            stock.Add(wordPointer);
+            wordPointer = newPointer;
+
+            // activate coloring when code editor opened the target node
+            wordPointer.InitibitColor = true;
+            {
+                codeEditor.NavigatePanel.NavigatePanelNode node;
+                codeEditor.Controller.NavigatePanel.GetSelectedNode(out node);
+                if (node != null)
+                {
+                    Data.VerilogHeaderInstance vh = node.Item as Data.VerilogHeaderInstance;
+                    if (vh != null)
+                    {
+                        if (vh.ID == vhInstance.ID)
+                        {
+                            wordPointer.InitibitColor = false;
+                        }
+                    }
+                }
+            }
+            /*
             vhInstance.Parent = RootParsedDocument.File as codeEditor.Data.Item;
             vhInstance.SetName(vhInstance.Name + ":" + RootParsedDocument.IncludeFiles.Count);
 
@@ -1032,6 +1086,7 @@ namespace pluginVerilog.Verilog
             stock.Add(wordPointer);
             wordPointer = newPointer;
 
+            // activate coloring when code editor opened the target node
             wordPointer.InitibitColor = true;
             {
                 codeEditor.NavigatePanel.NavigatePanelNode node;
@@ -1049,7 +1104,7 @@ namespace pluginVerilog.Verilog
                     }
                 }
             }
-
+            */
 
 
             if (wordPointer.Eof)

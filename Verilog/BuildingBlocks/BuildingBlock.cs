@@ -8,7 +8,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
 {
     public class BuildingBlock : NameSpace, IBuildingBlock
     {
-        protected BuildingBlock(Module module, NameSpace parent) :base(module,parent)
+        protected BuildingBlock(BuildingBlock bulidingBlock, NameSpace parent) :base(bulidingBlock, parent)
         {
         }
 

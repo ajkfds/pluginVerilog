@@ -78,7 +78,7 @@ namespace pluginVerilog.Verilog.Variables
             integer_vector_type ::= "bit" | "logic" | "reg"
             non_integer_type    ::= "shortreal" | "real" | "realtime"
 
-
+            signing ::= "signed" | "unsigned"
             */
 
             // systemverilog data type does not include nets
@@ -99,6 +99,8 @@ namespace pluginVerilog.Verilog.Variables
 
                 // shortint
                 // int
+                case "int":
+                    return Int.ParseCreateType(word, nameSpace);
                 // longint
                 case "integer":
                     return Integer.ParseCreateType(word, nameSpace);
