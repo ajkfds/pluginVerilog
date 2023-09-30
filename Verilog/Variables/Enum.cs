@@ -156,7 +156,7 @@ namespace pluginVerilog.Verilog.Variables
              */
 
             Enum enum_ = new Enum();
-            if (!word.SystemVerilog) word.AddError("systemverilog description");
+            word.AddSystemVerilogError();
 
             Variable type = ParseCrateBaseDataType(word, nameSpace);
 

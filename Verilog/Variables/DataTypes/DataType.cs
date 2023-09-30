@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace pluginVerilog.Verilog.Variables
+namespace pluginVerilog.Verilog.Variables.DataTypes
+
 {
     // ## Verilog 2001
     // Variable -+-net +-> wire         4state  >=1bit      v
@@ -27,8 +28,42 @@ namespace pluginVerilog.Verilog.Variables
     //                 +-> longint      2state  64bit
     //                 +-> shortreal
 
-    public class DataType
+    public enum DataTypeEnum
     {
+        //integer_vector_type::= bit | logic | reg
+        Bit,
+        Logic,
+        Reg,
+        //integer_atom_type::= byte | shortint | int | longint | integer | time
+        Byte,
+        Shortint,
+        Int,
+        Longint,
+        Integer,
+        Time,
+        //non_integer_type::= "shortreal" | "real" | "realtime"
+        Shortreal,
+        Real,
+        Realtime,
+        // others
+        Enum,
+        String,
+        Chandle,
+        Virtual,
+        Class,
+        Event,
+        CoverGroup,
+        TypeReference
+    }
+
+    abstract public class DataType
+    {
+//        protected List<Variables.Dimension> dimensions = new List<Variables.Dimension>();
+//        public IReadOnlyList<Variables.Dimension> Dimensions { get; }
+//        public virtual int BitWidth { get; }
+//        public virtual bool State4 { get; }
+        public virtual DataTypeEnum Type { get; }
+
         /*
         data_type::=
               integer_vector_type[signing] { packed_dimension }
@@ -51,7 +86,7 @@ namespace pluginVerilog.Verilog.Variables
 
         signing ::= "signed" | "unsigned"
         */
-        public static Variable ParseCrateDataType(WordScanner word, NameSpace nameSpace)
+        public static DataType ParseCreate(WordScanner word, NameSpace nameSpace)
         {
             /*
             data_type::=
@@ -82,48 +117,44 @@ namespace pluginVerilog.Verilog.Variables
             {
                 //integer_vector_type::= bit | logic | reg
                 case "bit":
-                    return Bit.ParseCreateType(word, nameSpace);
                 case "logic":
-                    return Logic.ParseCreateType(word, nameSpace);
                 case "reg":
-                    return Reg.ParseCreateType(word, nameSpace);
+                    return DataTypes.IntegerVectorType.ParseCreate(word, nameSpace);
 
                 //integer_atom_type::= byte | shortint | int | longint | integer | time
-                //case "byte":
-                //    return Byte.ParseCreateType(word, nameSpace);
-
-                // shortint
-                // int
+                case "byte":
+                case "shortint":
                 case "int":
-                    return Int.ParseCreateType(word, nameSpace);
-                // longint
+                case "longint":
                 case "integer":
-                    return Integer.ParseCreateType(word, nameSpace);
                 case "time":
-                    return Time.ParseCreateType(word, nameSpace);
-
-
-                //non_integer_type::= shortreal | real | realtime
-                // shortreal
+                    return IntegerAtomType.ParseCreate(word, nameSpace);
+                //non_integer_type::= "shortreal" | "real" | "realtime"
+                case "shortreal":
                 case "real":
-                    return Real.ParseCreateType(word, nameSpace);
                 case "realtime":
-                    return RealTime.ParseCreateType(word, nameSpace);
+                    return NonIntegerType.ParseCreate(word, nameSpace);
 
                 // struct_union["packed"[signing]] { struct_union_member { struct_union_member } } { packed_dimension }
 
                 // "enum" [enum_base_type] { enum_name_declaration { , enum_name_declaration } { packed_dimension }
                 case "enum":
-                    return Enum.ParseCreateType(word, nameSpace);
+                    return Enum.ParseCreate(word, nameSpace);
 
                 // "string"
+                case "string":
+                    return String.ParseCreate(word, nameSpace);
                 // "chandle"
                 // "virtual" ["interface"] interface_identifier[parameter_value_assignment][ . modport_identifier] 
 
                 // class_type
                 // "event"
                 // ps_covergroup_identifier 
+
                 // type_reference
+                case "type":
+                    return parseTypeReference(word, nameSpace);
+                    
                 default:
                     // [class_scope | package_scope] type_identifier { packed_dimension }
                     {
@@ -133,6 +164,41 @@ namespace pluginVerilog.Verilog.Variables
                     break;
             }
             return null;
+        }
+
+        private static DataType parseTypeReference(WordScanner word,NameSpace nameSpace)
+        {
+            //type_reference::= type(expression) | type(data_type)
+            if (word.Text != "type") System.Diagnostics.Debugger.Break();
+
+            word.Color(CodeDrawStyle.ColorType.Keyword);
+            if(word.Text != "(")
+            {
+                word.AddError("( required");
+                return null;
+            }
+
+            DataType dtype = DataType.ParseCreate(word, nameSpace);
+            if(dtype == null)
+            {
+                Expressions.Expression ex = Expressions.Expression.ParseCreate(word, nameSpace);
+                if(ex == null)
+                {
+                    word.AddError("expression or data_type required");
+                    return null;
+                }
+                else
+                {
+                    word.AddError("type(expression) is not supported");
+                }
+            }
+
+            if (word.Text != ")")
+            {
+                word.AddError(") required");
+                return null;
+            }
+            return dtype;
         }
     }
 }

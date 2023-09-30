@@ -23,6 +23,9 @@ namespace pluginVerilog.Verilog.BuildingBlocks
         private Dictionary<string, Class> classes = new Dictionary<string, Class>();
         public Dictionary<string, Class> Classes { get { return classes; } }
 
+        private Dictionary<string, Variables.DataTypes.DataType> datatypes = new Dictionary<string, Variables.DataTypes.DataType>();
+        public Dictionary<string, Variables.DataTypes.DataType> Datatypes {  get { return datatypes; } }
+
         private Dictionary<string, BuildingBlock> elements = new Dictionary<string, BuildingBlock>();
         public Dictionary<string, BuildingBlock> Elements { get { return elements; } }
 

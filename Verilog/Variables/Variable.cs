@@ -144,6 +144,25 @@ namespace pluginVerilog.Verilog.Variables
             Variable type = ParseCrateDataType(word, nameSpace);
             ParseCreateFromDataDeclaration(word, nameSpace,type);
         }
+
+        /*
+        data_declaration ::= 
+              [ const ] [ var ] [ lifetime ] data_type_or_implicit list_of_variable_decl_assignments ;
+            | type_declaration 
+            | package_import_declaration11
+            net_type_declaration
+
+        package_import_declaration ::= 
+            import package_import_item { , package_import_item } ;
+        package_import_item ::= 
+            package_identifier "::" identifier 
+            | package_identifier ":: *"
+        data_type_or_implicit ::= 
+            data_type 
+            | implicit_data_type
+        implicit_data_type ::= [ signing ] { packed_dimension } 
+        */
+
         public static void ParseCreateFromDataDeclaration(WordScanner word, NameSpace nameSpace,Variable type)
         {
 
