@@ -94,22 +94,12 @@ namespace pluginVerilog.Verilog.Statements
                     switch (word.Text)
                     {
                         case "reg":
-                            Variables.Reg.ParseCreateFromDeclaration(word, namedBlock);
-                            break;
                         case "integer":
-                            Variables.Integer.ParseCreateFromDeclaration(word, namedBlock);
-                            break;
                         case "real":
-                            Verilog.Variables.Real.ParseCreateFromDeclaration(word, namedBlock);
-                            break;
                         case "realtime":
-                            Verilog.Variables.RealTime.ParseCreateFromDeclaration(word, namedBlock);
-                            break;
                         case "time":
-                            Verilog.Variables.Time.ParseCreateFromDeclaration(word, namedBlock);
-                            break;
                         case "event":
-                            Verilog.Variables.Event.ParseCreateFromDeclaration(word, namedBlock);
+                            Variables.Variable.ParseDeclaration(word, nameSpace);
                             break;
                         case "parameter":
                         case "localparam":

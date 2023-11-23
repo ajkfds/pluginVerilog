@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pluginVerilog.Verilog.Nets;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,7 +25,7 @@ namespace pluginVerilog.Verilog.Expressions
             {
                 label.AppendText(VariableName, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Register));
             }
-            else if (Variable is Variables.Net)
+            else if (Variable is Net)
             {
                 label.AppendText(VariableName, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net));
             }
@@ -107,7 +108,7 @@ namespace pluginVerilog.Verilog.Expressions
             {
                 word.Color(CodeDrawStyle.ColorType.Register);
             }
-            else if (variable is Variables.Net)
+            else if (variable is Net)
             {
                 word.Color(CodeDrawStyle.ColorType.Net);
             }
@@ -203,9 +204,9 @@ namespace pluginVerilog.Verilog.Expressions
                     if (((Variables.Reg)variable).Range != null) val.BitWidth = ((Variables.Reg)variable).Range.BitWidth;
                     else val.BitWidth = 1;
                 }
-                else if (variable is Variables.Net)
+                else if (variable is Net)
                 {
-                    if (((Variables.Net)variable).Range != null) val.BitWidth = ((Variables.Net)variable).Range.BitWidth;
+                    if (((Net)variable).Range != null) val.BitWidth = ((Net)variable).Range.BitWidth;
                     else val.BitWidth = 1;
                 }
                 else if (variable is Variables.Genvar)

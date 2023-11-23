@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pluginVerilog.Verilog.Nets;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,6 +29,8 @@ namespace pluginVerilog.Verilog.Items
          */
         public static bool Parse(WordScanner word, NameSpace nameSpace)
         {
+            if (Variables.Variable.ParseDeclaration(word, nameSpace)) return true;
+
             switch (word.Text)
             {
                 // net_declaration
@@ -36,49 +39,15 @@ namespace pluginVerilog.Verilog.Items
                 case "tri":
                 case "triand":
                 case "trior":
+                case "trireg":
                 case "tri0":
                 case "tri1":
+                case "uwire":
                 case "wire":
                 case "wand":
                 case "wor":
-                    Verilog.Variables.Net.ParseCreateFromDeclaration(word, nameSpace);
+                    Net.ParseDeclaration(word, nameSpace);
                     break;
-                case "trireg":
-                    Verilog.Variables.Trireg.ParseCreateFromDeclaration(word, nameSpace);
-                    break;
-                //  data_declaration
-                //      [ const ] [var][lifetime] data_type_or_implicit
-                //          data_type
-                //              integer_vector_type[signing] { packed_dimension }
-                //                  "bit" | "logic" | "reg"
-                case "bit":
-                    Verilog.Variables.Bit.ParseCreateFromDeclaration(word, nameSpace);
-                    break;
-                case "logic":
-                    Verilog.Variables.Logic.ParseCreateFromDeclaration(word, nameSpace);
-                    break;
-                case "reg":
-                    Verilog.Variables.Reg.ParseCreateFromDeclaration(word, nameSpace);
-                    break;
-
-                //              integer_atom_type[signing]
-                //                  "byte" | "shortint" | "int" | "longint" | "integer" | "time"
-                case "integer":
-                    Verilog.Variables.Integer.ParseCreateFromDeclaration(word, nameSpace);
-                    break;
-                case "time":
-                    Verilog.Variables.Time.ParseCreateFromDeclaration(word, nameSpace);
-                    break;
-
-                //              non_integer_type
-                //                  "shortreal" | "real" | "realtime"
-                case "real":
-                    Verilog.Variables.Real.ParseCreateFromDeclaration(word, nameSpace);
-                    break;
-                case "realtime":
-                    Verilog.Variables.RealTime.ParseCreateFromDeclaration(word, nameSpace);
-                    break;
-
                 //              struct_union["packed"[signing]] { struct_union_member { struct_union_member } }{ packed_dimension }
                 // TODO
 

@@ -144,13 +144,9 @@ namespace pluginVerilog.Verilog
                             }
                             continue;
                         case "reg":
-                            Verilog.Variables.Reg.ParseCreateFromDeclaration(word, task);
-                            continue;
                         case "integer":
-                            Verilog.Variables.Integer.ParseCreateFromDeclaration(word, task);
-                            continue;
                         case "real":
-                            Verilog.Variables.Real.ParseCreateFromDeclaration(word, task);
+                            Verilog.Variables.Variable.ParseCreateFromDataDeclaration(word, task);
                             continue;
                         default:
                             break;

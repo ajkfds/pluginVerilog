@@ -14,20 +14,18 @@ namespace pluginVerilog.Verilog.BuildingBlocks
 
         #region IDesignElementContainer
 
-        private Dictionary<string, Function> functions = new Dictionary<string, Function>();
-        public Dictionary<string, Function> Functions { get { return functions; } }
+        public Dictionary<string, Function> Functions { get; set; } = new Dictionary<string, Function>();
 
-        private Dictionary<string, Task> tasks = new Dictionary<string, Task>();
-        public Dictionary<string, Task> Tasks { get { return tasks; } }
+        public Dictionary<string, Task> Tasks { get; set; } = new Dictionary<string, Task>();
 
-        private Dictionary<string, Class> classes = new Dictionary<string, Class>();
-        public Dictionary<string, Class> Classes { get { return classes; } }
+        public Dictionary<string, Class> Classes { get; set; } = new Dictionary<string, Class>();
 
-        private Dictionary<string, Variables.DataTypes.DataType> datatypes = new Dictionary<string, Variables.DataTypes.DataType>();
-        public Dictionary<string, Variables.DataTypes.DataType> Datatypes {  get { return datatypes; } }
+        public Dictionary<string, Variables.DataTypes.DataType> Datatypes { get; set; } = new Dictionary<string, Variables.DataTypes.DataType>();
 
-        private Dictionary<string, BuildingBlock> elements = new Dictionary<string, BuildingBlock>();
-        public Dictionary<string, BuildingBlock> Elements { get { return elements; } }
+        public Dictionary<string, BuildingBlock> Elements { get; set; } = new Dictionary<string, BuildingBlock>();
+
+        public bool AnsiStylePortDefinition { get; set; } = false;
+        public Nets.Net.NetTypeEnum DefaultNetType = Verilog.Nets.Net.NetTypeEnum.Wire;
 
         private bool reparseRequested = false;
         public bool ReperseRequested

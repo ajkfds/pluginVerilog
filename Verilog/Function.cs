@@ -1,4 +1,5 @@
 ﻿using pluginVerilog.Verilog.BuildingBlocks;
+using pluginVerilog.Verilog.Nets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -61,45 +62,49 @@ namespace pluginVerilog.Verilog
                 word.MoveNext();
             }
 
-            bool signed = false;
-            if (word.Text == "signed")
-            {
-                word.Color(CodeDrawStyle.ColorType.Keyword);
-                word.MoveNext();
-                signed = true;
-            }
+            Verilog.Variables.DataTypes.DataType dataType = Verilog.Variables.DataTypes.DataType.ParseCreate(word, nameSpace);
 
-            Verilog.Variables.Range range = null;
-            valType valType = valType.reg;
+            //bool signed = false;
+            //if (word.Text == "signed")
+            //{
+            //    word.Color(CodeDrawStyle.ColorType.Keyword);
+            //    word.MoveNext();
+            //    signed = true;
+            //}
 
-            switch (word.Text)
-            {
-                case "[":
-                    range = Verilog.Variables.Range.ParseCreate(word, function);
-                    break;
-                case "integer":
-                    valType = valType.integer;
-                    word.Color(CodeDrawStyle.ColorType.Keyword);
-                    word.MoveNext();
-                    break;
-                case "real":
-                    valType = valType.real;
-                    word.Color(CodeDrawStyle.ColorType.Keyword);
-                    word.MoveNext();
-                    break;
-                case "realtime":
-                    valType = valType.realtime;
-                    word.Color(CodeDrawStyle.ColorType.Keyword);
-                    word.MoveNext();
-                    break;
-                case "time":
-                    valType = valType.time;
-                    word.Color(CodeDrawStyle.ColorType.Keyword);
-                    word.MoveNext();
-                    break;
-                default:
-                    break;
-            }
+            //Verilog.Variables.Range range = null;
+            //valType valType = valType.reg;
+
+            //switch (word.Text)
+            //{
+            //    case "[":
+            //        range = Verilog.Variables.Range.ParseCreate(word, function);
+            //        break;
+            //    case "integer":
+            //        valType = valType.integer;
+            //        word.Color(CodeDrawStyle.ColorType.Keyword);
+            //        word.MoveNext();
+            //        break;
+            //    case "real":
+            //        valType = valType.real;
+            //        word.Color(CodeDrawStyle.ColorType.Keyword);
+            //        word.MoveNext();
+            //        break;
+            //    case "realtime":
+            //        valType = valType.realtime;
+            //        word.Color(CodeDrawStyle.ColorType.Keyword);
+            //        word.MoveNext();
+            //        break;
+            //    case "time":
+            //        valType = valType.time;
+            //        word.Color(CodeDrawStyle.ColorType.Keyword);
+            //        word.MoveNext();
+            //        break;
+            //    default:
+            //        break;
+            //}
+
+
 
             if (!General.IsIdentifier(word.Text))
             {
@@ -135,27 +140,7 @@ namespace pluginVerilog.Verilog
             word.Color(CodeDrawStyle.ColorType.Identifier);
             word.MoveNext();
 
-            Variables.Variable retVal;
-            switch (valType)
-            {
-                case valType.reg:
-                    retVal = new Variables.Reg(function.Name, range, signed);
-                    break;
-                case valType.integer:
-                    retVal = new Variables.Integer(function.Name);
-                    break;
-                case valType.real:
-                    retVal = new Variables.Real(function.Name);
-                    break;
-                case valType.realtime:
-                    retVal = new Variables.RealTime(function.Name);
-                    break;
-                case valType.time:
-                    retVal = new Variables.Time(function.Name);
-                    break;
-                default:
-                    throw new Exception();
-            }
+            Variables.Variable retVal = Verilog.Variables.Variable.Create(dataType);
 
             if (word.Prototype)
             {
@@ -201,28 +186,28 @@ namespace pluginVerilog.Verilog
                             }
                             continue;
                         case "reg": // block_reg_declaration
-                            Verilog.Variables.Reg.ParseCreateFromDeclaration(word, function);
+                            Verilog.Variables.Reg.ParseDeclaration(word, function);
                             continue;
                         // event_declaration
                         case "integer": // integer_declaration
-                            Verilog.Variables.Integer.ParseCreateFromDeclaration(word, function);
+                            Verilog.Variables.Integer.ParseDeclaration(word, function);
                             continue;
                         case "localparameter": // local_parameter_declaration
                         case "paraeter":  // parameter_declaration
                             Verilog.Variables.Parameter.ParseCreateDeclaration(word, function,null);
                             continue;
                         case "real": // real_declaration
-                            Verilog.Variables.Real.ParseCreateFromDeclaration(word, function);
+                            Verilog.Variables.Real.ParseDeclaration(word, function);
                             continue;
                         case "realtime": // realtime_declaration
-                            Verilog.Variables.RealTime.ParseCreateFromDeclaration(word, function);
+                            Verilog.Variables.RealTime.ParseDeclaration(word, function);
                             continue;
                         case "time": // time_declaration
-                            Verilog.Variables.Time.ParseCreateFromDeclaration(word, function);
+                            Verilog.Variables.Time.ParseDeclaration(word, function);
                             continue;
                         case "wire": // illegal format for Verilog 2001
                             word.AddError("not supported(Veriog2001)");
-                            Verilog.Variables.Net.ParseCreateFromDeclaration(word, function);
+                            Net.ParseDeclaration(word, function);
                             continue;
                         default:
                             break;

@@ -385,9 +385,13 @@ namespace pluginVerilog.Verilog.BuildingBlocks
             foreach (var variable in nameSpace.Variables.Values)
             {
                 if (variable.DefinedReference == null) continue;
-                if (variable.AssignedReferences.Count == 0)
+
+                Variables.ValueVariable valueVar = variable as Variables.ValueVariable;
+                if (valueVar == null) continue;
+
+                if (valueVar.AssignedReferences.Count == 0)
                 {
-                    if (variable.UsedReferences.Count == 0)
+                    if (valueVar.UsedReferences.Count == 0)
                     {
                         word.AddNotice(variable.DefinedReference, "undriven & unused");
                     }
@@ -398,7 +402,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
                 }
                 else
                 {
-                    if (variable.UsedReferences.Count == 0)
+                    if (valueVar.UsedReferences.Count == 0)
                     {
                         word.AddNotice(variable.DefinedReference, "unused");
                     }
@@ -436,88 +440,15 @@ namespace pluginVerilog.Verilog.BuildingBlocks
                 return;
             }
 
-            if (word.Text == "input" || word.Text == "output" || word.Text == "inout")
-            {
-                while (!word.Eof)
-                {
-                    if (word.Text == "input" || word.Text == "output" || word.Text == "inout")
-                    {
-                        Verilog.Variables.Port.ParsePortDeclaration(word, module);
-                    }
-                    else
-                    {
-                        break;
-                    }
+            Verilog.Variables.Port.ParsePortDeclarations(word, module);
 
-                    if (word.Text == ";")
-                    {
-                        word.AddError(", expected");
-                        word.MoveNext();
-                    }
-                }
-                if (word.Text == ")")
-                {
-                    word.MoveNext();
-                }
-                else
-                {
-                    word.AddError(") expected");
-                }
+            if (word.Text == ")")
+            {
+                word.MoveNext();
             }
             else
             {
-
-                while (!word.Eof && word.Text != ")")
-                {
-                    Variables.Port port = Verilog.Variables.Port.Create(word, null);
-
-                    if (port == null)
-                    {
-                        word.AddError("illegal port identifier");
-                        return;
-                    }
-
-                    if (!word.Active)
-                    {
-
-                    }
-                    else if (word.Prototype)
-                    {
-                        if (module.Ports.ContainsKey(port.Name))
-                        {
-                            word.AddError("duplicated port name");
-                        }
-                        else
-                        {
-                            module.Ports.Add(port.Name, port);
-                            module.PortsList.Add(port);
-                        }
-                    }
-                    else
-                    {
-                        if (module.Ports.ContainsKey(port.Name))
-                        {
-                            port = module.Ports[port.Name];
-                        }
-                    }
-
-                    if (word.Text == ",")
-                    {
-                        word.MoveNext();
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                if (word.Text == ")")
-                {
-                    word.MoveNext();
-                }
-                else
-                {
-                    word.AddError(") expected");
-                }
+                word.AddError(") expected");
             }
         }
 

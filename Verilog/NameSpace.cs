@@ -1,4 +1,5 @@
 ﻿using pluginVerilog.Verilog.BuildingBlocks;
+using pluginVerilog.Verilog.Nets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,7 @@ namespace pluginVerilog.Verilog
         public int LastIndex = -1;
 
         private Dictionary<string, Variables.Variable> variables = new Dictionary<string, Variables.Variable>();
+        private Dictionary<string, Net> nets = new Dictionary<string, Net>();
         private Dictionary<string, Variables.Parameter> parameters = new Dictionary<string, Variables.Parameter>();
         private Dictionary<string, Variables.Parameter> localParameters = new Dictionary<string, Variables.Parameter>();
         private Dictionary<string, Variables.Enum> enums = new Dictionary<string, Variables.Enum>();
@@ -29,6 +31,9 @@ namespace pluginVerilog.Verilog
         private Dictionary<string, NameSpace> nameSpaces = new Dictionary<string, NameSpace>();
 
         public Dictionary<string, Variables.Variable> Variables { get { return variables; } }
+        public Dictionary<string, Net> Nets { get { return nets; } }
+
+
         public NameSpace Parent { get; protected set; }
         public Dictionary<string, Variables.Parameter> Parameters { get { return parameters; } }
         public Dictionary<string, Variables.Parameter> LocalParameters { get { return localParameters; } }
@@ -55,13 +60,17 @@ namespace pluginVerilog.Verilog
         }
         public virtual void AppendAutoCompleteItem( List<codeEditor.CodeEditor.AutocompleteItem> items)
         {
+            foreach (Net net in Nets.Values)
+            {
+                if (net is Net)
+                {
+                    items.Add(newItem(net.Name, CodeDrawStyle.ColorType.Net));
+                }
+            }
+
             foreach (Variables.Variable variable in Variables.Values)
             {
-                if (variable is Variables.Net)
-                {
-                    items.Add(newItem(variable.Name, CodeDrawStyle.ColorType.Net));
-                }
-                else if (variable is Variables.Reg)
+                if (variable is Variables.Reg)
                 {
                     items.Add(newItem(variable.Name, CodeDrawStyle.ColorType.Register));
                 }
