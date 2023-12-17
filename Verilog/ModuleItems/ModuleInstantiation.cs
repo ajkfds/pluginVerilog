@@ -13,10 +13,10 @@ namespace pluginVerilog.Verilog.ModuleItems
 
         public string ModuleName{ get; protected set; }
 
-//        private List<Verilog.Variables.Port> ports = new List<Variables.Port>();
+//        private List<Verilog.DataObjects.Port> ports = new List<DataObjects.Port>();
 
         public Dictionary<string, Expressions.Expression> ParameterOverrides = new Dictionary<string, Expressions.Expression>();
-        //        public IReadOnlyList<Verilog.Variables.Port> Ports { get { return ports; } }
+        //        public IReadOnlyList<Verilog.DataObjects.Port> Ports { get { return ports; } }
         public Dictionary<string, Expressions.Expression> PortConnection = new Dictionary<string, Expressions.Expression>();
 
         public string OverrideParameterID
@@ -279,8 +279,8 @@ namespace pluginVerilog.Verilog.ModuleItems
                         if (instancedModule != null && !word.Prototype) {
                             if (instancedModule.Ports.ContainsKey(pinName))
                             {
-                                if(instancedModule.Ports[pinName].Direction == Variables.Port.DirectionEnum.Output
-                                    || instancedModule.Ports[pinName].Direction == Variables.Port.DirectionEnum.Inout )
+                                if(instancedModule.Ports[pinName].Direction == DataObjects.Port.DirectionEnum.Output
+                                    || instancedModule.Ports[pinName].Direction == DataObjects.Port.DirectionEnum.Inout )
                                 {
                                     outPort = true;
                                 }

@@ -24,7 +24,7 @@ namespace pluginVerilog.Verilog.Expressions
 
         public new static ParameterReference ParseCreate(WordScanner word, NameSpace nameSpace)
         {
-            Variables.Parameter parameter = nameSpace.GetParameter(word.Text);
+            DataObjects.Parameter parameter = nameSpace.GetParameter(word.Text);
             if (parameter == null) return null;
 
             ParameterReference val = new ParameterReference();

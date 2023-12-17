@@ -8,18 +8,18 @@ namespace pluginVerilog.Verilog.BuildingBlocks
 {
     public interface IModuleOrGeneratedBlock
     {
-        Dictionary<string, Variables.Variable> Variables { get; }
+        Dictionary<string, DataObjects.Variables.Variable> Variables { get; }
         NameSpace Parent { get; }
-        Dictionary<string, Variables.Parameter> Parameters { get; }
-        Dictionary<string, Variables.Parameter> LocalParameters { get; }
+        Dictionary<string, DataObjects.Parameter> Parameters { get; }
+        Dictionary<string, DataObjects.Parameter> LocalParameters { get; }
         Module Module { get; }
         Dictionary<string, NameSpace> NameSpaces { get; }
 
         NameSpace GetHierNameSpace(int index);
 
-        Variables.Variable GetVariable(string identifier);
+        DataObjects.Variables.Variable GetVariable(string identifier);
 
-        Variables.Parameter GetParameter(string identifier);
+        DataObjects.Parameter GetParameter(string identifier);
 
         // module
         Dictionary<string, Function> Functions { get; }

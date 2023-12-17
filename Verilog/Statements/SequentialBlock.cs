@@ -99,11 +99,11 @@ namespace pluginVerilog.Verilog.Statements
                         case "realtime":
                         case "time":
                         case "event":
-                            Variables.Variable.ParseDeclaration(word, nameSpace);
+                            DataObjects.Variables.Variable.ParseDeclaration(word, nameSpace);
                             break;
                         case "parameter":
                         case "localparam":
-                            Verilog.Variables.Parameter.ParseCreateDeclaration(word, namedBlock, null);
+                            Verilog.DataObjects.Parameter.ParseCreateDeclaration(word, namedBlock, null);
                             break;
                         default:
                             endFlag = true;

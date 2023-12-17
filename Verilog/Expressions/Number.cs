@@ -210,22 +210,22 @@ namespace pluginVerilog.Verilog.Expressions
                     number.Constant = true;
                     number.Value = 1;
                     number.NumberType = NumberTypeEnum.Decimal;
-                    if (!word.SystemVerilog) word.AddError("Systemverilog Description");
+                    word.AddSystemVerilogError();
                     word.MoveNext();
                     return number;
                 case '0':
                     number.Constant = true;
                     number.Value = 0;
                     number.NumberType = NumberTypeEnum.Decimal;
-                    if (!word.SystemVerilog) word.AddError("Systemverilog Description");
+                    word.AddSystemVerilogError();
                     word.MoveNext();
                     return number;
                 case 'x':
-                    if (!word.SystemVerilog) word.AddError("Systemverilog Description");
+                    word.AddSystemVerilogError();
                     word.MoveNext();
                     return number;
                 case 'z':
-                    if (!word.SystemVerilog) word.AddError("Systemverilog Description");
+                    word.AddSystemVerilogError();
                     word.MoveNext();
                     return number;
             }

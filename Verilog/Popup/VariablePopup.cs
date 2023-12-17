@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
-using pluginVerilog.Verilog.Variables;
+using Variables = pluginVerilog.Verilog.DataObjects.Variables;
 
 namespace pluginVerilog.Verilog.Popup
 {
     public class VariablePopup : codeEditor.CodeEditor.PopupItem
     {
-        public VariablePopup(Variables.Variable variable)
+        public VariablePopup(DataObjects.IVariableOrNet variable)
         {
             variable.AppendLabel(label);
         }

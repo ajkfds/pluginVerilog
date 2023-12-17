@@ -377,7 +377,7 @@ namespace pluginVerilog
             {"$dumplimit",null },
         };
 
-        public Dictionary<string, Func<Verilog.Variables.Variable, Verilog.WordScanner>> SystemFunctions = new Dictionary<string, Func<Verilog.Variables.Variable, Verilog.WordScanner>>
+        public Dictionary<string, Func<Verilog.DataObjects.Variables.Variable, Verilog.WordScanner>> SystemFunctions = new Dictionary<string, Func<Verilog.DataObjects.Variables.Variable, Verilog.WordScanner>>
         {
             {"$sformat", null },
             {"$ferror", null },

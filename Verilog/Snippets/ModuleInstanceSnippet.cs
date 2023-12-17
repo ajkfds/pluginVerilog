@@ -205,7 +205,7 @@ namespace pluginVerilog.Verilog.Snippets
 
             sb.Append(" (\r\n");
             int j = 0;
-            foreach (Verilog.Variables.Port port in module.Ports.Values)
+            foreach (Verilog.DataObjects.Port port in module.Ports.Values)
             {
                 sb.Append("\t.");
                 sb.Append(port.Name);

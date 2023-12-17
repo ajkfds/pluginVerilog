@@ -22,7 +22,7 @@ namespace pluginVerilog.Verilog.Items.Generate
                 word.MoveNext();
 
                 if (word.Eof) return true;
-                Variables.Genvar gvar = new Variables.Genvar(word.Text);
+                DataObjects.Variables.Genvar gvar = new DataObjects.Variables.Genvar(word.Text);
                 gvar.DefinedReference = word.GetReference();
                 if (nameSpace.Variables.ContainsKey(gvar.Name))
                 {
@@ -42,7 +42,7 @@ namespace pluginVerilog.Verilog.Items.Generate
                 if (genvar == null) return false;
             }
 
-            if (!(genvar.Variable is Variables.Genvar))
+            if (!(genvar.Variable is DataObjects.Variables.Genvar))
             {
                 word.AddError("should be genvar");
             }

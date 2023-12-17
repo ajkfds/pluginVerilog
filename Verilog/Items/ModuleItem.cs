@@ -28,7 +28,7 @@ namespace pluginVerilog.Verilog.Items
                 case "input":
                 case "output":
                 case "inout":
-                    Verilog.Variables.Port.ParsePortDeclaration(word, nameSpace);
+                    Verilog.DataObjects.Port.ParsePortDeclarations(word, nameSpace);
                     if (word.GetCharAt(0) != ';')
                     {
                         word.AddError("; expected");

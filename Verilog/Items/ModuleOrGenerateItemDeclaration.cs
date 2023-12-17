@@ -27,7 +27,7 @@ namespace pluginVerilog.Verilog.Items
             {
                 // genvar_declaration
                 case "genvar":
-                    Variables.Genvar.ParseCreateFromDeclaration(word, buildingBlock);
+                    DataObjects.Variables.Genvar.ParseCreateFromDeclaration(word, buildingBlock);
                     break;
                 // clocking_declaration ::= [ default ] clocking [ clocking_identifier ] clocking_event ; { clocking_item } endclocking  [ : clocking_identifier]  | global clocking[clocking_identifier] clocking_event; endclocking[ : clocking_identifier]
                 // "default clocking" clocking_identifier;

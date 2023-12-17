@@ -14,14 +14,14 @@ namespace pluginVerilog.Verilog.Popup
             label.AppendText("function ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
             if (function.Variables.ContainsKey(function.Name))
             {
-                Variables.Variable retVal = function.Variables[function.Name];
+                DataObjects.IVariableOrNet retVal = function.Variables[function.Name];
                 retVal.AppendTypeLabel(label);
             }
             label.AppendText(function.Name, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Identifier));
 
             label.AppendText("\r\n");
             bool first = true;
-            foreach(Variables.Port port in function.Ports.Values)
+            foreach(DataObjects.Port port in function.Ports.Values)
             {
                 if(!first) label.AppendText("\r\n");
                 label.AppendLabel(port.GetLabel());

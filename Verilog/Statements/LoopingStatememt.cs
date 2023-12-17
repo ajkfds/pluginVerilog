@@ -148,9 +148,9 @@ namespace pluginVerilog.Verilog.Statements
 
         public IStatement Statement;
 
-        public Variables.VariableAssignment VariableAssignment;
+        public DataObjects.VariableAssignment VariableAssignment;
         public Expressions.Expression Expression;
-        public Variables.VariableAssignment VariableUpdate;
+        public DataObjects.VariableAssignment VariableUpdate;
 
         //A.6.8 Looping statements
         //function_loop_statement ::= forever function_statement          
@@ -174,7 +174,7 @@ namespace pluginVerilog.Verilog.Statements
             }
             word.MoveNext();
 
-            forStatement.VariableAssignment = Variables.VariableAssignment.ParseCreate(word, nameSpace);
+            forStatement.VariableAssignment = DataObjects.VariableAssignment.ParseCreate(word, nameSpace);
             if (word.GetCharAt(0) != ';')
             {
                 word.AddError("( expected");
@@ -191,7 +191,7 @@ namespace pluginVerilog.Verilog.Statements
             }
             word.MoveNext();
 
-            forStatement.VariableUpdate = Variables.VariableAssignment.ParseCreate(word, nameSpace);
+            forStatement.VariableUpdate = DataObjects.VariableAssignment.ParseCreate(word, nameSpace);
 
             if (word.GetCharAt(0) != ')')
             {

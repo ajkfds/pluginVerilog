@@ -1,5 +1,5 @@
 ﻿using pluginVerilog.Verilog.BuildingBlocks;
-using pluginVerilog.Verilog.Nets;
+using pluginVerilog.Verilog.DataObjects.Nets;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Text;
@@ -142,7 +142,7 @@ namespace pluginVerilog.Verilog.Expressions
                                 if (General.IsIdentifier(word.Text) && !nameSpace.Variables.ContainsKey(word.Text) && !word.Prototype)
                                 {   // undefined net
                                     if (!word.CellDefine) word.AddWarning("undefined");
-                                    Net net = new Variables.Net();
+                                    Net net = new DataObjects.Nets.Net();
                                     net.Name = word.Text;
                                     net.Signed = false;
                                     if (word.Active)

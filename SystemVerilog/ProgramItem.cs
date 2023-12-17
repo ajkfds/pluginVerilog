@@ -110,7 +110,7 @@ namespace pluginVerilog.SystemVerilog
     //                    word.MoveNext();
     //                    while (!word.Eof)
     //                    {
-    //                        if (word.Text == "parameter") Verilog.Variables.Parameter.ParseCreateDeclarationForPort(word, module, null);
+    //                        if (word.Text == "parameter") Verilog.DataObjects.Parameter.ParseCreateDeclarationForPort(word, module, null);
     //                        if (word.Text != ",") break;
     //                        word.MoveNext();
     //                    }
@@ -188,7 +188,7 @@ namespace pluginVerilog.SystemVerilog
     //                case "input":
     //                case "output":
     //                case "inout":
-    //                    Verilog.Variables.Port.ParsePortDeclaration(word, module, null);
+    //                    Verilog.DataObjects.Port.ParsePortDeclaration(word, module, null);
     //                    if (word.GetCharAt(0) != ';')
     //                    {
     //                        word.AddError("; expected");
@@ -246,7 +246,7 @@ namespace pluginVerilog.SystemVerilog
     //                case "parameter":
     //                // local_parameter_declaration
     //                case "localparam":
-    //                    Verilog.Variables.Parameter.ParseCreateDeclaration(word, module, null);
+    //                    Verilog.DataObjects.Parameter.ParseCreateDeclaration(word, module, null);
     //                    break;
     //                // continuous_assign
     //                case "assign":
@@ -324,7 +324,7 @@ namespace pluginVerilog.SystemVerilog
     //            case "input":
     //            case "output":
     //            case "inout":
-    //                Verilog.Variables.Port.ParsePortDeclaration(word, module, null);
+    //                Verilog.DataObjects.Port.ParsePortDeclaration(word, module, null);
     //                if (word.GetCharAt(0) != ';')
     //                {
     //                    word.AddError("; expected");
@@ -377,7 +377,7 @@ namespace pluginVerilog.SystemVerilog
     //                break;
     //            case "parameter":
     //            case "localparam":
-    //                Verilog.Variables.Parameter.ParseCreateDeclaration(word, module, null);
+    //                Verilog.DataObjects.Parameter.ParseCreateDeclaration(word, module, null);
     //                break;
     //            case "assign":
     //                Verilog.ModuleItems.ContinuousAssign continuousAssign = Verilog.ModuleItems.ContinuousAssign.ParseCreate(word, module);

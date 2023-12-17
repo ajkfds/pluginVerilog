@@ -58,8 +58,8 @@ namespace pluginVerilog.Verilog.Statements
                     }
                     else
                     {
-                        Verilog.Variables.Port port = task.PortsList[portCount];
-                        if (port.Direction == Variables.Port.DirectionEnum.Input)
+                        Verilog.DataObjects.Port port = task.PortsList[portCount];
+                        if (port.Direction == DataObjects.Port.DirectionEnum.Input)
                         {
                             expression = Expressions.Expression.ParseCreate(word, nameSpace);
                         }

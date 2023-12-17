@@ -1,5 +1,8 @@
 ﻿using pluginVerilog.Verilog.BuildingBlocks;
-using pluginVerilog.Verilog.Nets;
+using pluginVerilog.Verilog.DataObjects;
+using pluginVerilog.Verilog.DataObjects.DataTypes;
+using pluginVerilog.Verilog.DataObjects.Nets;
+using pluginVerilog.Verilog.DataObjects.Variables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +17,10 @@ namespace pluginVerilog.Verilog
         {
         }
 
-        private Dictionary<string, Variables.Port> ports = new Dictionary<string, Variables.Port>();
-        public Dictionary<string, Variables.Port> Ports { get { return ports; } }
-        private List<Variables.Port> portsList = new List<Variables.Port>();
-        public List<Variables.Port> PortsList { get { return portsList; } }
+        private Dictionary<string, DataObjects.Port> ports = new Dictionary<string, DataObjects.Port>();
+        public Dictionary<string, DataObjects.Port> Ports { get { return ports; } }
+        private List<DataObjects.Port> portsList = new List<DataObjects.Port>();
+        public List<DataObjects.Port> PortsList { get { return portsList; } }
 
         public Statements.IStatement Statement;
 
@@ -41,6 +44,7 @@ namespace pluginVerilog.Verilog
             function.BeginIndex = word.RootIndex;
             word.MoveNext();
 
+            // ## verilog 2001
             // function_declaration::= function[automatic][signed][range_or_type] function_identifier;
             // function_item_declaration { function_item_declaration }
             // function_statement
@@ -56,13 +60,91 @@ namespace pluginVerilog.Verilog
             // tf_input_declaration { , { attribute_instance } tf_input_declaration }
             // range_or_type::= range | integer | real | realtime | time
 
-            if (word.Text == "automatic")
+            // ## SystemVerilog2017
+            // function_declaration         ::= "function" [lifetime] function_body_declaration
+
+            // function_body_declaration    ::=   function_data_type_or_implicit [interface_identifier. | class_scope] function_identifier;
+            //                                      { tf_item_declaration }
+            //                                      { function_statement_or_null }
+            //                                      endfunction[ : function_identifier]
+
+            //                                  | function_data_type_or_implicit [interface_identifier. | class_scope] function_identifier([tf_port_list]);
+            //                                      { block_item_declaration }
+            //                                      { function_statement_or_null }
+            //                                      endfunction[ : function_identifier]
+
+            // function_data_type_or_implicit   ::= data_type_or_void | implicit_data_type;
+            // signing::= signed | unsigned
+            // lifetime::= static | automatic
+
+
+            // return type  explicit    data_type
+            //                          "void"
+            //              implicit    (packed dimenstions and,optionally signedness) -> logic scalar
+            //                          (empty) -> void
+
+            // [lifetime]
+            switch (word.Text)
             {
-                word.Color(CodeDrawStyle.ColorType.Keyword);
-                word.MoveNext();
+                case "static":
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
+                    word.MoveNext();
+                    break;
+                case "automatic":
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
+                    word.MoveNext();
+                    break;
             }
 
-            Verilog.Variables.DataTypes.DataType dataType = Verilog.Variables.DataTypes.DataType.ParseCreate(word, nameSpace);
+
+            // function_data_type_or_implicit   ::= data_type_or_void | implicit_data_type;
+            DataObjects.IVariableOrNet retVal = null;
+
+            switch (word.Text)
+            {
+                case "void":
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
+                    word.MoveNext();
+                    break;
+                case "signed":
+                case "unsigned":
+                case "[":
+                    {
+                        bool signed = false;
+                        if(word.Text == "signed")
+                        {
+                            signed = true;
+                            word.Color(CodeDrawStyle.ColorType.Keyword);
+                            word.MoveNext();
+                        }
+                        else if(word.Text == "unsigned")
+                        {
+                            word.Color(CodeDrawStyle.ColorType.Keyword);
+                            word.MoveNext();
+                        }
+                        List<Range> packedDimensions = new List<Range>();
+                        while (word.Text == "[")
+                        {
+                            Range range = Range.ParseCreate(word, nameSpace);
+                            if (range != null) packedDimensions.Add(range);
+                        }
+                        DataType dataType = DataObjects.DataTypes.IntegerVectorType.Create(DataTypeEnum.Logic, signed, packedDimensions);
+                        Logic logic = Verilog.DataObjects.Variables.Logic.Create(dataType);
+                        logic.PackedDimensions = packedDimensions;
+                        retVal = logic;
+                    }
+                    break;
+                default:
+                    {
+                        DataType dataType = DataType.ParseCreate(word, nameSpace, null);
+                        if (dataType != null)
+                        {
+                            retVal = Verilog.DataObjects.Variables.Variable.Create(dataType);
+                        }
+                    }
+                    break;
+            }
+
 
             //bool signed = false;
             //if (word.Text == "signed")
@@ -113,39 +195,33 @@ namespace pluginVerilog.Verilog
             }
 
             function.Name = word.Text;
+            retVal.Name = function.Name;
 
             if (!word.Active)
             {
                 // skip
             }
-            else if (word.Prototype)
+            else
             {
-                if (!nameSpace.BuildingBlock.Functions.ContainsKey(function.Name) && !nameSpace.BuildingBlock.NameSpaces.ContainsKey(function.Name))
+                if(retVal != null && retVal.Name != null)
                 {
-                    nameSpace.BuildingBlock.Functions.Add(function.Name, function);
-                    nameSpace.BuildingBlock.NameSpaces.Add(function.Name, function);
+                    function.Variables.Add(retVal.Name, retVal);
+                }
+
+                if (nameSpace.BuildingBlock.Functions.ContainsKey(function.Name))
+                {
+                    nameSpace.BuildingBlock.Functions[function.Name] = function;
                 }
                 else
                 {
-                    word.AddError("duplicated name");
+                    nameSpace.BuildingBlock.Functions.Add(function.Name, function);
                 }
             }
-            else
-            {
-                if (nameSpace.BuildingBlock.Functions.ContainsKey(function.Name))
-                {
-                    function = nameSpace.BuildingBlock.Functions[function.Name];
-                }
-            }
+
             word.Color(CodeDrawStyle.ColorType.Identifier);
             word.MoveNext();
 
-            Variables.Variable retVal = Verilog.Variables.Variable.Create(dataType);
 
-            if (word.Prototype)
-            {
-                function.Variables.Add(retVal.Name, retVal);
-            }
 
             /*            
             // function_item_declaration::= block_item_declaration | tf_input_declaration;
@@ -175,7 +251,8 @@ namespace pluginVerilog.Verilog
                     switch (word.Text)
                     {
                         case "input": // tf_input_declaration
-                            Verilog.Variables.Port.ParseFunctionPortDeclaration(word,function, null);
+
+                            Verilog.DataObjects.Port.ParseTfPortDeclaration(word,function);
                             if(word.Text != ";")
                             {
                                 word.AddError("; expected");
@@ -186,24 +263,24 @@ namespace pluginVerilog.Verilog
                             }
                             continue;
                         case "reg": // block_reg_declaration
-                            Verilog.Variables.Reg.ParseDeclaration(word, function);
+                            Verilog.DataObjects.Variables.Reg.ParseDeclaration(word, function);
                             continue;
                         // event_declaration
                         case "integer": // integer_declaration
-                            Verilog.Variables.Integer.ParseDeclaration(word, function);
+                            Verilog.DataObjects.Variables.Integer.ParseDeclaration(word, function);
                             continue;
                         case "localparameter": // local_parameter_declaration
                         case "paraeter":  // parameter_declaration
-                            Verilog.Variables.Parameter.ParseCreateDeclaration(word, function,null);
+                            Verilog.DataObjects.Parameter.ParseCreateDeclaration(word, function,null);
                             continue;
                         case "real": // real_declaration
-                            Verilog.Variables.Real.ParseDeclaration(word, function);
+                            Verilog.DataObjects.Variables.Real.ParseDeclaration(word, function);
                             continue;
                         case "realtime": // realtime_declaration
-                            Verilog.Variables.RealTime.ParseDeclaration(word, function);
+                            Verilog.DataObjects.Variables.RealTime.ParseDeclaration(word, function);
                             continue;
                         case "time": // time_declaration
-                            Verilog.Variables.Time.ParseDeclaration(word, function);
+                            Verilog.DataObjects.Variables.Time.ParseDeclaration(word, function);
                             continue;
                         case "wire": // illegal format for Verilog 2001
                             word.AddError("not supported(Veriog2001)");

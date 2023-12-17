@@ -9,7 +9,7 @@ namespace pluginVerilog.Verilog.Popup
 {
     public class PortPopup : codeEditor.CodeEditor.PopupItem
     {
-        public PortPopup(Variables.Port port)
+        public PortPopup(DataObjects.Port port)
         {
             label.AppendLabel(port.GetLabel());
         }

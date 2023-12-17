@@ -86,7 +86,7 @@ namespace pluginVerilog.Verilog.AutoComplete
 
             // ports
             i = 0;
-            foreach (Verilog.Variables.Port port in instancedModule.Ports.Values)
+            foreach (Verilog.DataObjects.Port port in instancedModule.Ports.Values)
             {
                 sb.Append("\t.");
                 sb.Append(port.Name);

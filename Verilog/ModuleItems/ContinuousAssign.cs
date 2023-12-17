@@ -13,7 +13,7 @@ namespace pluginVerilog.Verilog.ModuleItems
         public DriveStrength DriveStrength;
         public Delay3 Delay3;
 
-        public Variables.VariableAssignment VariableAssignment { get; protected set; }
+        public DataObjects.VariableAssignment VariableAssignment { get; protected set; }
 
         public static bool Parse(WordScanner word, NameSpace nameSpace)
         {
@@ -39,7 +39,7 @@ namespace pluginVerilog.Verilog.ModuleItems
             continuousAssign.Delay3 = Delay3.ParseCreate(word, nameSpace);
 
 
-            continuousAssign.VariableAssignment = Variables.VariableAssignment.ParseCreate(word, nameSpace);
+            continuousAssign.VariableAssignment = DataObjects.VariableAssignment.ParseCreate(word, nameSpace);
 
             if(word.GetCharAt(0) == ';')
             {

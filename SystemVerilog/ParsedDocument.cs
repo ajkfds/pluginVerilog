@@ -287,12 +287,12 @@ namespace pluginVerilog.SystemVerilog
 //                }
 //            }
 
-//            foreach (Verilog.Variables.Parameter parameter in nameSpace.Module.Parameters.Values)
+//            foreach (Verilog.DataObjects.Parameter parameter in nameSpace.Module.Parameters.Values)
 //            {
 //                items.Add(newItem(parameter.Name, CodeDrawStyle.ColorType.Paramater));
 //            }
 
-//            foreach (Verilog.Variables.Parameter parameter in nameSpace.Module.LocalParameters.Values)
+//            foreach (Verilog.DataObjects.Parameter parameter in nameSpace.Module.LocalParameters.Values)
 //            {
 //                items.Add(newItem(parameter.Name, CodeDrawStyle.ColorType.Paramater));
 //            }

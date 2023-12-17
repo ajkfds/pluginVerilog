@@ -1,4 +1,6 @@
-﻿using System;
+﻿using pluginVerilog.Verilog.DataObjects.DataTypes;
+using pluginVerilog.Verilog.DataObjects.Nets;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,12 +22,12 @@ namespace pluginVerilog.Verilog.BuildingBlocks
 
         public Dictionary<string, Class> Classes { get; set; } = new Dictionary<string, Class>();
 
-        public Dictionary<string, Variables.DataTypes.DataType> Datatypes { get; set; } = new Dictionary<string, Variables.DataTypes.DataType>();
+        public Dictionary<string, DataType> Datatypes { get; set; } = new Dictionary<string, DataType>();
 
         public Dictionary<string, BuildingBlock> Elements { get; set; } = new Dictionary<string, BuildingBlock>();
 
         public bool AnsiStylePortDefinition { get; set; } = false;
-        public Nets.Net.NetTypeEnum DefaultNetType = Verilog.Nets.Net.NetTypeEnum.Wire;
+        public Net.NetTypeEnum DefaultNetType = Net.NetTypeEnum.Wire;
 
         private bool reparseRequested = false;
         public bool ReperseRequested

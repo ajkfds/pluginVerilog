@@ -1,4 +1,4 @@
-﻿using pluginVerilog.Verilog.Nets;
+﻿using pluginVerilog.Verilog.DataObjects.Nets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +29,7 @@ namespace pluginVerilog.Verilog.Items
          */
         public static bool Parse(WordScanner word, NameSpace nameSpace)
         {
-            if (Variables.Variable.ParseDeclaration(word, nameSpace)) return true;
+            if (DataObjects.Variables.Variable.ParseDeclaration(word, nameSpace)) return true;
 
             switch (word.Text)
             {
@@ -53,7 +53,7 @@ namespace pluginVerilog.Verilog.Items
 
                 //              "enum"[enum_base_type] {enum_name_declaration { , enum_name_declaration } { packed_dimension }
                 case "enum":
-                    Verilog.Variables.Enum.ParseCreateFromDataDeclaration(word, nameSpace);
+                    DataObjects.Variables.Enum.ParseDeclaration(word, nameSpace);
                     break;
 
                 //              "string"
@@ -61,7 +61,7 @@ namespace pluginVerilog.Verilog.Items
                 //              "virtual"["interface"] interface_identifier[parameter_value_assignment][ . modport_identifier] [class_scope | package_scope] type_identifier { packed_dimension } class_type
                 //              "event"
                 case "event":
-                    Verilog.Variables.Event.ParseCreateFromDeclaration(word, nameSpace);
+                    DataObjects.Variables.Event.ParseCreateFromDeclaration(word, nameSpace);
                     break;
                 //              ps_covergroup_identifier
                 //              type_reference
@@ -100,7 +100,7 @@ namespace pluginVerilog.Verilog.Items
                 // parameter_declaration;
                 case "parameter":
                 case "localparam":
-                    Verilog.Variables.Parameter.ParseCreateDeclaration(word, nameSpace, null);
+                    Verilog.DataObjects.Parameter.ParseCreateDeclaration(word, nameSpace, null);
                     break;
 
                 // covergroup_declaration
@@ -110,7 +110,7 @@ namespace pluginVerilog.Verilog.Items
                 // ;
                 case ";":
                     word.MoveNext();
-                    if (!word.SystemVerilog) word.AddError("SystemVerilog description");
+                    word.AddSystemVerilogError();
                     break;
 
                 // etc

@@ -144,7 +144,7 @@ namespace pluginVerilog.Verilog
                     Module originalModule = ProjectProperty.GetModule(inst.ModuleName);
                     if (originalModule == null) return ret;
                     if (!originalModule.Ports.ContainsKey(portName)) return ret;
-                    Verilog.Variables.Port port = originalModule.Ports[portName];
+                    Verilog.DataObjects.Port port = originalModule.Ports[portName];
                     ret.Add(new Popup.PortPopup(port));
                 }
             }
@@ -155,7 +155,7 @@ namespace pluginVerilog.Verilog
             }
 
             {
-                Variables.Parameter param = space.GetParameter(text);
+                DataObjects.Parameter param = space.GetParameter(text);
                 if(param != null)
                 {
                     ret.Add(new Popup.ParameterPopup(param));

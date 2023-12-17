@@ -9,16 +9,16 @@ namespace pluginVerilog.Verilog
 {
     public interface IPortNameSpace
     {
-        Dictionary<string, Variables.Variable> Variables { get; }
+        Dictionary<string, DataObjects.IVariableOrNet> Variables { get; }
         NameSpace Parent { get; }
-        Dictionary<string, Variables.Parameter> Parameters { get; }
-        Dictionary<string, Variables.Parameter> LocalParameters { get; }
+        Dictionary<string, DataObjects.Parameter> Parameters { get; }
+        Dictionary<string, DataObjects.Parameter> LocalParameters { get; }
 
         BuildingBlocks.BuildingBlock BuildingBlock { get; }
 
         Dictionary<string, NameSpace> NameSpaces { get; }
 
-        Dictionary<string, Variables.Port> Ports { get; }
-        List<Variables.Port> PortsList { get; }
+        Dictionary<string, DataObjects.Port> Ports { get; }
+        List<DataObjects.Port> PortsList { get; }
     }
 }

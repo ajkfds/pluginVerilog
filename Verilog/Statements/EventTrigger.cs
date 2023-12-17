@@ -30,7 +30,7 @@ namespace pluginVerilog.Verilog.Statements
             if(ex is Verilog.Expressions.VariableReference)
             {
                 var valRef = ex as Expressions.VariableReference;
-                if (valRef.Variable is Verilog.Variables.Event)
+                if (valRef.Variable is DataObjects.Variables.Event)
                 {
                     // event expression
                 }

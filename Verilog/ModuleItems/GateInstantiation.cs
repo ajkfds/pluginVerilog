@@ -48,8 +48,8 @@ namespace pluginVerilog.Verilog.ModuleItems
 
         //        public string ModuleName { get; protected set; }
 
-        //        private List<Verilog.Variables.Port> ports = new List<Variables.Port>();
-        //        public IReadOnlyList<Verilog.Variables.Port> Ports { get { return ports; } }
+        //        private List<Verilog.DataObjects.Port> ports = new List<DataObjects.Port>();
+        //        public IReadOnlyList<Verilog.DataObjects.Port> Ports { get { return ports; } }
 
         public static bool Parse(WordScanner word, NameSpace nameSpace)
         {

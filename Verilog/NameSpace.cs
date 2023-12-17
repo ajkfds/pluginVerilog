@@ -1,5 +1,5 @@
 ﻿using pluginVerilog.Verilog.BuildingBlocks;
-using pluginVerilog.Verilog.Nets;
+using pluginVerilog.Verilog.DataObjects.Nets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,24 +21,23 @@ namespace pluginVerilog.Verilog
         public int BeginIndex = -1;
         public int LastIndex = -1;
 
-        private Dictionary<string, Variables.Variable> variables = new Dictionary<string, Variables.Variable>();
+        private Dictionary<string, DataObjects.IVariableOrNet> variables = new Dictionary<string, DataObjects.IVariableOrNet>();
         private Dictionary<string, Net> nets = new Dictionary<string, Net>();
-        private Dictionary<string, Variables.Parameter> parameters = new Dictionary<string, Variables.Parameter>();
-        private Dictionary<string, Variables.Parameter> localParameters = new Dictionary<string, Variables.Parameter>();
-        private Dictionary<string, Variables.Enum> enums = new Dictionary<string, Variables.Enum>();
-        private Dictionary<string, Variables.Typedef> typedefs = new Dictionary<string, Variables.Typedef>();
+        private Dictionary<string, DataObjects.Parameter> parameters = new Dictionary<string, DataObjects.Parameter>();
+        private Dictionary<string, DataObjects.Parameter> localParameters = new Dictionary<string, DataObjects.Parameter>();
+        private Dictionary<string, DataObjects.Variables.Enum> enums = new Dictionary<string, DataObjects.Variables.Enum>();
+        private Dictionary<string, DataObjects.Variables.Typedef> typedefs = new Dictionary<string, DataObjects.Variables.Typedef>();
 
         private Dictionary<string, NameSpace> nameSpaces = new Dictionary<string, NameSpace>();
 
-        public Dictionary<string, Variables.Variable> Variables { get { return variables; } }
-        public Dictionary<string, Net> Nets { get { return nets; } }
+        public Dictionary<string, DataObjects.IVariableOrNet> Variables { get { return variables; } }
 
 
         public NameSpace Parent { get; protected set; }
-        public Dictionary<string, Variables.Parameter> Parameters { get { return parameters; } }
-        public Dictionary<string, Variables.Parameter> LocalParameters { get { return localParameters; } }
-        public Dictionary<string, Variables.Enum> Enums { get { return enums; } }
-        public Dictionary<string, Variables.Typedef> Typedefs { get { return typedefs; } }
+        public Dictionary<string, DataObjects.Parameter> Parameters { get { return parameters; } }
+        public Dictionary<string, DataObjects.Parameter> LocalParameters { get { return localParameters; } }
+        public Dictionary<string, DataObjects.Variables.Enum> Enums { get { return enums; } }
+        public Dictionary<string, DataObjects.Variables.Typedef> Typedefs { get { return typedefs; } }
         public BuildingBlocks.BuildingBlock BuildingBlock { get; protected set; }
         public Dictionary<string, NameSpace> NameSpaces { get { return nameSpaces;  } }
 
@@ -60,36 +59,40 @@ namespace pluginVerilog.Verilog
         }
         public virtual void AppendAutoCompleteItem( List<codeEditor.CodeEditor.AutocompleteItem> items)
         {
-            foreach (Net net in Nets.Values)
-            {
-                if (net is Net)
-                {
-                    items.Add(newItem(net.Name, CodeDrawStyle.ColorType.Net));
-                }
-            }
+            //foreach (Net net in Nets.Values)
+            //{
+            //    if (net is Net)
+            //    {
+            //        items.Add(newItem(net.Name, CodeDrawStyle.ColorType.Net));
+            //    }
+            //}
 
-            foreach (Variables.Variable variable in Variables.Values)
+            foreach (DataObjects.IVariableOrNet variable in Variables.Values)
             {
-                if (variable is Variables.Reg)
+                if(variable is DataObjects.Nets.Net)
+                {
+                    items.Add(newItem(variable.Name, CodeDrawStyle.ColorType.Net));
+                }
+                else if (variable is DataObjects.Variables.Reg)
                 {
                     items.Add(newItem(variable.Name, CodeDrawStyle.ColorType.Register));
                 }
-                else if (variable is Variables.Integer)
+                else if (variable is DataObjects.Variables.Integer)
                 {
                     items.Add(newItem(variable.Name, CodeDrawStyle.ColorType.Variable));
                 }
-                else if (variable is Variables.Time || variable is Variables.Real || variable is Variables.RealTime || variable is Variables.Integer || variable is Variables.Genvar)
+                else if (variable is DataObjects.Variables.Time || variable is DataObjects.Variables.Real || variable is DataObjects.Variables.RealTime || variable is DataObjects.Variables.Integer || variable is DataObjects.Variables.Genvar)
                 {
                     items.Add(newItem(variable.Name, CodeDrawStyle.ColorType.Variable));
                 }
             }
 
-            foreach (Variables.Parameter parameter in BuildingBlock.Parameters.Values)
+            foreach (DataObjects.Parameter parameter in BuildingBlock.Parameters.Values)
             {
                 items.Add(newItem(parameter.Name, CodeDrawStyle.ColorType.Paramater));
             }
 
-            foreach (Variables.Parameter parameter in BuildingBlock.LocalParameters.Values)
+            foreach (DataObjects.Parameter parameter in BuildingBlock.LocalParameters.Values)
             {
                 items.Add(newItem(parameter.Name, CodeDrawStyle.ColorType.Paramater));
             }
@@ -116,7 +119,7 @@ namespace pluginVerilog.Verilog
             }
         }
 
-        public Variables.Variable GetVariable(string identifier)
+        public DataObjects.IVariableOrNet GetVariable(string identifier)
         {
             if (Variables.ContainsKey(identifier))
             {
@@ -130,7 +133,7 @@ namespace pluginVerilog.Verilog
             return null;
         }
 
-        public Variables.Parameter GetParameter(string identifier)
+        public DataObjects.Parameter GetParameter(string identifier)
         {
             if (Parameters.ContainsKey(identifier))
             {
@@ -149,7 +152,7 @@ namespace pluginVerilog.Verilog
             return null;
         }
 
-        private Variables.Parameter getParameterHier(string identifier)
+        private DataObjects.Parameter getParameterHier(string identifier)
         {
             if (Parameters.ContainsKey(identifier))
             {

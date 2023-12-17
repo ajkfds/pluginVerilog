@@ -10,8 +10,8 @@ namespace pluginVerilog.Verilog.BuildingBlocks
     {
 
         // Port
-        Dictionary<string, Variables.Port> Ports { get; }
-        List<Variables.Port> PortsList { get; }
+        Dictionary<string, DataObjects.Port> Ports { get; }
+        List<DataObjects.Port> PortsList { get; }
         List<string> PortParameterNameList { get; }
 
         // Generate

@@ -1,5 +1,4 @@
 ﻿using pluginVerilog.Verilog.ModuleItems;
-using pluginVerilog.Verilog.Variables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +16,10 @@ namespace pluginVerilog.Verilog.BuildingBlocks
 
         // IModuleOrInterfaceOrProfram
         // Port
-        private Dictionary<string, Variables.Port> ports = new Dictionary<string, Variables.Port>();
-        public Dictionary<string, Variables.Port> Ports { get { return ports; } }
-        private List<Variables.Port> portsList = new List<Variables.Port>();
-        public List<Variables.Port> PortsList { get { return portsList; } }
+        private Dictionary<string, DataObjects.Port> ports = new Dictionary<string, DataObjects.Port>();
+        public Dictionary<string, DataObjects.Port> Ports { get { return ports; } }
+        private List<DataObjects.Port> portsList = new List<DataObjects.Port>();
+        public List<DataObjects.Port> PortsList { get { return portsList; } }
         public WordReference NameReference;
         private List<string> portParameterNameList = new List<string>();
         public List<string> PortParameterNameList { get { return portParameterNameList; } }

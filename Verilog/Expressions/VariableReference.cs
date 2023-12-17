@@ -1,4 +1,4 @@
-﻿using pluginVerilog.Verilog.Nets;
+﻿using pluginVerilog.Verilog.DataObjects.Nets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +13,7 @@ namespace pluginVerilog.Verilog.Expressions
         public string VariableName { get; protected set; }
         public RangeExpression RangeExpression { get; protected set; }
         public List<Expression> Dimensions = new List<Expression>();
-        public Variables.Variable Variable = null;
+        public DataObjects.IVariableOrNet Variable = null;
 
         public override string CreateString()
         {
@@ -21,7 +21,7 @@ namespace pluginVerilog.Verilog.Expressions
         }
         public override void AppendLabel(ajkControls.ColorLabel.ColorLabel label)
         {
-            if (Variable is Variables.Reg)
+            if (Variable is DataObjects.Variables.Reg)
             {
                 label.AppendText(VariableName, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Register));
             }
@@ -52,7 +52,7 @@ namespace pluginVerilog.Verilog.Expressions
         }
 
 
-        private static Variables.Variable getVariable(WordScanner word, string identifier, NameSpace nameSpace)
+        private static DataObjects.IVariableOrNet getVariable(WordScanner word, string identifier, NameSpace nameSpace)
         {
             if (nameSpace.Variables.ContainsKey(identifier))
             {
@@ -63,7 +63,7 @@ namespace pluginVerilog.Verilog.Expressions
             {
                 if (nameSpace.Parent != null)
                 {
-                    Variables.Variable val = nameSpace.Parent.GetVariable(identifier);
+                    DataObjects.IVariableOrNet val = nameSpace.Parent.GetVariable(identifier);
                     if (val != null) word.AddWarning("external function reference");
                     return val;
                 }
@@ -74,6 +74,10 @@ namespace pluginVerilog.Verilog.Expressions
                 {
                     return nameSpace.Parent.GetVariable(identifier);
                 }
+                else
+                {
+                    return nameSpace.GetVariable(identifier);
+                }
             }
             return null;
         }
@@ -83,7 +87,7 @@ namespace pluginVerilog.Verilog.Expressions
             throw new Exception("illegal access");
         }
 
-        public static VariableReference Create(Variables.Variable variable,NameSpace nameSpace)
+        public static VariableReference Create(DataObjects.Variables.Variable variable,NameSpace nameSpace)
         {
             VariableReference val = new VariableReference();
             val.VariableName = variable.Name;
@@ -96,7 +100,7 @@ namespace pluginVerilog.Verilog.Expressions
         public static VariableReference ParseCreate(WordScanner word, NameSpace nameSpace, bool assigned)
         {
             if (nameSpace == null) System.Diagnostics.Debugger.Break();
-            Variables.Variable variable = getVariable(word, word.Text, nameSpace);
+            DataObjects.IVariableOrNet variable = getVariable(word, word.Text, nameSpace);
             if (variable == null) return null;
 
             VariableReference val = new VariableReference();
@@ -104,7 +108,7 @@ namespace pluginVerilog.Verilog.Expressions
             val.Variable = variable;
             val.Reference = word.GetReference();
 
-            if (variable is Variables.Reg)
+            if (variable is DataObjects.Variables.Reg)
             {
                 word.Color(CodeDrawStyle.ColorType.Register);
             }
@@ -199,9 +203,10 @@ namespace pluginVerilog.Verilog.Expressions
             }
             else
             {   // w/o range
-                if (variable is Variables.Reg)
+                if (variable is DataObjects.Variables.Reg)
                 {
-                    if (((Variables.Reg)variable).Range != null) val.BitWidth = ((Variables.Reg)variable).Range.BitWidth;
+                    DataObjects.Variables.Reg reg = (DataObjects.Variables.Reg)variable;
+                    if (reg.Range != null) val.BitWidth = reg.Range.BitWidth;
                     else val.BitWidth = 1;
                 }
                 else if (variable is Net)
@@ -209,7 +214,7 @@ namespace pluginVerilog.Verilog.Expressions
                     if (((Net)variable).Range != null) val.BitWidth = ((Net)variable).Range.BitWidth;
                     else val.BitWidth = 1;
                 }
-                else if (variable is Variables.Genvar)
+                else if (variable is DataObjects.Variables.Genvar)
                 {
                     val.Constant = true;
                 }

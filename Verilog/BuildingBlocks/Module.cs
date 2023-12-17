@@ -13,10 +13,10 @@ namespace pluginVerilog.Verilog.BuildingBlocks
 
         // IModuleOrInterfaceOrProfram
         // Port
-        private Dictionary<string, Variables.Port> ports = new Dictionary<string, Variables.Port>();
-        public Dictionary<string, Variables.Port> Ports { get { return ports; } }
-        private List<Variables.Port> portsList = new List<Variables.Port>();
-        public List<Variables.Port> PortsList { get { return portsList; } }
+        private Dictionary<string, DataObjects.Port> ports = new Dictionary<string, DataObjects.Port>();
+        public Dictionary<string, DataObjects.Port> Ports { get { return ports; } }
+        private List<DataObjects.Port> portsList = new List<DataObjects.Port>();
+        public List<DataObjects.Port> PortsList { get { return portsList; } }
         public WordReference NameReference;
         private List<string> portParameterNameList = new List<string>();
         public List<string> PortParameterNameList { get { return portParameterNameList; } }
@@ -281,7 +281,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
                         word.MoveNext();
                         while (!word.Eof)
                         {
-                            if (word.Text == "parameter") Verilog.Variables.Parameter.ParseCreateDeclarationForPort(word, module, null);
+                            if (word.Text == "parameter") Verilog.DataObjects.Parameter.ParseCreateDeclarationForPort(word, module, null);
                             if (word.Text != ",")
                             {
                                 if (word.Text == ")") break;
@@ -318,7 +318,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
                             }
 
                             module.Parameters.Remove(vkp.Key);
-                            Variables.Parameter param = new Variables.Parameter();
+                            DataObjects.Parameter param = new DataObjects.Parameter();
                             param.Name = vkp.Key;
                             param.Expression = vkp.Value;
                             module.Parameters.Add(param.Name, param);
@@ -386,7 +386,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
             {
                 if (variable.DefinedReference == null) continue;
 
-                Variables.ValueVariable valueVar = variable as Variables.ValueVariable;
+                DataObjects.Variables.ValueVariable valueVar = variable as DataObjects.Variables.ValueVariable;
                 if (valueVar == null) continue;
 
                 if (valueVar.AssignedReferences.Count == 0)
@@ -440,7 +440,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
                 return;
             }
 
-            Verilog.Variables.Port.ParsePortDeclarations(word, module);
+            Verilog.DataObjects.Port.ParsePortDeclarations(word, module);
 
             if (word.Text == ")")
             {
@@ -550,7 +550,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
                     case "input":
                     case "output":
                     case "inout":
-                        Verilog.Variables.Port.ParsePortDeclaration(word, module);
+                        Verilog.DataObjects.Port.ParsePortDeclaration(word, module);
                         if (word.GetCharAt(0) != ';')
                         {
                             word.AddError("; expected");
@@ -612,7 +612,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
                     case "parameter":
                     // local_parameter_declaration
                     case "localparam":
-                        Verilog.Variables.Parameter.ParseCreateDeclaration(word, module, null);
+                        Verilog.DataObjects.Parameter.ParseCreateDeclaration(word, module, null);
                         break;
                     // continuous_assign
                     case "assign":
@@ -774,7 +774,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
         //        case "inout":
         //            if (nameSpace is Module)
         //            {
-        //                Verilog.Variables.Port.ParsePortDeclaration(word, nameSpace as Module);
+        //                Verilog.DataObjects.Port.ParsePortDeclaration(word, nameSpace as Module);
         //                if (word.GetCharAt(0) != ';')
         //                {
         //                    word.AddError("; expected");
@@ -834,7 +834,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
         //            break;
         //        case "parameter":
         //        case "localparam":
-        //            Verilog.Variables.Parameter.ParseCreateDeclaration(word, nameSpace as NameSpace, null);
+        //            Verilog.DataObjects.Parameter.ParseCreateDeclaration(word, nameSpace as NameSpace, null);
         //            break;
         //        case "assign":
         //            ModuleItems.ContinuousAssign continuousAssign = ModuleItems.ContinuousAssign.ParseCreate(word, nameSpace);

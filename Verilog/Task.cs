@@ -48,10 +48,10 @@ namespace pluginVerilog.Verilog
         {
         }
 
-        private Dictionary<string, Variables.Port> ports = new Dictionary<string, Variables.Port>();
-        public Dictionary<string, Variables.Port> Ports { get { return ports; } }
-        private List<Variables.Port> portsList = new List<Variables.Port>();
-        public List<Variables.Port> PortsList { get { return portsList; } }
+        private Dictionary<string, DataObjects.Port> ports = new Dictionary<string, DataObjects.Port>();
+        public Dictionary<string, DataObjects.Port> Ports { get { return ports; } }
+        private List<DataObjects.Port> portsList = new List<DataObjects.Port>();
+        public List<DataObjects.Port> PortsList { get { return portsList; } }
 
         public Statements.IStatement Statement;
 
@@ -62,6 +62,7 @@ namespace pluginVerilog.Verilog
                 System.Diagnostics.Debugger.Break();
             }
             Task task = new Task(nameSpace);
+            task.BuildingBlock = nameSpace.BuildingBlock;
             word.Color(CodeDrawStyle.ColorType.Keyword);
             task.BeginIndex = word.RootIndex;
             word.MoveNext();
@@ -133,7 +134,7 @@ namespace pluginVerilog.Verilog
                         case "input":
                         case "output":
                         case "inout":
-                            Verilog.Variables.Port.ParseTaskPortDeclaration(word, task);
+                            Verilog.DataObjects.Port.ParseTfPortDeclaration(word, task);
                             if (word.Text != ";")
                             {
                                 word.AddError("; expected");
@@ -146,7 +147,7 @@ namespace pluginVerilog.Verilog
                         case "reg":
                         case "integer":
                         case "real":
-                            Verilog.Variables.Variable.ParseCreateFromDataDeclaration(word, task);
+                            DataObjects.Variables.Variable.ParseDeclaration(word, task);
                             continue;
                         default:
                             break;

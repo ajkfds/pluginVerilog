@@ -9,7 +9,7 @@ namespace pluginVerilog.Verilog.Popup
 {
     public class ParameterPopup : codeEditor.CodeEditor.PopupItem
     {
-        public ParameterPopup(Variables.Parameter parameter)
+        public ParameterPopup(DataObjects.Parameter parameter)
         {
             label.AppendText("parameter ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
             label.AppendText(parameter.Name, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Paramater));

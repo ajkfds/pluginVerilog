@@ -15,7 +15,7 @@ namespace pluginVerilog.Verilog.Popup
             label.AppendText(task.Name, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Identifier));
             label.AppendText("\r\n");
             bool first = true;
-            foreach (Variables.Port port in task.Ports.Values)
+            foreach (DataObjects.Port port in task.Ports.Values)
             {
                 if (!first) label.AppendText("\r\n");
                 label.AppendLabel(port.GetLabel());
@@ -23,21 +23,21 @@ namespace pluginVerilog.Verilog.Popup
             }
 
 
-            //foreach (Variables.Port port in task.Ports.Values)
+            //foreach (DataObjects.Port port in task.Ports.Values)
             //{
             //    switch (port.Direction)
             //    {
-            //        case Variables.Port.DirectionEnum.Input:
+            //        case DataObjects.Port.DirectionEnum.Input:
             //            label.AppendText(" input ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
             //            label.AppendText(port.Name);
             //            label.AppendText("\r\n");
             //            break;
-            //        case Variables.Port.DirectionEnum.Output:
+            //        case DataObjects.Port.DirectionEnum.Output:
             //            label.AppendText(" output ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
             //            label.AppendText(port.Name);
             //            label.AppendText("\r\n");
             //            break;
-            //        case Variables.Port.DirectionEnum.Inout:
+            //        case DataObjects.Port.DirectionEnum.Inout:
             //            label.AppendText(" inout ", CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
             //            label.AppendText(port.Name);
             //            label.AppendText("\r\n");

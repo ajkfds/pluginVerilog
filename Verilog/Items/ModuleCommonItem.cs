@@ -59,7 +59,7 @@ namespace pluginVerilog.Verilog.Items
                     return ModuleItems.AlwaysConstruct.Parse(word, nameSpace);
                 // loop_generate_construct
                 case "for":
-                    if (!word.SystemVerilog) word.AddError("SystemVerilog Description");
+                    word.AddSystemVerilogError();
                     return Generate.LoopGenerateConstruct.Parse(word, nameSpace);
                 // conditional_generate_construct
                 case "if":
