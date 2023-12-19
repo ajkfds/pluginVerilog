@@ -195,6 +195,7 @@ namespace pluginVerilog.Verilog
             }
 
             function.Name = word.Text;
+            if (retVal == null) return;
             retVal.Name = function.Name;
 
             if (!word.Active)
@@ -277,7 +278,7 @@ namespace pluginVerilog.Verilog
                             Verilog.DataObjects.Variables.Real.ParseDeclaration(word, function);
                             continue;
                         case "realtime": // realtime_declaration
-                            Verilog.DataObjects.Variables.RealTime.ParseDeclaration(word, function);
+                            Verilog.DataObjects.Variables.Realtime.ParseDeclaration(word, function);
                             continue;
                         case "time": // time_declaration
                             Verilog.DataObjects.Variables.Time.ParseDeclaration(word, function);

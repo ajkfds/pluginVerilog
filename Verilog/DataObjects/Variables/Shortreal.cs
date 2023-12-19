@@ -8,29 +8,29 @@ using pluginVerilog.Verilog.DataObjects.DataTypes;
 
 namespace pluginVerilog.Verilog.DataObjects.Variables
 {
-    public class Realtime : Variable
+    public class Shortreal : ValueVariable
     {
-        protected Realtime() { }
+        protected Shortreal() { }
 
-        public static new Realtime Create(DataType dataType)
+        public static new Shortreal Create(DataType dataType)
         {
-            System.Diagnostics.Debug.Assert(dataType.Type == DataTypeEnum.Realtime);
+            System.Diagnostics.Debug.Assert(dataType.Type == DataTypeEnum.Shortreal );
 
-            Realtime val = new Realtime();
+            Shortreal val = new Shortreal();
             val.DataType = dataType.Type;
             return val;
         }
 
         public override Variable Clone()
         {
-            Realtime val = new Realtime();
+            Shortreal val = new Shortreal();
             val.DataType = DataType;
             return val;
         }
 
         public override void AppendTypeLabel(ColorLabel label)
         {
-            label.AppendText("realtime ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+            label.AppendText("shortreal ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
             label.AppendText(" ");
         }
 

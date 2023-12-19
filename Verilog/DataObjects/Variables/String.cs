@@ -1,36 +1,36 @@
-﻿using System;
+﻿using ajkControls.ColorLabel;
+using pluginVerilog.Verilog.DataObjects.DataTypes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ajkControls.ColorLabel;
-using pluginVerilog.Verilog.DataObjects.DataTypes;
 
 namespace pluginVerilog.Verilog.DataObjects.Variables
 {
-    public class Realtime : Variable
+    public class String : ValueVariable
     {
-        protected Realtime() { }
+        protected String() { }
 
-        public static new Realtime Create(DataType dataType)
+        public static new String Create(DataType dataType)
         {
-            System.Diagnostics.Debug.Assert(dataType.Type == DataTypeEnum.Realtime);
+            System.Diagnostics.Debug.Assert(dataType.Type == DataTypeEnum.String);
 
-            Realtime val = new Realtime();
+            String val = new String();
             val.DataType = dataType.Type;
             return val;
         }
 
         public override Variable Clone()
         {
-            Realtime val = new Realtime();
+            String val = new String();
             val.DataType = DataType;
             return val;
         }
 
         public override void AppendTypeLabel(ColorLabel label)
         {
-            label.AppendText("realtime ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+            label.AppendText("string ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
             label.AppendText(" ");
         }
 

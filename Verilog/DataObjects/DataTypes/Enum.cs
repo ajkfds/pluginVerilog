@@ -91,6 +91,7 @@ namespace pluginVerilog.Verilog.DataObjects.DataTypes
                 word.AddError("{ required");
                 return null;
             }
+//            word.MoveNext(); // "{"
 
             while( !word.Eof | word.Text != "}")
             {

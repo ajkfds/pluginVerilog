@@ -145,67 +145,6 @@ namespace pluginVerilog.Parser
 
             Root root = Root.ParseCreate(word,VerilogParsedDocument,File as Data.VerilogFile);
 
-
-            //while (!word.Eof)
-            //{
-            //    if (word.Text == "module")
-            //    {
-            //        if (targetModuleName != null)
-            //        {
-            //            string moduleName = word.NextText;
-            //            if (moduleName != targetModuleName)
-            //            {
-            //                word.SkipToKeyword("endmodule");
-            //                word.MoveNext();
-            //                continue;
-            //            }
-            //        }
-
-
-            //        Module module;
-                    
-            //        if (ParseMode == ParseModeEnum.LoadParse)
-            //        {
-            //            if (parameterOverrides == null)
-            //            {
-            //                module = Module.Create(word, null, File, true);
-            //            }
-            //            else
-            //            {
-            //                module = Module.Create(word, parameterOverrides, null, File, true);
-            //            }
-            //            if(module.ModuleInstantiations.Count != 0) // prepare reparse (instanced module could have un-refferenced link)
-            //            {
-            //                module.ReperseRequested = true;
-            //            }
-            //        }
-            //        else
-            //        {
-            //            if (parameterOverrides == null)
-            //            {
-            //                module = Module.Create(word, null, File, false);
-            //            }
-            //            else
-            //            {
-            //                module = Module.Create(word, parameterOverrides, null, File, false);
-            //            }
-            //        }
-
-            //        if (!parsedDocument.Modules.ContainsKey(module.Name))
-            //        {
-            //            parsedDocument.Modules.Add(module.Name, module);
-            //            if (module.ReperseRequested) parsedDocument.ReparseRequested = true;
-            //        }
-            //        else
-            //        {
-            //            word.AddError("duplicated module name");
-            //        }
-            //    }
-            //    else
-            //    {
-            //        word.MoveNext();
-            //    }
-            //}
             word.Dispose();
             word = null;
         }

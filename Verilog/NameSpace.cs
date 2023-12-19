@@ -81,7 +81,7 @@ namespace pluginVerilog.Verilog
                 {
                     items.Add(newItem(variable.Name, CodeDrawStyle.ColorType.Variable));
                 }
-                else if (variable is DataObjects.Variables.Time || variable is DataObjects.Variables.Real || variable is DataObjects.Variables.RealTime || variable is DataObjects.Variables.Integer || variable is DataObjects.Variables.Genvar)
+                else if (variable is DataObjects.Variables.Time || variable is DataObjects.Variables.Real || variable is DataObjects.Variables.Realtime || variable is DataObjects.Variables.Integer || variable is DataObjects.Variables.Genvar)
                 {
                     items.Add(newItem(variable.Name, CodeDrawStyle.ColorType.Variable));
                 }

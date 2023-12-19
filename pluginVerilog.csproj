@@ -74,8 +74,6 @@
     <Compile Include="NavigatePanel\VerilogHeaderInstanceNode.cs" />
     <Compile Include="NavigatePanel\VerilogHeaderNode.cs" />
     <Compile Include="ProjectProperty.cs" />
-    <Compile Include="SystemVerilog\ParsedDocument.cs" />
-    <Compile Include="SystemVerilog\ProgramItem.cs" />
     <Compile Include="Tools\AutoConnectForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -130,11 +128,13 @@
     <Compile Include="Verilog\DataObjects\Variables\IntegerVectorValueVariable.cs" />
     <Compile Include="Verilog\DataObjects\Variables\Logic.cs" />
     <Compile Include="Verilog\DataObjects\Variables\Longint.cs" />
+    <Compile Include="Verilog\DataObjects\Variables\Shortreal.cs" />
     <Compile Include="Verilog\DataObjects\Variables\Real.cs" />
-    <Compile Include="Verilog\DataObjects\Variables\RealTime.cs" />
+    <Compile Include="Verilog\DataObjects\Variables\Realtime.cs" />
     <Compile Include="Verilog\DataObjects\Variables\ReferenceVariable.cs" />
     <Compile Include="Verilog\DataObjects\Variables\Reg.cs" />
     <Compile Include="Verilog\DataObjects\Variables\Shortint.cs" />
+    <Compile Include="Verilog\DataObjects\Variables\String.cs" />
     <Compile Include="Verilog\DataObjects\Variables\Time.cs" />
     <Compile Include="Verilog\DataObjects\Variables\Typedef.cs" />
     <Compile Include="Verilog\DataObjects\Variables\ValueVariable.cs" />

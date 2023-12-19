@@ -179,6 +179,7 @@ namespace pluginVerilog.Verilog
         private bool systemVerilogError = false;
         public void AddSystemVerilogError()
         {
+            if (wordPointer.ParsedDocument.SystemVerilog) return;
             if (systemVerilogError) return;
             AddError("SystemVerilog Description");
         }
