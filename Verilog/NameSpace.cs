@@ -21,7 +21,7 @@ namespace pluginVerilog.Verilog
         public int BeginIndex = -1;
         public int LastIndex = -1;
 
-        private Dictionary<string, DataObjects.IVariableOrNet> variables = new Dictionary<string, DataObjects.IVariableOrNet>();
+        private Dictionary<string, DataObjects.DataObject> variables = new Dictionary<string, DataObjects.DataObject>();
         private Dictionary<string, Net> nets = new Dictionary<string, Net>();
         private Dictionary<string, DataObjects.Parameter> parameters = new Dictionary<string, DataObjects.Parameter>();
         private Dictionary<string, DataObjects.Parameter> localParameters = new Dictionary<string, DataObjects.Parameter>();
@@ -30,7 +30,7 @@ namespace pluginVerilog.Verilog
 
         private Dictionary<string, NameSpace> nameSpaces = new Dictionary<string, NameSpace>();
 
-        public Dictionary<string, DataObjects.IVariableOrNet> Variables { get { return variables; } }
+        public Dictionary<string, DataObjects.DataObject> Variables { get { return variables; } }
 
 
         public NameSpace Parent { get; protected set; }
@@ -67,7 +67,7 @@ namespace pluginVerilog.Verilog
             //    }
             //}
 
-            foreach (DataObjects.IVariableOrNet variable in Variables.Values)
+            foreach (DataObjects.DataObject variable in Variables.Values)
             {
                 if(variable is DataObjects.Nets.Net)
                 {
@@ -119,7 +119,7 @@ namespace pluginVerilog.Verilog
             }
         }
 
-        public DataObjects.IVariableOrNet GetVariable(string identifier)
+        public DataObjects.DataObject GetVariable(string identifier)
         {
             if (Variables.ContainsKey(identifier))
             {

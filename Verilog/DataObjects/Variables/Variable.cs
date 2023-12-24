@@ -6,13 +6,12 @@ using System.Threading.Tasks;
 using System.Drawing;
 using pluginVerilog.Verilog.DataObjects.DataTypes;
 using pluginVerilog.Verilog.DataObjects;
+using System.Data;
 
 namespace pluginVerilog.Verilog.DataObjects.Variables
 {
-    // #SystemVeriog 2012
-    //	net												user-defined-size	4state	v
-    //
-    //	variabel	+ integer_vector_type	+ bit 		user-defined-size	2state	sv
+    // #SystemVeriog 2017
+    //	variable	+ integer_vector_type	+ bit 		user-defined-size	2state	sv
     //										+ logic		user-defined-size	4state  sv
     //										+ reg		user-defined-size	4state	v
     //
@@ -26,67 +25,26 @@ namespace pluginVerilog.Verilog.DataObjects.Variables
     //            	+ non_integer_type		+ shortreal	                            sv
     //										+ real		                            v
     //										+ realtime	                            v
+    //              + struct/union
+    //              + enum
+    //              + string
+    //              + chandle
+    //              + virtual(interface)
+    //              + class/package
+    //              + event
+    //              + pos_covergroup
+    //              + type_reference
 
-    // net datat type : logic/integer/reg
 
-
-    /*
-    data objects definition
-        - variables
-            data storage element
-                (value type)
-                    integer_vector_type (integer with range)
-                        bit | logic | reg
-                    integer_atom_type
-                         byte | shortint | int | longint | integer | time
-                    non_integer_type
-                        shortreal | real | realtime
-                    struct_union
-                    enum
-                    string
-                    event
-                    chandle
-
-                (reference type?)
-                class_type	// object
-                interface_identifier
-                ps_covergroup_identifier
-
-                (etc)
-                type_identifier	// userdefined type
-        - nets
-            net type
-                buit-in
-                    wire
-                    wand
-                    wor
-                    tri
-                    triand
-                    trior
-                    tri0
-                    tri1
-                    trireg
-                    supply0
-                    supply1
-                    uwire
-                user-defined
-
-     */
-
-    public class Variable : CommentAnnotated, IVariableOrNet
+    public class Variable : DataObject, CommentAnnotated
     {
-        public string Name { set; get; }
-        public string Comment { set; get; } = "";
-        public WordReference DefinedReference { set; get; } = null;
-        public DataTypeEnum DataType = DataTypeEnum.Reg;
-        public List<Range> Dimensions { get; set; } = new List<Range>();
-
-        public List<WordReference> UsedReferences { set; get; } = new List<WordReference>();
-        public List<WordReference> AssignedReferences { set; get; } = new List<WordReference>();
-        public int DisposedIndex = -1;
-
         protected Variable() { }
 
+        /// <summary>
+        /// create variable instance from DataType
+        /// </summary>
+        /// <param name="dataType"></param>
+        /// <returns></returns>
         public static Variable Create(DataType dataType)
         {
             /* TODO
@@ -127,6 +85,18 @@ namespace pluginVerilog.Verilog.DataObjects.Variables
                 // "string"
                 case DataTypeEnum.String:
                     return String.Create(dataType);
+                case DataTypeEnum.Enum:
+                    {
+                        DataTypes.Enum enm = (DataTypes.Enum) dataType;
+                        if(enm.BaseType != null)
+                        {
+                            return Variable.Create(enm.BaseType);
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
                 default:
                     System.Diagnostics.Debugger.Break();
                     break;
@@ -136,12 +106,12 @@ namespace pluginVerilog.Verilog.DataObjects.Variables
 
 
 
-        public virtual void AppendLabel(ajkControls.ColorLabel.ColorLabel label)
+        public override void AppendLabel(ajkControls.ColorLabel.ColorLabel label)
         {
             label.AppendText(Name);
         }
 
-        public virtual void AppendTypeLabel(ajkControls.ColorLabel.ColorLabel label)
+        public override void AppendTypeLabel(ajkControls.ColorLabel.ColorLabel label)
         {
 
         }
@@ -152,47 +122,15 @@ namespace pluginVerilog.Verilog.DataObjects.Variables
             return val;
         }
 
-        /*
-        data_declaration ::= 
-              [ const ] [ var ] [ lifetime ] data_type_or_implicit list_of_variable_decl_assignments ;
-            | type_declaration 
-            | package_import_declaration
-              net_type_declaration
-
-        package_import_declaration ::= 
-            import package_import_item { , package_import_item } ;
-
-        package_import_item ::= 
-            package_identifier "::" identifier 
-            | package_identifier ":: *"
-
-        data_type_or_implicit ::= 
-            data_type 
-            | implicit_data_type
-        implicit_data_type ::= [ signing ] { packed_dimension } 
-        */
-
-        // list_of_variable_decl_assignments ::= variable_decl_assignment { , variable_decl_assignment } 
-
-        // variable_decl_assignment ::=   variable_identifier { variable_dimension } [ = expression]
-        //                              | dynamic_array_variable_identifier unsized_dimension { variable_dimension }    [ = dynamic_array_new] 
-        //                              | class_variable_identifier [ = class_new]
-
-        // class_new ::= [class_scope] new [(list_of_arguments)] 
-        //               | new expression
-
         public static bool ParseDeclaration(WordScanner word, NameSpace nameSpace)
         {
+            // data_declaration::=    [ const ] [var][lifetime] data_type_or_implicit list_of_variable_decl_assignments; 10
+            //                      | type_declaration
+            //                      | package_import_declaration11
+            //                      | net_type_declaration
+
             DataType dataType = DataObjects.DataTypes.DataType.ParseCreate(word, nameSpace, null);
             if (dataType == null) return false;
-            if(
-                dataType.Type != DataTypeEnum.Integer &&
-                dataType.Type != DataTypeEnum.Logic &&
-                dataType.Type != DataTypeEnum.Reg
-                )
-            {
-                word.AddError("should be 4-state type");
-            }
 
             List<Variable> vars = new List<Variable>();
 
@@ -206,6 +144,7 @@ namespace pluginVerilog.Verilog.DataObjects.Variables
                 }
 
                 Variable variable = Variable.Create(dataType);
+                if (variable == null) return true;
                 variable.DefinedReference = word.GetReference();
 
                 variable.Name = word.Text;

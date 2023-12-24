@@ -21,37 +21,8 @@ namespace pluginVerilog.Verilog.DataObjects.DataTypes
         public List<Item> Items = new List<Item>();
 
 
-        /*
-         type_declaration::= 
-             typedef data_type type_identifier { variable_dimension};
-             | typedef interface_instance_identifier constant_bit_select.type_identifier type_identifier;
-             | typedef[enum | struct | union | class | interface class ] type_identifier ;
 
-
-             data_type ::=
-                 ... 
-                 | enum [ enum_base_type ] { enum_name_declaration { , enum_name_declaration } } { packed_dimension } 
-                 ... 
-
-             enum_base_type ::= 
-                 integer_atom_type [ signing ] 
-                 | integer_vector_type [ signing ] [ packed_dimension ] 
-                 | type_identifier [ packed_dimension ]
-
-             enum_name_declaration ::= 
-                 enum_identifier [ [ integral_number [ : integral_number ] ] ] [ = constant_expression ]
-             integer_type            ::= integer_vector_type | integer_atom_type 
-             integer_atom_type       ::= byte | shortint | int | longint | integer | time
-             integer_vector_type     ::= bit | logic | reg
-
-             non_integer_type ::= shortreal | real | realtime
-
-         */
-
-        // A type_identifier shall be legal as an enum_base_type if it denotes an integer_atom_type, with which an additional
-        // packed dimension is not permitted, or an integer_vector_type.
-
-        public static new Enum ParseCreate(WordScanner word, NameSpace nameSpace)
+        public static Enum ParseCreate(WordScanner word, NameSpace nameSpace)
         {
             if (word.Text != "enum") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);
@@ -91,11 +62,12 @@ namespace pluginVerilog.Verilog.DataObjects.DataTypes
                 word.AddError("{ required");
                 return null;
             }
-//            word.MoveNext(); // "{"
+            word.MoveNext(); // "{"
 
+            long prevAssignValue = 0;
             while( !word.Eof | word.Text != "}")
             {
-                Item item = Item.ParseCreate(word, nameSpace);
+                Item item = Item.ParseCreate(word, nameSpace,ref prevAssignValue);
                 if (item == null) break;
                 if (item != null) type.Items.Add(item);
 
@@ -126,7 +98,7 @@ namespace pluginVerilog.Verilog.DataObjects.DataTypes
             enum_name_declaration::=
                 enum_identifier[ [integral_number[ : integral_number]] ] [ = constant_expression ]
             */
-            public static Item ParseCreate(WordScanner word,NameSpace nameSpace)
+            public static Item ParseCreate(WordScanner word,NameSpace nameSpace,ref long prevAssignedNumber)
             {
                 if (word.Text == "}" | word.Text == ",") return null;
                 if (!General.IsIdentifier(word.Text)) return null;
@@ -136,10 +108,20 @@ namespace pluginVerilog.Verilog.DataObjects.DataTypes
                 word.Color(CodeDrawStyle.ColorType.Identifier);
                 word.MoveNext();
 
-                if (word.Text != "=") return item;
-                word.MoveNext();
+                if(word.Text == "[")
+                {
+                    Range range = Range.ParseCreate(word, nameSpace);
+                }
 
-                item.Value = Expressions.Expression.ParseCreate(word, nameSpace);
+                if(word.Text == "=")
+                {
+                    word.MoveNext();    // =
+                    item.Value = Expressions.Expression.ParseCreate(word, nameSpace);
+                }
+                else
+                {
+
+                }
 
                 return item;
             }

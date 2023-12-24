@@ -14,7 +14,7 @@ namespace pluginVerilog.Verilog.Popup
             label.AppendText("function ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
             if (function.Variables.ContainsKey(function.Name))
             {
-                DataObjects.IVariableOrNet retVal = function.Variables[function.Name];
+                DataObjects.DataObject retVal = function.Variables[function.Name];
                 retVal.AppendTypeLabel(label);
             }
             label.AppendText(function.Name, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Identifier));

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using pluginVerilog.Verilog.DataObjects.DataTypes;
+using pluginVerilog.Verilog.DataObjects.Variables;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,12 +8,9 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Verilog.DataObjects
 {
-    /// <summary>
-    /// . A data object is a named entity that has a data value and a data type associated with it, such as a parameter, a variable, or a net.
-    /// </summary>
     public class DataObject
     {
-        // #SystemVeriog 2012
+        // #SystemVeriog 2017
         //	net												user-defined-size	4state	v
         //
         //	variable	+ integer_vector_type	+ bit 		user-defined-size	2state	sv
@@ -28,8 +27,44 @@ namespace pluginVerilog.Verilog.DataObjects
         //            	+ non_integer_type		+ shortreal	                            sv
         //										+ real		                            v
         //										+ realtime	                            v
+        //              + struct/union
+        //              + enum
+        //              + string
+        //              + chandle
+        //              + virtual(interface)
+        //              + class/package
+        //              + event
+        //              + pos_covergroup
+        //              + type_reference
+        // 
 
-        // net datat type : logic/integer/reg
+
+        public string Name { set; get; }
+        public string Comment { set; get; } = "";
+        public WordReference DefinedReference { set; get; } = null;
+        public DataTypeEnum DataType = DataTypeEnum.Reg;
+        public List<Range> Dimensions { get; set; } = new List<Range>();
+
+        public List<WordReference> UsedReferences { set; get; } = new List<WordReference>();
+        public List<WordReference> AssignedReferences { set; get; } = new List<WordReference>();
+        public int DisposedIndex = -1;
+
+        public virtual void AppendLabel(ajkControls.ColorLabel.ColorLabel label)
+        {
+            label.AppendText(Name);
+        }
+
+        public virtual void AppendTypeLabel(ajkControls.ColorLabel.ColorLabel label)
+        {
+
+        }
+
+        public virtual DataObject Clone()
+        {
+            return null;
+        }
+
+
 
 
     }

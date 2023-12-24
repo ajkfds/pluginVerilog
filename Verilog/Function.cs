@@ -98,7 +98,7 @@ namespace pluginVerilog.Verilog
 
 
             // function_data_type_or_implicit   ::= data_type_or_void | implicit_data_type;
-            DataObjects.IVariableOrNet retVal = null;
+            DataObjects.DataObject retVal = null;
 
             switch (word.Text)
             {

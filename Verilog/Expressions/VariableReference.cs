@@ -13,7 +13,7 @@ namespace pluginVerilog.Verilog.Expressions
         public string VariableName { get; protected set; }
         public RangeExpression RangeExpression { get; protected set; }
         public List<Expression> Dimensions = new List<Expression>();
-        public DataObjects.IVariableOrNet Variable = null;
+        public DataObjects.DataObject Variable = null;
 
         public override string CreateString()
         {
@@ -52,7 +52,7 @@ namespace pluginVerilog.Verilog.Expressions
         }
 
 
-        private static DataObjects.IVariableOrNet getVariable(WordScanner word, string identifier, NameSpace nameSpace)
+        private static DataObjects.DataObject getVariable(WordScanner word, string identifier, NameSpace nameSpace)
         {
             if (nameSpace.Variables.ContainsKey(identifier))
             {
@@ -63,7 +63,7 @@ namespace pluginVerilog.Verilog.Expressions
             {
                 if (nameSpace.Parent != null)
                 {
-                    DataObjects.IVariableOrNet val = nameSpace.Parent.GetVariable(identifier);
+                    DataObjects.DataObject val = nameSpace.Parent.GetVariable(identifier);
                     if (val != null) word.AddWarning("external function reference");
                     return val;
                 }
@@ -100,7 +100,7 @@ namespace pluginVerilog.Verilog.Expressions
         public static VariableReference ParseCreate(WordScanner word, NameSpace nameSpace, bool assigned)
         {
             if (nameSpace == null) System.Diagnostics.Debugger.Break();
-            DataObjects.IVariableOrNet variable = getVariable(word, word.Text, nameSpace);
+            DataObjects.DataObject variable = getVariable(word, word.Text, nameSpace);
             if (variable == null) return null;
 
             VariableReference val = new VariableReference();

@@ -8,16 +8,8 @@ using ajkControls.ColorLabel;
 
 namespace pluginVerilog.Verilog.DataObjects.Nets
 {
-    public class Net : DataObjects.IVariableOrNet
+    public class Net : DataObject
     {
-        public string Name { set; get; }
-        public string Comment { set; get; } = "";
-        public WordReference DefinedReference { set; get; } = null;
-
-        public List<WordReference> UsedReferences { set; get; } = new List<WordReference>();
-        public List<WordReference> AssignedReferences { set; get; } = new List<WordReference>();
-        public int DisposedIndex = -1;
-
         public bool Signed = false;
         public List<DataObjects.Range> Dimensions { get; set; } = new List<DataObjects.Range>();
 
@@ -229,27 +221,12 @@ namespace pluginVerilog.Verilog.DataObjects.Nets
 
             // ### SystemVerilog 2012
             // net_declaration  ::=
-            //        net_type [drive_strength | charge_strength] [vectored | scalared] data_type_or_implicit [delay3] list_of_net_decl_assignments;
-            //      | net_type_identifier           [delay_control] list_of_net_decl_assignments;
+            //        net_type              [drive_strength | charge_strength] [vectored | scalared] data_type_or_implicit [delay3] list_of_net_decl_assignments;
+            //      | net_type_identifier   [delay_control] list_of_net_decl_assignments;
             //      | interconnect implicit_data_type[ # delay_value ] net_identifier { unpacked_dimension }  [ , net_identifier { unpacked_dimension }] ;
             //
             // data_type_or_implicit::= data_type | implicit_data_type
             // implicit_data_type ::= [ signing ] { packed_dimension } 
-
-            //          data_type::=
-            //                integer_vector_type [signing] { packed_dimension }
-            //              | integer_atom_type [signing]
-            //              | non_integer_type
-            //              | struct_union[packed[signing]] { struct_union_member { struct_union_member } } { packed_dimension }
-            //              | enum [enum_base_type] { enum_name_declaration { , enum_name_declaration } } { packed_dimension }
-            //              | string
-            //              | chandle
-            //              | virtual [interface ] interface_identifier[parameter_value_assignment][ . modport_identifier]
-            //              | [class_scope | package_scope] type_identifier { packed_dimension }
-            //              | class_type
-            //              | event
-            //              | ps_covergroup_identifier 
-            //              | type_reference
 
             // integer_vector_type::= bit | logic | reg
 
@@ -262,7 +239,6 @@ namespace pluginVerilog.Verilog.DataObjects.Nets
             //  The effect of this recursive definition is that a net is composed entirely of 4 - state bits and is treated
             //  accordingly. In addition to a signal value, each bit of a net shall have additional strength information.When
             //  bits of signals combine, the strength and value of the resulting signal shall be determined as described in 28.12.
-
 
             // A lexical restriction applies to the use of the reg keyword in a net or port declaration. A net type keyword
             // shall not be followed directly by the reg keyword. Thus, the following declarations are in error:
@@ -288,24 +264,22 @@ namespace pluginVerilog.Verilog.DataObjects.Nets
 
             // [vectored | scalared]
 
-            // [signed]
-
-            // [signed]
-
-
-            bool signed = false;
 
             if (word.Eof)
             {
                 word.AddError("illegal net declaration");
                 return true;
             }
+
+            // [signed]
+            bool signed = false;
             if (word.Text == "signed")
             {
                 word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext();
                 signed = true;
             }
+
             if (word.Eof)
             {
                 word.AddError("illegal net declaration");
@@ -323,6 +297,13 @@ namespace pluginVerilog.Verilog.DataObjects.Nets
                     return true;
                 }
             }
+            else
+            {
+//                DataTypes.DataType dataType = DataTypes.DataType.ParseCreate(word, nameSpace,DataTypes.DataTypeEnum.Logic);
+            }
+
+
+
             if (!General.IsIdentifier(word.Text))
             {
                 word.AddError("illegal net identifier");

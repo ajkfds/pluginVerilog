@@ -29,6 +29,7 @@ namespace pluginVerilog.Verilog.Items
          */
         public static bool Parse(WordScanner word, NameSpace nameSpace)
         {
+            // data_declaration
             if (DataObjects.Variables.Variable.ParseDeclaration(word, nameSpace)) return true;
 
             switch (word.Text)
@@ -49,17 +50,6 @@ namespace pluginVerilog.Verilog.Items
                     Net.ParseDeclaration(word, nameSpace);
                     break;
                 //              struct_union["packed"[signing]] { struct_union_member { struct_union_member } }{ packed_dimension }
-                // TODO
-
-                //              "enum"[enum_base_type] {enum_name_declaration { , enum_name_declaration } { packed_dimension }
-                case "enum":
-                    DataObjects.Variables.Enum.ParseDeclaration(word, nameSpace);
-                    break;
-
-                //              "string"
-                //              "chandle"
-                //              "virtual"["interface"] interface_identifier[parameter_value_assignment][ . modport_identifier] [class_scope | package_scope] type_identifier { packed_dimension } class_type
-                //              "event"
                 case "event":
                     DataObjects.Variables.Event.ParseCreateFromDeclaration(word, nameSpace);
                     break;

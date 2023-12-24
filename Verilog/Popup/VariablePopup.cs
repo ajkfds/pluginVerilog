@@ -10,7 +10,7 @@ namespace pluginVerilog.Verilog.Popup
 {
     public class VariablePopup : codeEditor.CodeEditor.PopupItem
     {
-        public VariablePopup(DataObjects.IVariableOrNet variable)
+        public VariablePopup(DataObjects.DataObject variable)
         {
             variable.AppendLabel(label);
         }

@@ -39,7 +39,7 @@ namespace pluginVerilog.Verilog.DataObjects
             }
         }
 
-        public IVariableOrNet VariableOrNet { set; get; } = null;
+        public DataObject VariableOrNet { set; get; } = null;
         public string Comment = "";
         public string SectionName = "";
 

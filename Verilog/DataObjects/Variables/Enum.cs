@@ -37,7 +37,7 @@ namespace pluginVerilog.Verilog.DataObjects.Variables
         non_integer_type ::= shortreal | real | realtime
 
     */
-    public class Enum : Variable
+    public class Enum : DataObject
     {
         protected Enum() { }
 

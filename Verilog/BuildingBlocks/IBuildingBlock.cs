@@ -9,13 +9,13 @@ namespace pluginVerilog.Verilog.BuildingBlocks
     public interface IBuildingBlock
     {
         // NameSpace
-        Dictionary<string, DataObjects.IVariableOrNet> Variables { get; }
+        Dictionary<string, DataObjects.DataObject> Variables { get; }
         NameSpace Parent { get; }
         Dictionary<string, DataObjects.Parameter> Parameters { get; }
         Dictionary<string, DataObjects.Parameter> LocalParameters { get; }
         Dictionary<string, NameSpace> NameSpaces { get; }
         NameSpace GetHierNameSpace(int index);
-        DataObjects.IVariableOrNet GetVariable(string identifier);
+        DataObjects.DataObject GetVariable(string identifier);
         DataObjects.Parameter GetParameter(string identifier);
 
         // Bulding Block
