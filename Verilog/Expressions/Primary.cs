@@ -43,16 +43,16 @@ namespace pluginVerilog.Verilog.Expressions
             return "";
         }
         */
-/*        public virtual void AppendLabel(ajkControls.ColorLabel.ColorLabel label)
-        {
+        /*        public virtual void AppendLabel(ajkControls.ColorLabel.ColorLabel label)
+                {
 
-        }
+                }
 
-        public virtual void AppendString( StringBuilder stringBuilder )
-        {
+                public virtual void AppendString( StringBuilder stringBuilder )
+                {
 
-        }
-        */
+                }
+                */
         /*
          * 
          * 
@@ -84,6 +84,28 @@ namespace pluginVerilog.Verilog.Expressions
                                 | hierarchical_identifier [ expression ] { [ expression ] }
                                 | hierarchical_identifier [ expression ] { [ expression ] }  [ range_expression ]
                                 | hierarchical_identifier [ range_expression ]
+
+        ## SystemVerilog2017
+        primary     ::=   primary_literal 
+                        | [ class_qualifier | package_scope ] hierarchical_identifier select 
+                        | empty_queue 
+                        | concatenation [ [ range_expression ] ] 
+                        | multiple_concatenation [ [ range_expression ] ] 
+                        | function_subroutine_call 
+                        | let_expression 
+                        | ( mintypmax_expression )
+                        | cast 
+                        | assignment_pattern_expression 
+                        | streaming_concatenation
+                        | sequence_method_call 
+                        | "this"
+                        | "$"
+                        | "null"
+
+        cast            ::=  casting_type "`" "(" expression ")"
+        casting_type    ::=  simple_type | constant_primary | signing | "string" | "const"
+        simple_type     ::= integer_type | non_integer_type | ps_type_identifier | ps_parameter_identifier 
+
         */
         public static new Primary ParseCreate(WordScanner word, NameSpace nameSpace)
         {

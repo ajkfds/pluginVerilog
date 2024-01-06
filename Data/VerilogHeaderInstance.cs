@@ -258,7 +258,7 @@ namespace pluginVerilog.Data
 
         public override List<codeEditor.CodeEditor.PopupItem> GetPopupItems(ulong version, int index)
         {
-            return VerilogCommon.AutoComplete.GetPopupItems(this,RootFile.VerilogParsedDocument, version, index);
+            return VerilogCommon.AutoComplete.GetPopupItems(this,VerilogParsedDocument, version, index);
         }
 
         public override List<codeEditor.CodeEditor.ToolItem> GetToolItems(int index)
@@ -268,7 +268,7 @@ namespace pluginVerilog.Data
 
         public override List<codeEditor.CodeEditor.AutocompleteItem> GetAutoCompleteItems(int index, out string cantidateWord)
         {
-            return VerilogCommon.AutoComplete.GetAutoCompleteItems(this,RootFile.VerilogParsedDocument, index, out cantidateWord);
+            return VerilogCommon.AutoComplete.GetAutoCompleteItems(this,VerilogParsedDocument, index, out cantidateWord);
         }
 
 

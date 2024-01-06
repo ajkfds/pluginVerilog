@@ -38,8 +38,8 @@ namespace pluginVerilog.Verilog.ModuleItems
 
         public bool Prototype = false;
 
-        public int BeginIndex;
-        public int LastIndex;
+        public IndexReference BeginIndexReference;
+        public IndexReference LastIndexReference;
         public static bool Parse(WordScanner word, NameSpace nameSpace)
         {
             Module module = nameSpace.BuildingBlock as Module;
@@ -47,7 +47,7 @@ namespace pluginVerilog.Verilog.ModuleItems
 
             WordScanner moduleIdentifier = word.Clone();
             string moduleName = word.Text;
-            int beginIndex = word.RootIndex;
+            IndexReference beginIndexReference = word.CreateIndexReference();
             Module instancedModule = word.ProjectProperty.GetModule(moduleName);
             if (instancedModule == null)
             {
@@ -65,7 +65,7 @@ namespace pluginVerilog.Verilog.ModuleItems
             moduleIdentifier.Color(CodeDrawStyle.ColorType.Keyword);
             ModuleInstantiation moduleInstantiation = new ModuleInstantiation();
             moduleInstantiation.ModuleName = moduleName;
-            moduleInstantiation.BeginIndex = beginIndex;
+            moduleInstantiation.BeginIndexReference = beginIndexReference;
             moduleInstantiation.Project = word.RootParsedDocument.Project;
 
 
@@ -402,9 +402,9 @@ namespace pluginVerilog.Verilog.ModuleItems
                     return true;
                 }
                 word.MoveNext();
-                moduleInstantiation.LastIndex = word.RootIndex;
+                moduleInstantiation.LastIndexReference = word.CreateIndexReference();
 
-                if (!word.Prototype && word.Active) word.AppendBlock(moduleInstantiation.BeginIndex, moduleInstantiation.LastIndex);
+                if (!word.Prototype && word.Active) word.AppendBlock(moduleInstantiation.BeginIndexReference , moduleInstantiation.LastIndexReference);
                 if (word.Text != ",") break;
                 word.MoveNext();
             }

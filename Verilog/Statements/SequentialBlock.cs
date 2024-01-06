@@ -48,13 +48,13 @@ namespace pluginVerilog.Verilog.Statements
                 System.Diagnostics.Debugger.Break();
             }
             word.Color(CodeDrawStyle.ColorType.Keyword);
-            int beginIndex = word.RootIndex;
+            IndexReference beginIndex = word.CreateIndexReference();
             word.MoveNext(); // begin
 
             if (word.GetCharAt(0) == ':')
             {
                 NamedSequentialBlock namedBlock = new NamedSequentialBlock(nameSpace.BuildingBlock, nameSpace);
-                namedBlock.BeginIndex = beginIndex;
+                namedBlock.BeginIndexReference = beginIndex;
 
                 word.MoveNext(); // :
                 if (!General.IsIdentifier(word.Text))
@@ -103,7 +103,7 @@ namespace pluginVerilog.Verilog.Statements
                             break;
                         case "parameter":
                         case "localparam":
-                            Verilog.DataObjects.Parameter.ParseCreateDeclaration(word, namedBlock, null);
+                            Verilog.DataObjects.Constants.Parameter.ParseCreateDeclaration(word, namedBlock, null);
                             break;
                         default:
                             endFlag = true;
@@ -143,7 +143,7 @@ namespace pluginVerilog.Verilog.Statements
                     return null;
                 }
                 word.Color(CodeDrawStyle.ColorType.Keyword);
-                namedBlock.LastIndex = word.RootIndex;
+                namedBlock.LastIndexReference = word.CreateIndexReference();
                 word.MoveNext(); // end
 
                 if (namedBlock.Name != null && !nameSpace.NameSpaces.ContainsKey(namedBlock.Name))

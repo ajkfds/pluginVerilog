@@ -9,6 +9,7 @@ namespace pluginVerilog.Parser
 {
     public class VerilogParser : codeEditor.CodeEditor.DocumentParser
     {
+        // create parser
         public VerilogParser(
             Data.IVerilogRelatedFile verilogFile,
             codeEditor.CodeEditor.DocumentParser.ParseModeEnum parseMode
@@ -20,7 +21,7 @@ namespace pluginVerilog.Parser
             this.TextFile = verilogFile as codeEditor.Data.TextFile;
 
             File = verilogFile;
-            parsedDocument = new Verilog.ParsedDocument(verilogFile, parseMode);
+            parsedDocument = new Verilog.ParsedDocument(verilogFile,null, parseMode);
             parsedDocument.Version = verilogFile.CodeDocument.Version;
             if (verilogFile is Data.VerilogFile && (verilogFile as Data.VerilogFile).SystemVerilog)
             {
@@ -29,6 +30,7 @@ namespace pluginVerilog.Parser
              word = new Verilog.WordScanner(VerilogDocument, parsedDocument, parsedDocument.SystemVerilog);
         }
 
+        // create parser with parameter override
         public VerilogParser(
             Data.IVerilogRelatedFile verilogFile,
             string moduleName,
@@ -43,7 +45,7 @@ namespace pluginVerilog.Parser
             this.TextFile = verilogFile as codeEditor.Data.TextFile;
 
             File = verilogFile;
-            parsedDocument = new Verilog.ParsedDocument(verilogFile, parseMode);
+            parsedDocument = new Verilog.ParsedDocument(verilogFile,null, parseMode);
             if (verilogFile is Data.VerilogFile && (verilogFile as Data.VerilogFile).SystemVerilog)
             {
                 parsedDocument.SystemVerilog = true;

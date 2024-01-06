@@ -1,5 +1,7 @@
-﻿using System;
+﻿using pluginVerilog.Verilog.DataObjects;
+using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +27,16 @@ namespace pluginVerilog.Verilog.Statements
         //                            | repeat (expression ) statement
         //                            | while (expression ) statement
         //                            | for (variable_assignment ; expression ; variable_assignment ) statement
+
+        /* # SystemVerilog
+        loop_statement ::=    forever statement_or_null 
+                            | repeat ( expression ) statement_or_null 
+                            | while ( expression ) statement_or_null 
+                            | for ( [ for_initialization ] ; [ expression ] ; [ for_step ] ) statement_or_null 
+                            | do statement_or_null while ( expression ) ;
+                            | foreach ( ps_or_hierarchical_array_identifier [ loop_variables ] ) statement
+        */
+
         public static ForeverStatement ParseCreate(WordScanner word, NameSpace nameSpace)
         {
             ForeverStatement foreverStatement = new ForeverStatement();
@@ -135,9 +147,12 @@ namespace pluginVerilog.Verilog.Statements
         }
     }
 
-    public class ForStatememt : IStatement
+    public class ForStatememt : NameSpace, IStatement
     {
-        protected ForStatememt() { }
+        protected ForStatememt(BuildingBlocks.BuildingBlock buildingBlock,NameSpace nameSpace) : base(buildingBlock, nameSpace)
+        {
+
+        }
 
         public void DisposeSubReference()
         {
@@ -161,37 +176,71 @@ namespace pluginVerilog.Verilog.Statements
         //                            | repeat (expression ) statement
         //                            | while (expression ) statement
         //                            | for (variable_assignment ; expression ; variable_assignment ) statement
+
+        // ## SystemVerilog2017
+        // for ( [ for_initialization ] ; [ expression ] ; [ for_step ] ) statement_or_null
+
+        // for_initialization           ::=   list_of_variable_assignments
+        //                                  | for_variable_declaration { , for_variable_declaration }
+
+        // for_variable_declaration     ::= [ "var" ] data_type variable_identifier = expression { , variable_identifier = expression }
+        // for_step                     ::=   for_step_assignment { , for_step_assignment }
+        // for_step_assignment          ::=   operator_assignment
+        //                                  | inc_or_dec_expression 
+        //                                  | function_subroutine_call
+        // loop_variables               ::=   [index_variable_identifier] { , [index_variable_identifier] }
+
+        // operator_assignment          ::= variable_lvalue assignment_operator expression
+        // assignment_operator          ::= = | += | -= | *= | /= | %= | &= | |= | ^= | <<= | >>= | <<<= | >>>=
+
         public static ForStatememt ParseCreate(WordScanner word, NameSpace nameSpace)
         {
-            ForStatememt forStatement = new ForStatememt();
+            ForStatememt forStatement = new ForStatememt(nameSpace.BuildingBlock,nameSpace);
+
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
-            if (word.GetCharAt(0) != '(')
+            
+
+            if(word.Text == "(")
+            {
+                word.MoveNext();
+            }
+            else
             {
                 word.AddError("( expected");
                 return null;
             }
-            word.MoveNext();
 
-            forStatement.VariableAssignment = DataObjects.VariableAssignment.ParseCreate(word, nameSpace);
-            if (word.GetCharAt(0) != ';')
+            DataObjects.Variables.Variable.ParseDeclaration(word, forStatement);
+
+            //if(word.Text == ";")
+            //{
+            //    word.MoveNext();
+            //}
+            //else
+            //{
+            //    word.AddError("; expected");
+            //    return null;
+            //}
+
+            forStatement.Expression = Expressions.Expression.ParseCreate(word, forStatement);
+
+            if (word.Text == ";")
             {
-                word.AddError("( expected");
+                word.MoveNext();
+            }
+            else
+            {
+                word.AddError("; expected");
                 return null;
             }
-            word.MoveNext();
 
-            forStatement.Expression = Expressions.Expression.ParseCreate(word, nameSpace);
-
-            if (word.GetCharAt(0) != ';')
+            DataObjects.VariableAssignment assign = DataObjects.VariableAssignment.ParseCreate(word, forStatement);
+            if(assign == null)
             {
-                word.AddError("( expected");
-                return null;
+                forStatement.Expression = Expressions.Expression.ParseCreate(word, forStatement);
             }
-            word.MoveNext();
-
-            forStatement.VariableUpdate = DataObjects.VariableAssignment.ParseCreate(word, nameSpace);
 
             if (word.GetCharAt(0) != ')')
             {
@@ -201,9 +250,11 @@ namespace pluginVerilog.Verilog.Statements
             word.MoveNext();
 
 
-            forStatement.Statement = Statements.ParseCreateStatement(word, nameSpace);
+            forStatement.Statement = Statements.ParseCreateStatement(word, forStatement);
             return forStatement;
         }
+
+
     }
 
 }

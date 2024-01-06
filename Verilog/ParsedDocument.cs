@@ -10,9 +10,17 @@ namespace pluginVerilog.Verilog
 {
     public class ParsedDocument : codeEditor.CodeEditor.ParsedDocument
     {
-        public ParsedDocument(Data.IVerilogRelatedFile file, codeEditor.CodeEditor.DocumentParser.ParseModeEnum parseMode) : base(file as codeEditor.Data.TextFile,file.CodeDocument.Version,parseMode)
+        public ParsedDocument(Data.IVerilogRelatedFile file, IndexReference indexReference, codeEditor.CodeEditor.DocumentParser.ParseModeEnum parseMode) : base(file as codeEditor.Data.TextFile,file.CodeDocument.Version,parseMode)
         {
             fileRef = new WeakReference<Data.IVerilogRelatedFile>(file);
+            if(indexReference == null)
+            {
+                IndexReference = IndexReference.Create(this);
+            }
+            else
+            {
+                IndexReference = indexReference;
+            }
         }
 
         private System.WeakReference<Data.IVerilogRelatedFile> fileRef;
@@ -26,15 +34,23 @@ namespace pluginVerilog.Verilog
             }
         }
 
+        public IndexReference IndexReference;
+
+        public List<int> Indexs = new List<int>();
+
         public bool SystemVerilog = false;
         public bool Instance = false;
-        public Dictionary<string, Module> Modules = new Dictionary<string, Module>();
+//        public Dictionary<string, Module> Modules = new Dictionary<string, Module>();
+
+        public Root Root = null;
 
         public Dictionary<string, Data.VerilogHeaderInstance> IncludeFiles = new Dictionary<string, Data.VerilogHeaderInstance>();
         public Dictionary<string, Macro> Macros = new Dictionary<string, Macro>();
 
         public Dictionary<string, Verilog.Expressions.Expression> ParameterOverrides;
         public string TargetBuldingBlockName = null;
+
+        public Dictionary<int, ParsedDocument> ParsedDocumentIndexDictionary = new Dictionary<int, ParsedDocument>();
 
         private bool reparseRequested = false;
         public bool ReparseRequested
@@ -72,7 +88,7 @@ namespace pluginVerilog.Verilog
                 if (file is Data.VerilogFile)
                 {
                     Data.VerilogFile verilogFile = file as Data.VerilogFile;
-                    foreach (Module module in Modules.Values)
+                    foreach (Module module in Root.Modules.Values)
                     {
                         verilogFile.ProjectProperty.RemoveModule(module.Name, verilogFile);
                     }
@@ -93,9 +109,12 @@ namespace pluginVerilog.Verilog
 
         public List<codeEditor.CodeEditor.PopupItem> GetPopupItems(int index,string text)
         {
+            IndexReference iref = IndexReference.Create(this.IndexReference, index);
+            if (iref.RootParsedDocument == null) return null;
+
+
             List<codeEditor.CodeEditor.PopupItem> ret = new List<codeEditor.CodeEditor.PopupItem>();
 
-//            System.Diagnostics.Debug.Print("text" + text);
             // add messages
             foreach (Message message in Messages)
             {
@@ -118,23 +137,24 @@ namespace pluginVerilog.Verilog
                 }
             }
 
-            NameSpace space = null;
-            foreach(Module module in Modules.Values)
+            NameSpace space = iref.RootParsedDocument.Root;
+
+            foreach (Module module in iref.RootParsedDocument.Root.Modules.Values)
             {
-                if (index < module.BeginIndex) continue;
-                if (index > module.LastIndex) continue;
+                if (iref.IsSmallerThan(module.BeginIndexReference)) continue;
+                if (iref.IsGreaterThan(module.LastIndexReference)) continue;
                 space = module.GetHierNameSpace(index);
                 break;
             }
-            if (space == null) return ret;
+
             if(text.StartsWith(".") && space is IModuleOrGeneratedBlock)
             {
                 IModuleOrGeneratedBlock block = space as IModuleOrGeneratedBlock;
                 ModuleItems.ModuleInstantiation inst = null;
                 foreach (ModuleItems.ModuleInstantiation i in block.ModuleInstantiations.Values)
                 {
-                    if (index < i.BeginIndex) continue;
-                    if (index > i.LastIndex) continue;
+                    if (iref.IsSmallerThan(i.BeginIndexReference)) continue;
+                    if (iref.IsGreaterThan(i.LastIndexReference)) continue;
                     inst = i;
                     break;
                 }
@@ -155,16 +175,16 @@ namespace pluginVerilog.Verilog
             }
 
             {
-                DataObjects.Parameter param = space.GetParameter(text);
+                DataObjects.Constants.Parameter param = space.GetParameter(text);
                 if(param != null)
                 {
                     ret.Add(new Popup.ParameterPopup(param));
                 }
             }
 
-            if (text.StartsWith("`") && Macros.ContainsKey(text.Substring(1)))
+            if (text.StartsWith("`") && iref.RootParsedDocument.Macros.ContainsKey(text.Substring(1)))
             {
-                ret.Add(new Popup.MacroPopup(text.Substring(1), Macros[text.Substring(1)].MacroText));
+                ret.Add(new Popup.MacroPopup(text.Substring(1), iref.RootParsedDocument.Macros[text.Substring(1)].MacroText));
             }
             if (space.BuildingBlock.Functions.ContainsKey(text))
             {
@@ -179,10 +199,11 @@ namespace pluginVerilog.Verilog
 
         public Module GetModule(int index)
         {
-            foreach (Module module in Modules.Values)
+            IndexReference iref = IndexReference.Create(this.IndexReference, index);
+            foreach (Module module in Root.Modules.Values)
             {
-                if (index < module.BeginIndex) continue;
-                if (index > module.LastIndex) continue;
+                if (iref.IsSmallerThan(module.BeginIndexReference)) continue;
+                if (iref.IsGreaterThan(module.LastIndexReference)) continue;
                 return module;
             }
             return null;
@@ -302,14 +323,16 @@ namespace pluginVerilog.Verilog
 
         public List<codeEditor.CodeEditor.AutocompleteItem> GetAutoCompleteItems(List<string> hierWords,int index,int line,CodeEditor.CodeDocument document,string cantidateWord)
         {
+            IndexReference iref = IndexReference.Create(this.IndexReference, index);
+
             List<codeEditor.CodeEditor.AutocompleteItem> items = null;
 
             // get current nameSpace
             NameSpace space = null;
-            foreach (Module module in Modules.Values)
+            foreach (Module module in Root.Modules.Values)
             {
-                if (index < module.BeginIndex) continue;
-                if (index > module.LastIndex) continue;
+                if (iref.IsSmallerThan(module.BeginIndexReference)) continue;
+                if (iref.IsGreaterThan(module.LastIndexReference)) continue;
                 space = module.GetHierNameSpace(index);
                 break;
             }

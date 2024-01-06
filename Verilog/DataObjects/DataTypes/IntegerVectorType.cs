@@ -22,7 +22,7 @@ namespace pluginVerilog.Verilog.DataObjects.DataTypes
 
         public virtual int BitWidth { get; }
 
-        public static new IntegerVectorType ParseCreate(WordScanner word, NameSpace nameSpace)
+        public static IntegerVectorType ParseCreate(WordScanner word, NameSpace nameSpace)
         {
             switch (word.Text)
             {

@@ -88,9 +88,9 @@ namespace pluginVerilog.NavigatePanel
                 }
             }
 
-            foreach (Module module in VerilogFile.VerilogParsedDocument.Modules.Values)
+            foreach (Module module in VerilogFile.VerilogParsedDocument.Root.Modules.Values)
             {
-                VerilogFile.CodeDocument.ExpandBlock(VerilogFile.CodeDocument.GetLineAt(module.BeginIndex));
+                VerilogFile.CodeDocument.ExpandBlock(VerilogFile.CodeDocument.GetLineAt(module.BeginIndexReference.Indexs.Last() ));
             }
 
             if (NodeSelected != null) NodeSelected();

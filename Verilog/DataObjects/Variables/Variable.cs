@@ -86,17 +86,7 @@ namespace pluginVerilog.Verilog.DataObjects.Variables
                 case DataTypeEnum.String:
                     return String.Create(dataType);
                 case DataTypeEnum.Enum:
-                    {
-                        DataTypes.Enum enm = (DataTypes.Enum) dataType;
-                        if(enm.BaseType != null)
-                        {
-                            return Variable.Create(enm.BaseType);
-                        }
-                        else
-                        {
-                            return null;
-                        }
-                    }
+                    return Enum.Create(dataType);
                 default:
                     System.Diagnostics.Debugger.Break();
                     break;
@@ -124,10 +114,17 @@ namespace pluginVerilog.Verilog.DataObjects.Variables
 
         public static bool ParseDeclaration(WordScanner word, NameSpace nameSpace)
         {
-            // data_declaration::=    [ const ] [var][lifetime] data_type_or_implicit list_of_variable_decl_assignments; 10
+            // data_declaration::=    [ const ] [var][lifetime] data_type_or_implicit list_of_variable_decl_assignments;
             //                      | type_declaration
             //                      | package_import_declaration11
             //                      | net_type_declaration
+
+            // list_of_variable_decl_assignments ::= variable_decl_assignment { , variable_decl_assignment } 
+
+            // variable_decl_assignment     ::=   variable_identifier                                   { variable_dimension }  [ = expression]
+            //                                  | dynamic_array_variable_identifier unsized_dimension   { variable_dimension }  [ = dynamic_array_new]
+            //                                  | class_variable_identifier                                                     [ = class_new]
+
 
             DataType dataType = DataObjects.DataTypes.DataType.ParseCreate(word, nameSpace, null);
             if (dataType == null) return false;
@@ -159,6 +156,14 @@ namespace pluginVerilog.Verilog.DataObjects.Variables
                 }
                 word.MoveNext();
 
+                // { variable_dimension }
+                while(word.Text == "[" && !word.Eof)
+                {
+                    Range range = Range.ParseCreate(word, nameSpace);
+                    variable.Dimensions.Add(range);
+                }
+
+
                 if (word.Text == "=") 
                 {
                     word.MoveNext();    // =
@@ -178,9 +183,9 @@ namespace pluginVerilog.Verilog.DataObjects.Variables
                 }
                 else
                 {
-                    if (nameSpace.Variables.ContainsKey(variable.Name))
+                    if (!nameSpace.Variables.ContainsKey(variable.Name))
                     {
-
+                        nameSpace.Variables.Add(variable.Name, variable);
                     }
                 }
                 vars.Add(variable);

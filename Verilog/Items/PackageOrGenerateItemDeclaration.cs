@@ -31,6 +31,17 @@ namespace pluginVerilog.Verilog.Items
         {
             // data_declaration
             if (DataObjects.Variables.Variable.ParseDeclaration(word, nameSpace)) return true;
+            /*
+            data_declaration ::=      [ const ] [ var ] [ lifetime ] data_type_or_implicit list_of_variable_decl_assignments ;10
+                                    | type_declaration
+                                    | package_import_declaration
+                                    | net_type_declaration       
+             */
+            if(word.Text == "typedef")
+            {
+                return DataObjects.Typedef.ParseDeclaration(word, nameSpace);
+            }
+
 
             switch (word.Text)
             {
@@ -90,7 +101,7 @@ namespace pluginVerilog.Verilog.Items
                 // parameter_declaration;
                 case "parameter":
                 case "localparam":
-                    Verilog.DataObjects.Parameter.ParseCreateDeclaration(word, nameSpace, null);
+                    Verilog.DataObjects.Constants.Parameter.ParseCreateDeclaration(word, nameSpace, null);
                     break;
 
                 // covergroup_declaration
@@ -99,8 +110,8 @@ namespace pluginVerilog.Verilog.Items
 
                 // ;
                 case ";":
-                    word.MoveNext();
                     word.AddSystemVerilogError();
+                    word.MoveNext();
                     break;
 
                 // etc

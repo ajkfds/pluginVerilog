@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace pluginVerilog.Verilog.BuildingBlocks
 {
+
     /* Verilog 2001
         source_text ::= { description }
         description ::= module_declaration
@@ -62,12 +64,13 @@ namespace pluginVerilog.Verilog.BuildingBlocks
 
         }
 
+        public Dictionary<string, Module> Modules = new Dictionary<string, Module>();
 
         public static Root ParseCreate(WordScanner word, ParsedDocument parsedDocument,Data.VerilogFile file)
         {
             Root root = new Root();
             root.BuildingBlock = root;
-
+            parsedDocument.Root = root;
 
             while (!word.Eof)
             {
@@ -91,6 +94,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
                             word.MoveNext();
                         }
                         break;
+
                 }
             }
 
@@ -115,6 +119,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
 
 
             Module module;
+            IndexReference iref = IndexReference.Create(parsedDocument);
 
             if (parsedDocument.ParseMode == Parser.VerilogParser.ParseModeEnum.LoadParse)
             {
@@ -124,7 +129,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
                 }
                 else
                 {
-                    module = Module.Create(word, parsedDocument.ParameterOverrides, null, file, true);
+                    module = Module.Create(word, parsedDocument.ParameterOverrides, null , file, true);
                 }
                 if (module.ModuleInstantiations.Count != 0) // prepare reparse (instanced module could have un-refferenced link)
                 {
@@ -143,9 +148,9 @@ namespace pluginVerilog.Verilog.BuildingBlocks
                 }
             }
 
-            if (!parsedDocument.Modules.ContainsKey(module.Name))
+            if (!parsedDocument.Root.Modules.ContainsKey(module.Name))
             {
-                parsedDocument.Modules.Add(module.Name, module);
+                parsedDocument.Root.Modules.Add(module.Name, module);
                 if (module.ReperseRequested) parsedDocument.ReparseRequested = true;
             }
             else

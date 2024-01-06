@@ -11,11 +11,13 @@ namespace pluginVerilog.Verilog.DataObjects.DataTypes
     {
         public virtual bool Signed { get; protected set; }
 
-        //        data_type::=   integer_atom_type[signing]
-        //                     | ...
-        //        integer_atom_type::= "byte" | "shortint" | "int" | "longint" | "integer" | "time"
+        // data_type            ::=   integer_atom_type[signing]
+        //                          | ...
+        // integer_atom_type    ::=   "byte" | "shortint" | "int" | "longint" | "integer" | "time"
+        // signing              ::=   "signed" | "unsigned"
 
-        public static new IntegerAtomType ParseCreate(WordScanner word, NameSpace nameSpace)
+
+        public static IntegerAtomType ParseCreate(WordScanner word, NameSpace nameSpace)
         {
             IntegerAtomType dType = new IntegerAtomType();
 
@@ -66,7 +68,14 @@ namespace pluginVerilog.Verilog.DataObjects.DataTypes
                 word.Color(CodeDrawStyle.ColorType.Keyword);
                 word.MoveNext();
                 integerAtomType.Signed = true;
+            }else if (word.Text == "unsigned")
+            {
+                word.Color(CodeDrawStyle.ColorType.Keyword);
+                word.MoveNext();
+                integerAtomType.Signed = false;
             }
+
+
             if (word.Eof)
             {
                 word.AddError("illegal reg declaration");

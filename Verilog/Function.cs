@@ -3,6 +3,7 @@ using pluginVerilog.Verilog.DataObjects;
 using pluginVerilog.Verilog.DataObjects.DataTypes;
 using pluginVerilog.Verilog.DataObjects.Nets;
 using pluginVerilog.Verilog.DataObjects.Variables;
+using pluginVerilog.Verilog.Items;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,7 +42,7 @@ namespace pluginVerilog.Verilog
             }
             Function function = new Function(nameSpace);
             word.Color(CodeDrawStyle.ColorType.Keyword);
-            function.BeginIndex = word.RootIndex;
+            function.BeginIndexReference = word.CreateIndexReference();
             word.MoveNext();
 
             // ## verilog 2001
@@ -99,11 +100,13 @@ namespace pluginVerilog.Verilog
 
             // function_data_type_or_implicit   ::= data_type_or_void | implicit_data_type;
             DataObjects.DataObject retVal = null;
+            bool returnVoid = false;
 
             switch (word.Text)
             {
                 case "void":
                     word.Color(CodeDrawStyle.ColorType.Keyword);
+                    returnVoid = true;
                     word.MoveNext();
                     break;
                 case "signed":
@@ -145,49 +148,6 @@ namespace pluginVerilog.Verilog
                     break;
             }
 
-
-            //bool signed = false;
-            //if (word.Text == "signed")
-            //{
-            //    word.Color(CodeDrawStyle.ColorType.Keyword);
-            //    word.MoveNext();
-            //    signed = true;
-            //}
-
-            //Verilog.Variables.Range range = null;
-            //valType valType = valType.reg;
-
-            //switch (word.Text)
-            //{
-            //    case "[":
-            //        range = Verilog.Variables.Range.ParseCreate(word, function);
-            //        break;
-            //    case "integer":
-            //        valType = valType.integer;
-            //        word.Color(CodeDrawStyle.ColorType.Keyword);
-            //        word.MoveNext();
-            //        break;
-            //    case "real":
-            //        valType = valType.real;
-            //        word.Color(CodeDrawStyle.ColorType.Keyword);
-            //        word.MoveNext();
-            //        break;
-            //    case "realtime":
-            //        valType = valType.realtime;
-            //        word.Color(CodeDrawStyle.ColorType.Keyword);
-            //        word.MoveNext();
-            //        break;
-            //    case "time":
-            //        valType = valType.time;
-            //        word.Color(CodeDrawStyle.ColorType.Keyword);
-            //        word.MoveNext();
-            //        break;
-            //    default:
-            //        break;
-            //}
-
-
-
             if (!General.IsIdentifier(word.Text))
             {
                 word.AddError("illegal identifier name");
@@ -195,8 +155,9 @@ namespace pluginVerilog.Verilog
             }
 
             function.Name = word.Text;
-            if (retVal == null) return;
-            retVal.Name = function.Name;
+            if (retVal == null & !returnVoid) return;
+
+            if(retVal != null) retVal.Name = function.Name;
 
             if (!word.Active)
             {
@@ -244,62 +205,14 @@ namespace pluginVerilog.Verilog
 
             if (word.Text == ";")
             {
-                word.MoveNext();
-
-                // TODO imlement { attriute_instance }
-                while(!word.Eof)
-                {
-                    switch (word.Text)
-                    {
-                        case "input": // tf_input_declaration
-
-                            Verilog.DataObjects.Port.ParseTfPortDeclaration(word,function);
-                            if(word.Text != ";")
-                            {
-                                word.AddError("; expected");
-                            }
-                            else
-                            {
-                                word.MoveNext();
-                            }
-                            continue;
-                        case "reg": // block_reg_declaration
-                            Verilog.DataObjects.Variables.Reg.ParseDeclaration(word, function);
-                            continue;
-                        // event_declaration
-                        case "integer": // integer_declaration
-                            Verilog.DataObjects.Variables.Integer.ParseDeclaration(word, function);
-                            continue;
-                        case "localparameter": // local_parameter_declaration
-                        case "paraeter":  // parameter_declaration
-                            Verilog.DataObjects.Parameter.ParseCreateDeclaration(word, function,null);
-                            continue;
-                        case "real": // real_declaration
-                            Verilog.DataObjects.Variables.Real.ParseDeclaration(word, function);
-                            continue;
-                        case "realtime": // realtime_declaration
-                            Verilog.DataObjects.Variables.Realtime.ParseDeclaration(word, function);
-                            continue;
-                        case "time": // time_declaration
-                            Verilog.DataObjects.Variables.Time.ParseDeclaration(word, function);
-                            continue;
-                        case "wire": // illegal format for Verilog 2001
-                            word.AddError("not supported(Veriog2001)");
-                            Net.ParseDeclaration(word, function);
-                            continue;
-                        default:
-                            break;
-                    }
-                    break;
-                }
-
+                parse_function_items_non_ansi(word, nameSpace, function);
             }
             else
             {
-
+                parse_function_items_ansi(word, nameSpace, function);
             }
 
-            if(word.Text == "endfunction")
+            if (word.Text == "endfunction")
             {
                 word.AddError("statement required");
             }
@@ -330,19 +243,129 @@ namespace pluginVerilog.Verilog
                 }
             }
 
-            if(word.Text != "endfunction")
+            if(word.Text == "endfunction")
+            {
+                word.Color(CodeDrawStyle.ColorType.Keyword);
+                function.LastIndexReference = word.CreateIndexReference();
+                word.AppendBlock(function.BeginIndexReference, function.LastIndexReference);
+                word.MoveNext();
+            }
+            else
             {
                 word.AddError("endfunction expected");
                 return;
             }
 
+            if(word.Text == ":")
+            {
+                word.MoveNext();
+                if(word.Text == function.Name)
+                {
+                    word.Color(CodeDrawStyle.ColorType.Identifier);
+                    word.MoveNext();
+                }
+                else
+                {
+                    word.AddError("function name mismatch");
+                    word.MoveNext();
+                }
+            }
 
-            word.Color(CodeDrawStyle.ColorType.Keyword);
-            function.LastIndex = word.RootIndex;
-            word.AppendBlock(function.BeginIndex, function.LastIndex);
-            word.MoveNext();
+
 
             return;
+        }
+
+        // function_body_declaration    ::=   function_data_type_or_implicit [interface_identifier. | class_scope] function_identifier;
+
+
+        //  ; { tf_item_declaration }
+        private static void parse_function_items_non_ansi(WordScanner word, NameSpace nameSpace, Function function)
+        {
+            if (word.Text != ";") System.Diagnostics.Debugger.Break();
+            word.MoveNext();
+
+            while (!word.Eof)
+                {
+                    switch (word.Text)
+                    {
+                        case "input": // tf_input_declaration
+
+                            Verilog.DataObjects.Port.ParseTfPortDeclaration(word, function);
+                            if (word.Text != ";")
+                            {
+                                word.AddError("; expected");
+                            }
+                            else
+                            {
+                                word.MoveNext();
+                            }
+                            continue;
+                        case "reg": // block_reg_declaration
+                            Verilog.DataObjects.Variables.Reg.ParseDeclaration(word, function);
+                            continue;
+                        // event_declaration
+                        case "integer": // integer_declaration
+                            Verilog.DataObjects.Variables.Integer.ParseDeclaration(word, function);
+                            continue;
+                        case "localparameter": // local_parameter_declaration
+                        case "paraeter":  // parameter_declaration
+                            Verilog.DataObjects.Constants.Parameter.ParseCreateDeclaration(word, function, null);
+                            continue;
+                        case "real": // real_declaration
+                            Verilog.DataObjects.Variables.Real.ParseDeclaration(word, function);
+                            continue;
+                        case "realtime": // realtime_declaration
+                            Verilog.DataObjects.Variables.Realtime.ParseDeclaration(word, function);
+                            continue;
+                        case "time": // time_declaration
+                            Verilog.DataObjects.Variables.Time.ParseDeclaration(word, function);
+                            continue;
+                        case "wire": // illegal format for Verilog 2001
+                            word.AddError("not supported(Veriog2001)");
+                            Net.ParseDeclaration(word, function);
+                            continue;
+                        default:
+                            break;
+                    }
+                    break;
+                }
+        }
+
+        //  ([tf_port_list]);  { block_item_declaration }
+
+        // tf_port_list ::= tf_port_item { "," tf_port_item } 
+        // tf_port_item ::= { attribute_instance } [ tf_port_direction ] [ var ] data_type_or_implicit [ port_identifier { variable_dimension } [ = expression ] ]
+
+        private static void parse_function_items_ansi(WordScanner word, NameSpace nameSpace, Function function)
+        {
+            if (word.Text != "(") System.Diagnostics.Debugger.Break();
+            word.MoveNext();
+
+            Port.ParseTfPortItems(word, nameSpace,function);
+
+            if (word.Text == ")")
+            {
+                word.MoveNext();
+            }
+            else
+            {
+                word.AddError(") required");
+            }
+            if (word.Text == ";")
+            {
+                word.MoveNext();
+            }
+            else
+            {
+                word.AddError("; required");
+            }
+
+            while (!word.Eof)
+            {
+                if (!BlockItemDeclaration.Parse(word, function)) break;
+            }
+
         }
 
     }

@@ -694,6 +694,12 @@ namespace pluginVerilog.Verilog
                 return;
             }
 
+            string op4 = "";
+            if (docLength > nextIndex + 3)
+            {
+                op4 = document.CreateString(nextIndex, 4);
+            }
+
             string op3 = "";
             if (docLength > nextIndex + 2)
             {
@@ -708,10 +714,24 @@ namespace pluginVerilog.Verilog
 
 
             if (
+                    op4 == "<<<=" ||
+                    op4 == ">>>="
+            )
+            {
+                nextIndex = nextIndex + 4;
+                return;
+            }
+
+            if (
                     op3 == ">>>" ||
                     op3 == "<<<" ||
                     op3 == "===" ||
-                    op3 == "!=="
+                    op3 == "!==" ||
+                    op3 == "<<=" ||
+                    op3 == ">>=" ||
+                    op3 == "==?" ||
+                    op3 == "!=?" ||
+                    op3 == "<->"
             )
             {
                 nextIndex = nextIndex + 3;
@@ -736,7 +756,18 @@ namespace pluginVerilog.Verilog
                 op2 == "*)" ||
                 op2 == "+:" ||
                 op2 == "-:" ||
-                op2 == "=>"
+                op2 == "=>" ||
+                op2 == "+=" ||
+                op2 == "-=" ||
+                op2 == "*=" ||
+                op2 == "/=" ||
+                op2 == "%=" ||
+                op2 == "&=" ||
+                op2 == "|=" ||
+                op2 == "^=" ||
+                op2 == "->" ||
+                op2 == "++" ||
+                op2 == "--"
             )
             {
                 nextIndex = nextIndex + 2;

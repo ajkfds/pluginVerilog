@@ -18,15 +18,14 @@ namespace pluginVerilog.Verilog
             Parent = parent;
         }
 
-        public int BeginIndex = -1;
-        public int LastIndex = -1;
+        public IndexReference BeginIndexReference = null;
+        public IndexReference LastIndexReference = null;
 
         private Dictionary<string, DataObjects.DataObject> variables = new Dictionary<string, DataObjects.DataObject>();
         private Dictionary<string, Net> nets = new Dictionary<string, Net>();
-        private Dictionary<string, DataObjects.Parameter> parameters = new Dictionary<string, DataObjects.Parameter>();
-        private Dictionary<string, DataObjects.Parameter> localParameters = new Dictionary<string, DataObjects.Parameter>();
-        private Dictionary<string, DataObjects.Variables.Enum> enums = new Dictionary<string, DataObjects.Variables.Enum>();
-        private Dictionary<string, DataObjects.Variables.Typedef> typedefs = new Dictionary<string, DataObjects.Variables.Typedef>();
+        private Dictionary<string, DataObjects.Constants.Parameter> parameters = new Dictionary<string, DataObjects.Constants.Parameter>();
+//        private Dictionary<string, DataObjects.Constants.Parameter> localParameters = new Dictionary<string, DataObjects.Constants.Parameter>();
+        private Dictionary<string, DataObjects.Typedef> typedefs = new Dictionary<string, DataObjects.Typedef>();
 
         private Dictionary<string, NameSpace> nameSpaces = new Dictionary<string, NameSpace>();
 
@@ -34,22 +33,21 @@ namespace pluginVerilog.Verilog
 
 
         public NameSpace Parent { get; protected set; }
-        public Dictionary<string, DataObjects.Parameter> Parameters { get { return parameters; } }
-        public Dictionary<string, DataObjects.Parameter> LocalParameters { get { return localParameters; } }
-        public Dictionary<string, DataObjects.Variables.Enum> Enums { get { return enums; } }
-        public Dictionary<string, DataObjects.Variables.Typedef> Typedefs { get { return typedefs; } }
+        public Dictionary<string, DataObjects.Constants.Parameter> Parameters { get { return parameters; } }
+//        public Dictionary<string, DataObjects.Constants.Parameter> LocalParameters { get { return localParameters; } }
+        public Dictionary<string, DataObjects.Typedef> Typedefs { get { return typedefs; } }
         public BuildingBlocks.BuildingBlock BuildingBlock { get; protected set; }
         public Dictionary<string, NameSpace> NameSpaces { get { return nameSpaces;  } }
 
         public NameSpace GetHierNameSpace(int index)
         {
-            foreach(NameSpace subSpace in NameSpaces.Values)
+/*            foreach(NameSpace subSpace in NameSpaces.Values)
             {
                 if (index < subSpace.BeginIndex) continue;
                 if (index > subSpace.LastIndex) continue;
                 return subSpace.GetHierNameSpace(index);
             }
-            return this;
+*/            return this;
         }
         
 
@@ -87,12 +85,7 @@ namespace pluginVerilog.Verilog
                 }
             }
 
-            foreach (DataObjects.Parameter parameter in BuildingBlock.Parameters.Values)
-            {
-                items.Add(newItem(parameter.Name, CodeDrawStyle.ColorType.Paramater));
-            }
-
-            foreach (DataObjects.Parameter parameter in BuildingBlock.LocalParameters.Values)
+            foreach (DataObjects.Constants.Parameter parameter in BuildingBlock.Parameters.Values)
             {
                 items.Add(newItem(parameter.Name, CodeDrawStyle.ColorType.Paramater));
             }
@@ -133,34 +126,30 @@ namespace pluginVerilog.Verilog
             return null;
         }
 
-        public DataObjects.Parameter GetParameter(string identifier)
+        public DataObjects.Constants.Parameter GetParameter(string identifier)
         {
             if (Parameters.ContainsKey(identifier))
             {
                 return Parameters[identifier];
-            }
-            if (LocalParameters.ContainsKey(identifier))
-            {
-                return LocalParameters[identifier];
             }
 
             if (Parent != null)
             {
                 return Parent.getParameterHier(identifier);
             }
+            else
+            {
+                
+            }
 
             return null;
         }
 
-        private DataObjects.Parameter getParameterHier(string identifier)
+        private DataObjects.Constants.Parameter getParameterHier(string identifier)
         {
             if (Parameters.ContainsKey(identifier))
             {
                 return Parameters[identifier];
-            }
-            if (LocalParameters.ContainsKey(identifier))
-            {
-                return LocalParameters[identifier];
             }
 
             if (Parent != null)

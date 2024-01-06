@@ -116,44 +116,45 @@ namespace pluginVerilog.NavigatePanel
                 }
             }
 
-            Module targetModule = null;
-            foreach (Module module in ModuleInstance.VerilogParsedDocument.Modules.Values)
-            {
-                if(module.Name != ModuleInstance.ModuleName)
-                {
-                    ModuleInstance.CodeDocument.CollapseBlock(ModuleInstance.CodeDocument.GetLineAt(module.BeginIndex));
-                }
-                else
-                {
-                    ModuleInstance.CodeDocument.ExpandBlock(ModuleInstance.CodeDocument.GetLineAt(module.BeginIndex));
-                    targetModule = module;
-                }
-            }
+            // TODO
+            //Module targetModule = null;
+            //foreach (Module module in ModuleInstance.VerilogParsedDocument.Modules.Values)
+            //{
+            //    if(module.Name != ModuleInstance.ModuleName)
+            //    {
+            //        ModuleInstance.CodeDocument.CollapseBlock(ModuleInstance.CodeDocument.GetLineAt(module.BeginIndex));
+            //    }
+            //    else
+            //    {
+            //        ModuleInstance.CodeDocument.ExpandBlock(ModuleInstance.CodeDocument.GetLineAt(module.BeginIndex));
+            //        targetModule = module;
+            //    }
+            //}
 
-            if(targetModule != null)
-            {
-                if (
-                    ModuleInstance.CodeDocument.SelectionStart < targetModule.BeginIndex &&
-                    ModuleInstance.CodeDocument.SelectionLast < targetModule.BeginIndex
-                    )
-                {
-                    ModuleInstance.CodeDocument.SelectionStart = targetModule.BeginIndex;
-                    ModuleInstance.CodeDocument.SelectionLast = targetModule.BeginIndex;
-                    ModuleInstance.CodeDocument.CaretIndex = targetModule.BeginIndex;
-                    codeEditor.Controller.CodeEditor.ScrollToCaret();
-                }
+            //if(targetModule != null)
+            //{
+            //    if (
+            //        ModuleInstance.CodeDocument.SelectionStart < targetModule.BeginIndex &&
+            //        ModuleInstance.CodeDocument.SelectionLast < targetModule.BeginIndex
+            //        )
+            //    {
+            //        ModuleInstance.CodeDocument.SelectionStart = targetModule.BeginIndex;
+            //        ModuleInstance.CodeDocument.SelectionLast = targetModule.BeginIndex;
+            //        ModuleInstance.CodeDocument.CaretIndex = targetModule.BeginIndex;
+            //        codeEditor.Controller.CodeEditor.ScrollToCaret();
+            //    }
 
-                if (
-                    targetModule.LastIndex < ModuleInstance.CodeDocument.SelectionStart &&
-                    targetModule.LastIndex < ModuleInstance.CodeDocument.SelectionLast
-                    )
-                {
-                    ModuleInstance.CodeDocument.SelectionStart = targetModule.BeginIndex;
-                    ModuleInstance.CodeDocument.SelectionLast = targetModule.BeginIndex;
-                    ModuleInstance.CodeDocument.CaretIndex = targetModule.BeginIndex;
-                    codeEditor.Controller.CodeEditor.ScrollToCaret();
-                }
-            }
+            //    if (
+            //        targetModule.LastIndex < ModuleInstance.CodeDocument.SelectionStart &&
+            //        targetModule.LastIndex < ModuleInstance.CodeDocument.SelectionLast
+            //        )
+            //    {
+            //        ModuleInstance.CodeDocument.SelectionStart = targetModule.BeginIndex;
+            //        ModuleInstance.CodeDocument.SelectionLast = targetModule.BeginIndex;
+            //        ModuleInstance.CodeDocument.CaretIndex = targetModule.BeginIndex;
+            //        codeEditor.Controller.CodeEditor.ScrollToCaret();
+            //    }
+            //}
 
             //targetModule.
         }

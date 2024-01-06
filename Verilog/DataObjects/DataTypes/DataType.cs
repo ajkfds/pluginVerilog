@@ -171,6 +171,20 @@ namespace pluginVerilog.Verilog.DataObjects.DataTypes
                     return parseTypeReference(word, nameSpace);
 
                 default:
+                    // [class_scope | package_scope] type_identifier { packed_dimension }
+                    {
+                        if (nameSpace.Typedefs.ContainsKey(word.Text))
+                        {
+                            DataType dType = nameSpace.Typedefs[word.Text].VariableType;
+                            if (dType != null)
+                            {
+                                word.Color(CodeDrawStyle.ColorType.Keyword);
+                                word.MoveNext();
+                                return dType;
+                            }
+                        }
+                    }
+
                     if (defaultDataType != null)
                     {
                         // data_type_or_implicit::= data_type | implicit_data_type
@@ -184,12 +198,6 @@ namespace pluginVerilog.Verilog.DataObjects.DataTypes
                         }
                     }
 
-
-                    // [class_scope | package_scope] type_identifier { packed_dimension }
-                    {
-                        //Variable variable = parseCrateDataType_TypeIdentifier(word, nameSpace);
-                        //if (variable != null) return variable;
-                    }
                     break;
             }
             return null;

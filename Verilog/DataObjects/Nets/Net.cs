@@ -11,10 +11,8 @@ namespace pluginVerilog.Verilog.DataObjects.Nets
     public class Net : DataObject
     {
         public bool Signed = false;
-        public List<DataObjects.Range> Dimensions { get; set; } = new List<DataObjects.Range>();
 
         public NetTypeEnum NetType = NetTypeEnum.Wire;
-        public DataObjects.DataTypes.DataTypeEnum DataType;
 
         public List<DataObjects.Range> PackedDimensions { get; set; } = new List<DataObjects.Range>();
         public DataObjects.Range Range
@@ -46,7 +44,7 @@ namespace pluginVerilog.Verilog.DataObjects.Nets
             Wor
         }
 
-        public void AppendTypeLabel(ColorLabel label)
+        public override void AppendTypeLabel(ColorLabel label)
         {
             switch (NetType)
             {
@@ -101,7 +99,7 @@ namespace pluginVerilog.Verilog.DataObjects.Nets
             }
         }
 
-        public void AppendLabel(ColorLabel label)
+        public override void AppendLabel(ColorLabel label)
         {
             AppendTypeLabel(label);
             if (Name == null) return;

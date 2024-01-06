@@ -10,8 +10,8 @@ namespace pluginVerilog.Verilog.BuildingBlocks
     {
         Dictionary<string, DataObjects.Variables.Variable> Variables { get; }
         NameSpace Parent { get; }
-        Dictionary<string, DataObjects.Parameter> Parameters { get; }
-        Dictionary<string, DataObjects.Parameter> LocalParameters { get; }
+        Dictionary<string, DataObjects.Constants.Parameter> Parameters { get; }
+        Dictionary<string, DataObjects.Constants.Parameter> LocalParameters { get; }
         Module Module { get; }
         Dictionary<string, NameSpace> NameSpaces { get; }
 
@@ -19,7 +19,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
 
         DataObjects.Variables.Variable GetVariable(string identifier);
 
-        DataObjects.Parameter GetParameter(string identifier);
+        DataObjects.Constants.Parameter GetParameter(string identifier);
 
         // module
         Dictionary<string, Function> Functions { get; }

@@ -28,7 +28,7 @@ namespace pluginVerilog.Verilog.Items
                 // genvar_declaration
                 case "genvar":
                     DataObjects.Variables.Genvar.ParseCreateFromDeclaration(word, buildingBlock);
-                    break;
+                    return true;
                 // clocking_declaration ::= [ default ] clocking [ clocking_identifier ] clocking_event ; { clocking_item } endclocking  [ : clocking_identifier]  | global clocking[clocking_identifier] clocking_event; endclocking[ : clocking_identifier]
                 // "default clocking" clocking_identifier;
                 case "clocking":
@@ -36,7 +36,7 @@ namespace pluginVerilog.Verilog.Items
                     word.MoveNext();
                     word.AddError("not implemented");
                     word.SkipToKeyword(";");
-                    break;
+                    return true;
                 case "default":
                     word.Color(CodeDrawStyle.ColorType.Keyword);
                     word.MoveNext();
@@ -59,14 +59,13 @@ namespace pluginVerilog.Verilog.Items
                     {
                         word.AddError("clocking expected");
                     }
-                    break;
+                    return true;
                 default:
                     return false;
             }
 
 
 
-            return false;
         }
 
     }

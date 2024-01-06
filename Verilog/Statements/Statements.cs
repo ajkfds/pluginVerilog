@@ -60,20 +60,61 @@ namespace pluginVerilog.Verilog.Statements
                             | { attribute_instance } wait_statement
             procedural_timing_control_statement ::= delay_or_event_control statement_or_null 
             */
+            /* # SystemVerilog
+            statement_item ::=    blocking_assignment ;
+	                            | nonblocking_assignment ;
+	                            | procedural_continuous_assignment ;
+	                            | case_statement 
+	                            | conditional_statement 
+	                            | inc_or_dec_expression ;
+	                            | subroutine_call_statement 
+	                            | disable_statement 
+	                            | event_trigger 
+	                            | loop_statement 
+	                            | jump_statement 
+	                            | par_block 
+	                            | procedural_timing_control_statement 
+	                            | seq_block 
+	                            | wait_statement 
+	                            | procedural_assertion_statement 
+	                            | clocking_drive ;
+	                            | randsequence_statement 
+	                            | randcase_statement 
+	                            | expect_property_statement             
+            */
+
+            // inc_or_dec_expression ;
+            // wait_statement 
+            // procedural_assertion_statement 
+            // clocking_drive ;
+            // randsequence_statement 
+            // randcase_statement 
+            // expect_property_statement 
+
             switch (word.Text)
             {
                 case "(*":
                     Attribute attribute = Attribute.ParseCreate(word);
                     return Statements.ParseCreateStatement(word, nameSpace);
+
+                // conditional_statement 
                 case "if":
                     return ConditionalStatement.ParseCreate(word, nameSpace);
+
+                // procedural_timing_control_statement 
                 case "#":
                 case "@":
                     return ProceduralTimingControlStatement.ParseCreate(word, nameSpace);
+
+                // seq_block 
                 case "begin":
                     return SequentialBlock.ParseCreate(word, nameSpace);
+
+                // par_block 
                 case "fork":
                     return ParallelBlock.ParseCreate(word, nameSpace);
+
+                // loop_statement 
                 case "forever":
                     return ForeverStatement.ParseCreate(word, nameSpace);
                 case "repeat":
@@ -82,20 +123,37 @@ namespace pluginVerilog.Verilog.Statements
                     return WhileStatememt.ParseCreate(word, nameSpace);
                 case "for":
                     return ForStatememt.ParseCreate(word, nameSpace);
+
+                // case_statement 
                 case "case":
                 case "casex":
                 case "casez":
                     return CaseStatement.ParseCreate(word, nameSpace);
+
+                // disable_statement 
                 case "disable":
                     return DisableStatement.ParseCreate(word,nameSpace);
+
                 case "force":
                     return ForceStatement.ParseCreate(word,nameSpace);
                 case "release":
                     return ReleaseStatement.ParseCreate(word, nameSpace);
+
+                // jump_statement 
+                case "return":
+                    return ReturnStatement.ParseCreate(word, nameSpace);
+                case "break":
+                    return BreakStatement.ParseCreate(word, nameSpace);
+                case "continue":
+                    return ContinueStatement.ParseCreate(word, nameSpace);
+
+                // procedural_continuous_assignment ;
                 case "assign":
                     return ProceduralContinuousAssignment.ParseCreate(word, nameSpace);
+
                 case "deassign":
                     return DeassignStatement.ParseCreate(word, nameSpace);
+                // event_trigger 
                 case "->":
                     return EventTrigger.ParseCreate(word, nameSpace);
                 case ";":
@@ -104,9 +162,7 @@ namespace pluginVerilog.Verilog.Statements
                     return null;
                 default:
 
-                   // NameSpace refNameSpace = null;
-                   // refNameSpace = nameSpace.ParseHierNameSpace(word, nameSpace);
-                   //if (refNameSpace == null) refNameSpace = nameSpace;
+                    // subroutine_call_statement 
                     string nextText = word.NextText;
                     if (nextText == "(" || nextText == ";")
                     {
@@ -116,8 +172,6 @@ namespace pluginVerilog.Verilog.Statements
                             {
                                 word.AddError("unsupported system task");
                                 return SystemTask.SkipArguments.ParseCreate(word, nameSpace);
-//                                word.SkipToKeyword(";");
-//                                return null;
                             }else if(word.RootParsedDocument.ProjectProperty.SystemTaskParsers[word.Text] != null)
                             {
                                 return word.RootParsedDocument.ProjectProperty.SystemTaskParsers[word.Text](word, nameSpace);
@@ -146,9 +200,11 @@ namespace pluginVerilog.Verilog.Statements
                     }
                     switch (word.Text)
                     {
+                        // blocking_assignment ;
                         case "=":
                             statement = BlockingAssignment.ParseCreate(word, nameSpace, expression);
                             break;
+                        // nonblocking_assignment ;
                         case "<=":
                             statement = NonBlockingAssignment.ParseCreate(word, nameSpace, expression);
                             break;

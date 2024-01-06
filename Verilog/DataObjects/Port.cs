@@ -591,7 +591,7 @@ ansi_port_declaration ::=
         signing                 ::= "signed" | "unsigned"
         */
 
-        public static void ParseTfPortDeclaration(WordScanner word, NameSpace nameSpace)
+        public static bool ParseTfPortDeclaration(WordScanner word, NameSpace nameSpace)
         {
             // tf_port_direction[var] data_type_or_implicit list_of_tf_variable_identifiers;
             BuildingBlock buildingBlock = nameSpace.BuildingBlock;
@@ -628,7 +628,7 @@ ansi_port_declaration ::=
                     }
                     break;
                 default:
-                    return;
+                    return false;
             }
 
             if (word.Text == "var")
@@ -662,7 +662,7 @@ ansi_port_declaration ::=
             if (!General.IsIdentifier(word.Text))
             {
                 word.AddError("illegal port name");
-                return;
+                return true;
             }
 
             while (!word.Eof)
@@ -701,12 +701,13 @@ ansi_port_declaration ::=
                 word.Color(CodeDrawStyle.ColorType.Variable);
                 word.MoveNext();
 
-                if (word.Text != ",") return;
+                if (word.Text != ",") return true;
                 word.MoveNext();
             }
+            return true;
         }
 
-        public static void ParseTfPortItems(WordScanner word, NameSpace nameSpace)
+        public static void ParseTfPortItems(WordScanner word, NameSpace nameSpace, IPortNameSpace portNameSpace)
         {
             DirectionEnum? prevDirection = null;
             DataType prevDataType = null;
@@ -715,12 +716,20 @@ ansi_port_declaration ::=
 
             while(!word.Eof && word.Text != ")" && word.Text != "end")
             {
-                ParseTfPortItem(word, nameSpace, firstPort, ref prevDirection, ref prevDataType);
+                ParseTfPortItem(word, nameSpace, portNameSpace, firstPort, ref prevDirection, ref prevDataType);
+                if(word.Text == ",")
+                {
+                    word.MoveNext();
+                }
+                else
+                {
+                    return;
+                }
             }
 
         }
 
-        public static bool ParseTfPortItem(WordScanner word, NameSpace nameSpace,bool first,ref DirectionEnum? prevDirection, ref DataType prevDataType)
+        public static bool ParseTfPortItem(WordScanner word, NameSpace nameSpace, IPortNameSpace portNameSpace, bool first,ref DirectionEnum? prevDirection, ref DataType prevDataType)
         {
             // tf_port_item    ::= { attribute_instance } [ tf_port_direction ] [ var ] data_type_or_implicit [ port_identifier { variable_dimension } [ = expression ] ]
 
@@ -781,8 +790,11 @@ ansi_port_declaration ::=
                 {
                     DataTypes.IntegerVectorType vectorType = new DataTypes.IntegerVectorType();
                     vectorType.Type = DataTypeEnum.Logic;
-                    Range range = Range.ParseCreate(word, nameSpace);
-                    vectorType.PackedDimensions.Add(range);
+                    if (word.Text == "[")
+                    {
+                        Range range = Range.ParseCreate(word, nameSpace);
+                        vectorType.PackedDimensions.Add(range);
+                    }
 
                     dataType = vectorType;
                 }
@@ -808,6 +820,44 @@ ansi_port_declaration ::=
             Port port = new Port();
             port.Direction = (DirectionEnum)direction;
             port.VariableOrNet = Variables.Variable.Create(dataType);
+            port.Name = word.Text;
+            port.VariableOrNet.Name = port.Name;
+            word.Color(CodeDrawStyle.ColorType.Variable);
+
+            portNameSpace.Ports.Clear();
+            portNameSpace.PortsList.Clear();
+
+            if (portNameSpace.Ports.ContainsKey(port.Name))
+            {
+                if (portNameSpace.Ports.ContainsKey(port.Name))
+                {
+                    word.AddError("port name duplicated");
+                }
+            }
+            else
+            {
+                portNameSpace.Ports.Add(port.Name, port);
+                portNameSpace.PortsList.Add(port);
+            }
+
+            if (portNameSpace.Variables.ContainsKey(port.VariableOrNet.Name))
+            {
+                if (word.Prototype)
+                {
+                }
+                else
+                {
+                    if (portNameSpace.Variables.ContainsKey(port.VariableOrNet.Name)) portNameSpace.Variables.Remove(port.VariableOrNet.Name);
+                }
+                portNameSpace.Variables.Add(port.VariableOrNet.Name, port.VariableOrNet);
+            }
+            else
+            {
+                portNameSpace.Variables.Add(port.VariableOrNet.Name, port.VariableOrNet);
+            }
+
+
+            word.MoveNext();
 
             prevDirection = port.Direction;
             prevDataType = dataType;

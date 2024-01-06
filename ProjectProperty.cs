@@ -66,8 +66,8 @@ namespace pluginVerilog
                 if (file == null) return null;
                 Verilog.ParsedDocument parsedDocument = file.GetInstancedParsedDocument(moduleInstantiation.ModuleName+":"+ moduleInstantiation.OverrideParameterID) as Verilog.ParsedDocument;
                 if (parsedDocument == null) return null;
-                if (!parsedDocument.Modules.ContainsKey(moduleInstantiation.ModuleName)) return null;
-                return parsedDocument.Modules[moduleInstantiation.ModuleName];
+                if (!parsedDocument.Root.Modules.ContainsKey(moduleInstantiation.ModuleName)) return null;
+                return parsedDocument.Root.Modules[moduleInstantiation.ModuleName];
             }
         }
         public void loadMacros(ajkControls.Json.JsonReader jsonReader)
@@ -278,8 +278,8 @@ namespace pluginVerilog
             if (file == null) return null;
 
             if (file == null || file.VerilogParsedDocument == null) return null;
-            if (!file.VerilogParsedDocument.Modules.ContainsKey(moduleName)) return null;
-            return file.VerilogParsedDocument.Modules[moduleName];
+            if (!file.VerilogParsedDocument.Root.Modules.ContainsKey(moduleName)) return null;
+            return file.VerilogParsedDocument.Root.Modules[moduleName];
         }
 
         // inline comment
@@ -417,6 +417,10 @@ namespace pluginVerilog
             // Command line input
             {"$test$plusargs",null },
             {"$value$plusargs",null },
+
+            // systemverilog
+            {"$clog2",null },
+
         };
 
         public Dictionary<string, Action<Verilog.WordScanner>> InCommentTags = new Dictionary<string, Action<Verilog.WordScanner>>

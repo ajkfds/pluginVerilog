@@ -7,11 +7,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace pluginVerilog.Verilog.DataObjects
+namespace pluginVerilog.Verilog.DataObjects.Constants
 {
-    public class Parameter : Item
+
+    // parameter, localparam, and specparam.
+    public class Constants : DataObject
     {
         public Expressions.Expression Expression;
+        public WordReference DefinitionRefrecnce { get; set; }
+
+        public enum ConstantTypeEnum
+        {
+            parameter,
+            localparam,
+            specparam
+        }
+        public ConstantTypeEnum ConstantType = ConstantTypeEnum.parameter;
 
         public static void ParseCreateDeclarationForPort(WordScanner word, Module module, Attribute attribute)
         {
@@ -34,23 +45,27 @@ namespace pluginVerilog.Verilog.DataObjects
 
             /* ## SystemVerilog
              * 
-            local_parameter_declaration ::= 
+            local_parameter_declaration ::=
                   "localparam" data_type_or_implicit list_of_param_assignments 
                 | "localparam" type list_of_type_assignments 
-
             parameter_declaration ::= 
                   "parameter" data_type_or_implicit list_of_param_assignments 
-                | "parameter" type list_of_type_assignments
-
+                | "parameter" type list_of_type_assignments 
+            specparam_declaration ::= 
+                  "specparam" [ packed_dimension ] list_of_specparam_assignments ;
              */
-            bool local = false;
+            ConstantTypeEnum constantType = ConstantTypeEnum.parameter;
             if (word.Text == "parameter")
             {
-                local = false;
+                constantType = ConstantTypeEnum.parameter;
             }
             else if (word.Text == "localparam")
             {
-                local = true;
+                constantType = ConstantTypeEnum.localparam;
+            }
+            else if(word.Text == "specparam")
+            {
+                constantType = ConstantTypeEnum.specparam;
             }
             else
             {
@@ -59,9 +74,9 @@ namespace pluginVerilog.Verilog.DataObjects
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
-//            Variable dataType = Variable.ParseCrateDataType(word, module);
+            DataObjects.DataTypes.DataType dataType = DataObjects.DataTypes.DataType.ParseCreate(word, module, null);
 
-            switch(word.Text)
+            switch (word.Text)
             {
                 case "integer":
                     word.Color(CodeDrawStyle.ColorType.Keyword);
@@ -80,12 +95,12 @@ namespace pluginVerilog.Verilog.DataObjects
                     word.MoveNext();
                     break;
                 default:
-                    if(word.Text == "signed")
+                    if (word.Text == "signed")
                     {
                         word.Color(CodeDrawStyle.ColorType.Keyword);
                         word.MoveNext();
                     }
-                    if(word.GetCharAt(0) == '[')
+                    if (word.GetCharAt(0) == '[')
                     {
                         Range range = Range.ParseCreate(word, module);
                     }
@@ -107,33 +122,33 @@ namespace pluginVerilog.Verilog.DataObjects
                 if (expression == null) break;
                 if (word.Active)
                 {
-                    if (local)
-                    {
-                        if (!word.Active)
-                        {
+                    //if (local)
+                    //{
+                    //    if (!word.Active)
+                    //    {
 
-                        }
-                        else if (word.Prototype)
-                        {
-                            if (module.LocalParameters.ContainsKey(identifier))
-                            {
-//                                nameReference.AddError("local parameter name duplicated");
-                            }
-                            else
-                            {
-                                Parameter param = new Parameter();
-                                param.Name = identifier;
-                                param.Expression = expression;
-                                param.DefinitionRefrecnce = nameReference;
-                                module.LocalParameters.Add(param.Name, param);
-                            }
-                        }
-                        else
-                        {
-                            
-                        }
-                    }
-                    else
+                    //    }
+                    //    else if (word.Prototype)
+                    //    {
+                    //        if (module.LocalParameters.ContainsKey(identifier))
+                    //        {
+                    //            //                                nameReference.AddError("local parameter name duplicated");
+                    //        }
+                    //        else
+                    //        {
+                    //            Parameter param = new Parameter();
+                    //            param.Name = identifier;
+                    //            param.Expression = expression;
+                    //            param.DefinitionRefrecnce = nameReference;
+                    //            module.LocalParameters.Add(param.Name, param);
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+
+                    //    }
+                    //}
+                    //else
                     {
                         if (!word.Active)
                         {
@@ -143,7 +158,7 @@ namespace pluginVerilog.Verilog.DataObjects
                         {
                             if (module.Parameters.ContainsKey(identifier))
                             {
-//                                nameReference.AddError("parameter name duplicated");
+                                //                                nameReference.AddError("parameter name duplicated");
                             }
                             else
                             {
@@ -151,6 +166,7 @@ namespace pluginVerilog.Verilog.DataObjects
                                 param.Name = identifier;
                                 param.Expression = expression;
                                 param.DefinitionRefrecnce = nameReference;
+                                param.ConstantType = constantType;
                                 module.Parameters.Add(param.Name, param);
 
                                 module.PortParameterNameList.Add(identifier);
@@ -185,54 +201,67 @@ namespace pluginVerilog.Verilog.DataObjects
             param_assignment ::= (From Annex A - A.2.4) parameter_identifier = constant_expression  
             range ::=  (From Annex A - A.2.5) [ msb_constant_expression : lsb_constant_expression ]              
             */
-            bool local = false;
+
+            /* ## SystemVerilog
+            local_parameter_declaration     ::=   "localparam" data_type_or_implicit list_of_param_assignments 
+                                                | "localparam" type list_of_type_assignments 
+            parameter_declaration           ::=   "parameter" data_type_or_implicit list_of_param_assignments 
+                                                | "parameter" type list_of_type_assignments 
+
+            specparam_declaration           ::=   "specparam" [ packed_dimension ] list_of_specparam_assignments ";"
+
+            data_type_or_implicit           ::=   data_type
+                                                | implicit_data_type
+            implicit_data_type              ::=   [ signing ] { packed_dimension } 
+
+            list_of_param_assignments       ::= param_assignment { , param_assignment }
+            list_of_specparam_assignments   ::= specparam_assignment { , specparam_assignment }
+            list_of_type_assignments        ::= type_assignment { , type_assignment } 
+
+            param_assignment                ::= parameter_identifier { unpacked_dimension } [ = constant_param_expression ]
+            
+            specparam_assignment            ::= specparam_identifier = constant_mintypmax_expression 
+                                                | pulse_control_specparam 
+
+            type_assignment                 ::= type_identifier [ = data_type ]
+             */
+
+            ConstantTypeEnum constantType = ConstantTypeEnum.parameter;
             if (word.Text == "parameter")
             {
-                local = false;
+                constantType = ConstantTypeEnum.parameter;
             }
             else if (word.Text == "localparam")
             {
-                local = true;
+                constantType = ConstantTypeEnum.localparam;
+            }
+            else if (word.Text == "specparam")
+            {
+                constantType = ConstantTypeEnum.specparam;
             }
             else
             {
                 System.Diagnostics.Debugger.Break();
             }
+
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
-            DataType dataType = DataType.ParseCreate(word, nameSpace,null);
+            DataType dataType = DataObjects.DataTypes.DataType.ParseCreate(word, nameSpace, null);
+            Range range = null;
+            bool signed = false;
 
-            //switch (word.Text)
-            //{
-            //    case "integer":
-            //        word.Color( CodeDrawStyle.ColorType.Keyword);
-            //        word.MoveNext();
-            //        break;
-            //    case "real":
-            //        word.Color(CodeDrawStyle.ColorType.Keyword);
-            //        word.MoveNext();
-            //        break;
-            //    case "realtime":
-            //        word.Color(CodeDrawStyle.ColorType.Keyword);
-            //        word.MoveNext();
-            //        break;
-            //    case "time":
-            //        word.Color(CodeDrawStyle.ColorType.Keyword);
-            //        word.MoveNext();
-            //        break;
-            //    default:
-            //        if (word.Text == "signed")
-            //        {
-            //            word.Color(CodeDrawStyle.ColorType.Keyword);
-            //            word.MoveNext();
-            //        }
-            //        if (word.GetCharAt(0) == '[')
-            //        {
-            //            Range range = Range.ParseCreate(word, nameSpace);
-            //        }
-            //        break;
-            //}
+            if (word.Text == "signed")
+            {
+                signed = true;
+                word.Color(CodeDrawStyle.ColorType.Keyword);
+                word.MoveNext();
+            }
+
+            if (word.GetCharAt(0) == '[')
+            {
+                range = Range.ParseCreate(word, nameSpace);
+            }
 
             while (!word.Eof)
             {
@@ -240,33 +269,7 @@ namespace pluginVerilog.Verilog.DataObjects
                 string identifier = word.Text;
                 word.Color(CodeDrawStyle.ColorType.Paramater);
                 Parameter param = new Parameter();
-                if (local)
-                {
-                    if (!word.Active)
-                    {
-                        // skip
-                    }else if (word.Prototype)
-                    {
-                        if (nameSpace.LocalParameters.ContainsKey(identifier))
-                        {
-                            word.AddError("name duplicated");
-                        }
-                        else
-                        {
-                            param.Name = identifier;
-                            nameSpace.LocalParameters.Add(param.Name, param);
-                        }
-                    }
-                    else
-                    {
-                        if (nameSpace.LocalParameters.ContainsKey(identifier))
-                        {
-                            param = nameSpace.LocalParameters[identifier];
-                        }
-                    }
 
-                }
-                else
                 {
                     if (!word.Active)
                     {
@@ -287,8 +290,13 @@ namespace pluginVerilog.Verilog.DataObjects
                     else
                     {
                         if (nameSpace.Parameters.ContainsKey(identifier))
-                        {
+                        { // re-parse after prototype parse 
                             param = nameSpace.Parameters[identifier];
+                        }
+                        else
+                        { // for root nameSpace parameter
+                            param.Name = identifier;
+                            nameSpace.Parameters.Add(param.Name, param);
                         }
                     }
                 }
@@ -296,7 +304,7 @@ namespace pluginVerilog.Verilog.DataObjects
 
                 if (word.Text != "=") break;
                 word.MoveNext();
-                
+
                 param.Expression = Expressions.Expression.ParseCreate(word, nameSpace);
                 if (param.Expression == null) break;
 
@@ -311,6 +319,8 @@ namespace pluginVerilog.Verilog.DataObjects
             else
             {
                 word.AddError("; expected");
+                word.SkipToKeyword(";");
+                if (word.Text == ";") word.MoveNext();
             }
         }
     }

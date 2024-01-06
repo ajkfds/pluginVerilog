@@ -10,13 +10,14 @@ namespace pluginVerilog.Verilog.BuildingBlocks
 
         }
 
-
         // IModuleOrInterfaceOrProfram
+
         // Port
         private Dictionary<string, DataObjects.Port> ports = new Dictionary<string, DataObjects.Port>();
         public Dictionary<string, DataObjects.Port> Ports { get { return ports; } }
         private List<DataObjects.Port> portsList = new List<DataObjects.Port>();
         public List<DataObjects.Port> PortsList { get { return portsList; } }
+
         public WordReference NameReference;
         private List<string> portParameterNameList = new List<string>();
         public List<string> PortParameterNameList { get { return portParameterNameList; } }
@@ -49,101 +50,101 @@ namespace pluginVerilog.Verilog.BuildingBlocks
         }
 
 
-        public static Module ParseCreate(
-            WordScanner word, 
-            Dictionary<string, Expressions.Expression> parameterOverrides,
-            Data.IVerilogRelatedFile file,
-            bool protoType)
-        {
+        //public static Module ParseCreate(
+        //    WordScanner word, 
+        //    Dictionary<string, Expressions.Expression> parameterOverrides,
+        //    Data.IVerilogRelatedFile file,
+        //    bool protoType)
+        //{
 
-            /* # SystemVerilog
+        //    /* # SystemVerilog
 
-                module_declaration ::= 
-                      module_nonansi_header [ timeunits_declaration ] { module_item } "endmodule" [ ":" module_identifier ] 
-                    | module_ansi_header [ timeunits_declaration ] { non_port_module_item } "endmodule" [ ":" module_identifier ] 
-                    | { attribute_instance } module_keyword [ lifetime ] module_identifier "( .* ) ;"  [ timeunits_declaration ] { module_item } endmodule [ : module_identifier ] 
-                    | "extern" module_nonansi_header 
-                    | "extern" module_ansi_header
+        //        module_declaration ::= 
+        //              module_nonansi_header [ timeunits_declaration ] { module_item } "endmodule" [ ":" module_identifier ] 
+        //            | module_ansi_header [ timeunits_declaration ] { non_port_module_item } "endmodule" [ ":" module_identifier ] 
+        //            | { attribute_instance } module_keyword [ lifetime ] module_identifier "( .* ) ;"  [ timeunits_declaration ] { module_item } endmodule [ : module_identifier ] 
+        //            | "extern" module_nonansi_header 
+        //            | "extern" module_ansi_header
 
-                module_nonansi_header ::= 
-                    { attribute_instance } module_keyword [ lifetime ] module_identifier { package_import_declaration } [ parameter_port_list ] list_of_ports ;
-                module_ansi_header ::= 
-                    { attribute_instance } module_keyword [ lifetime ] module_identifier { package_import_declaration } [ parameter_port_list ] [ list_of_port_declarations ] ;
+        //        module_nonansi_header ::= 
+        //            { attribute_instance } module_keyword [ lifetime ] module_identifier { package_import_declaration } [ parameter_port_list ] list_of_ports ;
+        //        module_ansi_header ::= 
+        //            { attribute_instance } module_keyword [ lifetime ] module_identifier { package_import_declaration } [ parameter_port_list ] [ list_of_port_declarations ] ;
 
-                module_keyword ::=
-                    "module" | "macromodule"         
-            */
+        //        module_keyword ::=
+        //            "module" | "macromodule"         
+        //    */
 
-            // module_keyword
-            if (word.Text != "module" && word.Text != "macromodule") System.Diagnostics.Debugger.Break();
-            word.Color(CodeDrawStyle.ColorType.Keyword);
-            Module module = new Module();
+        //    // module_keyword
+        //    if (word.Text != "module" && word.Text != "macromodule") System.Diagnostics.Debugger.Break();
+        //    word.Color(CodeDrawStyle.ColorType.Keyword);
+        //    Module module = new Module();
 
-            module.BuildingBlock = module;
-            module.File = file;
-            module.BeginIndex = word.RootIndex;
-            if (word.CellDefine) module.cellDefine = true;
+        //    module.BuildingBlock = module;
+        //    module.File = file;
+        //    module.BeginIndex = word.RootIndex;
+        //    if (word.CellDefine) module.cellDefine = true;
 
-            word.MoveNext();
+        //    word.MoveNext();
 
-            // [ lifetime ]
-            if(word.Text == "static")
-            {
-                word.Color(CodeDrawStyle.ColorType.Keyword);
-                word.MoveNext();
-            } else if(word.Text == "automatic")
-            {
-                word.Color(CodeDrawStyle.ColorType.Keyword);
-                word.MoveNext();
-            }
+        //    // [ lifetime ]
+        //    if(word.Text == "static")
+        //    {
+        //        word.Color(CodeDrawStyle.ColorType.Keyword);
+        //        word.MoveNext();
+        //    } else if(word.Text == "automatic")
+        //    {
+        //        word.Color(CodeDrawStyle.ColorType.Keyword);
+        //        word.MoveNext();
+        //    }
 
-            // parse definitions
-            Dictionary<string, Macro> macroKeep = new Dictionary<string, Macro>();
-            foreach (var kvpair in word.RootParsedDocument.Macros)
-            {
-                macroKeep.Add(kvpair.Key, kvpair.Value);
-            }
+        //    // parse definitions
+        //    Dictionary<string, Macro> macroKeep = new Dictionary<string, Macro>();
+        //    foreach (var kvpair in word.RootParsedDocument.Macros)
+        //    {
+        //        macroKeep.Add(kvpair.Key, kvpair.Value);
+        //    }
 
 
-            if (!word.CellDefine && !protoType)
-            {
-                // protptype parse
-                WordScanner prototypeWord = word.Clone();
-                prototypeWord.Prototype = true;
-                parseModuleItems(prototypeWord, parameterOverrides, null, module);
-                prototypeWord.Dispose();
+        //    if (!word.CellDefine && !protoType)
+        //    {
+        //        // protptype parse
+        //        WordScanner prototypeWord = word.Clone();
+        //        prototypeWord.Prototype = true;
+        //        parseModuleItems(prototypeWord, parameterOverrides, null, module);
+        //        prototypeWord.Dispose();
 
-                // parse
-                word.RootParsedDocument.Macros = macroKeep;
-                parseModuleItems(word, parameterOverrides, null, module);
-            }
-            else
-            {
-                // parse prototype only
-                word.Prototype = true;
+        //        // parse
+        //        word.RootParsedDocument.Macros = macroKeep;
+        //        parseModuleItems(word, parameterOverrides, null, module);
+        //    }
+        //    else
+        //    {
+        //        // parse prototype only
+        //        word.Prototype = true;
 
-                parseModuleItems(word, parameterOverrides, null, module);
-                word.Prototype = false;
-            }
+        //        parseModuleItems(word, parameterOverrides, null, module);
+        //        word.Prototype = false;
+        //    }
 
-            // endmodule keyword
-            if (word.Text == "endmodule")
-            {
-                word.Color(CodeDrawStyle.ColorType.Keyword);
-                module.LastIndex = word.RootIndex;
+        //    // endmodule keyword
+        //    if (word.Text == "endmodule")
+        //    {
+        //        word.Color(CodeDrawStyle.ColorType.Keyword);
+        //        module.LastIndex = word.RootIndex;
 
-                word.AppendBlock(module.BeginIndex, module.LastIndex);
-                word.MoveNext();
-                return module;
-            }
+        //        word.AppendBlock(module.BeginIndex, module.LastIndex);
+        //        word.MoveNext();
+        //        return module;
+        //    }
 
-            {
-                word.AddError("endmodule expected");
-            }
+        //    {
+        //        word.AddError("endmodule expected");
+        //    }
 
-            return module;
+        //    return module;
 
-        }
+        //}
 
         public static Module Create(WordScanner word, Attribute attribute, Data.IVerilogRelatedFile file, bool protoType)
         {
@@ -175,10 +176,11 @@ namespace pluginVerilog.Verilog.BuildingBlocks
             if (word.Text != "module" && word.Text != "macromodule") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);
             Module module = new Module();
+            module.Parent = word.RootParsedDocument.Root;
 
             module.BuildingBlock = module;
             module.File = file;
-            module.BeginIndex = word.RootIndex;
+            module.BeginIndexReference = word.CreateIndexReference();
             if (word.CellDefine) module.cellDefine = true;
             word.MoveNext();
 
@@ -215,9 +217,9 @@ namespace pluginVerilog.Verilog.BuildingBlocks
             if (word.Text == "endmodule")
             {
                 word.Color(CodeDrawStyle.ColorType.Keyword);
-                module.LastIndex = word.RootIndex;
+                module.LastIndexReference = word.CreateIndexReference();
 
-                word.AppendBlock(module.BeginIndex, module.LastIndex);
+                word.AppendBlock(module.BeginIndexReference, module.LastIndexReference);
                 word.MoveNext();
                 return module;
             }
@@ -281,7 +283,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
                         word.MoveNext();
                         while (!word.Eof)
                         {
-                            if (word.Text == "parameter") Verilog.DataObjects.Parameter.ParseCreateDeclarationForPort(word, module, null);
+                            if (word.Text == "parameter") Verilog.DataObjects.Constants.Parameter.ParseCreateDeclarationForPort(word, module, null);
                             if (word.Text != ",")
                             {
                                 if (word.Text == ")") break;
@@ -318,7 +320,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
                             }
 
                             module.Parameters.Remove(vkp.Key);
-                            DataObjects.Parameter param = new DataObjects.Parameter();
+                            DataObjects.Constants.Parameter param = new DataObjects.Constants.Parameter();
                             param.Name = vkp.Key;
                             param.Expression = vkp.Value;
                             module.Parameters.Add(param.Name, param);
@@ -347,7 +349,15 @@ namespace pluginVerilog.Verilog.BuildingBlocks
                     word.AddError("; expected");
                 }
 
-                while (Items.ModuleItem.Parse(word, module)) { };
+                while (!word.Eof)
+                {
+                    if(!Items.ModuleItem.Parse(word, module))
+                    {
+                        if (word.Text == "endmodule") break;
+                        word.AddError("illegal module item");
+                        word.MoveNext();
+                    }
+                }
                 //parseModuleItems(word, module);
                 break;
             }

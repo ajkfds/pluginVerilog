@@ -5,14 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace pluginVerilog.Verilog.DataObjects.Variables
+namespace pluginVerilog.Verilog.DataObjects
 {
     public class Typedef
     {
         public DataType VariableType;
         public string Name;
 
-        public static void ParseCreateFromDeclaration(WordScanner word, NameSpace nameSpace)
+        public static bool ParseDeclaration(WordScanner word, NameSpace nameSpace)
         {
 
             /* ## SyetemVerilog2012
@@ -34,14 +34,14 @@ namespace pluginVerilog.Verilog.DataObjects.Variables
             {
                 word.AddError("datat type expected");
                 word.SkipToKeyword(";");
-                return;
+                return true;
             }
 
             if (!General.IsIdentifier(word.Text))
             {
                 word.AddError("illegal type_identifier");
                 word.SkipToKeyword(";");
-                return;
+                return true;
             }
 
             word.Color(CodeDrawStyle.ColorType.Identifier);
@@ -77,11 +77,11 @@ namespace pluginVerilog.Verilog.DataObjects.Variables
             if(word.Text != ";")
             {
                 word.AddError("; expedted");
-                return;
+                return true;
             }
             word.MoveNext();    // ;
 
-            return;
+            return true;
         }
 
 

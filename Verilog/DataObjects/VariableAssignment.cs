@@ -31,7 +31,6 @@ namespace pluginVerilog.Verilog.DataObjects
             variableAssign.NetLValue = Expressions.Expression.ParseCreateVariableLValue(word, nameSpace);
             if (variableAssign.NetLValue == null)
             {
-                word.AddError("illegal lValue");
                 return null;
             }
             if (word.Text != "=")
@@ -61,5 +60,6 @@ namespace pluginVerilog.Verilog.DataObjects
 
             return variableAssign;
         }
+
     }
 }

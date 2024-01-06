@@ -64,7 +64,7 @@ namespace pluginVerilog.Verilog
             Task task = new Task(nameSpace);
             task.BuildingBlock = nameSpace.BuildingBlock;
             word.Color(CodeDrawStyle.ColorType.Keyword);
-            task.BeginIndex = word.RootIndex;
+            task.BeginIndexReference = word.CreateIndexReference();
             word.MoveNext();
 
             if (word.Text == "automatic")
@@ -181,8 +181,8 @@ namespace pluginVerilog.Verilog
                 return;
             }
             word.Color(CodeDrawStyle.ColorType.Keyword);
-            task.LastIndex = word.RootIndex;
-            word.AppendBlock(task.BeginIndex, task.LastIndex);
+            task.LastIndexReference = word.CreateIndexReference();
+            word.AppendBlock(task.BeginIndexReference, task.LastIndexReference);
             word.MoveNext();
 
             if (word.Prototype)

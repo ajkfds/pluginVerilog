@@ -26,30 +26,30 @@ namespace pluginVerilog.Verilog.Snippets
             int index = codeDocument.CaretIndex;
             Module module = parsedDocument.GetModule(index);
 
-            foreach(var inst in 
-                module.ModuleInstantiations.Values)
-            {
-                if(inst.BeginIndex<index && index < inst.LastIndex)
-                {
-                    writeModuleInstance(codeDocument, index, inst);
-                    return;
-                }
-            }
+            //foreach(var inst in 
+            //    module.ModuleInstantiations.Values)
+            //{
+            //    if(inst.BeginIndex<index && index < inst.LastIndex)
+            //    {
+            //        writeModuleInstance(codeDocument, index, inst);
+            //        return;
+            //    }
+            //}
         }
 
         private void writeModuleInstance(CodeDocument codeDocument,int index,ModuleItems.ModuleInstantiation moduleInstantiation)
         {
             string indent = (codeDocument as CodeEditor.CodeDocument).GetIndentString(index);
 
-            codeDocument.CaretIndex = moduleInstantiation.BeginIndex;
-            codeDocument.Replace(
-                moduleInstantiation.BeginIndex,
-                moduleInstantiation.LastIndex - moduleInstantiation.BeginIndex + 1,
-                0,
-                moduleInstantiation.CreateSrting("\t")
-                );
-            codeDocument.SelectionStart = codeDocument.CaretIndex;
-            codeDocument.SelectionLast = codeDocument.CaretIndex;
+            //codeDocument.CaretIndex = moduleInstantiation.BeginIndex;
+            //codeDocument.Replace(
+            //    moduleInstantiation.BeginIndex,
+            //    moduleInstantiation.LastIndex - moduleInstantiation.BeginIndex + 1,
+            //    0,
+            //    moduleInstantiation.CreateSrting("\t")
+            //    );
+            //codeDocument.SelectionStart = codeDocument.CaretIndex;
+            //codeDocument.SelectionLast = codeDocument.CaretIndex;
         }
     }
 }

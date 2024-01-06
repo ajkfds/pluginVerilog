@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -154,7 +155,6 @@ namespace pluginVerilog.Verilog
             {
                 return new WordReference(stock[0].Index, stock[0].Length, stock[0].ParsedDocument,stock[0].Document);
             }
-            //            return new WordReference(wordPointer.Document, wordPointer.ParsedDocument, wordPointer.Index, wordPointer.Length);
         }
 
         public WordReference GetReference(WordReference fromReference)
@@ -169,17 +169,22 @@ namespace pluginVerilog.Verilog
             wordPointer.Color(colorType);
         }
 
-        public void AppendBlock(int startIndex, int lastIndex)
+        public void AppendBlock(IndexReference startIndexReference, IndexReference lastIndexReference)
         {
-            if (stock.Count != 0) return;
-            if (wordPointer.Document.GetLineAt(startIndex) == wordPointer.Document.GetLineAt(lastIndex)) return;
-            wordPointer.AppendBlock(startIndex, lastIndex);
+            if (startIndexReference.Indexs.Count != lastIndexReference.Indexs.Count) return;
+            for (int i= 0; i < startIndexReference.Indexs.Count - 1; i++)
+            {
+                if (startIndexReference.Indexs[i] != lastIndexReference.Indexs[i]) return;
+            }
+
+            if (wordPointer.Document.GetLineAt(startIndexReference.Indexs.Last()) == wordPointer.Document.GetLineAt(lastIndexReference.Indexs.Last())) return;
+            wordPointer.AppendBlock(startIndexReference.Indexs.Last(), lastIndexReference.Indexs.Last());
         }
 
         private bool systemVerilogError = false;
         public void AddSystemVerilogError()
         {
-            if (wordPointer.ParsedDocument.SystemVerilog) return;
+            if (RootParsedDocument.SystemVerilog) return;
             if (systemVerilogError) return;
             AddError("SystemVerilog Description");
         }
@@ -232,6 +237,11 @@ namespace pluginVerilog.Verilog
                     return stock[0].Index;
                 }
             }
+        }
+
+        public IndexReference CreateIndexReference()
+        {
+            return IndexReference.Create(wordPointer, stock);
         }
 
         public bool Active
@@ -985,17 +995,10 @@ namespace pluginVerilog.Verilog
             }
         }
 
+
+
         private void diveIntoIncludeFile(string relativeFilePath)
         {
-            //if (wordPointer.ParsedDocument.Project.IsRegistered(id))
-            //{
-            //    item = wordPointer.ParsedDocument.Project.GetRegisterdItem(id);
-            //    wordPointer.ParsedDocument.Project.RegisterProjectItem(item);
-            //}
-            //else
-            //{
-            //            Data.IVerilogRelatedFile file = wordPointer.ParsedDocument.File;
-
             string id = wordPointer.ParsedDocument.File.ID + ","+ relativeFilePath +"_"+ wordPointer.ParsedDocument.IncludeFiles.Count.ToString();
 
             Data.IVerilogRelatedFile rootFile;
@@ -1014,7 +1017,6 @@ namespace pluginVerilog.Verilog
                 wordPointer.AddError("illegal file");
                 return;
             }
-
 
             vhInstance.Parent = wordPointer.ParsedDocument.File as codeEditor.Data.Item;
             
@@ -1041,7 +1043,13 @@ namespace pluginVerilog.Verilog
             }
 
             // assign new parsed document
-            vhInstance.ParsedDocument = new Verilog.ParsedDocument(vhInstance, RootParsedDocument.ParseMode);// editid =, -1);
+            IndexReference indexReference = IndexReference.Create(wordPointer.ParsedDocument.IndexReference, wordPointer.Index);
+            ParsedDocument newParsedDocument = new Verilog.ParsedDocument(vhInstance, indexReference, RootParsedDocument.ParseMode);// editid =, -1);
+            vhInstance.ParsedDocument = newParsedDocument;
+            if (wordPointer.ParsedDocument.ParsedDocumentIndexDictionary.ContainsKey(wordPointer.Index)){
+                wordPointer.ParsedDocument.ParsedDocumentIndexDictionary.Remove(wordPointer.Index);
+            }
+            if (!prototype) wordPointer.ParsedDocument.ParsedDocumentIndexDictionary.Add(wordPointer.Index, newParsedDocument);
 
             WordPointer newPointer = new WordPointer(vhInstance.CodeDocument as CodeEditor.CodeDocument, vhInstance.ParsedDocument as Verilog.ParsedDocument);
             stock.Add(wordPointer);
@@ -1064,49 +1072,6 @@ namespace pluginVerilog.Verilog
                     }
                 }
             }
-            /*
-            vhInstance.Parent = RootParsedDocument.File as codeEditor.Data.Item;
-            vhInstance.SetName(vhInstance.Name + ":" + RootParsedDocument.IncludeFiles.Count);
-
-            if (!prototype)
-            {
-                if (!RootParsedDocument.IncludeFiles.ContainsKey(vhInstance.Name))
-                {
-                    RootParsedDocument.IncludeFiles.Add(vhInstance.Name, vhInstance);
-                }
-                else
-                {
-                    vhInstance = RootParsedDocument.IncludeFiles[vhInstance.Name];
-                }
-            }
-
-            // assign new parsed document
-            vhInstance.ParsedDocument = new Verilog.ParsedDocument(vhInstance, RootParsedDocument.ParseMode);// editid =, -1);
-
-            WordPointer newPointer = new WordPointer(vhInstance.CodeDocument as CodeEditor.CodeDocument, vhInstance.ParsedDocument as Verilog.ParsedDocument);
-            stock.Add(wordPointer);
-            wordPointer = newPointer;
-
-            // activate coloring when code editor opened the target node
-            wordPointer.InitibitColor = true;
-            {
-                codeEditor.NavigatePanel.NavigatePanelNode node;
-                codeEditor.Controller.NavigatePanel.GetSelectedNode(out node);
-                if(node != null)
-                {
-                    Data.VerilogHeaderInstance vh = node.Item as Data.VerilogHeaderInstance;
-                    if (vh != null)
-                    {
-                        if (vh.ID == vhInstance.ID)
-                        {
-                            wordPointer.InitibitColor = false;
-                            System.Diagnostics.Debug.Print("current insatance");
-                        }
-                    }
-                }
-            }
-            */
-
 
             if (wordPointer.Eof)
             {

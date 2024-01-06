@@ -37,7 +37,7 @@ namespace pluginVerilog.Verilog.DataObjects.Variables
         non_integer_type ::= shortreal | real | realtime
 
     */
-    public class Enum : DataObject
+    public class Enum : Variable
     {
         protected Enum() { }
 
@@ -79,91 +79,22 @@ namespace pluginVerilog.Verilog.DataObjects.Variables
         {
         }
 
-
-
-        public new static void ParseDeclaration(WordScanner word, NameSpace nameSpace)
+        public static new Enum Create(DataTypes.DataType dataType)
         {
-            DataType dataType = DataObjects.DataTypes.DataType.ParseCreate(word, nameSpace,DataTypeEnum.Int);
-            if(!(dataType is DataTypes.Enum)) System.Diagnostics.Debug.Assert(true);
-            DataTypes.Enum enumDataType = dataType as DataTypes.Enum;
+            System.Diagnostics.Debug.Assert(dataType.Type == DataTypes.DataTypeEnum.Enum);
+            DataTypes.Enum dType = dataType as DataTypes.Enum;
 
-
-
-            // list_of_variable_decl_assignments
-
-            while (!word.Eof)
+            Enum val = new Enum();
+            val.DataType = dType.Type;
+            foreach(var item in dType.Items)
             {
-                if (!General.IsIdentifier(word.Text))
-                {
-                    word.AddError("illegal identifier");
-                    word.SkipToKeyword(";");
-                    return;
-                }
-
-                word.Color(CodeDrawStyle.ColorType.Variable);
-                Enum enum_ = new Enum();
-                enum_.Name = word.Text;
-                enum_.BaseType = enumDataType.BaseType;
-                foreach(var item in enumDataType.Items)
-                {
-                    enum_.Items.Add(item);
-                }
-
-                // register valiable
-                if (!word.Active)
-                {
-                    // skip
-                }
-                else if (word.Prototype)
-                {
-                    if (nameSpace.Enums.ContainsKey(enum_.Name))
-                    {
-                        word.AddError("duplicated enum name");
-                    }
-                    else
-                    {
-                        nameSpace.Enums.Add(enum_.Name, enum_);
-                    }
-                    word.Color(CodeDrawStyle.ColorType.Register);
-                }
-                else
-                {
-                    if (nameSpace.Enums.ContainsKey(enum_.Name))
-                    {
-                        if (nameSpace.Enums[enum_.Name] is Enum)
-                        {
-                            enum_ = nameSpace.Enums[enum_.Name] as Enum;
-                        }
-                    }
-                }
-                word.MoveNext();
-
-                if (word.Text == ",")
-                {
-                    word.MoveNext();
-                    continue;
-                }
-                break;
+                val.Items.Add(item);
             }
-
-            // ;
-            if (word.Text == ";")
-            {
-                word.MoveNext();
-            }else{
-                word.AddError("; expected");
-            }
-
-            return;
+            return val;
         }
 
 
-        public class Item
-        {
-            public string Identifier;
-            public int Index;
-            public Expressions.Expression Value;
-        }
+
     }
 }
 

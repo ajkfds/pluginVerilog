@@ -1,7 +1,9 @@
 ﻿using pluginVerilog.Verilog.DataObjects.DataTypes;
+using pluginVerilog.Verilog.DataObjects.Variables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,8 +21,6 @@ namespace pluginVerilog.Verilog.DataObjects.DataTypes
 
         public DataType BaseType { get; protected set; } = null;
         public List<Item> Items = new List<Item>();
-
-
 
         public static Enum ParseCreate(WordScanner word, NameSpace nameSpace)
         {
@@ -64,12 +64,10 @@ namespace pluginVerilog.Verilog.DataObjects.DataTypes
             }
             word.MoveNext(); // "{"
 
-            long prevAssignValue = 0;
+            int index = 0;
             while( !word.Eof | word.Text != "}")
             {
-                Item item = Item.ParseCreate(word, nameSpace,ref prevAssignValue);
-                if (item == null) break;
-                if (item != null) type.Items.Add(item);
+                if (!parseItem(type, word, nameSpace, ref index)) break;
 
                 if (word.Text == ",")
                 {
@@ -77,6 +75,14 @@ namespace pluginVerilog.Verilog.DataObjects.DataTypes
                     if (word.Text == "}") word.AddError("illegal comma");
                 }
             }
+
+            foreach(Item item in type.Items)
+            {
+                Variable variable = Variables.Variable.Create(type.BaseType);
+                variable.Name = item.Identifier;
+                if (!nameSpace.Variables.ContainsKey(variable.Name)) nameSpace.Variables.Add(variable.Name, variable);
+            }
+
 
             if (word.Eof | word.Text != "}")
             {
@@ -88,43 +94,58 @@ namespace pluginVerilog.Verilog.DataObjects.DataTypes
             return type;
         }
 
-        public class Item
+        private static bool parseItem(Enum enum_,WordScanner word, NameSpace nameSpace, ref int index)
         {
-            public string Identifier;
-            public int Index;
-            public Expressions.Expression Value;
-
             /*
             enum_name_declaration::=
                 enum_identifier[ [integral_number[ : integral_number]] ] [ = constant_expression ]
             */
-            public static Item ParseCreate(WordScanner word,NameSpace nameSpace,ref long prevAssignedNumber)
+            if (word.Text == "}" | word.Text == ",") return false;
+            if (!General.IsIdentifier(word.Text)) return false;
+
+            string identifier = word.Text;
+            word.Color(CodeDrawStyle.ColorType.Variable);
+            word.MoveNext();
+
+            Range range = null;
+            if (word.Text == "[")
             {
-                if (word.Text == "}" | word.Text == ",") return null;
-                if (!General.IsIdentifier(word.Text)) return null;
-
-                Item item = new Item();
-                item.Identifier = word.Text;
-                word.Color(CodeDrawStyle.ColorType.Identifier);
-                word.MoveNext();
-
-                if(word.Text == "[")
-                {
-                    Range range = Range.ParseCreate(word, nameSpace);
-                }
-
-                if(word.Text == "=")
-                {
-                    word.MoveNext();    // =
-                    item.Value = Expressions.Expression.ParseCreate(word, nameSpace);
-                }
-                else
-                {
-
-                }
-
-                return item;
+                range = Range.ParseCreate(word, nameSpace);
             }
+
+            Expressions.Expression exp = null;
+            if (word.Text == "=")
+            {
+                word.MoveNext();    // =
+                exp = Expressions.Expression.ParseCreate(word, nameSpace);
+            }
+
+            if (exp != null)
+            {
+                int.TryParse(exp.ConstantValueString(), out index);
+            }
+
+            if (range == null)
+            {
+                Item item = new Item();
+                item.Identifier = identifier;
+                item.Index = index;
+
+                enum_.Items.Add(item);
+            }
+            else
+            {
+
+            }
+
+            index++;
+            return true;
+        }
+
+        public class Item
+        {
+            public string Identifier;
+            public int Index;
         }
 
     }

@@ -101,7 +101,7 @@ namespace pluginVerilog.Data
                 return;
             }
 
-            foreach (Module module in VerilogParsedDocument.Modules.Values)
+            foreach (Module module in VerilogParsedDocument.Root.Modules.Values)
             {
                 if (!ProjectProperty.IsRegisterableModule(module.Name, this))
                 {

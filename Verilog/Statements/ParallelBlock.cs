@@ -35,13 +35,13 @@ namespace pluginVerilog.Verilog.Statements
                 System.Diagnostics.Debugger.Break();
             }
             word.Color(CodeDrawStyle.ColorType.Keyword);
-            int beginIndex = word.RootIndex;
+            IndexReference beginIndex = word.CreateIndexReference();
             word.MoveNext(); // begin
 
             if (word.GetCharAt(0) == ':')
             {
                 NamedParallelBlock namedBlock = new NamedParallelBlock(nameSpace.BuildingBlock , nameSpace);
-                namedBlock.BeginIndex = beginIndex;
+                namedBlock.BeginIndexReference = beginIndex;
 
                 word.MoveNext(); // :
                 if (!General.IsIdentifier(word.Text))
@@ -86,7 +86,7 @@ namespace pluginVerilog.Verilog.Statements
                     return null;
                 }
                 word.Color(CodeDrawStyle.ColorType.Keyword);
-                namedBlock.LastIndex = word.RootIndex;
+                namedBlock.LastIndexReference = word.CreateIndexReference();
                 word.MoveNext(); // end
 
                 if (word.Active && namedBlock.Name != null && !nameSpace.NameSpaces.ContainsKey(namedBlock.Name))

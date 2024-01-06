@@ -117,7 +117,7 @@ namespace pluginVerilog.IcarusVerilog
             if (topFile == null) return;
             Verilog.ParsedDocument topParsedDocument = topFile.ParsedDocument as Verilog.ParsedDocument;
             if (topParsedDocument == null) return;
-            if (topParsedDocument.Modules.Count == 0) return;
+            if (topParsedDocument.Root.Modules.Count == 0) return;
 
             string simName = topFile.Name.Substring(0, topFile.Name.LastIndexOf('.'));
 
@@ -136,7 +136,7 @@ namespace pluginVerilog.IcarusVerilog
 
             List<string> includeFileList = new List<string>();
 
-            foreach (Module module in topParsedDocument.Modules.Values)
+            foreach (Module module in topParsedDocument.Root.Modules.Values)
             {
                 appendFiles(filePathList,includeFileList, module, project);
             }

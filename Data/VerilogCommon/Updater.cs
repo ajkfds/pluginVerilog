@@ -72,11 +72,13 @@ namespace pluginVerilog.Data.VerilogCommon
                 }
 
                 // module instances
-                foreach (Module module in rootItem.VerilogParsedDocument.Modules.Values)
-                {
-                    if(moduleName == null || moduleName == module.Name)
+                if (rootItem.VerilogParsedDocument.Root != null) {
+                    foreach (Module module in rootItem.VerilogParsedDocument.Root.Modules.Values)
                     {
-                        UpdateModuleInstance(module, project, rootItem, targetItems, newItems);
+                        if (moduleName == null || moduleName == module.Name)
+                        {
+                            UpdateModuleInstance(module, project, rootItem, targetItems, newItems);
+                        }
                     }
                 }
 
