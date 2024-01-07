@@ -183,7 +183,111 @@ namespace pluginVerilog.Verilog.Expressions
         }
     }
 
-   public class UnaryOperator : Operator
+    public class IncDecOperator : Operator
+    {
+        protected IncDecOperator(WordScanner word, string text, byte precedence) : base(text, precedence)
+        {
+            Reference = word.GetReference();
+            word.MoveNext();
+        }
+        /*
+        inc_or_dec_operator ::= ++ | --
+        */
+
+        public override void DisposeSubRefrence(bool keepThisReference)
+        {
+            base.DisposeSubRefrence(keepThisReference);
+            Primary.DisposeSubRefrence(false);
+        }
+
+        public override void AppendLabel(ajkControls.ColorLabel.ColorLabel label)
+        {
+            label.AppendText(Text);
+            Primary.AppendLabel(label);
+        }
+
+        public override void AppendString(StringBuilder stringBuilder)
+        {
+            stringBuilder.Append(Text);
+            Primary.AppendString(stringBuilder);
+        }
+
+        public static IncDecOperator ParseCreate(WordScanner word)
+        {
+            switch (word.Length)
+            {
+                case 2:
+                    if (word.GetCharAt(0) == '+')
+                    {
+                        if (word.GetCharAt(1) == '+') { return new IncDecOperator(word, "++", 3); }
+                        return null;
+                    }
+                    else if (word.GetCharAt(0) == '-')
+                    {
+                        if (word.GetCharAt(1) == '-') { return new IncDecOperator(word, "--", 3); }
+                        return null;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                default:
+                    return null;
+            }
+        }
+
+        public delegate void OperatedAction(IncDecOperator unaryOperator);
+        public static OperatedAction Operated;
+
+        public IncDecOperator Operate(Primary primary)
+        {
+            Primary = primary;
+            bool constant = false;
+            double? value = null;
+            int? bitWidth = null;
+
+            if (primary.Constant) constant = true;
+            if (primary.Value != null) value = getValue(Text, (double)primary.Value);
+            if (primary.BitWidth != null) bitWidth = getBitWidth(Text, (int)primary.BitWidth);
+
+            this.Constant = constant;
+            this.Value = value;
+            this.BitWidth = BitWidth;
+            if (Primary.Reference != null)
+            {
+                this.Reference = Primary.Reference.CreateReferenceFrom(Primary.Reference);
+            }
+            if (Operated != null) Operated(this);
+            return this;
+        }
+
+        private double? getValue(string text, double value)
+        {
+            switch (text)
+            {
+                case "++":
+                    return value+1;
+                case "--":
+                    return value-1;
+                default:
+                    return null;
+            }
+        }
+
+        private int? getBitWidth(string text, int bitWidth)
+        {
+            switch (text)
+            {
+                case "++":
+                case "--":
+                    return bitWidth + 1;
+                default:
+                    return null;
+            }
+        }
+    }
+
+    public class UnaryOperator : Operator
     {
         protected UnaryOperator(WordScanner word, string text,byte precedence) : base(text,precedence) 
         {
@@ -246,16 +350,6 @@ namespace pluginVerilog.Verilog.Expressions
                     else if (word.GetCharAt(0) == '^')
                     {
                         if (word.GetCharAt(1) == '~') { return new UnaryOperator(word, "^~", 3); }
-                        return null;
-                    }
-                    else if (word.GetCharAt(0) == '+')
-                    {
-                        if (word.GetCharAt(1) == '+') { return new UnaryOperator(word, "++", 3); }
-                        return null;
-                    }
-                    else if (word.GetCharAt(0) == '-')
-                    {
-                        if (word.GetCharAt(1) == '-') { return new UnaryOperator(word, "--", 3); }
                         return null;
                     }
                     else

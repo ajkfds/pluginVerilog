@@ -17,18 +17,18 @@ namespace pluginVerilog.Verilog.Expressions
         {
         }
 
-        private System.WeakReference<Task> taskReferenceRef;
-        public Task Task
+        private System.WeakReference<IPortNameSpace> taskReferenceRef;
+        public IPortNameSpace Task
         {
             get
             {
-                Task ret;
+                IPortNameSpace ret;
                 if(taskReferenceRef == null || !taskReferenceRef.TryGetTarget(out ret)) return null;
                 return ret;
             }
             protected set
             {
-                taskReferenceRef = new WeakReference<Task>(value);
+                taskReferenceRef = new WeakReference<IPortNameSpace>(value);
             }
         }
 
@@ -46,6 +46,18 @@ namespace pluginVerilog.Verilog.Expressions
             if (taskNameSpace.BuildingBlock.Tasks.ContainsKey(ret.TaskName))
             {
                 ret.Task = taskNameSpace.BuildingBlock.Tasks[ret.TaskName];
+            }
+            if (taskNameSpace.BuildingBlock.Functions.ContainsKey(ret.TaskName))
+            {
+                Function function = taskNameSpace.BuildingBlock.Functions[ret.TaskName];
+                if(function.ReturnVariable != null)
+                {
+                    word.AddError("illegal task name");
+                }
+                else
+                {
+                    ret.Task = function;
+                }
             }
             else
             {

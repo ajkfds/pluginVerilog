@@ -1,4 +1,5 @@
-﻿using pluginVerilog.Verilog.DataObjects.DataTypes;
+﻿using pluginVerilog.Verilog.DataObjects.Constants;
+using pluginVerilog.Verilog.DataObjects.DataTypes;
 using pluginVerilog.Verilog.DataObjects.Variables;
 using System;
 using System.Collections.Generic;
@@ -76,14 +77,6 @@ namespace pluginVerilog.Verilog.DataObjects.DataTypes
                 }
             }
 
-            foreach(Item item in type.Items)
-            {
-                Variable variable = Variables.Variable.Create(type.BaseType);
-                variable.Name = item.Identifier;
-                if (!nameSpace.Variables.ContainsKey(variable.Name)) nameSpace.Variables.Add(variable.Name, variable);
-            }
-
-
             if (word.Eof | word.Text != "}")
             {
                 word.AddError("{ required");
@@ -103,8 +96,15 @@ namespace pluginVerilog.Verilog.DataObjects.DataTypes
             if (word.Text == "}" | word.Text == ",") return false;
             if (!General.IsIdentifier(word.Text)) return false;
 
-            string identifier = word.Text;
-            word.Color(CodeDrawStyle.ColorType.Variable);
+            Item item = new Item();
+            item.Identifier = word.Text;
+            word.Color(CodeDrawStyle.ColorType.Paramater);
+
+            EnumConstants constants = EnumConstants.Create(enum_.BaseType);
+            constants.Name = item.Identifier;
+            constants.DefinedReference = word.GetReference();
+            if (!nameSpace.Constants.ContainsKey(constants.Name)) nameSpace.Constants.Add(constants.Name, constants);
+
             word.MoveNext();
 
             Range range = null;
@@ -124,19 +124,9 @@ namespace pluginVerilog.Verilog.DataObjects.DataTypes
             {
                 int.TryParse(exp.ConstantValueString(), out index);
             }
+            item.Index = index;
 
-            if (range == null)
-            {
-                Item item = new Item();
-                item.Identifier = identifier;
-                item.Index = index;
-
-                enum_.Items.Add(item);
-            }
-            else
-            {
-
-            }
+            enum_.Items.Add(item);
 
             index++;
             return true;

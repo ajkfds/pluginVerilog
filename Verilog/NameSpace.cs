@@ -23,8 +23,6 @@ namespace pluginVerilog.Verilog
 
         private Dictionary<string, DataObjects.DataObject> variables = new Dictionary<string, DataObjects.DataObject>();
         private Dictionary<string, Net> nets = new Dictionary<string, Net>();
-        private Dictionary<string, DataObjects.Constants.Parameter> parameters = new Dictionary<string, DataObjects.Constants.Parameter>();
-//        private Dictionary<string, DataObjects.Constants.Parameter> localParameters = new Dictionary<string, DataObjects.Constants.Parameter>();
         private Dictionary<string, DataObjects.Typedef> typedefs = new Dictionary<string, DataObjects.Typedef>();
 
         private Dictionary<string, NameSpace> nameSpaces = new Dictionary<string, NameSpace>();
@@ -33,8 +31,10 @@ namespace pluginVerilog.Verilog
 
 
         public NameSpace Parent { get; protected set; }
-        public Dictionary<string, DataObjects.Constants.Parameter> Parameters { get { return parameters; } }
-//        public Dictionary<string, DataObjects.Constants.Parameter> LocalParameters { get { return localParameters; } }
+
+        private Dictionary<string, DataObjects.Constants.Constants> constants = new Dictionary<string, DataObjects.Constants.Constants>();
+        public Dictionary<string, DataObjects.Constants.Constants> Constants { get { return constants; } }
+
         public Dictionary<string, DataObjects.Typedef> Typedefs { get { return typedefs; } }
         public BuildingBlocks.BuildingBlock BuildingBlock { get; protected set; }
         public Dictionary<string, NameSpace> NameSpaces { get { return nameSpaces;  } }
@@ -85,9 +85,9 @@ namespace pluginVerilog.Verilog
                 }
             }
 
-            foreach (DataObjects.Constants.Parameter parameter in BuildingBlock.Parameters.Values)
+            foreach (DataObjects.Constants.Constants constants in BuildingBlock.Constants.Values)
             {
-                items.Add(newItem(parameter.Name, CodeDrawStyle.ColorType.Paramater));
+                items.Add(newItem(constants.Name, CodeDrawStyle.ColorType.Paramater));
             }
 
             foreach (Function function in BuildingBlock.Functions.Values)
@@ -126,16 +126,16 @@ namespace pluginVerilog.Verilog
             return null;
         }
 
-        public DataObjects.Constants.Parameter GetParameter(string identifier)
+        public DataObjects.Constants.Constants GetConstants(string identifier)
         {
-            if (Parameters.ContainsKey(identifier))
+            if (Constants.ContainsKey(identifier))
             {
-                return Parameters[identifier];
+                return Constants[identifier];
             }
 
             if (Parent != null)
             {
-                return Parent.getParameterHier(identifier);
+                return Parent.getConstantsHier(identifier);
             }
             else
             {
@@ -145,16 +145,16 @@ namespace pluginVerilog.Verilog
             return null;
         }
 
-        private DataObjects.Constants.Parameter getParameterHier(string identifier)
+        private DataObjects.Constants.Constants getConstantsHier(string identifier)
         {
-            if (Parameters.ContainsKey(identifier))
+            if (Constants.ContainsKey(identifier))
             {
-                return Parameters[identifier];
+                return Constants[identifier];
             }
 
             if (Parent != null)
             {
-                return Parent.getParameterHier(identifier);
+                return Parent.getConstantsHier(identifier);
             }
 
             return null;

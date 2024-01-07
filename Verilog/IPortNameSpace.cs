@@ -11,7 +11,7 @@ namespace pluginVerilog.Verilog
     {
         Dictionary<string, DataObjects.DataObject> Variables { get; }
         NameSpace Parent { get; }
-        Dictionary<string, DataObjects.Constants.Parameter> Parameters { get; }
+        Dictionary<string, DataObjects.Constants.Constants> Constants { get; }
 
         BuildingBlocks.BuildingBlock BuildingBlock { get; }
 

@@ -28,11 +28,13 @@ namespace pluginVerilog.Verilog.DataObjects
             //                          | variable_concatenation
 
             VariableAssignment variableAssign = new VariableAssignment();
-            variableAssign.NetLValue = Expressions.Expression.ParseCreateVariableLValue(word, nameSpace);
+            variableAssign.NetLValue = Expressions.Expression.ParseCreate(word, nameSpace);
+
             if (variableAssign.NetLValue == null)
             {
                 return null;
             }
+            if (variableAssign.NetLValue.IncrementDecrement) return variableAssign;
             if (word.Text != "=")
             {
                 word.AddError("= expected.");

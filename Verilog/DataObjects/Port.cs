@@ -686,7 +686,7 @@ ansi_port_declaration ::=
                 }else if(nameSpace is Task)
                 {
                     Task task = nameSpace as Task;
-                    if (task.Ports.ContainsKey(port.Name))
+                    if (!task.Ports.ContainsKey(port.Name))
                     {
                         task.Ports.Add(port.Name, port);
                         task.PortsList.Add(port);
@@ -713,8 +713,11 @@ ansi_port_declaration ::=
             DataType prevDataType = null;
 
             bool firstPort = true;
+            portNameSpace.Ports.Clear();
+            portNameSpace.PortsList.Clear();
 
-            while(!word.Eof && word.Text != ")" && word.Text != "end")
+
+            while (!word.Eof && word.Text != ")" && word.Text != "end")
             {
                 ParseTfPortItem(word, nameSpace, portNameSpace, firstPort, ref prevDirection, ref prevDataType);
                 if(word.Text == ",")
@@ -823,9 +826,6 @@ ansi_port_declaration ::=
             port.Name = word.Text;
             port.VariableOrNet.Name = port.Name;
             word.Color(CodeDrawStyle.ColorType.Variable);
-
-            portNameSpace.Ports.Clear();
-            portNameSpace.PortsList.Clear();
 
             if (portNameSpace.Ports.ContainsKey(port.Name))
             {

@@ -26,11 +26,11 @@ namespace pluginVerilog.Verilog.Statements
         public static TaskEnable ParseCreate(Expressions.TaskReference taskReference,WordScanner word,NameSpace nameSpace)
         {
 
-            Task task = taskReference.Task;
+            IPortNameSpace task = taskReference.Task;
             return parseCreate(task, word, nameSpace);
         }
 
-        private static TaskEnable parseCreate(Task task, WordScanner word, NameSpace nameSpace)
+        private static TaskEnable parseCreate(IPortNameSpace task, WordScanner word, NameSpace nameSpace)
         {
             TaskEnable taskEnable = new TaskEnable();
             int portCount = 0;

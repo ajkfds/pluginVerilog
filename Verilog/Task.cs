@@ -1,9 +1,13 @@
 ﻿using pluginVerilog.Verilog.BuildingBlocks;
+using pluginVerilog.Verilog.DataObjects.Nets;
+using pluginVerilog.Verilog.DataObjects;
+using pluginVerilog.Verilog.Items;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using pluginVerilog.Verilog.DataObjects.Variables;
 
 namespace pluginVerilog.Verilog
 {
@@ -44,6 +48,15 @@ namespace pluginVerilog.Verilog
         list_of_block_variable_identifiers  ::= block_variable_type { , block_variable_type } 
         block_variable_type                 ::= variable_identifier | variable_identifier dimension { dimension }
          */
+
+
+        /*
+        // # SystemVerilog2017
+        // task_declaration         ::=   task [ lifetime ] task_body_declaration
+        // task_body_declaration    ::=   [ interface_identifier . | class_scope ] task_identifier ; { tf_item_declaration } { statement_or_null } endtask [ : task_identifier ] 
+        //                              | [ interface_identifier . | class_scope ] task_identifier ( [ tf_port_list ] ) ; { block_item_declaration } { statement_or_null } endtask [ : task_identifier ]
+         
+         */
         protected Task(NameSpace parent) : base(parent.BuildingBlock , parent)
         {
         }
@@ -67,10 +80,17 @@ namespace pluginVerilog.Verilog
             task.BeginIndexReference = word.CreateIndexReference();
             word.MoveNext();
 
-            if (word.Text == "automatic")
+            // [lifetime]
+            switch (word.Text)
             {
-                word.Color(CodeDrawStyle.ColorType.Keyword);
-                word.MoveNext();
+                case "static":
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
+                    word.MoveNext();
+                    break;
+                case "automatic":
+                    word.Color(CodeDrawStyle.ColorType.Keyword);
+                    word.MoveNext();
+                    break;
             }
 
             if (!General.IsIdentifier(word.Text))
@@ -80,36 +100,24 @@ namespace pluginVerilog.Verilog
             }
 
             task.Name = word.Text;
-            word.Color(CodeDrawStyle.ColorType.Identifier);
-//            if (word.Active && module.Tasks.ContainsKey(task.Name) || module.NameSpaces.ContainsKey(task.Name))
-//            {
-//                word.AddError("duplicated name");
-//            }
+
             if (!word.Active)
             {
                 // skip
-            }
-            else if (word.Prototype)
-            {
-                if (!nameSpace.BuildingBlock.Tasks.ContainsKey(task.Name) && !nameSpace.BuildingBlock.NameSpaces.ContainsKey(task.Name))
-                {
-                    nameSpace.BuildingBlock.Tasks.Add(task.Name, task);
-                    nameSpace.BuildingBlock.NameSpaces.Add(task.Name, task);
-                }
-                else
-                {
-                    word.AddError("duplicated name");
-                }
             }
             else
             {
                 if (nameSpace.BuildingBlock.Tasks.ContainsKey(task.Name))
                 {
-                    task = nameSpace.BuildingBlock.Tasks[task.Name];
+                    nameSpace.BuildingBlock.Tasks[task.Name] = task;
+                }
+                else
+                {
+                    nameSpace.BuildingBlock.Tasks.Add(task.Name, task);
                 }
             }
 
-
+            word.Color(CodeDrawStyle.ColorType.Identifier);
             word.MoveNext();
 
 
@@ -124,47 +132,18 @@ namespace pluginVerilog.Verilog
                         realtime_declaration | { attribute_instance }
                         time_declaration block_reg_declaration ::= reg[signed][range]                    list_of_block_variable_identifiers;
             */
+
+            int x=0;
+            x++;
+
             if (word.Text == ";")
             {
-                word.MoveNext();
-                while (!word.Eof)
-                {
-                    switch (word.Text)
-                    {
-                        case "input":
-                        case "output":
-                        case "inout":
-                            Verilog.DataObjects.Port.ParseTfPortDeclaration(word, task);
-                            if (word.Text != ";")
-                            {
-                                word.AddError("; expected");
-                            }
-                            else
-                            {
-                                word.MoveNext();
-                            }
-                            continue;
-                        case "reg":
-                        case "integer":
-                        case "real":
-                            DataObjects.Variables.Variable.ParseDeclaration(word, task);
-                            continue;
-                        default:
-                            break;
-                    }
-                    break;
-                }
-
+                parse_task_items_non_ansi(word, nameSpace, task);
             }
             else
             {
-
+                parse_task_items_ansi(word, nameSpace, task);
             }
-
-//            if (module.Tasks.ContainsKey(task.Name) && module.Tasks[task.Name].BeginIndex == task.BeginIndex)
-//            {
-//                task = module.Tasks[task.Name];
-//            }
 
             if (word.Text == "endtask")
             {
@@ -172,30 +151,150 @@ namespace pluginVerilog.Verilog
             }
             else
             {
-                Statements.IStatement statement = Statements.Statements.ParseCreateFunctionStatement(word, task);
+                if (word.Prototype)
+                {
+                    while (!word.Eof)
+                    {
+                        if (word.Text == "endtask") break;
+                        switch (word.Text)
+                        {
+                            case "endmodule":
+                            case "endfunction":
+                            case "always":
+                            case "initial":
+                                word.AddError("missed endfunction");
+                                return;
+                            default:
+                                break;
+                        }
+                        word.MoveNext();
+                    }
+                }
+                else
+                {
+                    Statements.IStatement statement = Statements.Statements.ParseCreateFunctionStatement(word, task);
+                }
             }
 
-            if (word.Text != "endtask")
+            if (word.Text == "endtask")
+            {
+                word.Color(CodeDrawStyle.ColorType.Keyword);
+                task.LastIndexReference = word.CreateIndexReference();
+                word.AppendBlock(task.BeginIndexReference, task.LastIndexReference);
+                word.MoveNext();
+            }
+            else
             {
                 word.AddError("endtask expected");
                 return;
             }
-            word.Color(CodeDrawStyle.ColorType.Keyword);
-            task.LastIndexReference = word.CreateIndexReference();
-            word.AppendBlock(task.BeginIndexReference, task.LastIndexReference);
-            word.MoveNext();
 
-            if (word.Prototype)
+            if (word.Text == ":")
             {
-                if (nameSpace.BuildingBlock.Tasks.ContainsKey(task.Name)) return;
-                if (nameSpace.BuildingBlock.NameSpaces.ContainsKey(task.Name)) return;
-                nameSpace.BuildingBlock.Tasks.Add(task.Name, task);
-                nameSpace.BuildingBlock.NameSpaces.Add(task.Name, task);
+                word.MoveNext();
+                if (word.Text == task.Name)
+                {
+                    word.Color(CodeDrawStyle.ColorType.Identifier);
+                    word.MoveNext();
+                }
+                else
+                {
+                    word.AddError("task name mismatch");
+                    word.MoveNext();
+                }
             }
 
             return;
 
         }
 
+
+        // function_body_declaration    ::=   function_data_type_or_implicit [interface_identifier. | class_scope] function_identifier;
+
+
+        // ; { tf_item_declaration }
+        private static void parse_task_items_non_ansi(WordScanner word, NameSpace nameSpace, Task function)
+        {
+            if (word.Text != ";") System.Diagnostics.Debugger.Break();
+            word.MoveNext();
+
+            while (!word.Eof)
+            {
+                switch (word.Text)
+                {
+                    case "input": // tf_input_declaration
+
+                        Verilog.DataObjects.Port.ParseTfPortDeclaration(word, function);
+                        if (word.Text != ";")
+                        {
+                            word.AddError("; expected");
+                        }
+                        else
+                        {
+                            word.MoveNext();
+                        }
+                        continue;
+                    case "reg": // block_reg_declaration
+                        Verilog.DataObjects.Variables.Reg.ParseDeclaration(word, function);
+                        continue;
+                    // event_declaration
+                    case "integer": // integer_declaration
+                        Verilog.DataObjects.Variables.Integer.ParseDeclaration(word, function);
+                        continue;
+                    case "localparameter": // local_parameter_declaration
+                    case "paraeter":  // parameter_declaration
+                        Verilog.DataObjects.Constants.Parameter.ParseCreateDeclaration(word, function, null);
+                        continue;
+                    case "real": // real_declaration
+                        Verilog.DataObjects.Variables.Real.ParseDeclaration(word, function);
+                        continue;
+                    case "realtime": // realtime_declaration
+                        Verilog.DataObjects.Variables.Realtime.ParseDeclaration(word, function);
+                        continue;
+                    case "time": // time_declaration
+                        Verilog.DataObjects.Variables.Time.ParseDeclaration(word, function);
+                        continue;
+                    case "wire": // illegal format for Verilog 2001
+                        word.AddError("not supported(Veriog2001)");
+                        Net.ParseDeclaration(word, function);
+                        continue;
+                    default:
+                        break;
+                }
+                break;
+            }
+        }
+
+        // ( [ tf_port_list ] ) ; { block_item_declaration }
+        private static void parse_task_items_ansi(WordScanner word, NameSpace nameSpace, Task function)
+        {
+            if (word.Text != "(") System.Diagnostics.Debugger.Break();
+            word.MoveNext();
+
+            Port.ParseTfPortItems(word, nameSpace, function);
+
+            if (word.Text == ")")
+            {
+                word.MoveNext();
+            }
+            else
+            {
+                word.AddError(") required");
+            }
+            if (word.Text == ";")
+            {
+                word.MoveNext();
+            }
+            else
+            {
+                word.AddError("; required");
+            }
+
+            while (!word.Eof)
+            {
+                if (!BlockItemDeclaration.Parse(word, function)) break;
+            }
+
+        }
     }
 }

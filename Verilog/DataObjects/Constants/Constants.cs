@@ -3,6 +3,7 @@ using pluginVerilog.Verilog.DataObjects;
 using pluginVerilog.Verilog.DataObjects.DataTypes;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,7 +21,8 @@ namespace pluginVerilog.Verilog.DataObjects.Constants
         {
             parameter,
             localparam,
-            specparam
+            specparam,
+            enum_
         }
         public ConstantTypeEnum ConstantType = ConstantTypeEnum.parameter;
 
@@ -156,18 +158,33 @@ namespace pluginVerilog.Verilog.DataObjects.Constants
                         }
                         else if (word.Prototype)
                         {
-                            if (module.Parameters.ContainsKey(identifier))
+                            if (module.Constants.ContainsKey(identifier))
                             {
                                 //                                nameReference.AddError("parameter name duplicated");
                             }
                             else
                             {
-                                Parameter param = new Parameter();
-                                param.Name = identifier;
-                                param.Expression = expression;
-                                param.DefinitionRefrecnce = nameReference;
-                                param.ConstantType = constantType;
-                                module.Parameters.Add(param.Name, param);
+                                Constants constants;
+                                switch (constantType)
+                                {
+                                    case ConstantTypeEnum.localparam:
+                                        constants = new Localparam();
+                                        break;
+                                    case ConstantTypeEnum.parameter:
+                                        constants = new Parameter();
+                                        break;
+                                    case ConstantTypeEnum.specparam:
+                                        constants = new Specparam();
+                                        break;
+                                    default:
+                                        System.Diagnostics.Debugger.Break();
+                                        return;
+                                }
+                                constants.Name = identifier;
+                                constants.Expression = expression;
+                                constants.DefinitionRefrecnce = nameReference;
+                                constants.ConstantType = constantType;
+                                module.Constants.Add(constants.Name, constants);
 
                                 module.PortParameterNameList.Add(identifier);
                             }
@@ -268,7 +285,22 @@ namespace pluginVerilog.Verilog.DataObjects.Constants
                 if (!General.IsIdentifier(word.Text)) break;
                 string identifier = word.Text;
                 word.Color(CodeDrawStyle.ColorType.Paramater);
-                Parameter param = new Parameter();
+                Constants constants;
+                switch (constantType)
+                {
+                    case ConstantTypeEnum.localparam:
+                        constants = new Localparam();
+                        break;
+                    case ConstantTypeEnum.parameter:
+                        constants = new Parameter();
+                        break;
+                    case ConstantTypeEnum.specparam:
+                        constants = new Specparam();
+                        break;
+                    default:
+                        System.Diagnostics.Debugger.Break();
+                        return;
+                }
 
                 {
                     if (!word.Active)
@@ -277,26 +309,26 @@ namespace pluginVerilog.Verilog.DataObjects.Constants
                     }
                     else if (word.Prototype)
                     {
-                        if (nameSpace.Parameters.ContainsKey(identifier))
+                        if (nameSpace.Constants.ContainsKey(identifier))
                         {
                             word.AddError("name duplicated");
                         }
                         else
                         {
-                            param.Name = identifier;
-                            nameSpace.Parameters.Add(param.Name, param);
+                            constants.Name = identifier;
+                            nameSpace.Constants.Add(constants.Name, constants);
                         }
                     }
                     else
                     {
-                        if (nameSpace.Parameters.ContainsKey(identifier))
+                        if (nameSpace.Constants.ContainsKey(identifier))
                         { // re-parse after prototype parse 
-                            param = nameSpace.Parameters[identifier];
+                            constants = nameSpace.Constants[identifier];
                         }
                         else
                         { // for root nameSpace parameter
-                            param.Name = identifier;
-                            nameSpace.Parameters.Add(param.Name, param);
+                            constants.Name = identifier;
+                            nameSpace.Constants.Add(constants.Name, constants);
                         }
                     }
                 }
@@ -305,8 +337,8 @@ namespace pluginVerilog.Verilog.DataObjects.Constants
                 if (word.Text != "=") break;
                 word.MoveNext();
 
-                param.Expression = Expressions.Expression.ParseCreate(word, nameSpace);
-                if (param.Expression == null) break;
+                constants.Expression = Expressions.Expression.ParseCreate(word, nameSpace);
+                if (constants.Expression == null) break;
 
                 if (word.Text != ",") break;
                 word.MoveNext();

@@ -11,11 +11,11 @@ namespace pluginVerilog.Verilog.BuildingBlocks
         // NameSpace
         Dictionary<string, DataObjects.DataObject> Variables { get; }
         NameSpace Parent { get; }
-        Dictionary<string, DataObjects.Constants.Parameter> Parameters { get; }
+        Dictionary<string, DataObjects.Constants.Constants> Constants { get; }
         Dictionary<string, NameSpace> NameSpaces { get; }
         NameSpace GetHierNameSpace(int index);
         DataObjects.DataObject GetVariable(string identifier);
-        DataObjects.Constants.Parameter GetParameter(string identifier);
+        DataObjects.Constants.Constants GetConstants(string identifier);
 
         // Bulding Block
         Dictionary<string, Function> Functions { get; }

@@ -107,6 +107,7 @@
     <Compile Include="Verilog\CommentAnnotated.cs" />
     <Compile Include="Verilog\CommentScanner.cs" />
     <Compile Include="Verilog\DataObjects\Constants\Constants.cs" />
+    <Compile Include="Verilog\DataObjects\Constants\EnumConstants.cs" />
     <Compile Include="Verilog\DataObjects\Constants\Specparam.cs" />
     <Compile Include="Verilog\DataObjects\Constants\Localparam.cs" />
     <Compile Include="Verilog\DataObjects\DataObject.cs" />

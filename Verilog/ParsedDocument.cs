@@ -175,7 +175,7 @@ namespace pluginVerilog.Verilog
             }
 
             {
-                DataObjects.Constants.Parameter param = space.GetParameter(text);
+                DataObjects.Constants.Constants param = space.GetConstants(text);
                 if(param != null)
                 {
                     ret.Add(new Popup.ParameterPopup(param));

@@ -20,6 +20,7 @@ namespace pluginVerilog.Verilog.Expressions
         public virtual double? Value { get; protected set; }
         public virtual int? BitWidth { get; protected set; }
         public WordReference Reference { get; protected set; }
+        public bool IncrementDecrement = false;
 
         /// <summary>
         /// dispose refrence
@@ -140,6 +141,17 @@ namespace pluginVerilog.Verilog.Expressions
             }
 
             if (!word.Active) return expression;
+
+            bool incdec = false;
+            if(rpnPrimarys.Count == 2)
+            {
+                if (rpnPrimarys[0] is IncDecOperator || rpnPrimarys[1] is IncDecOperator)
+                {
+                    incdec = true;
+                }
+            }
+
+
             // parse rpn
             List<Primary> primarys = new List<Primary>();
             for(int i=0;i<rpnPrimarys.Count;i++)
@@ -158,6 +170,14 @@ namespace pluginVerilog.Verilog.Expressions
                 {
                     if (primarys.Count < 1) return null;
                     UnaryOperator op = item as UnaryOperator;
+                    Primary primary = op.Operate(primarys[0]);
+                    primarys.RemoveAt(0);
+                    primarys.Add(primary);
+                }
+                else if (item is IncDecOperator)
+                {
+                    if (primarys.Count < 1) return null;
+                    IncDecOperator op = item as IncDecOperator;
                     Primary primary = op.Operate(primarys[0]);
                     primarys.RemoveAt(0);
                     primarys.Add(primary);
@@ -189,6 +209,7 @@ namespace pluginVerilog.Verilog.Expressions
                 return null;
             }
 
+            primarys[0].IncrementDecrement = incdec;
             return primarys[0];
 //            return expression;
         }
@@ -290,15 +311,23 @@ namespace pluginVerilog.Verilog.Expressions
         private static bool parseExpression(WordScanner word,NameSpace nameSpace,List<Primary> Primarys,List<Operator> operatorStock,ref WordReference reference)
         {
             reference = word.GetReference(reference);
+
+            // ++(primary),--(primary)
             Primary primary = Primary.ParseCreate(word, nameSpace);
             if (primary != null)
             {
                 Primarys.Add(primary);
+                IncDecOperator incdecOperator = IncDecOperator.ParseCreate(word);
+                if (incdecOperator != null)
+                {
+                    Primarys.Add(incdecOperator);
+                }
             }
             else
             {
-                UnaryOperator unaryOperator = UnaryOperator.ParseCreate(word);
-                if (unaryOperator != null)
+                // ++(primary),-(primary)
+                IncDecOperator incdecOperator = IncDecOperator.ParseCreate(word);
+                if(incdecOperator != null)
                 {
                     if (word.Eof)
                     {
@@ -312,11 +341,32 @@ namespace pluginVerilog.Verilog.Expressions
                         return false;
                     }
                     Primarys.Add(primary);
-                    addOperator(unaryOperator, Primarys, operatorStock);
+                    Primarys.Add(incdecOperator);
                 }
                 else
                 {
-                    return false;
+                    UnaryOperator unaryOperator = UnaryOperator.ParseCreate(word);
+                    if (unaryOperator != null)
+                    {
+                        if (word.Eof)
+                        {
+                            word.AddError("illegal unary Operator");
+                            return false;
+                        }
+                        primary = Primary.ParseCreate(word, nameSpace);
+                        if (primary == null)
+                        {
+                            word.AddError("illegal unary Operator");
+                            return false;
+                        }
+                        Primarys.Add(primary);
+                        Primarys.Add(unaryOperator);
+//                        addOperator(unaryOperator, Primarys, operatorStock);
+                    }
+                    else
+                    {
+                        return false;
+                    }
                 }
             }
             if (word.Eof) return true;

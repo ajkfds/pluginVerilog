@@ -23,6 +23,8 @@ namespace pluginVerilog.Verilog
         private List<DataObjects.Port> portsList = new List<DataObjects.Port>();
         public List<DataObjects.Port> PortsList { get { return portsList; } }
 
+        public DataObjects.Variables.Variable ReturnVariable = null;
+
         public Statements.IStatement Statement;
 
         private enum valType
@@ -99,7 +101,7 @@ namespace pluginVerilog.Verilog
 
 
             // function_data_type_or_implicit   ::= data_type_or_void | implicit_data_type;
-            DataObjects.DataObject retVal = null;
+            Variable retVal = null;
             bool returnVoid = false;
 
             switch (word.Text)
@@ -158,6 +160,8 @@ namespace pluginVerilog.Verilog
             if (retVal == null & !returnVoid) return;
 
             if(retVal != null) retVal.Name = function.Name;
+
+            function.ReturnVariable = retVal;
 
             if (!word.Active)
             {

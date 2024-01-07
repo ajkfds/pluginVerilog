@@ -466,11 +466,11 @@ namespace pluginVerilog.Verilog.ModuleItems
                     else
                     {
                         if(
-                            instancedModule.Parameters.ContainsKey(paramName) && 
-                            instancedModule.Parameters[paramName].Expression != null
+                            instancedModule.Constants.ContainsKey(paramName) && 
+                            instancedModule.Constants[paramName].Expression != null
                             )
                         {
-                            sb.Append(instancedModule.Parameters[paramName].Expression.CreateString());
+                            sb.Append(instancedModule.Constants[paramName].Expression.CreateString());
                         }
                     }
                     sb.Append(" )");
