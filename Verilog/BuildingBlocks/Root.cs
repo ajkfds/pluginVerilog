@@ -64,7 +64,8 @@ namespace pluginVerilog.Verilog.BuildingBlocks
 
         }
 
-        public Dictionary<string, Module> Modules = new Dictionary<string, Module>();
+        public Dictionary<string, BuildingBlock> Modules = new Dictionary<string, BuildingBlock>();
+        public Dictionary<string, Interface> Interfaces = new Dictionary<string, Interface>();
 
         public static Root ParseCreate(WordScanner word, ParsedDocument parsedDocument,Data.VerilogFile file)
         {
@@ -83,6 +84,9 @@ namespace pluginVerilog.Verilog.BuildingBlocks
                         break;
                     // udp_declaration
                     // interface_declaration
+                    case "interface":
+                        parseInterface(word, parsedDocument, file);
+                        break;
                     // program_declaration
                     // bind_directive
                     // config_declaration
@@ -159,6 +163,61 @@ namespace pluginVerilog.Verilog.BuildingBlocks
             }
         }
 
+        private static void parseInterface(WordScanner word, ParsedDocument parsedDocument, Data.VerilogFile file)
+        {
+            if (word.Text != "interface") System.Diagnostics.Debugger.Break();
+
+            if (parsedDocument.TargetBuldingBlockName != null)
+            {
+                string moduleName = word.NextText;
+                if (moduleName != parsedDocument.TargetBuldingBlockName)
+                {
+                    word.SkipToKeyword("endinterface");
+                    word.MoveNext();
+                    return;
+                }
+            }
+
+            Interface module;
+            IndexReference iref = IndexReference.Create(parsedDocument);
+
+            if (parsedDocument.ParseMode == Parser.VerilogParser.ParseModeEnum.LoadParse)
+            {
+                if (parsedDocument.ParameterOverrides == null)
+                {
+                    module = Interface.Create(word, null, file, true);
+                }
+                else
+                {
+                    module = Interface.Create(word, parsedDocument.ParameterOverrides, null, file, true);
+                }
+                if (module.ModuleInstantiations.Count != 0) // prepare reparse (instanced module could have un-refferenced link)
+                {
+                    module.ReperseRequested = true;
+                }
+            }
+            else
+            {
+                if (parsedDocument.ParameterOverrides == null)
+                {
+                    module = Interface.Create(word, null, file, false);
+                }
+                else
+                {
+                    module = Interface.Create(word, parsedDocument.ParameterOverrides, null, file, false);
+                }
+            }
+
+            if (!parsedDocument.Root.Modules.ContainsKey(module.Name))
+            {
+                parsedDocument.Root.Interfaces.Add(module.Name, module);
+                if (module.ReperseRequested) parsedDocument.ReparseRequested = true;
+            }
+            else
+            {
+                word.AddError("duplicated module name");
+            }
+        }
 
     }
 }

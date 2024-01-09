@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ajkControls;
 using ajkControls.Json;
 using pluginVerilog.Verilog.BuildingBlocks;
+using pluginVerilog.Verilog.ModuleItems;
 
 namespace pluginVerilog
 {
@@ -54,7 +55,7 @@ namespace pluginVerilog
             }
         }
 
-        public Module GetInstancedModule(Verilog.ModuleItems.ModuleInstantiation moduleInstantiation)
+        public Module GetInstancedModule(IInstantiation moduleInstantiation)
         {
             if (moduleInstantiation.ParameterOverrides.Count == 0)
             {
@@ -67,9 +68,27 @@ namespace pluginVerilog
                 Verilog.ParsedDocument parsedDocument = file.GetInstancedParsedDocument(moduleInstantiation.ModuleName+":"+ moduleInstantiation.OverrideParameterID) as Verilog.ParsedDocument;
                 if (parsedDocument == null) return null;
                 if (!parsedDocument.Root.Modules.ContainsKey(moduleInstantiation.ModuleName)) return null;
+                return parsedDocument.Root.Modules[moduleInstantiation.ModuleName] as Module;
+            }
+        }
+
+        public BuildingBlock GetInstancedBuildingBlock(IInstantiation moduleInstantiation)
+        {
+            if (moduleInstantiation.ParameterOverrides.Count == 0)
+            {
+                return GetModule(moduleInstantiation.ModuleName);
+            }
+            else
+            {
+                Data.VerilogFile file = GetFileOfModule(moduleInstantiation.ModuleName) as Data.VerilogFile;
+                if (file == null) return null;
+                Verilog.ParsedDocument parsedDocument = file.GetInstancedParsedDocument(moduleInstantiation.ModuleName + ":" + moduleInstantiation.OverrideParameterID) as Verilog.ParsedDocument;
+                if (parsedDocument == null) return null;
+                if (!parsedDocument.Root.Modules.ContainsKey(moduleInstantiation.ModuleName)) return null;
                 return parsedDocument.Root.Modules[moduleInstantiation.ModuleName];
             }
         }
+
         public void loadMacros(ajkControls.Json.JsonReader jsonReader)
         {
             using(var reader = jsonReader.GetNextObjectReader())
@@ -279,7 +298,7 @@ namespace pluginVerilog
 
             if (file == null || file.VerilogParsedDocument == null) return null;
             if (!file.VerilogParsedDocument.Root.Modules.ContainsKey(moduleName)) return null;
-            return file.VerilogParsedDocument.Root.Modules[moduleName];
+            return file.VerilogParsedDocument.Root.Modules[moduleName] as Module;
         }
 
         // inline comment

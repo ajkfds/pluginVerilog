@@ -70,7 +70,7 @@ namespace pluginVerilog.Tools
                 sourceParsedDocument = source.GetInstancedParsedDocument(moduleInstantiation.OverrideParameterID) as Verilog.ParsedDocument;
             }
             if (sourceParsedDocument == null) return;
-            Module sourceModule = sourceParsedDocument.Root.Modules[moduleInstantiation.ModuleName];
+            Module sourceModule = sourceParsedDocument.Root.Modules[moduleInstantiation.ModuleName] as Module;
             if (sourceModule == null) return;
 
             Module instancedModule = parsedDocument.ProjectProperty.GetModule(moduleInstantiation.ModuleName);

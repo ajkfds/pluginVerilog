@@ -45,7 +45,7 @@ namespace pluginVerilog.Verilog.AutoComplete
             if (instancedFile == null) return;
             Verilog.ParsedDocument instancedParsedDocument = instancedFile.ParsedDocument as Verilog.ParsedDocument;
             if (instancedParsedDocument == null) return;
-            Module instancedModule = instancedParsedDocument.Root.Modules[Text];
+            Module instancedModule = instancedParsedDocument.Root.Modules[Text] as Module;
             if (instancedModule == null) return;
 
             string instanceName;

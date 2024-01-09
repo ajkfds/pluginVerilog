@@ -206,7 +206,7 @@ namespace pluginVerilog.Verilog.Expressions
             {
                 IBuildingBlockWithModuleInstance buildingBlock = nameSpace.BuildingBlock as IBuildingBlockWithModuleInstance;
 
-                ModuleItems.ModuleInstantiation minst = buildingBlock.ModuleInstantiations[word.Text];
+                ModuleItems.IInstantiation minst = buildingBlock.ModuleInstantiations[word.Text];
                 ModuleInstanceReference moduleInstanceReference = new ModuleInstanceReference(minst);
                 primary = moduleInstanceReference;
                 nameSpace = minst.GetInstancedModule();

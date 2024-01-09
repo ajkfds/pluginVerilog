@@ -307,7 +307,7 @@ namespace pluginVerilog.Verilog
 
             if (buildingBlock.ModuleInstantiations.ContainsKey(hier[0]))
             {
-                ModuleInstantiation inst = buildingBlock.ModuleInstantiations[hier[0]];
+                IInstantiation inst = buildingBlock.ModuleInstantiations[hier[0]];
                 Module module = ProjectProperty.GetInstancedModule(inst);
                 hier.RemoveAt(0);
                 return getSearchNameSpace(module,hier);

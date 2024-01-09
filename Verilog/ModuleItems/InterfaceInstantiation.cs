@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Verilog.ModuleItems
 {
-    public class ModuleInstantiation : Item,IInstantiation
+    public class InterfaceInstantiation : Item, IInstantiation
     {
-        protected ModuleInstantiation() { }
+        protected InterfaceInstantiation() { }
 
-        public string ModuleName{ get; protected set; }
+        public string ModuleName { get; protected set; }
 
         public Dictionary<string, Expressions.Expression> ParameterOverrides { get; set; } = new Dictionary<string, Expressions.Expression>();
 
@@ -40,7 +40,7 @@ namespace pluginVerilog.Verilog.ModuleItems
         public IndexReference LastIndexReference;
         public static bool Parse(WordScanner word, NameSpace nameSpace)
         {
-            // interface instanciation can be placed only in module,or root
+            // module instanciation can be placed only in module
             Module module = nameSpace.BuildingBlock as Module;
             //            if (module == null) System.Diagnostics.Debugger.Break();
             if (module == null) return false;
@@ -63,7 +63,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                 return true;
             }
             moduleIdentifier.Color(CodeDrawStyle.ColorType.Keyword);
-            ModuleInstantiation moduleInstantiation = new ModuleInstantiation();
+            InterfaceInstantiation moduleInstantiation = new InterfaceInstantiation();
             moduleInstantiation.ModuleName = moduleName;
             moduleInstantiation.BeginIndexReference = beginIndexReference;
             moduleInstantiation.Project = word.RootParsedDocument.Project;
@@ -244,7 +244,7 @@ namespace pluginVerilog.Verilog.ModuleItems
                     {   // duplicated
                         if (module.ModuleInstantiations[moduleInstantiation.Name].Prototype)
                         {
-                            moduleInstantiation = module.ModuleInstantiations[moduleInstantiation.Name] as ModuleInstantiation;
+                            moduleInstantiation = module.ModuleInstantiations[moduleInstantiation.Name] as InterfaceInstantiation;
                             moduleInstantiation.Prototype = false;
                         }
                         else

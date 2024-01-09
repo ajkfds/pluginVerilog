@@ -80,7 +80,7 @@ namespace pluginVerilog.Verilog.Snippets
             Verilog.ParsedDocument targetParsedDocument = targetFile.ParsedDocument as Verilog.ParsedDocument;
             if (targetParsedDocument == null) return;
 
-            Module targetModule = targetParsedDocument.Root.Modules[Text];
+            Module targetModule = targetParsedDocument.Root.Modules[Text] as Module;
             if (targetModule == null) return;
 
             string replaceText = getReplaceText(targetModule, instanceName);

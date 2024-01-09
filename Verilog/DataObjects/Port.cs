@@ -278,7 +278,10 @@ ansi_port_declaration ::=
             port.Name = word.Text;
             port.Direction = DirectionEnum.Undefined;
             IModuleOrInterfaceOrProgram block = nameSpace.BuildingBlock as IModuleOrInterfaceOrProgram;
-            block.Ports.Add(port.Name,port);
+            if (block.Ports.ContainsKey(port.Name))
+            {
+                block.Ports.Add(port.Name, port);
+            }
             word.Color(CodeDrawStyle.ColorType.Variable);
             word.MoveNext();
 

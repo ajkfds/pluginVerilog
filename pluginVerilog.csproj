@@ -167,10 +167,13 @@
     <Compile Include="Verilog\Items\Generate\IfGenerateConstruct.cs" />
     <Compile Include="Verilog\Items\Generate\LoopGenerateConstruct.cs" />
     <Compile Include="Verilog\Items\ModuleCommonItem.cs" />
+    <Compile Include="Verilog\Items\InterfaceItem.cs" />
     <Compile Include="Verilog\Items\ModuleItem.cs" />
+    <Compile Include="Verilog\Items\InterfaceOrGenerateItem.cs" />
     <Compile Include="Verilog\Items\ModuleOrGenerateItem.cs" />
     <Compile Include="Verilog\Items\BlockItemDeclaration.cs" />
     <Compile Include="Verilog\Items\ModuleOrGenerateItemDeclaration.cs" />
+    <Compile Include="Verilog\Items\NonPortInterfaceItem.cs" />
     <Compile Include="Verilog\Items\NonPortModuleItem.cs" />
     <Compile Include="Verilog\Items\PackageItem.cs" />
     <Compile Include="Verilog\Items\PackageOrGenerateItemDeclaration.cs" />
@@ -185,7 +188,9 @@
     <Compile Include="Verilog\Function.cs" />
     <Compile Include="Verilog\ModuleItems\AlwaysConstruct.cs" />
     <Compile Include="Verilog\ModuleItems\GateInstantiation.cs" />
+    <Compile Include="Verilog\ModuleItems\IInstantiation.cs" />
     <Compile Include="Verilog\ModuleItems\InitialConstruct.cs" />
+    <Compile Include="Verilog\ModuleItems\InterfaceInstantiation.cs" />
     <Compile Include="Verilog\ModuleItems\ModuleInstantiation.cs" />
     <Compile Include="NavigatePanel\VerilogFileNode.cs" />
     <Compile Include="Verilog\ModuleItems\ParameterOverride.cs" />

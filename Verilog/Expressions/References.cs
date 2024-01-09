@@ -97,8 +97,8 @@ namespace pluginVerilog.Verilog.Expressions
 
     public class ModuleInstanceReference : Primary
     {
-        ModuleItems.ModuleInstantiation moduleInstantiation;
-        public ModuleInstanceReference(ModuleItems.ModuleInstantiation moduleInstantiation)
+        ModuleItems.IInstantiation moduleInstantiation;
+        public ModuleInstanceReference(ModuleItems.IInstantiation moduleInstantiation)
         {
             this.moduleInstantiation = moduleInstantiation;
         }

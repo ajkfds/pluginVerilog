@@ -26,7 +26,7 @@ namespace pluginVerilog.Verilog.DataObjects.Constants
         }
         public ConstantTypeEnum ConstantType = ConstantTypeEnum.parameter;
 
-        public static void ParseCreateDeclarationForPort(WordScanner word, Module module, Attribute attribute)
+        public static void ParseCreateDeclarationForPort(WordScanner word, IModuleOrInterfaceOrProgram module, Attribute attribute)
         {
             /*
             local_parameter_declaration ::=  (From Annex A - A.2.1.1)  
@@ -76,7 +76,7 @@ namespace pluginVerilog.Verilog.DataObjects.Constants
             word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
-            DataObjects.DataTypes.DataType dataType = DataObjects.DataTypes.DataType.ParseCreate(word, module, null);
+            DataObjects.DataTypes.DataType dataType = DataObjects.DataTypes.DataType.ParseCreate(word, (NameSpace)module, null);
 
             switch (word.Text)
             {
@@ -104,7 +104,7 @@ namespace pluginVerilog.Verilog.DataObjects.Constants
                     }
                     if (word.GetCharAt(0) == '[')
                     {
-                        Range range = Range.ParseCreate(word, module);
+                        Range range = Range.ParseCreate(word, (NameSpace)module);
                     }
                     break;
             }
@@ -120,7 +120,7 @@ namespace pluginVerilog.Verilog.DataObjects.Constants
 
                 if (word.Text != "=") break;
                 word.MoveNext();
-                Expressions.Expression expression = Expressions.Expression.ParseCreate(word, module);
+                Expressions.Expression expression = Expressions.Expression.ParseCreate(word, (NameSpace)module);
                 if (expression == null) break;
                 if (word.Active)
                 {
