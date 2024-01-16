@@ -88,7 +88,7 @@ namespace pluginVerilog.Verilog
                 if (file is Data.VerilogFile)
                 {
                     Data.VerilogFile verilogFile = file as Data.VerilogFile;
-                    foreach (Module module in Root.Modules.Values)
+                    foreach (BuildingBlock module in Root.BuldingBlocks.Values)
                     {
                         verilogFile.ProjectProperty.RemoveModule(module.Name, verilogFile);
                     }
@@ -139,7 +139,7 @@ namespace pluginVerilog.Verilog
 
             NameSpace space = iref.RootParsedDocument.Root;
 
-            foreach (Module module in iref.RootParsedDocument.Root.Modules.Values)
+            foreach (BuildingBlock module in iref.RootParsedDocument.Root.BuldingBlocks.Values)
             {
                 if (iref.IsSmallerThan(module.BeginIndexReference)) continue;
                 if (iref.IsGreaterThan(module.LastIndexReference)) continue;
@@ -161,7 +161,7 @@ namespace pluginVerilog.Verilog
                 if (inst != null)
                 {
                     string portName = text.Substring(1);
-                    Module originalModule = ProjectProperty.GetModule(inst.ModuleName);
+                    BuildingBlock originalModule = ProjectProperty.GetBuildingBlock(inst.SourceName);
                     if (originalModule == null) return ret;
                     if (!originalModule.Ports.ContainsKey(portName)) return ret;
                     Verilog.DataObjects.Port port = originalModule.Ports[portName];
@@ -197,10 +197,10 @@ namespace pluginVerilog.Verilog
             return ret;
         }
 
-        public Module GetModule(int index)
+        public BuildingBlock GetBuidingBlockAt(int index)
         {
             IndexReference iref = IndexReference.Create(this.IndexReference, index);
-            foreach (Module module in Root.Modules.Values)
+            foreach (BuildingBlock module in Root.BuldingBlocks.Values)
             {
                 if (iref.IsSmallerThan(module.BeginIndexReference)) continue;
                 if (iref.IsGreaterThan(module.LastIndexReference)) continue;
@@ -305,10 +305,10 @@ namespace pluginVerilog.Verilog
             if(nameSpace == null) return null;
             if (hier.Count == 0) return nameSpace;
 
-            if (buildingBlock.ModuleInstantiations.ContainsKey(hier[0]))
+            if (buildingBlock.Instantiations.ContainsKey(hier[0]))
             {
-                IInstantiation inst = buildingBlock.ModuleInstantiations[hier[0]];
-                Module module = ProjectProperty.GetInstancedModule(inst);
+                IInstantiation inst = buildingBlock.Instantiations[hier[0]];
+                BuildingBlock module = ProjectProperty.GetInstancedBuildingBlock(inst);
                 hier.RemoveAt(0);
                 return getSearchNameSpace(module,hier);
             }
@@ -329,7 +329,7 @@ namespace pluginVerilog.Verilog
 
             // get current nameSpace
             NameSpace space = null;
-            foreach (Module module in Root.Modules.Values)
+            foreach (BuildingBlock module in Root.BuldingBlocks.Values)
             {
                 if (iref.IsSmallerThan(module.BeginIndexReference)) continue;
                 if (iref.IsGreaterThan(module.LastIndexReference)) continue;

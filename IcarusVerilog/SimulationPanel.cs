@@ -117,7 +117,7 @@ namespace pluginVerilog.IcarusVerilog
             if (topFile == null) return;
             Verilog.ParsedDocument topParsedDocument = topFile.ParsedDocument as Verilog.ParsedDocument;
             if (topParsedDocument == null) return;
-            if (topParsedDocument.Root.Modules.Count == 0) return;
+            if (topParsedDocument.Root.BuldingBlocks.Count == 0) return;
 
             string simName = topFile.Name.Substring(0, topFile.Name.LastIndexOf('.'));
 
@@ -136,7 +136,7 @@ namespace pluginVerilog.IcarusVerilog
 
             List<string> includeFileList = new List<string>();
 
-            foreach (Module module in topParsedDocument.Root.Modules.Values)
+            foreach (BuildingBlock module in topParsedDocument.Root.BuldingBlocks.Values)
             {
                 appendFiles(filePathList,includeFileList, module, project);
             }
@@ -184,7 +184,7 @@ namespace pluginVerilog.IcarusVerilog
 
         }
 
-        private void appendFiles(List<string> filePathList, List<string> includePathList, Module module, codeEditor.Data.Project project)
+        private void appendFiles(List<string> filePathList, List<string> includePathList, BuildingBlock module, codeEditor.Data.Project project)
         {
             string fileId = module.FileId;
             Data.VerilogFile file = module.File as Data.VerilogFile;
@@ -202,9 +202,9 @@ namespace pluginVerilog.IcarusVerilog
                 if (!includePathList.Contains(includePath)) includePathList.Add(includePath);
             }
 
-            foreach(Verilog.ModuleItems.ModuleInstantiation instance in module.ModuleInstantiations.Values)
+            foreach(Verilog.ModuleItems.ModuleInstantiation instance in module.Instantiations.Values)
             {
-                Module subModule = project.GetPluginProperty().GetModule(instance.ModuleName);
+                BuildingBlock subModule = project.GetPluginProperty().GetBuildingBlock(instance.SourceName);
                 if (subModule != null) appendFiles(filePathList, includePathList, subModule, project);
             }
 

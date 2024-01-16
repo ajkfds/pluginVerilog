@@ -55,37 +55,20 @@ namespace pluginVerilog
             }
         }
 
-        public Module GetInstancedModule(IInstantiation moduleInstantiation)
+        public BuildingBlock GetInstancedBuildingBlock(IInstantiation instantiation)
         {
-            if (moduleInstantiation.ParameterOverrides.Count == 0)
+            if (instantiation.ParameterOverrides.Count == 0)
             {
-                return GetModule(moduleInstantiation.ModuleName);
+                return GetBuildingBlock(instantiation.SourceName);
             }
             else
             {
-                Data.VerilogFile file = GetFileOfModule(moduleInstantiation.ModuleName) as Data.VerilogFile;
+                Data.VerilogFile file = GetFileOfBuildingblock(instantiation.SourceName) as Data.VerilogFile;
                 if (file == null) return null;
-                Verilog.ParsedDocument parsedDocument = file.GetInstancedParsedDocument(moduleInstantiation.ModuleName+":"+ moduleInstantiation.OverrideParameterID) as Verilog.ParsedDocument;
+                Verilog.ParsedDocument parsedDocument = file.GetInstancedParsedDocument(instantiation.SourceName + ":" + instantiation.OverrideParameterID) as Verilog.ParsedDocument;
                 if (parsedDocument == null) return null;
-                if (!parsedDocument.Root.Modules.ContainsKey(moduleInstantiation.ModuleName)) return null;
-                return parsedDocument.Root.Modules[moduleInstantiation.ModuleName] as Module;
-            }
-        }
-
-        public BuildingBlock GetInstancedBuildingBlock(IInstantiation moduleInstantiation)
-        {
-            if (moduleInstantiation.ParameterOverrides.Count == 0)
-            {
-                return GetModule(moduleInstantiation.ModuleName);
-            }
-            else
-            {
-                Data.VerilogFile file = GetFileOfModule(moduleInstantiation.ModuleName) as Data.VerilogFile;
-                if (file == null) return null;
-                Verilog.ParsedDocument parsedDocument = file.GetInstancedParsedDocument(moduleInstantiation.ModuleName + ":" + moduleInstantiation.OverrideParameterID) as Verilog.ParsedDocument;
-                if (parsedDocument == null) return null;
-                if (!parsedDocument.Root.Modules.ContainsKey(moduleInstantiation.ModuleName)) return null;
-                return parsedDocument.Root.Modules[moduleInstantiation.ModuleName];
+                if (!parsedDocument.Root.BuldingBlocks.ContainsKey(instantiation.SourceName)) return null;
+                return parsedDocument.Root.BuldingBlocks[instantiation.SourceName];
             }
         }
 
@@ -260,14 +243,14 @@ namespace pluginVerilog
             }
         }
 
-        public Data.IVerilogRelatedFile GetFileOfModule(string moduleName)
+        public Data.IVerilogRelatedFile GetFileOfBuildingblock(string buildingBlockName)
         {
             lock (moduleFileRefs)
             {
-                if (moduleFileRefs.ContainsKey(moduleName))
+                if (moduleFileRefs.ContainsKey(buildingBlockName))
                 {
                     Data.IVerilogRelatedFile file;
-                    if (!moduleFileRefs[moduleName].TryGetTarget(out file))
+                    if (!moduleFileRefs[buildingBlockName].TryGetTarget(out file))
                     {
                         return null;
                     }
@@ -291,14 +274,15 @@ namespace pluginVerilog
             }
         }
 
-        public Module GetModule(string moduleName)
+        public BuildingBlock
+            GetBuildingBlock(string moduleName)
         {
-            Data.IVerilogRelatedFile file = GetFileOfModule(moduleName);
+            Data.IVerilogRelatedFile file = GetFileOfBuildingblock(moduleName);
             if (file == null) return null;
 
             if (file == null || file.VerilogParsedDocument == null) return null;
-            if (!file.VerilogParsedDocument.Root.Modules.ContainsKey(moduleName)) return null;
-            return file.VerilogParsedDocument.Root.Modules[moduleName] as Module;
+            if (!file.VerilogParsedDocument.Root.BuldingBlocks.ContainsKey(moduleName)) return null;
+            return file.VerilogParsedDocument.Root.BuldingBlocks[moduleName] as BuildingBlock;
         }
 
         // inline comment

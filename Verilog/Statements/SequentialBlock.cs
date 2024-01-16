@@ -123,7 +123,7 @@ namespace pluginVerilog.Verilog.Statements
                 {
                     int beginCount = 0;
                     word.AddError("illegal sequential block");
-                    while(!word.Eof && !Module.UniqueKeywords.Contains(word.Text))
+                    while(!word.Eof && !namedBlock.BuildingBlock.GetExitKeywords().Contains(word.Text))
                     {
                         if (word.Text == "begin")
                         {

@@ -12,20 +12,16 @@ namespace pluginVerilog.Verilog.BuildingBlocks
 
         // IModuleOrInterfaceOrProfram
 
+
         // Port
-        private Dictionary<string, DataObjects.Port> ports = new Dictionary<string, DataObjects.Port>();
-        public Dictionary<string, DataObjects.Port> Ports { get { return ports; } }
-        private List<DataObjects.Port> portsList = new List<DataObjects.Port>();
-        public List<DataObjects.Port> PortsList { get { return portsList; } }
+        public Dictionary<string, DataObjects.Port> Ports { get; } = new Dictionary<string, DataObjects.Port>();
+        public List<DataObjects.Port> PortsList { get; } = new List<DataObjects.Port>();
 
         public WordReference NameReference;
-        private List<string> portParameterNameList = new List<string>();
-        public List<string> PortParameterNameList { get { return portParameterNameList; } }
+        public List<string> PortParameterNameList { get; } = new List<string>();
 
         // Module
-        private Dictionary<string, ModuleItems.IInstantiation> moduleInstantiations = new Dictionary<string, ModuleItems.IInstantiation>();
-        public Dictionary<string, ModuleItems.IInstantiation> ModuleInstantiations { get { return moduleInstantiations; } }
-
+        public Dictionary<string, ModuleItems.IInstantiation> Instantiations { get; } = new Dictionary<string, ModuleItems.IInstantiation>();
 
         private WeakReference<Data.IVerilogRelatedFile> fileRef;
         public Data.IVerilogRelatedFile File
@@ -288,7 +284,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
         {
             base.AppendAutoCompleteItem(items);
 
-            foreach (ModuleItems.ModuleInstantiation mi in ModuleInstantiations.Values)
+            foreach (ModuleItems.ModuleInstantiation mi in Instantiations.Values)
             {
                 if (mi.Name == null) System.Diagnostics.Debugger.Break();
                 items.Add(newItem(mi.Name, CodeDrawStyle.ColorType.Identifier));
@@ -457,15 +453,17 @@ namespace pluginVerilog.Verilog.BuildingBlocks
 
          */
 
-
-        public static List<string> UniqueKeywords = new List<string> {
-            "module","endmodule",
-            "function","endfunction",
-            "task","endtask",
-            "always","initial",
-            "assign","specify","endspecify",
-            "generate","endgenerate"
-        };
+        public override List<string> GetExitKeywords()
+        {
+            return new List<string> {
+//                "module","endmodule",
+//                "function","endfunction",
+//                "task","endtask",
+//                "always","initial",
+//                "assign","specify","endspecify",
+//                "generate","endgenerate"
+            };
+        }
 
 
     }

@@ -64,8 +64,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
 
         }
 
-        public Dictionary<string, BuildingBlock> Modules = new Dictionary<string, BuildingBlock>();
-        public Dictionary<string, Interface> Interfaces = new Dictionary<string, Interface>();
+        public Dictionary<string, BuildingBlock> BuldingBlocks = new Dictionary<string, BuildingBlock>();
 
         public static Root ParseCreate(WordScanner word, ParsedDocument parsedDocument,Data.VerilogFile file)
         {
@@ -135,7 +134,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
                 {
                     module = Module.Create(word, parsedDocument.ParameterOverrides, null , file, true);
                 }
-                if (module.ModuleInstantiations.Count != 0) // prepare reparse (instanced module could have un-refferenced link)
+                if (module.Instantiations.Count != 0) // prepare reparse (instanced module could have un-refferenced link)
                 {
                     module.ReperseRequested = true;
                 }
@@ -152,9 +151,9 @@ namespace pluginVerilog.Verilog.BuildingBlocks
                 }
             }
 
-            if (!parsedDocument.Root.Modules.ContainsKey(module.Name))
+            if (!parsedDocument.Root.BuldingBlocks.ContainsKey(module.Name))
             {
-                parsedDocument.Root.Modules.Add(module.Name, module);
+                parsedDocument.Root.BuldingBlocks.Add(module.Name, module);
                 if (module.ReperseRequested) parsedDocument.ReparseRequested = true;
             }
             else
@@ -191,7 +190,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
                 {
                     module = Interface.Create(word, parsedDocument.ParameterOverrides, null, file, true);
                 }
-                if (module.ModuleInstantiations.Count != 0) // prepare reparse (instanced module could have un-refferenced link)
+                if (module.Instantiations.Count != 0) // prepare reparse (instanced module could have un-refferenced link)
                 {
                     module.ReperseRequested = true;
                 }
@@ -208,9 +207,9 @@ namespace pluginVerilog.Verilog.BuildingBlocks
                 }
             }
 
-            if (!parsedDocument.Root.Modules.ContainsKey(module.Name))
+            if (!parsedDocument.Root.BuldingBlocks.ContainsKey(module.Name))
             {
-                parsedDocument.Root.Interfaces.Add(module.Name, module);
+                parsedDocument.Root.BuldingBlocks.Add(module.Name, module);
                 if (module.ReperseRequested) parsedDocument.ReparseRequested = true;
             }
             else

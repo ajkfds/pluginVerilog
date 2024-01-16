@@ -58,7 +58,7 @@ namespace pluginVerilog.Verilog.Snippets
 
             ProjectProperty projectProperty = project.ProjectProperties[Plugin.StaticID] as ProjectProperty;
 
-            Data.VerilogFile targetFile = projectProperty.GetFileOfModule(Text) as Data.VerilogFile;
+            Data.VerilogFile targetFile = projectProperty.GetFileOfBuildingblock(Text) as Data.VerilogFile;
             if (targetFile == null) return;
 
             string instanceName = Text + "_";
@@ -67,10 +67,10 @@ namespace pluginVerilog.Verilog.Snippets
                 if (vfile == null) return;
 
                 ParsedDocument parenetParsedDocument = vfile.VerilogParsedDocument;
-                Module module = parenetParsedDocument.GetModule(vfile.CodeDocument.CaretIndex);
+                BuildingBlock module = parenetParsedDocument.GetBuidingBlockAt(vfile.CodeDocument.CaretIndex);
 
                 int instanceCount = 0;
-                while (module.ModuleInstantiations.ContainsKey(Text + "_" + instanceCount.ToString()))
+                while (module.Instantiations.ContainsKey(Text + "_" + instanceCount.ToString()))
                 {
                     instanceCount++;
                 }
@@ -80,7 +80,7 @@ namespace pluginVerilog.Verilog.Snippets
             Verilog.ParsedDocument targetParsedDocument = targetFile.ParsedDocument as Verilog.ParsedDocument;
             if (targetParsedDocument == null) return;
 
-            Module targetModule = targetParsedDocument.Root.Modules[Text] as Module;
+            BuildingBlock targetModule = targetParsedDocument.Root.BuldingBlocks[Text] as BuildingBlock;
             if (targetModule == null) return;
 
             string replaceText = getReplaceText(targetModule, instanceName);
@@ -178,7 +178,7 @@ namespace pluginVerilog.Verilog.Snippets
         }
 
 
-        private string getReplaceText(Module module, string instanceName)
+        private string getReplaceText(BuildingBlock module, string instanceName)
         {
             StringBuilder sb = new StringBuilder();
             sb.Append(module.Name);

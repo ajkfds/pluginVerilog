@@ -9,13 +9,21 @@ namespace pluginVerilog.Verilog.ModuleItems
 {
     public interface IInstantiation
     {
-        string ModuleName { get; }
+        string SourceName { get; }
 
         Dictionary<string, Expressions.Expression> ParameterOverrides { get; set; }
         Dictionary<string, Expressions.Expression> PortConnection { get; set; }
         string OverrideParameterID { get; }
         bool Prototype { get; set; }
-        BuildingBlock GetInstancedModule();
+        BuildingBlock GetInstancedBuildingBlock();
+
+        // Item
+        string Name { get; set; }
+        Attribute Attribute { get; set; }
+        WordReference DefinitionRefrecnce { get; set; }
+
+        codeEditor.Data.Project Project { get; }
+
 
     }
 }

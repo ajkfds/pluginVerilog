@@ -64,11 +64,11 @@ namespace pluginVerilog.Verilog.Items
                 // conditional_generate_construct
                 case "if":
                     return Generate.IfGenerateConstruct.Parse(word, nameSpace);
-                default:
-                    return false;
             }
 
-            return true;
+            if (ModuleItems.InterfaceInstantiation.Parse(word, nameSpace)) return true;
+
+            return false;
         }
 
     }

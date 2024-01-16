@@ -12,7 +12,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
         NameSpace Parent { get; }
         Dictionary<string, DataObjects.Constants.Parameter> Parameters { get; }
         Dictionary<string, DataObjects.Constants.Parameter> LocalParameters { get; }
-        Module Module { get; }
+        BuildingBlock Module { get; }
         Dictionary<string, NameSpace> NameSpaces { get; }
 
         NameSpace GetHierNameSpace(int index);

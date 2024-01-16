@@ -101,6 +101,7 @@
     <Compile Include="Verilog\BuildingBlocks\IBuildingBlockWithModuleInstance.cs" />
     <Compile Include="Verilog\BuildingBlocks\IModuleOrInterface.cs" />
     <Compile Include="Verilog\BuildingBlocks\IModuleOrInterfaceOrProgram.cs" />
+    <Compile Include="Verilog\BuildingBlocks\Module.cs" />
     <Compile Include="Verilog\BuildingBlocks\Package.cs" />
     <Compile Include="Verilog\BuildingBlocks\Root.cs" />
     <Compile Include="Verilog\Comment.cs" />
@@ -195,7 +196,6 @@
     <Compile Include="NavigatePanel\VerilogFileNode.cs" />
     <Compile Include="Verilog\ModuleItems\ParameterOverride.cs" />
     <Compile Include="Verilog\BuildingBlocks\IModuleOrGeneratedBlock.cs" />
-    <Compile Include="Verilog\ModuleReference.cs" />
     <Compile Include="Verilog\NamedGeneratedBlock.cs" />
     <Compile Include="Verilog\ParsedDocument.cs" />
     <Compile Include="Parser\VerilogParser.cs" />
@@ -246,7 +246,6 @@
     <Compile Include="Verilog\Statements\IStatement.cs" />
     <Compile Include="Verilog\Statements\JumpStatement.cs" />
     <Compile Include="Verilog\Statements\LoopingStatememt.cs" />
-    <Compile Include="Verilog\BuildingBlocks\Module.cs" />
     <Compile Include="Verilog\NameSpace.cs" />
     <Compile Include="Verilog\Expressions\Number.cs" />
     <Compile Include="Verilog\Expressions\Operator.cs" />

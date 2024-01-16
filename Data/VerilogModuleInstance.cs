@@ -20,7 +20,7 @@ namespace pluginVerilog.Data
             )
         {
             ProjectProperty projectPropery = project.ProjectProperties[Plugin.StaticID] as ProjectProperty;
-            Data.IVerilogRelatedFile file = projectPropery.GetFileOfModule(moduleInstantiation.ModuleName);
+            Data.IVerilogRelatedFile file = projectPropery.GetFileOfBuildingblock(moduleInstantiation.SourceName);
             if (file == null) return null;
 
             VerilogModuleInstance fileItem = new VerilogModuleInstance(file as codeEditor.Data.TextFile);
@@ -28,7 +28,7 @@ namespace pluginVerilog.Data
             fileItem.Project = project;
             fileItem.RelativePath = file.RelativePath;
             fileItem.Name = moduleInstantiation.Name;
-            fileItem.ModuleName = moduleInstantiation.ModuleName;
+            fileItem.ModuleName = moduleInstantiation.SourceName;
             //            fileItem.ParseRequested = true;
 
             if (file is Data.VerilogFile)
@@ -61,11 +61,11 @@ namespace pluginVerilog.Data
             )
         {
             ProjectProperty projectPropery = project.ProjectProperties[Plugin.StaticID] as ProjectProperty;
-            Data.IVerilogRelatedFile file = projectPropery.GetFileOfModule(moduleInstantiation.ModuleName);
+            Data.IVerilogRelatedFile file = projectPropery.GetFileOfBuildingblock(moduleInstantiation.SourceName);
             if (file == null) return false;
             if (!IsSameAs(file as File)) return false;
             if (Project != project) return false;
-            if (ModuleName != moduleInstantiation.ModuleName) return false;
+            if (ModuleName != moduleInstantiation.SourceName) return false;
 
             if (ParameterId == moduleInstantiation.OverrideParameterID) return true;
 

@@ -43,7 +43,6 @@ namespace pluginVerilog.Verilog.DataObjects
         public string Comment = "";
         public string SectionName = "";
 
-
         private Dictionary<string, string> commentAnnotations = new Dictionary<string, string>();
         public Dictionary<string, string> CommentAnnotations { get { return commentAnnotations; } }
         public void AppendAnnotation(string key, string value)
@@ -246,15 +245,14 @@ ansi_port_declaration ::=
             DataType prevDataType = null;
             Net.NetTypeEnum? prevNetType = null;
             DirectionEnum? prevDirection = null;
-            bool firstPort = true;
 
-            if (ParsePortDeclaration(word, nameSpace, firstPort, ref prevDataType, ref prevNetType, ref prevDirection))
+            if (ParsePortDeclaration(word, nameSpace, true, ref prevDataType, ref prevNetType, ref prevDirection))
             {
                 if (word.Text != ",") return;
                 word.MoveNext();
                 while (!word.Eof)
                 {
-                    if (!ParsePortDeclaration(word, nameSpace, firstPort, ref prevDataType, ref prevNetType, ref prevDirection)) return;
+                    if (!ParsePortDeclaration(word, nameSpace, false, ref prevDataType, ref prevNetType, ref prevDirection)) return;
                     if (word.Text != ",") return;
                     word.MoveNext();
                 }
@@ -296,11 +294,22 @@ ansi_port_declaration ::=
             // A.2.1.2 Port declarations
 
             // Non-ANSI style port declaration
+
+            // port_declaration     ::=   { attribute_instance } inout_declaration
+            //                          | { attribute_instance } input_declaration
+            //                          | { attribute_instance } output_declaration
+            //                          | { attribute_instance } ref_declaration
+            //                          | { attribute_instance } interface_port_declaration
+
             // inout_declaration ::=     "inout" net_port_type list_of_port_identifiers 
             // input_declaration ::=     "input" net_port_type list_of_port_identifiers 
             //                         | "input" variable_port_type list_of_variable_identifiers 
             // output_declaration ::=    "output" net_port_type list_of_port_identifiers 
-            //                         | "output" variable_port_type list_of_variable_port_identifiers 
+            //                         | "output" variable_port_type list_of_variable_port_identifiers
+            // ref_declaration ::= ref variable_port_type list_of_variable_identifiers
+
+            // interface_port_declaration   ::=   interface_identifier list_of_interface_identifiers 
+            //                                  | interface_identifier . modport_identifier list_of_interface_identifiers 
 
             // net_port_type				::=   [ net_type ] data_type_or_implicit 
             //								    | net_type_identifier 
@@ -312,14 +321,15 @@ ansi_port_declaration ::=
             // ANSI style list of port declarations
 
             // list_of_port_declarations	::=	( [ { attribute_instance} ansi_port_declaration { , { attribute_instance} ansi_port_declaration } ] )
+
             // ansi_port_declaration		::=   [ net_port_header | interface_port_header ] port_identifier { unpacked_dimension } [ = constant_expression ] 
             //								    | [ variable_port_header ]                    port_identifier { variable_dimension } [ = constant_expression ] 
             //								    | [ port_direction ] "." port_identifier "(" [ expression ] ")"
 
             // net_port_header				::= [ port_direction ] net_port_type 
             // variable_port_header			::= [ port_direction ] variable_port_type 
-            // interface_port_header		::=   interface_identifier [ . modport_identifier ] 
-            //								    | "interface" [ ". modport_identifier ] 
+            // interface_port_header		::=   interface_identifier [ "." modport_identifier ] 
+            //								    | "interface" [ "." modport_identifier ] 
 
             // port_direction				::= "input" | "output" | "inout" | "ref"
 
@@ -329,8 +339,6 @@ ansi_port_declaration ::=
             // variable_port_type			::= var_data_type 
             // var_data_type				::=   data_type
             //								    | var data_type_or_implicit 
-
-
 
 
             /*
@@ -368,9 +376,24 @@ ansi_port_declaration ::=
             Net.NetTypeEnum? netType = Net.parseNetType(word, nameSpace);
 
             DataType dataType = null;
-            dataType = DataObjects.DataTypes.DataType.ParseCreate(word, nameSpace,null);
+            if(netType == null)
+            {
+                dataType = DataObjects.DataTypes.DataType.ParseCreate(word, nameSpace, null);
+            }
 
-            if ( direction == null && netType == null && dataType == null)
+            Interface interface_ = null;
+            if(direction == null && netType == null && dataType == null)
+            {
+                string identifier = word.Text;
+                interface_ = word.ProjectProperty.GetBuildingBlock(identifier) as Interface;
+                if(interface_ != null)
+                {
+                    word.Color(CodeDrawStyle.ColorType.Identifier);
+                    word.MoveNext();
+                }
+            }
+
+            if ( direction == null && netType == null && dataType == null && interface_ == null )
             {
                 if (firstPort)
                 {
@@ -460,6 +483,10 @@ ansi_port_declaration ::=
                 variable.Name = port.Name;
                 port.VariableOrNet = variable;
             }
+            else if(interface_ != null)
+            {
+//                Interface interface_instance = interface_ .
+            }
 
             IModuleOrInterfaceOrProgram block = nameSpace.BuildingBlock as IModuleOrInterfaceOrProgram;
             if (block == null)
@@ -478,11 +505,13 @@ ansi_port_declaration ::=
                     {
                         block.Ports.Remove(port.Name);
                         block.Ports.Add(port.Name, port);
+                        block.PortsList.Add(port);
                     }
                 }
                 else
                 {
                     block.Ports.Add(port.Name, port);
+                    block.PortsList.Add(port);
                 }
 
                 if (port.VariableOrNet != null)

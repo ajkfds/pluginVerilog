@@ -8,6 +8,6 @@ namespace pluginVerilog.Verilog.BuildingBlocks
 {
     public interface IBuildingBlockWithModuleInstance
     {
-        Dictionary<string, ModuleItems.IInstantiation> ModuleInstantiations { get; }
+        Dictionary<string, ModuleItems.IInstantiation> Instantiations { get; }
     }
 }

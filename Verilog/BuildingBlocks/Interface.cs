@@ -17,18 +17,14 @@ namespace pluginVerilog.Verilog.BuildingBlocks
         // IModuleOrInterfaceOrProfram
 
         // Port
-        private Dictionary<string, DataObjects.Port> ports = new Dictionary<string, DataObjects.Port>();
-        public Dictionary<string, DataObjects.Port> Ports { get { return ports; } }
-        private List<DataObjects.Port> portsList = new List<DataObjects.Port>();
-        public List<DataObjects.Port> PortsList { get { return portsList; } }
+        public Dictionary<string, DataObjects.Port> Ports { get; } = new Dictionary<string, DataObjects.Port>();
+        public List<DataObjects.Port> PortsList { get; } = new List<DataObjects.Port>();
 
         public WordReference NameReference;
-        private List<string> portParameterNameList = new List<string>();
-        public List<string> PortParameterNameList { get { return portParameterNameList; } }
+        public List<string> PortParameterNameList { get; } = new List<string>();
 
         // Module
-        private Dictionary<string, ModuleItems.ModuleInstantiation> moduleInstantiations = new Dictionary<string, ModuleItems.ModuleInstantiation>();
-        public Dictionary<string, ModuleItems.ModuleInstantiation> ModuleInstantiations { get { return moduleInstantiations; } }
+        public Dictionary<string, ModuleItems.IInstantiation> Instantiations { get; } = new Dictionary<string, ModuleItems.IInstantiation>();
 
 
         private WeakReference<Data.IVerilogRelatedFile> fileRef;
@@ -84,13 +80,13 @@ namespace pluginVerilog.Verilog.BuildingBlocks
 
             if (word.Text != "interface") System.Diagnostics.Debugger.Break();
             word.Color(CodeDrawStyle.ColorType.Keyword);
-            Interface module = new Interface();
-            module.Parent = word.RootParsedDocument.Root;
+            Interface interface_ = new Interface();
+            interface_.Parent = word.RootParsedDocument.Root;
 
-            module.BuildingBlock = module;
-            module.File = file;
-            module.BeginIndexReference = word.CreateIndexReference();
-            if (word.CellDefine) module.cellDefine = true;
+            interface_.BuildingBlock = interface_;
+            interface_.File = file;
+            interface_.BeginIndexReference = word.CreateIndexReference();
+            if (word.CellDefine) interface_.cellDefine = true;
             word.MoveNext();
 
 
@@ -107,18 +103,18 @@ namespace pluginVerilog.Verilog.BuildingBlocks
                 // protptype parse
                 WordScanner prototypeWord = word.Clone();
                 prototypeWord.Prototype = true;
-                parseModuleItems(prototypeWord, parameterOverrides, null, module);
+                parseModuleItems(prototypeWord, parameterOverrides, null, interface_);
                 prototypeWord.Dispose();
 
                 // parse
                 word.RootParsedDocument.Macros = macroKeep;
-                parseModuleItems(word, parameterOverrides, null, module);
+                parseModuleItems(word, parameterOverrides, null, interface_);
             }
             else
             {
                 // parse prototype only
                 word.Prototype = true;
-                parseModuleItems(word, parameterOverrides, null, module);
+                parseModuleItems(word, parameterOverrides, null, interface_);
                 word.Prototype = false;
             }
 
@@ -126,18 +122,18 @@ namespace pluginVerilog.Verilog.BuildingBlocks
             if (word.Text == "endinterface")
             {
                 word.Color(CodeDrawStyle.ColorType.Keyword);
-                module.LastIndexReference = word.CreateIndexReference();
+                interface_.LastIndexReference = word.CreateIndexReference();
 
-                word.AppendBlock(module.BeginIndexReference, module.LastIndexReference);
+                word.AppendBlock(interface_.BeginIndexReference, interface_.LastIndexReference);
                 word.MoveNext();
-                return module;
+                return interface_;
             }
 
             {
                 word.AddError("endmodule expected");
             }
 
-            return module;
+            return interface_;
         }
 
         /*
@@ -302,7 +298,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
         {
             base.AppendAutoCompleteItem(items);
 
-            foreach (ModuleItems.ModuleInstantiation mi in ModuleInstantiations.Values)
+            foreach (ModuleItems.ModuleInstantiation mi in Instantiations.Values)
             {
                 if (mi.Name == null) System.Diagnostics.Debugger.Break();
                 items.Add(newItem(mi.Name, CodeDrawStyle.ColorType.Identifier));

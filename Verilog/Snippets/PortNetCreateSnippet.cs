@@ -25,7 +25,7 @@ namespace pluginVerilog.Verilog.Snippets
             if (parsedDocument == null) return;
 
             int index = codeDocument.CaretIndex;
-            Module module = parsedDocument.GetModule(index);
+            BuildingBlock module = parsedDocument.GetBuidingBlockAt(index);
 
         }
 

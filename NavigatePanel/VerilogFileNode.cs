@@ -88,7 +88,7 @@ namespace pluginVerilog.NavigatePanel
                 }
             }
 
-            foreach (Module module in VerilogFile.VerilogParsedDocument.Root.Modules.Values)
+            foreach (BuildingBlock module in VerilogFile.VerilogParsedDocument.Root.BuldingBlocks.Values)
             {
                 VerilogFile.CodeDocument.ExpandBlock(VerilogFile.CodeDocument.GetLineAt(module.BeginIndexReference.Indexs.Last() ));
             }

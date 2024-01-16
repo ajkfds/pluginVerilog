@@ -22,7 +22,7 @@ namespace pluginVerilog.Verilog.Items.Generate
 
         public static bool Parse(WordScanner word, NameSpace nameSpace)
         {
-            if (nameSpace.BuildingBlock is BuildingBlocks.Module)
+            if (nameSpace.BuildingBlock is BuildingBlocks.BuildingBlock)
             {
                 return ModuleOrGenerateItem.Parse(word, nameSpace);
             }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace pluginVerilog.Verilog
 {
-    public class ModuleReference
+    public class ModuleReferenceX
     {
         public string Name;
         public Dictionary<string, string> Parameters = new Dictionary<string, string>();

@@ -33,7 +33,7 @@ namespace pluginVerilog.Tools
             if (project == null) return;
 
             int index = codeDocument.CaretIndex;
-            module = parsedDocument.GetModule(index);
+            module = parsedDocument.GetBuidingBlockAt(index);
 
 
             //foreach (var inst in
@@ -52,12 +52,12 @@ namespace pluginVerilog.Tools
         Verilog.ParsedDocument parsedDocument;
         codeEditor.CodeEditor.CodeDocument codeDocument;
         codeEditor.Data.Project project;
-        Module module;
+        BuildingBlock module;
         Verilog.ModuleItems.ModuleInstantiation moduleInstantiation;
 
         private void setupModule()
         {
-            Data.VerilogFile source = parsedDocument.ProjectProperty.GetFileOfModule(moduleInstantiation.ModuleName) as Data.VerilogFile;
+            Data.VerilogFile source = parsedDocument.ProjectProperty.GetFileOfBuildingblock(moduleInstantiation.SourceName) as Data.VerilogFile;
             if (source == null) return;
 
             Verilog.ParsedDocument sourceParsedDocument;
@@ -70,13 +70,13 @@ namespace pluginVerilog.Tools
                 sourceParsedDocument = source.GetInstancedParsedDocument(moduleInstantiation.OverrideParameterID) as Verilog.ParsedDocument;
             }
             if (sourceParsedDocument == null) return;
-            Module sourceModule = sourceParsedDocument.Root.Modules[moduleInstantiation.ModuleName] as Module;
+            BuildingBlock sourceModule = sourceParsedDocument.Root.BuldingBlocks[moduleInstantiation.SourceName] as BuildingBlock;
             if (sourceModule == null) return;
 
-            Module instancedModule = parsedDocument.ProjectProperty.GetModule(moduleInstantiation.ModuleName);
+            BuildingBlock instancedModule = parsedDocument.ProjectProperty.GetBuildingBlock(moduleInstantiation.SourceName);
 
             HeaderLabel header = new HeaderLabel();
-            header.AppendText(moduleInstantiation.ModuleName, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
+            header.AppendText(moduleInstantiation.SourceName, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
             header.AppendText(" ");
             header.AppendText(moduleInstantiation.Name);
             header.AppendText("(");
@@ -113,7 +113,7 @@ namespace pluginVerilog.Tools
             checkConnectCantidate(colorLabelList, module, instancedModule);
         }
 
-        private static void checkConnectCantidate(ajkControls.ColorLabel.ColorLabelList labelList, Module module, Module instancedModule)
+        private static void checkConnectCantidate(ajkControls.ColorLabel.ColorLabelList labelList, BuildingBlock module, BuildingBlock instancedModule)
         {
             foreach(ajkControls.ColorLabel.ColorLabel label in labelList)
             {

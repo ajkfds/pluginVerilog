@@ -38,14 +38,14 @@ namespace pluginVerilog.Verilog.AutoComplete
             ParsedDocument parsedDocument = vfile.VerilogParsedDocument;
             if (parsedDocument == null) return;
 
-            Module module = parsedDocument.GetModule(vfile.CodeDocument.GetLineStartIndex(vfile.CodeDocument.GetLineAt(vfile.CodeDocument.CaretIndex)));
+            BuildingBlock module = parsedDocument.GetBuidingBlockAt(vfile.CodeDocument.GetLineStartIndex(vfile.CodeDocument.GetLineAt(vfile.CodeDocument.CaretIndex)));
             if (module == null) return;
 
-            Data.VerilogFile instancedFile = projectProperty.GetFileOfModule(Text) as Data.VerilogFile;
+            Data.VerilogFile instancedFile = projectProperty.GetFileOfBuildingblock(Text) as Data.VerilogFile;
             if (instancedFile == null) return;
             Verilog.ParsedDocument instancedParsedDocument = instancedFile.ParsedDocument as Verilog.ParsedDocument;
             if (instancedParsedDocument == null) return;
-            Module instancedModule = instancedParsedDocument.Root.Modules[Text] as Module;
+            BuildingBlock instancedModule = instancedParsedDocument.Root.BuldingBlocks[Text] as BuildingBlock;
             if (instancedModule == null) return;
 
             string instanceName;
@@ -53,7 +53,7 @@ namespace pluginVerilog.Verilog.AutoComplete
             while (true)
             {
                 instanceName = Text + "_" + i.ToString();
-                if (!module.ModuleInstantiations.ContainsKey(instanceName)) break;
+                if (!module.Instantiations.ContainsKey(instanceName)) break;
                 i++;
             }
 

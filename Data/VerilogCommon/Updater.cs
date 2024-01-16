@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using codeEditor.CodeEditor;
 using codeEditor.Data;
 using pluginVerilog.Verilog.BuildingBlocks;
+using pluginVerilog.Verilog.ModuleItems;
 
 namespace pluginVerilog.Data.VerilogCommon
 {
@@ -73,7 +74,7 @@ namespace pluginVerilog.Data.VerilogCommon
 
                 // module instances
                 if (rootItem.VerilogParsedDocument.Root != null) {
-                    foreach (Module module in rootItem.VerilogParsedDocument.Root.Modules.Values)
+                    foreach (BuildingBlock module in rootItem.VerilogParsedDocument.Root.BuldingBlocks.Values)
                     {
                         if (moduleName == null || moduleName == module.Name)
                         {
@@ -103,20 +104,24 @@ namespace pluginVerilog.Data.VerilogCommon
             }
         }
 
-        private static void UpdateModuleInstance(Module module,Project project, IVerilogRelatedFile rootItem, List<Item> targetItems,Dictionary<string, Item> newItems)
+        private static void UpdateModuleInstance(BuildingBlock module,Project project, IVerilogRelatedFile rootItem, List<Item> targetItems,Dictionary<string, Item> newItems)
         {
-            foreach (Verilog.ModuleItems.ModuleInstantiation subModuleInstantiation in module.ModuleInstantiations.Values)
+            foreach (Verilog.ModuleItems.IInstantiation subModuleInstantiation in module.Instantiations.Values)
             {
                 if (rootItem.Items.ContainsKey(subModuleInstantiation.Name))
                 { // already exist item
                     Item oldItem = rootItem.Items[subModuleInstantiation.Name];
-                    if (oldItem is Data.VerilogModuleInstance && (oldItem as Data.VerilogModuleInstance).ReplaceBy(subModuleInstantiation, project))
+                    if (oldItem is Data.VerilogModuleInstance && (oldItem as Data.VerilogModuleInstance).ReplaceBy(subModuleInstantiation as ModuleInstantiation, project))
                     { // sucessfully replaced
                         targetItems.Add(oldItem);
                     }
                     else
                     { // re-generate (same module instance name, but different file or module name or parameter
-                        Item item = Data.VerilogModuleInstance.Create(subModuleInstantiation, project);
+                        Item item = null;
+                        if(subModuleInstantiation is ModuleInstantiation)
+                        {
+                            item = Data.VerilogModuleInstance.Create(subModuleInstantiation as ModuleInstantiation, project);
+                        }
                         if (item != null & !newItems.ContainsKey(subModuleInstantiation.Name))
                         {
                             item.Parent = item;
@@ -135,7 +140,11 @@ namespace pluginVerilog.Data.VerilogCommon
                 }
                 else
                 { // new item
-                    Item item = Data.VerilogModuleInstance.Create(subModuleInstantiation, project);
+                    Item item = null;
+                    if (subModuleInstantiation is ModuleInstantiation)
+                    {
+                        item = Data.VerilogModuleInstance.Create(subModuleInstantiation as ModuleInstantiation, project);
+                    }
                     if (item != null & !newItems.ContainsKey(subModuleInstantiation.Name))
                     {
                         item.Parent = rootItem as Item;

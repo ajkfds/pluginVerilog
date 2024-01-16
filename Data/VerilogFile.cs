@@ -101,20 +101,21 @@ namespace pluginVerilog.Data
                 return;
             }
 
-            foreach (Module module in VerilogParsedDocument.Root.Modules.Values)
+            foreach (BuildingBlock buildingBlock in VerilogParsedDocument.Root.BuldingBlocks.Values)
             {
-                if (!ProjectProperty.IsRegisterableModule(module.Name, this))
+                if (!ProjectProperty.IsRegisterableModule(buildingBlock.Name, this))
                 {
-                    Module registeredModule = ProjectProperty.GetModule(module.Name);
+                    Module module = buildingBlock as Module;
+                    Module registeredModule = ProjectProperty.GetBuildingBlock(module.Name)as Module;
                     if (registeredModule.File.RelativePath == module.File.RelativePath) continue;
 
-                    if (module.NameReference != null) { 
+                    if (module.NameReference != null) {
                         module.NameReference.AddError("duplicated module name"); 
                     }
                     continue;
                 }
 
-                bool suceed = ProjectProperty.RegisterModule(module.Name, this);
+                bool suceed = ProjectProperty.RegisterModule(buildingBlock.Name, this);
                 if (!suceed)
                 {
                     System.Diagnostics.Debugger.Break();
