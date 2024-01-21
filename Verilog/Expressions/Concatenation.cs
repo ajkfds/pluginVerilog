@@ -136,7 +136,7 @@ namespace pluginVerilog.Verilog.Expressions
             multipleConcatenation.MultipleExpression = multipleExpression;
             multipleConcatenation.Expression = exp;
             multipleConcatenation.Reference = word.GetReference().CreateReferenceFrom(reference);
-            multipleConcatenation.Constant = exp.Constant & multipleConcatenation.Constant;
+            if(exp != null) multipleConcatenation.Constant = exp.Constant & multipleConcatenation.Constant;
 
             if(exp != null && multipleExpression != null)
             {

@@ -325,21 +325,21 @@ namespace pluginVerilog.Verilog.DataObjects.Nets
                 {
                     if (word.Prototype)
                     {
-                        if (nameSpace.Variables.ContainsKey(net.Name))
+                        if (nameSpace.DataObjects.ContainsKey(net.Name))
                         {
                             word.RootPointer.AddError(net.DefinedReference, "duplicated net name");
                         }
                         else
                         {
-                            nameSpace.Variables.Add(net.Name, net);
+                            nameSpace.DataObjects.Add(net.Name, net);
                         }
                         word.Color(CodeDrawStyle.ColorType.Net);
                     }
                     else
                     {
-                        if (nameSpace.Variables.ContainsKey(net.Name) && nameSpace.Variables[net.Name] is Net)
+                        if (nameSpace.DataObjects.ContainsKey(net.Name) && nameSpace.DataObjects[net.Name] is Net)
                         {
-                            net = nameSpace.Variables[net.Name] as Net;
+                            net = nameSpace.DataObjects[net.Name] as Net;
                         }
                         word.Color(CodeDrawStyle.ColorType.Net);
                     }

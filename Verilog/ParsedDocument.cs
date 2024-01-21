@@ -161,7 +161,7 @@ namespace pluginVerilog.Verilog
                 if (inst != null)
                 {
                     string portName = text.Substring(1);
-                    BuildingBlock originalModule = ProjectProperty.GetBuildingBlock(inst.SourceName);
+                    Module originalModule = ProjectProperty.GetBuildingBlock(inst.SourceName) as Module;
                     if (originalModule == null) return ret;
                     if (!originalModule.Ports.ContainsKey(portName)) return ret;
                     Verilog.DataObjects.Port port = originalModule.Ports[portName];
@@ -169,9 +169,9 @@ namespace pluginVerilog.Verilog
                 }
             }
 
-            if (space.Variables.ContainsKey(text))
+            if (space.DataObjects.ContainsKey(text))
             {
-                ret.Add(new Popup.VariablePopup(space.Variables[text]));
+                ret.Add(new Popup.VariablePopup(space.DataObjects[text]));
             }
 
             {

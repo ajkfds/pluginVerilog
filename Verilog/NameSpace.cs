@@ -27,7 +27,7 @@ namespace pluginVerilog.Verilog
 
         private Dictionary<string, NameSpace> nameSpaces = new Dictionary<string, NameSpace>();
 
-        public Dictionary<string, DataObjects.DataObject> Variables { get { return variables; } }
+        public Dictionary<string, DataObjects.DataObject> DataObjects { get { return variables; } }
 
 
         public NameSpace Parent { get; protected set; }
@@ -65,7 +65,7 @@ namespace pluginVerilog.Verilog
             //    }
             //}
 
-            foreach (DataObjects.DataObject variable in Variables.Values)
+            foreach (DataObjects.DataObject variable in DataObjects.Values)
             {
                 if(variable is DataObjects.Nets.Net)
                 {
@@ -112,16 +112,16 @@ namespace pluginVerilog.Verilog
             }
         }
 
-        public DataObjects.DataObject GetVariable(string identifier)
+        public DataObjects.DataObject GetDataObject(string identifier)
         {
-            if (Variables.ContainsKey(identifier))
+            if (DataObjects.ContainsKey(identifier))
             {
-                return Variables[identifier];
+                return DataObjects[identifier];
             }
 
             if (Parent != null)
             {
-                return Parent.GetVariable(identifier);
+                return Parent.GetDataObject(identifier);
             }
             return null;
         }

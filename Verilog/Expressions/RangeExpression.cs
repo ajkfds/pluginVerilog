@@ -98,7 +98,7 @@ namespace pluginVerilog.Verilog.Expressions
         {
             BaseExpression = expression1;
             WidthExpression = expression2;
-            if (WidthExpression.Constant && WidthExpression.Value != null)
+            if (WidthExpression != null && WidthExpression.Constant && WidthExpression.Value != null)
             {
                 BitWidth = (int)WidthExpression.Value;
             }

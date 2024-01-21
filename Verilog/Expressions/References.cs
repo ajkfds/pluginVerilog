@@ -104,6 +104,14 @@ namespace pluginVerilog.Verilog.Expressions
         }
     }
 
+    public class InterfaceReference : Primary
+    {
+        ModuleItems.IInstantiation interfaceInstantiation;
+        public InterfaceReference(ModuleItems.IInstantiation interfaceInstantiation)
+        {
+            this.interfaceInstantiation = interfaceInstantiation;
+        }
+    }
 
 
 }

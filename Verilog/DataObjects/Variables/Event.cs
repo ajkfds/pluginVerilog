@@ -32,12 +32,12 @@ namespace pluginVerilog.Verilog.DataObjects.Variables
                 }
                 Event val = new Event();
                 val.Name = word.Text;
-                if (nameSpace.Variables.ContainsKey(val.Name))
+                if (nameSpace.DataObjects.ContainsKey(val.Name))
                 {
-                    if (nameSpace.Variables[val.Name] is Event)
+                    if (nameSpace.DataObjects[val.Name] is Event)
                     {
-                        nameSpace.Variables.Remove(val.Name);
-                        nameSpace.Variables.Add(val.Name, val);
+                        nameSpace.DataObjects.Remove(val.Name);
+                        nameSpace.DataObjects.Add(val.Name, val);
                     }
                     else
                     {
@@ -46,7 +46,7 @@ namespace pluginVerilog.Verilog.DataObjects.Variables
                 }
                 else
                 {
-                    nameSpace.Variables.Add(val.Name, val);
+                    nameSpace.DataObjects.Add(val.Name, val);
                 }
 
                 word.Color(CodeDrawStyle.ColorType.Variable);

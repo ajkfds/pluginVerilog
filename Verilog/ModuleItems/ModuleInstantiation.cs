@@ -41,9 +41,8 @@ namespace pluginVerilog.Verilog.ModuleItems
         public static bool Parse(WordScanner word, NameSpace nameSpace)
         {
             // interface instanciation can be placed only in module
-            BuildingBlock module = nameSpace.BuildingBlock as BuildingBlock;
-            //            if (module == null) System.Diagnostics.Debugger.Break();
-            if (module == null) return false;
+            BuildingBlock buildingBlock = nameSpace.BuildingBlock as BuildingBlock;
+            if (buildingBlock == null) return false;
 
             WordScanner moduleIdentifier = word.Clone();
             string moduleName = word.Text;
@@ -67,6 +66,8 @@ namespace pluginVerilog.Verilog.ModuleItems
             moduleInstantiation.SourceName = moduleName;
             moduleInstantiation.BeginIndexReference = beginIndexReference;
             moduleInstantiation.Project = word.RootParsedDocument.Project;
+
+            
 
 
             if (word.Text == "#") // parameter
@@ -225,13 +226,13 @@ namespace pluginVerilog.Verilog.ModuleItems
                     {
                         // 
                     }
-                    else if (module.Instantiations.ContainsKey(moduleInstantiation.Name))
+                    else if (buildingBlock.Instantiations.ContainsKey(moduleInstantiation.Name))
                     {   // duplicated
                         word.AddPrototypeError("instance name duplicated");
                     }
                     else
                     {
-                        module.Instantiations.Add(moduleInstantiation.Name, moduleInstantiation);
+                        buildingBlock.Instantiations.Add(moduleInstantiation.Name, moduleInstantiation);
                     }
                 }
                 else
@@ -240,11 +241,11 @@ namespace pluginVerilog.Verilog.ModuleItems
                     {
                         // 
                     }
-                    else if (module.Instantiations.ContainsKey(moduleInstantiation.Name))
+                    else if (buildingBlock.Instantiations.ContainsKey(moduleInstantiation.Name))
                     {   // duplicated
-                        if (module.Instantiations[moduleInstantiation.Name].Prototype)
+                        if (buildingBlock.Instantiations[moduleInstantiation.Name].Prototype)
                         {
-                            moduleInstantiation = module.Instantiations[moduleInstantiation.Name] as ModuleInstantiation;
+                            moduleInstantiation = buildingBlock.Instantiations[moduleInstantiation.Name] as ModuleInstantiation;
                             moduleInstantiation.Prototype = false;
                         }
                         else
@@ -438,7 +439,7 @@ namespace pluginVerilog.Verilog.ModuleItems
         }
         public string CreateSrting(string indent)
         {
-            BuildingBlock instancedModule = ProjectProperty.GetBuildingBlock(SourceName);
+            Module instancedModule = ProjectProperty.GetBuildingBlock(SourceName) as Module;
             if (instancedModule == null) return null;
 
             StringBuilder sb = new StringBuilder();

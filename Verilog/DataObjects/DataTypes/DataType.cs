@@ -63,6 +63,7 @@ namespace pluginVerilog.Verilog.DataObjects.DataTypes
         Chandle,
         Virtual,
         Class,
+        InterfaceInstance,
         Event,
         CoverGroup,
         //        TypeReference

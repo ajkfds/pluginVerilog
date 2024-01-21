@@ -80,7 +80,7 @@ namespace pluginVerilog.Verilog.Snippets
             Verilog.ParsedDocument targetParsedDocument = targetFile.ParsedDocument as Verilog.ParsedDocument;
             if (targetParsedDocument == null) return;
 
-            BuildingBlock targetModule = targetParsedDocument.Root.BuldingBlocks[Text] as BuildingBlock;
+            Module targetModule = targetParsedDocument.Root.BuldingBlocks[Text] as Module;
             if (targetModule == null) return;
 
             string replaceText = getReplaceText(targetModule, instanceName);
@@ -178,7 +178,7 @@ namespace pluginVerilog.Verilog.Snippets
         }
 
 
-        private string getReplaceText(BuildingBlock module, string instanceName)
+        private string getReplaceText(Module module, string instanceName)
         {
             StringBuilder sb = new StringBuilder();
             sb.Append(module.Name);

@@ -12,9 +12,9 @@ namespace pluginVerilog.Verilog.Popup
         public FunctionPopup(Function function)
         {
             label.AppendText("function ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
-            if (function.Variables.ContainsKey(function.Name))
+            if (function.DataObjects.ContainsKey(function.Name))
             {
-                DataObjects.DataObject retVal = function.Variables[function.Name];
+                DataObjects.DataObject retVal = function.DataObjects[function.Name];
                 retVal.AppendTypeLabel(label);
             }
             label.AppendText(function.Name, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Identifier));

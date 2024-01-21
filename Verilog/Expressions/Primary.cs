@@ -1,7 +1,9 @@
 ﻿using pluginVerilog.Verilog.BuildingBlocks;
 using pluginVerilog.Verilog.DataObjects.Nets;
+using pluginVerilog.Verilog.ModuleItems;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Drawing.Text;
 using System.Linq;
 using System.Text;
@@ -117,6 +119,8 @@ namespace pluginVerilog.Verilog.Expressions
         }
         private static Primary parseCreate(WordScanner word, NameSpace nameSpace,bool lValue)
         {
+            //if (word.Text == "srif") System.Diagnostics.Debugger.Break();
+
             if (nameSpace == null) System.Diagnostics.Debugger.Break();
             switch (word.WordType)
             {
@@ -161,7 +165,7 @@ namespace pluginVerilog.Verilog.Expressions
                                 if (word.Eof) return null;
                                 if (General.ListOfKeywords.Contains(word.Text)) return null;
 
-                                if (General.IsIdentifier(word.Text) && !nameSpace.Variables.ContainsKey(word.Text) && !word.Prototype)
+                                if (General.IsIdentifier(word.Text) && !nameSpace.DataObjects.ContainsKey(word.Text) && !word.Prototype)
                                 {   // undefined net
                                     if (!word.CellDefine) word.AddWarning("undefined");
                                     Net net = new DataObjects.Nets.Net();
@@ -169,7 +173,7 @@ namespace pluginVerilog.Verilog.Expressions
                                     net.Signed = false;
                                     if (word.Active)
                                     {
-                                        nameSpace.Variables.Add(net.Name, net);
+                                        nameSpace.DataObjects.Add(net.Name, net);
                                     }
                                     variable = VariableReference.ParseCreate(word, nameSpace, lValue);
                                     if (variable != null) return variable;
@@ -181,7 +185,7 @@ namespace pluginVerilog.Verilog.Expressions
                             }
                             else if(space != null)
                             {
-                                if (space.Variables.ContainsKey(word.Text))
+                                if (space.DataObjects.ContainsKey(word.Text))
                                 {
                                     return VariableReference.ParseCreate(word, space, lValue);
                                 }
@@ -201,31 +205,11 @@ namespace pluginVerilog.Verilog.Expressions
 
         public static void parseHierNameSpace(WordScanner word, NameSpace rootNameSpace, ref NameSpace nameSpace,ref Primary primary,bool assigned)
         {
-            if (nameSpace.BuildingBlock is IBuildingBlockWithModuleInstance &&
-               (nameSpace.BuildingBlock as IBuildingBlockWithModuleInstance).Instantiations.ContainsKey(word.Text))
+            if(parseKnownHierNameSpace(word,rootNameSpace,ref nameSpace, ref primary, assigned))
             {
-                IBuildingBlockWithModuleInstance buildingBlock = nameSpace.BuildingBlock as IBuildingBlockWithModuleInstance;
-
-                ModuleItems.IInstantiation minst = buildingBlock.Instantiations[word.Text];
-                ModuleInstanceReference moduleInstanceReference = new ModuleInstanceReference(minst);
-                primary = moduleInstanceReference;
-                nameSpace = minst.GetInstancedBuildingBlock();
-                word.Color(CodeDrawStyle.ColorType.Identifier);
-                word.MoveNext();
-
-                if (nameSpace == null) return;
-
-                if (word.Text == ".")
-                {
-                    word.MoveNext();    // .
-                    parseHierNameSpace(word, rootNameSpace, ref nameSpace, ref primary, assigned);
-                }
-                else
-                {
-                    return;
-                }
-            }
-            else if (word.NextText == "(")
+                // parsed
+                return;
+            }else if (word.NextText == "(")
             {
                 // task reference : for left side only
                 // function calll : for right side only
@@ -262,6 +246,10 @@ namespace pluginVerilog.Verilog.Expressions
                 }
                 else
                 {
+                    if(nameSpace != null && rootNameSpace != nameSpace)
+                    {
+                        primary = new NameSpaceReference(nameSpace);
+                    }
                     return;
                 }
             }
@@ -283,6 +271,63 @@ namespace pluginVerilog.Verilog.Expressions
 
                 return;
             }
+        }
+
+        public static bool parseKnownHierNameSpace(WordScanner word, NameSpace rootNameSpace, ref NameSpace nameSpace, ref Primary primary, bool assigned)
+        {
+            BuildingBlock buildingBlock = nameSpace.BuildingBlock;
+            if (!buildingBlock.Instantiations.ContainsKey(word.Text)) return false;
+
+            IInstantiation instantiation = buildingBlock.Instantiations[word.Text];
+            if(instantiation is ModuleInstantiation)
+            {
+                ModuleInstantiation minst = instantiation as ModuleInstantiation;
+                ModuleInstanceReference moduleInstanceReference = new ModuleInstanceReference(minst);
+                primary = moduleInstanceReference;
+                nameSpace = minst.GetInstancedBuildingBlock();
+                word.Color(CodeDrawStyle.ColorType.Identifier);
+                word.MoveNext();
+
+                if (nameSpace == null) return true;
+
+                if (word.Text == ".")
+                {
+                    word.MoveNext();    // .
+                    parseHierNameSpace(word, rootNameSpace, ref nameSpace, ref primary, assigned);
+                    return true;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else if(instantiation is InterfaceInstantiation)
+            {
+                InterfaceInstantiation iinst = instantiation as InterfaceInstantiation;
+                InterfaceReference interfaceInstanceReference = new InterfaceReference(iinst);
+                primary = interfaceInstanceReference;
+                nameSpace = iinst.GetInstancedBuildingBlock();
+                word.Color(CodeDrawStyle.ColorType.Identifier);
+                word.MoveNext();
+
+                if (nameSpace == null) return true;
+
+                if (word.Text == ".")
+                {
+                    word.MoveNext();    // .
+                    parseHierNameSpace(word, rootNameSpace, ref nameSpace, ref primary, assigned);
+                    return true;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                return false;
+            }
+
         }
 
 

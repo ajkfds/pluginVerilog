@@ -52,18 +52,18 @@ namespace pluginVerilog.Verilog.Expressions
         }
 
 
-        private static DataObjects.DataObject getVariable(WordScanner word, string identifier, NameSpace nameSpace)
+        private static DataObjects.DataObject getDataObject(WordScanner word, string identifier, NameSpace nameSpace)
         {
-            if (nameSpace.Variables.ContainsKey(identifier))
+            if (nameSpace.DataObjects.ContainsKey(identifier))
             {
-                return nameSpace.Variables[identifier];
+                return nameSpace.DataObjects[identifier];
             }
 
             if (nameSpace is Function)
             {
                 if (nameSpace.Parent != null)
                 {
-                    DataObjects.DataObject val = nameSpace.Parent.GetVariable(identifier);
+                    DataObjects.DataObject val = nameSpace.Parent.GetDataObject(identifier);
                     if (val != null) word.AddWarning("external function reference");
                     return val;
                 }
@@ -72,11 +72,11 @@ namespace pluginVerilog.Verilog.Expressions
             {
                 if (nameSpace.Parent != null)
                 {
-                    return nameSpace.Parent.GetVariable(identifier);
+                    return nameSpace.Parent.GetDataObject(identifier);
                 }
                 else
                 {
-                    return nameSpace.GetVariable(identifier);
+                    return nameSpace.GetDataObject(identifier);
                 }
             }
             return null;
@@ -100,7 +100,7 @@ namespace pluginVerilog.Verilog.Expressions
         public static VariableReference ParseCreate(WordScanner word, NameSpace nameSpace, bool assigned)
         {
             if (nameSpace == null) System.Diagnostics.Debugger.Break();
-            DataObjects.DataObject variable = getVariable(word, word.Text, nameSpace);
+            DataObjects.DataObject variable = getDataObject(word, word.Text, nameSpace);
             if (variable == null) return null;
 
             VariableReference val = new VariableReference();

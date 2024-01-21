@@ -39,20 +39,20 @@ namespace pluginVerilog.Verilog.DataObjects.Variables
                 {
                     if (word.Prototype)
                     {
-                        if (nameSpace.Variables.ContainsKey(val.Name))
+                        if (nameSpace.DataObjects.ContainsKey(val.Name))
                         {
 //                            nameRef.AddError("duplicated net name");
                         }
                         else
                         {
-                            nameSpace.Variables.Add(val.Name, val);
+                            nameSpace.DataObjects.Add(val.Name, val);
                         }
                     }
                     else
                     {
-                        if (nameSpace.Variables.ContainsKey(val.Name) && nameSpace.Variables[val.Name] is Genvar)
+                        if (nameSpace.DataObjects.ContainsKey(val.Name) && nameSpace.DataObjects[val.Name] is Genvar)
                         {
-                            val = nameSpace.Variables[val.Name] as Genvar;
+                            val = nameSpace.DataObjects[val.Name] as Genvar;
                         }
                     }
                 }

@@ -172,9 +172,9 @@ namespace pluginVerilog.Verilog.DataObjects.Variables
 
                 if (word.Prototype)
                 {
-                    if (!nameSpace.Variables.ContainsKey(variable.Name))
+                    if (!nameSpace.DataObjects.ContainsKey(variable.Name))
                     {
-                        nameSpace.Variables.Add(variable.Name, variable);
+                        nameSpace.DataObjects.Add(variable.Name, variable);
                     }
                     else
                     {
@@ -183,9 +183,9 @@ namespace pluginVerilog.Verilog.DataObjects.Variables
                 }
                 else
                 {
-                    if (!nameSpace.Variables.ContainsKey(variable.Name))
+                    if (!nameSpace.DataObjects.ContainsKey(variable.Name))
                     {
-                        nameSpace.Variables.Add(variable.Name, variable);
+                        nameSpace.DataObjects.Add(variable.Name, variable);
                     }
                 }
                 vars.Add(variable);

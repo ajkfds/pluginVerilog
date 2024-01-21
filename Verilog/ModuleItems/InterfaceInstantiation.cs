@@ -1,4 +1,5 @@
-﻿using pluginVerilog.Verilog.BuildingBlocks;
+﻿using codeEditor.Data;
+using pluginVerilog.Verilog.BuildingBlocks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,6 +37,21 @@ namespace pluginVerilog.Verilog.ModuleItems
 
         public bool Prototype { get; set; } = false;
 
+        public static InterfaceInstantiation Create(string name,string sourceName,Project project)
+        {
+            InterfaceInstantiation inst = new InterfaceInstantiation();
+            inst.Name = name;
+            inst.SourceName = sourceName;
+            inst.Project = project;
+            return inst;
+        }
+
+
+        /*
+        nterface_instantiation  ::= interface_identifier [ parameter_value_assignment ] hierarchical_instance { , hierarchical_instance } ;
+        parameter_value_assignment ::= # ( [ list_of_parameter_assignments ] )
+        hierarchical_instance ::= name_of_instance ( [ list_of_port_connections ] )
+         */
         public IndexReference BeginIndexReference;
         public IndexReference LastIndexReference;
         public static bool Parse(WordScanner word, NameSpace nameSpace)
@@ -207,7 +223,7 @@ namespace pluginVerilog.Verilog.ModuleItems
             while (!word.Eof)
             {
 
-                word.Color(CodeDrawStyle.ColorType.Identifier);
+                word.Color(CodeDrawStyle.ColorType.Variable);
                 if (General.IsIdentifier(word.Text))
                 {
                     interfaceInstantiation.Name = word.Text;
@@ -438,7 +454,7 @@ namespace pluginVerilog.Verilog.ModuleItems
         }
         public string CreateSrting(string indent)
         {
-            BuildingBlock instancedModule = ProjectProperty.GetBuildingBlock(SourceName);
+            Interface instancedModule = ProjectProperty.GetBuildingBlock(SourceName) as Interface;
             if (instancedModule == null) return null;
 
             StringBuilder sb = new StringBuilder();

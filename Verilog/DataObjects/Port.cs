@@ -2,8 +2,11 @@
 using pluginVerilog.Verilog.DataObjects;
 using pluginVerilog.Verilog.DataObjects.DataTypes;
 using pluginVerilog.Verilog.DataObjects.Nets;
+using pluginVerilog.Verilog.ModuleItems;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,16 +21,16 @@ namespace pluginVerilog.Verilog.DataObjects
         {
             get
             {
-                if (VariableOrNet == null) return null;
-                if(VariableOrNet is Net)
+                if (DataObject == null) return null;
+                if(DataObject is Net)
                 {
-                    return (VariableOrNet as Net).Range;
+                    return (DataObject as Net).Range;
                 }
                 else
                 {
-                    if( (VariableOrNet as Variables.Variable) is Variables.IntegerVectorValueVariable)
+                    if( (DataObject as Variables.Variable) is Variables.IntegerVectorValueVariable)
                     {
-                        Variables.IntegerVectorValueVariable vector = VariableOrNet as Variables.IntegerVectorValueVariable;
+                        Variables.IntegerVectorValueVariable vector = DataObject as Variables.IntegerVectorValueVariable;
                         if (vector.PackedDimensions.Count < 1) return null;
                         return vector.PackedDimensions[0];
                     }
@@ -39,7 +42,8 @@ namespace pluginVerilog.Verilog.DataObjects
             }
         }
 
-        public DataObject VariableOrNet { set; get; } = null;
+        public DataObject DataObject { set; get; } = null;
+        public IInstantiation Instantiation{  set; get; } = null;
         public string Comment = "";
         public string SectionName = "";
 
@@ -112,7 +116,7 @@ namespace pluginVerilog.Verilog.DataObjects
                     break;
             }
 
-            if (VariableOrNet is Variables.Reg)
+            if (DataObject is Variables.Reg)
             {
                 label.AppendText("reg ", Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Keyword));
             }
@@ -124,13 +128,13 @@ namespace pluginVerilog.Verilog.DataObjects
                 label.AppendText(" ");
             }
 
-            if (VariableOrNet != null)
+            if (DataObject != null)
             {
-                if (VariableOrNet is Net)
+                if (DataObject is Net)
                 {
                     label.AppendText(Name, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Net));
                 }
-                else if (VariableOrNet is Variables.Reg)
+                else if (DataObject is Variables.Reg)
                 {
                     label.AppendText(Name, Global.CodeDrawStyle.Color(CodeDrawStyle.ColorType.Register));
                 }
@@ -384,12 +388,12 @@ ansi_port_declaration ::=
             Interface interface_ = null;
             if(direction == null && netType == null && dataType == null)
             {
-                string identifier = word.Text;
-                interface_ = word.ProjectProperty.GetBuildingBlock(identifier) as Interface;
-                if(interface_ != null)
+                if (parseInterfacePort(word, nameSpace))
                 {
-                    word.Color(CodeDrawStyle.ColorType.Identifier);
-                    word.MoveNext();
+                    prevDirection = null;
+                    prevDataType = null;
+                    prevNetType = null;
+                    return true;
                 }
             }
 
@@ -475,19 +479,89 @@ ansi_port_declaration ::=
                 Net net = Net.Create((Net.NetTypeEnum)netType, dataType);
                 net.PackedDimensions = packedDimensions;
                 net.Name = port.Name;
-                port.VariableOrNet = net;
+                port.DataObject = net;
             }
             else if(dataType != null)
             {
                 Variables.Variable variable = Variables.Variable.Create(dataType);
                 variable.Name = port.Name;
-                port.VariableOrNet = variable;
+                port.DataObject = variable;
             }
             else if(interface_ != null)
             {
 //                Interface interface_instance = interface_ .
             }
 
+            addPort(word, nameSpace, port);
+
+            word.Color(CodeDrawStyle.ColorType.Variable);
+            word.MoveNext();
+
+
+            // Unpacked dimensions shall not be inherited from the previous port declaration
+            //  and must be repeated for each port with the same dimensions.
+            // { dimension } 
+            while (!word.Eof && word.Text == "[")
+            {
+                Range dimension = Range.ParseCreate(word, nameSpace);
+                if(dimension != null)
+                {
+                    port.DataObject.Dimensions.Add(dimension);
+                }
+            }
+
+            // [ = constant_expression ] 
+            if (word.Text == "=")
+            {
+                word.MoveNext();
+                Expressions.Expression ex = Expressions.Expression.ParseCreate(word, nameSpace);
+                if (!ex.Constant)
+                {
+                    ex.Reference.AddError("should be constant");
+                }
+                else
+                {
+                    // TODO contant value assignment
+                }
+            }
+
+            prevDirection = direction;
+            prevDataType = dataType;
+            prevNetType = netType;
+
+            return true;
+        }
+
+        private static void addInstantiation(WordScanner word, NameSpace nameSpace, IInstantiation instantiation)
+        {
+            BuildingBlock block = nameSpace.BuildingBlock as BuildingBlock;
+            if (block == null)
+            {
+                word.AddError("cannot add instantiation");
+            }
+            else
+            {
+                if (block.Instantiations.ContainsKey(instantiation.Name))
+                {
+                    if (word.Prototype)
+                    {
+                        word.AddError("port name duplicate");
+                    }
+                    else
+                    {
+                        block.Instantiations.Remove(instantiation.Name);
+                        block.Instantiations.Add(instantiation.Name, instantiation);
+                    }
+                }
+                else
+                {
+                    block.Instantiations.Add(instantiation.Name, instantiation);
+                }
+            }
+        }
+
+        private static void addPort(WordScanner word, NameSpace nameSpace,Port port)
+        {
             IModuleOrInterfaceOrProgram block = nameSpace.BuildingBlock as IModuleOrInterfaceOrProgram;
             if (block == null)
             {
@@ -514,10 +588,10 @@ ansi_port_declaration ::=
                     block.PortsList.Add(port);
                 }
 
-                if (port.VariableOrNet != null)
+                if (port.DataObject != null)
                 {
-                    port.VariableOrNet.Name = port.Name;
-                    if (block.Variables.ContainsKey(port.Name))
+                    port.DataObject.Name = port.Name;
+                    if (block.DataObjects.ContainsKey(port.Name))
                     {
                         if (word.Prototype)
                         {
@@ -525,54 +599,53 @@ ansi_port_declaration ::=
                         }
                         else
                         {
-                            block.Variables.Remove(port.Name);
-                            block.Variables.Add(port.Name, port.VariableOrNet);
+                            block.DataObjects.Remove(port.Name);
+                            block.DataObjects.Add(port.Name, port.DataObject);
                         }
                     }
                     else
                     {
-                        block.Variables.Add(port.Name, port.VariableOrNet);
+                        block.DataObjects.Add(port.Name, port.DataObject);
                     }
                 }
             }
 
-            word.Color(CodeDrawStyle.ColorType.Variable);
+        }
+
+        private static bool parseInterfacePort(WordScanner word, NameSpace nameSpace)
+        {
+            Interface interface_ = null;
+            string identifier = word.Text;
+            interface_ = word.ProjectProperty.GetBuildingBlock(identifier) as Interface;
+            if (interface_ == null) return false;
+
+            BuildingBlock buildingBlock = nameSpace.BuildingBlock;
+            word.Color(CodeDrawStyle.ColorType.Keyword);
             word.MoveNext();
 
 
-            // Unpacked dimensions shall not be inherited from the previous port declaration
-            //  and must be repeated for each port with the same dimensions.
-            // { dimension } 
-            while (!word.Eof && word.Text == "[")
+            string instance_name = word.Text;
+            if (!General.IsIdentifier(instance_name))
             {
-                Range dimension = Range.ParseCreate(word, nameSpace);
-                if(dimension != null)
-                {
-                    port.VariableOrNet.Dimensions.Add(dimension);
-                }
+                word.AddError("illegal identifier");
+                return true;
             }
 
-            // [ = constant_expression ] 
-            if (word.Text == "=")
-            {
-                word.MoveNext();
-                Expressions.Expression ex = Expressions.Expression.ParseCreate(word, nameSpace);
-                if (!ex.Constant)
-                {
-                    ex.Reference.AddError("should be constant");
-                }
-                else
-                {
-                    // TODO contant value assignment
-                }
-            }
 
-            prevDirection = direction;
-            prevDataType = dataType;
-            prevNetType = netType;
+            InterfaceInstantiation iinst = InterfaceInstantiation.Create(instance_name, interface_.Name, word.Project);
+            word.Color(CodeDrawStyle.ColorType.Identifier);
+            word.MoveNext();
+
+            Port port = new Port();
+            port.Name = instance_name;
+            port.Instantiation = iinst;
+
+            addPort(word, nameSpace, port);
+            addInstantiation(word, nameSpace, iinst);
 
             return true;
         }
+
 
         // tf_port_item         ::= { attribute_instance } [tf_port_direction] [var] data_type_or_implicit [port_identifier { variable_dimension } [ = expression] ] 
 
@@ -704,8 +777,8 @@ ansi_port_declaration ::=
                 Port port = new Port();
                 port.Name = word.Text;
                 port.Direction = (DirectionEnum)direction;
-                port.VariableOrNet = Variables.Variable.Create(dataType);
-                port.VariableOrNet.Name = port.Name;
+                port.DataObject = Variables.Variable.Create(dataType);
+                port.DataObject.Name = port.Name;
 
                 if( nameSpace is Function)
                 {
@@ -725,9 +798,9 @@ ansi_port_declaration ::=
                     }
                 }
 
-                if (!nameSpace.Variables.ContainsKey(port.VariableOrNet.Name))
+                if (!nameSpace.DataObjects.ContainsKey(port.DataObject.Name))
                 {
-                    nameSpace.Variables.Add(port.VariableOrNet.Name, port.VariableOrNet);
+                    nameSpace.DataObjects.Add(port.DataObject.Name, port.DataObject);
                 }
 
                 word.Color(CodeDrawStyle.ColorType.Variable);
@@ -854,9 +927,9 @@ ansi_port_declaration ::=
 
             Port port = new Port();
             port.Direction = (DirectionEnum)direction;
-            port.VariableOrNet = Variables.Variable.Create(dataType);
+            port.DataObject = Variables.Variable.Create(dataType);
             port.Name = word.Text;
-            port.VariableOrNet.Name = port.Name;
+            port.DataObject.Name = port.Name;
             word.Color(CodeDrawStyle.ColorType.Variable);
 
             if (portNameSpace.Ports.ContainsKey(port.Name))
@@ -872,20 +945,20 @@ ansi_port_declaration ::=
                 portNameSpace.PortsList.Add(port);
             }
 
-            if (portNameSpace.Variables.ContainsKey(port.VariableOrNet.Name))
+            if (portNameSpace.DataObjects.ContainsKey(port.DataObject.Name))
             {
                 if (word.Prototype)
                 {
                 }
                 else
                 {
-                    if (portNameSpace.Variables.ContainsKey(port.VariableOrNet.Name)) portNameSpace.Variables.Remove(port.VariableOrNet.Name);
+                    if (portNameSpace.DataObjects.ContainsKey(port.DataObject.Name)) portNameSpace.DataObjects.Remove(port.DataObject.Name);
                 }
-                portNameSpace.Variables.Add(port.VariableOrNet.Name, port.VariableOrNet);
+                portNameSpace.DataObjects.Add(port.DataObject.Name, port.DataObject);
             }
             else
             {
-                portNameSpace.Variables.Add(port.VariableOrNet.Name, port.VariableOrNet);
+                portNameSpace.DataObjects.Add(port.DataObject.Name, port.DataObject);
             }
 
 

@@ -28,10 +28,8 @@ namespace pluginVerilog.Verilog.BuildingBlocks
 
         public Dictionary<string, ModuleItems.IInstantiation> Instantiations { get; } = new Dictionary<string, ModuleItems.IInstantiation>();
 
-        public Dictionary<string, DataObjects.Port> Ports { get; } = new Dictionary<string, DataObjects.Port>();
-        public List<DataObjects.Port> PortsList { get; } = new List<DataObjects.Port>();
 
-        public string FileId { get; protected set; }
+        public virtual string FileId { get; protected set; }
 
         public WordReference NameReference;
         public List<string> PortParameterNameList { get; } = new List<string>();
@@ -44,7 +42,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
         public bool AnsiStylePortDefinition { get; set; } = false;
         public Net.NetTypeEnum DefaultNetType = Net.NetTypeEnum.Wire;
 
-        public Data.IVerilogRelatedFile File { get; }
+        public virtual Data.IVerilogRelatedFile File { get; protected set; }
 
 
         private bool reparseRequested = false;

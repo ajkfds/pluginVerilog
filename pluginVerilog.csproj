@@ -116,6 +116,7 @@
     <Compile Include="Verilog\DataObjects\DataTypes\Enum.cs" />
     <Compile Include="Verilog\DataObjects\DataTypes\IntegerAtomType.cs" />
     <Compile Include="Verilog\DataObjects\DataTypes\IntegerVectorType.cs" />
+    <Compile Include="Verilog\DataObjects\DataTypes\InterfaceInstance.cs" />
     <Compile Include="Verilog\DataObjects\Nets\Net.cs" />
     <Compile Include="Verilog\DataObjects\Constants\Parameter.cs" />
     <Compile Include="Verilog\DataObjects\Port.cs" />

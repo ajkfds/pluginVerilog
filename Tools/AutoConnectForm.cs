@@ -70,7 +70,7 @@ namespace pluginVerilog.Tools
                 sourceParsedDocument = source.GetInstancedParsedDocument(moduleInstantiation.OverrideParameterID) as Verilog.ParsedDocument;
             }
             if (sourceParsedDocument == null) return;
-            BuildingBlock sourceModule = sourceParsedDocument.Root.BuldingBlocks[moduleInstantiation.SourceName] as BuildingBlock;
+            Module sourceModule = sourceParsedDocument.Root.BuldingBlocks[moduleInstantiation.SourceName] as Module;
             if (sourceModule == null) return;
 
             BuildingBlock instancedModule = parsedDocument.ProjectProperty.GetBuildingBlock(moduleInstantiation.SourceName);
@@ -123,7 +123,7 @@ namespace pluginVerilog.Tools
                     string portName = portLabel.PortName.ToLower();
 
                     int matchLength = 0;
-                    foreach(var variable in module.Variables.Values)
+                    foreach(var variable in module.DataObjects.Values)
                     {
                         string valName = variable.Name.ToLower();
                         int i, l;

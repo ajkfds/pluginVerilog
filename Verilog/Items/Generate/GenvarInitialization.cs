@@ -24,13 +24,13 @@ namespace pluginVerilog.Verilog.Items.Generate
                 if (word.Eof) return true;
                 DataObjects.Variables.Genvar gvar = new DataObjects.Variables.Genvar(word.Text);
                 gvar.DefinedReference = word.GetReference();
-                if (nameSpace.Variables.ContainsKey(gvar.Name))
+                if (nameSpace.DataObjects.ContainsKey(gvar.Name))
                 {
                     word.AddError("iillegal genvar name");
                 }
                 else
                 {
-                    nameSpace.Variables.Add(gvar.Name, gvar);
+                    nameSpace.DataObjects.Add(gvar.Name, gvar);
                 }
                 word.MoveNext();
                 genvar = Expressions.VariableReference.Create(gvar, nameSpace);

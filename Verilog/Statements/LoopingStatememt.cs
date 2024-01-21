@@ -212,7 +212,7 @@ namespace pluginVerilog.Verilog.Statements
                 return null;
             }
 
-            DataObjects.Variables.Variable.ParseDeclaration(word, forStatement);
+            Verilog.DataObjects.Variables.Variable.ParseDeclaration(word, forStatement);
 
             //if(word.Text == ";")
             //{
@@ -236,7 +236,7 @@ namespace pluginVerilog.Verilog.Statements
                 return null;
             }
 
-            DataObjects.VariableAssignment assign = DataObjects.VariableAssignment.ParseCreate(word, forStatement);
+            DataObjects.VariableAssignment assign = Verilog.DataObjects.VariableAssignment.ParseCreate(word, forStatement);
             if(assign == null)
             {
                 forStatement.Expression = Expressions.Expression.ParseCreate(word, forStatement);

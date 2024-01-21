@@ -17,14 +17,14 @@ namespace pluginVerilog.Verilog.BuildingBlocks
         public Dictionary<string, DataObjects.Port> Ports { get; } = new Dictionary<string, DataObjects.Port>();
         public List<DataObjects.Port> PortsList { get; } = new List<DataObjects.Port>();
 
-        public WordReference NameReference;
-        public List<string> PortParameterNameList { get; } = new List<string>();
+//        public WordReference NameReference;
+//        public List<string> PortParameterNameList { get; } = new List<string>();
 
         // Module
-        public Dictionary<string, ModuleItems.IInstantiation> Instantiations { get; } = new Dictionary<string, ModuleItems.IInstantiation>();
+//        public Dictionary<string, ModuleItems.IInstantiation> Instantiations { get; } = new Dictionary<string, ModuleItems.IInstantiation>();
 
         private WeakReference<Data.IVerilogRelatedFile> fileRef;
-        public Data.IVerilogRelatedFile File
+        public override Data.IVerilogRelatedFile File
         {
             get
             {
@@ -38,7 +38,7 @@ namespace pluginVerilog.Verilog.BuildingBlocks
             }
         }
 
-        public string FileId { get; protected set; }
+        public override string FileId { get; protected set; }
         private bool cellDefine = false;
         public bool CellDefine
         {
@@ -284,16 +284,16 @@ namespace pluginVerilog.Verilog.BuildingBlocks
         {
             base.AppendAutoCompleteItem(items);
 
-            foreach (ModuleItems.ModuleInstantiation mi in Instantiations.Values)
+            foreach (ModuleItems.IInstantiation inst in Instantiations.Values)
             {
-                if (mi.Name == null) System.Diagnostics.Debugger.Break();
-                items.Add(newItem(mi.Name, CodeDrawStyle.ColorType.Identifier));
+                if (inst.Name == null) System.Diagnostics.Debugger.Break();
+                items.Add(newItem(inst.Name, CodeDrawStyle.ColorType.Identifier));
             }
         }
 
         protected static void checkVariablesUseAndDriven(WordScanner word, NameSpace nameSpace)
         {
-            foreach (var variable in nameSpace.Variables.Values)
+            foreach (var variable in nameSpace.DataObjects.Values)
             {
                 if (variable.DefinedReference == null) continue;
 
