@@ -71,6 +71,10 @@ namespace pluginVerilog.Verilog.DataObjects
                             typeDef = nameSpace.Typedefs[typeDef.Name] as Typedef;
                         }
                     }
+                    else
+                    {
+                        nameSpace.Typedefs.Add(typeDef.Name, typeDef);
+                    }
                 }
             }
 

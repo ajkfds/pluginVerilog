@@ -1045,7 +1045,15 @@ namespace pluginVerilog.Verilog
             // assign new parsed document
             IndexReference indexReference = IndexReference.Create(wordPointer.ParsedDocument.IndexReference, wordPointer.Index);
             ParsedDocument newParsedDocument = new Verilog.ParsedDocument(vhInstance, indexReference, RootParsedDocument.ParseMode);// editid =, -1);
+            
+            
             newParsedDocument.SystemVerilog = wordPointer.ParsedDocument.SystemVerilog;
+            if (rootFile != null && rootFile.VerilogParsedDocument != null && rootFile.VerilogParsedDocument.SystemVerilog)
+            {
+                newParsedDocument.SystemVerilog = true;
+            }
+
+
             vhInstance.ParsedDocument = newParsedDocument;
             if (wordPointer.ParsedDocument.ParsedDocumentIndexDictionary.ContainsKey(wordPointer.Index)){
                 wordPointer.ParsedDocument.ParsedDocumentIndexDictionary.Remove(wordPointer.Index);
